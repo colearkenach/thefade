@@ -1,0 +1,71 @@
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
+      <div class="header-fields">
+        <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+      </div>
+    </header>
+  
+    <div class="form-group">
+      <label>Rank</label>
+      <select name="system.rank">
+        {{#select system.rank}}
+        <option value="untrained">Untrained</option>
+        <option value="learned">Learned</option>
+        <option value="practiced">Practiced</option>
+        <option value="adept">Adept</option>
+        <option value="experienced">Experienced</option>
+        <option value="expert">Expert</option>
+        <option value="mastered">Mastered</option>
+        {{/select}}
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Category</label>
+      <select name="system.category">
+        {{#select system.category}}
+        <option value="Combat">Combat</option>
+        <option value="Craft">Craft</option>
+        <option value="Knowledge">Knowledge</option>
+        <option value="Magical">Magical</option>
+        <option value="Physical">Physical</option>
+        <option value="Sense">Sense</option>
+        <option value="Social">Social</option>
+        {{/select}}
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Associated Attribute</label>
+      <select name="system.attribute">
+        {{#select system.attribute}}
+        <option value="physique">Physique</option>
+        <option value="finesse">Finesse</option>
+        <option value="mind">Mind</option>
+        <option value="presence">Presence</option>
+        <option value="soul">Soul</option>
+        <option value="physique_finesse">Physique & Finesse (Average)</option>
+        <option value="mind_soul">Mind & Soul (Average)</option>
+        <option value="finesse_presence">Finesse & Presence (Average)</option>
+        <option value="physique_mind">Physique & Mind (Average)</option>
+        {{/select}}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Misc Bonus (Extra Dice)</label>
+      <input type="number" name="system.miscBonus" value="{{system.miscBonus}}" data-dtype="Number"/>
+      <p class="hint">Additional dice added to skill rolls</p>
+    </div>
+    
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="system.description">{{system.description}}</textarea>
+    </div>
+  
+    <div class="form-group">
+      <label>Usage Examples</label>
+      <textarea name="system.usage">{{system.usage}}</textarea>
+    </div>
+  </form>

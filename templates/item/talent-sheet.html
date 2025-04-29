@@ -1,0 +1,25 @@
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
+      <div class="header-fields">
+        <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+      </div>
+    </header>
+  
+    <div class="form-group">
+      <label>Description</label>
+      <textarea name="system.description" rows="10">{{system.description}}</textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>Prerequisites</label>
+      <input type="text" name="system.prerequisites" value="{{system.prerequisites}}"/>
+      <p class="hint">Any requirements needed to learn this talent</p>
+    </div>
+    
+    <div class="form-group">
+      <label>Uses per Day</label>
+      <input type="number" name="system.usesPerDay" value="{{system.usesPerDay}}" data-dtype="Number"/>
+      <p class="hint">Leave at 0 for unlimited uses</p>
+    </div>
+  </form>

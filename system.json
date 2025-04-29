@@ -1,0 +1,125 @@
+{
+  "name": "thefade",
+  "title": "The Fade (Abyss)",
+  "description": "A system for playing The Fade (Abyss) TTRPG in Foundry VTT",
+  "version": "12.0.0",
+  "authors": [
+    {
+      "name": "Jeremy H.",
+      "discord": "ColeArkenach"
+    }
+  ],
+  "compatibility": {
+    "minimum": 9,
+    "verified": "12",
+    "maximum": "12"
+  },
+  "esmodules": [
+    "thefade.js"
+  ],
+  "styles": [
+    "styles/thefade.css"
+  ],
+  "packs": [
+    {
+      "name": "species",
+      "label": "Species",
+      "system": "thefade",
+      "path": "./packs/species.db",
+      "type": "Item"
+    },
+    {
+      "name": "paths",
+      "label": "Paths",
+      "system": "thefade",
+      "path": "./packs/paths.db",
+      "type": "Item"
+    },
+    {
+      "name": "skills",
+      "label": "Skills",
+      "system": "thefade",
+      "path": "./packs/skills.db",
+      "type": "Item"
+    },
+    {
+      "name": "weapons",
+      "label": "Weapons",
+      "system": "thefade",
+      "path": "./packs/weapons.db",
+      "type": "Item"
+    },
+    {
+      "name": "armor",
+      "label": "Armor",
+      "system": "thefade",
+      "path": "./packs/armor.db",
+      "type": "Item"
+    },
+    {
+      "name": "equipment",
+      "label": "Equipment",
+      "system": "thefade",
+      "path": "./packs/equipment.db",
+      "type": "Item"
+    },
+    {
+      "name": "spells",
+      "label": "Spells",
+      "system": "thefade",
+      "path": "./packs/spells.db",
+      "type": "Item"
+    },
+    {
+      "name": "talents",
+      "label": "Talents",
+      "system": "thefade",
+      "path": "./packs/talents.db",
+      "type": "Item"
+    }
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "grid": {
+    "distance": 1,
+    "units": "yard"
+  },
+  "primaryTokenAttribute": "hp",
+  "secondaryTokenAttribute": "sanity",
+  "url": "https://your/hosted/system/repo/",
+  "manifest": "https://your/hosted/system/repo/system.json",
+  "download": "https://your/packaged/download/archive.zip",
+  "license": "LICENSE.txt",
+  "itemTypes": [
+    "weapon",
+    "armor",
+    "skill",
+    "path",
+    "spell",
+    "talent",
+    "item",
+    "species",
+    "drug",
+    "poison",
+    "biological",
+    "medical",
+    "travel",
+    "mount",
+    "vehicle",
+    "musical",
+    "potion",
+    "staff",
+    "wand",
+    "gate",
+    "communication",
+    "containment",
+    "dream",
+    "fleshcraft",
+    "magicitem"
+  ]
+}

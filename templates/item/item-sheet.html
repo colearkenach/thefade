@@ -1,0 +1,384 @@
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+        </div>
+    </header>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="attributes">Attributes</a>
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        {{!-- Description Tab --}}
+        <div class="tab" data-group="primary" data-tab="description">
+            <textarea name="system.description">{{system.description}}</textarea>
+        </div>
+
+        {{!-- Attributes Tab --}}
+        <div class="tab" data-group="primary" data-tab="attributes">
+            <div class="form-group">
+                <label>Item Category</label>
+                <select name="system.itemCategory">
+                    {{#select system.itemCategory}}
+                    <option value="general">General Item</option>
+                    <option value="drug">Drug</option>
+                    <option value="poison">Poison</option>
+                    <option value="biological">Biological</option>
+                    <option value="medical">Medical</option>
+                    <option value="travel">Travel & Survival</option>
+                    <option value="mount">Mount</option>
+                    <option value="vehicle">Vehicle</option>
+                    <option value="musical">Musical Instrument</option>
+                    <option value="potion">Potion</option>
+                    <option value="staff">Staff</option>
+                    <option value="wand">Wand</option>
+                    <option value="gate">Dimensional Gate</option>
+                    <option value="communication">Communication Device</option>
+                    <option value="containment">Containment Item</option>
+                    <option value="dream">Dream Harvesting</option>
+                    <option value="fleshcraft">Flesh Craft</option>
+                    <option value="magicitem">Item of Power</option>
+                    {{/select}}
+                </select>
+            </div>
+
+            <!-- Common fields for all items -->
+            <div class="form-group">
+                <label>Price (sp)</label>
+                <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Weight</label>
+                <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
+                <span>lbs.</span>
+            </div>
+
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="text" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
+            </div>
+
+            <!-- Category-specific fields -->
+            {{#if (eq system.itemCategory "drug")}}
+            <hr>
+            <h3>Drug Properties</h3>
+            <div class="form-group">
+                <label>Duration</label>
+                <input type="text" name="system.duration" value="{{system.duration}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Addiction</label>
+                <input type="text" name="system.addiction" value="{{system.addiction}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Overdose</label>
+                <input type="text" name="system.overdose" value="{{system.overdose}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Effect</label>
+                <textarea name="system.effect">{{system.effect}}</textarea>
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "poison")}}
+            <hr>
+            <h3>Poison Properties</h3>
+            <div class="form-group">
+                <label>Toxicity</label>
+                <input type="text" name="system.toxicity" value="{{system.toxicity}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Type</label>
+                <select name="system.poisonType">
+                    {{#select system.poisonType}}
+                    <option value="injury">Injury</option>
+                    <option value="ingested">Ingested</option>
+                    <option value="inhaled">Inhaled</option>
+                    <option value="contact">Contact</option>
+                    {{/select}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Effect</label>
+                <textarea name="system.effect">{{system.effect}}</textarea>
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "biological")}}
+            <hr>
+            <h3>Biological Properties</h3>
+            <div class="form-group">
+                <label>HP</label>
+                <input type="text" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Energy</label>
+                <input type="text" name="system.energy" value="{{system.energy}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Effect</label>
+                <textarea name="system.effect">{{system.effect}}</textarea>
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "mount")}}
+            <hr>
+            <h3>Mount Properties</h3>
+            <div class="form-group">
+                <label>HP</label>
+                <input type="text" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Avoid</label>
+                <input type="text" name="system.avoid" value="{{system.avoid}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Size</label>
+                <select name="system.size">
+                    {{#select system.size}}
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large">Large</option>
+                    <option value="massive">Massive</option>
+                    {{/select}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Movement</label>
+                <input type="text" name="system.movement" value="{{system.movement}}" data-dtype="Number" />
+                <span>hexes</span>
+            </div>
+
+            <div class="form-group">
+                <label>Carry Capacity</label>
+                <input type="text" name="system.carryCapacity" value="{{system.carryCapacity}}" data-dtype="Number" />
+                <span>lbs.</span>
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "vehicle")}}
+            <hr>
+            <h3>Vehicle Properties</h3>
+            <div class="form-group">
+                <label>Drivers Required</label>
+                <input type="text" name="system.drivers" value="{{system.drivers}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Passengers</label>
+                <input type="text" name="system.passengers" value="{{system.passengers}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Movement</label>
+                <input type="text" name="system.movement" value="{{system.movement}}" data-dtype="Number" />
+                <span>hexes</span>
+            </div>
+
+            <div class="form-group">
+                <label>Overland Speed</label>
+                <input type="text" name="system.overland" value="{{system.overland}}" data-dtype="Number" />
+                <span>miles</span>
+            </div>
+
+            <div class="form-group">
+                <label>Cargo Capacity</label>
+                <input type="text" name="system.cargo" value="{{system.cargo}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Vehicle Type</label>
+                <select name="system.vehicleType">
+                    {{#select system.vehicleType}}
+                    <option value="land">Land</option>
+                    <option value="sea">Sea</option>
+                    <option value="air">Air</option>
+                    {{/select}}
+                </select>
+            </div>
+            {{/if}}
+
+            {{#if (or (eq system.itemCategory "staff") (eq system.itemCategory "wand"))}}
+            <hr>
+            <h3>Magic Tool Properties</h3>
+            <div class="form-group">
+                <label>Strength</label>
+                <input type="text" name="system.strength" value="{{system.strength}}" data-dtype="Number" />
+            </div>
+
+            {{#if (eq system.itemCategory "wand")}}
+            <div class="form-group">
+                <label>Charges</label>
+                <input type="text" name="system.charges" value="{{system.charges}}" data-dtype="Number" />
+                <span>/ 20</span>
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "staff")}}
+            <div class="form-group">
+                <label>Uses Per Day</label>
+                <input type="text" name="system.usesPerDay" value="{{system.usesPerDay}}" data-dtype="Number" />
+                <span>/ 3</span>
+            </div>
+            {{/if}}
+
+            <div class="form-group">
+                <label>Contained Spell</label>
+                <input type="text" name="system.spellName" value="{{system.spellName}}" />
+            </div>
+
+            <div class="form-group">
+                <label>School</label>
+                <select name="system.school">
+                    {{#select system.school}}
+                    <option value="General">General</option>
+                    <option value="Alchemy">Alchemy</option>
+                    <option value="Divine">Divine</option>
+                    <option value="Elementalism">Elementalism</option>
+                    <option value="Malevolent">Malevolent</option>
+                    <option value="Martial">Martial</option>
+                    <option value="Naturalism">Naturalism</option>
+                    <option value="Preternaturalism">Preternaturalism</option>
+                    <option value="Rituals">Rituals</option>
+                    <option value="Runes">Runes</option>
+                    <option value="Spiritualism">Spiritualism</option>
+                    {{/select}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Spell Description</label>
+                <textarea name="system.spellDescription">{{system.spellDescription}}</textarea>
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "gate")}}
+            <hr>
+            <h3>Dimensional Gate Properties</h3>
+            <div class="form-group">
+                <label>Range</label>
+                <input type="text" name="system.range" value="{{system.range}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Duration</label>
+                <input type="text" name="system.duration" value="{{system.duration}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Uses Per Day</label>
+                <input type="text" name="system.usesPerDay" value="{{system.usesPerDay}}" />
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "communication")}}
+            <hr>
+            <h3>Communication Device Properties</h3>
+            <div class="form-group">
+                <label>Distance</label>
+                <input type="text" name="system.distance" value="{{system.distance}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Complexity</label>
+                <select name="system.complexity">
+                    {{#select system.complexity}}
+                    <option value="audio">Audio Only</option>
+                    <option value="audiovisual">Audio & Visual</option>
+                    {{/select}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Relay Code</label>
+                <input type="text" name="system.relayCode" value="{{system.relayCode}}" />
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "magicitem")}}
+            <hr>
+            <h3>Item of Power Properties</h3>
+            <div class="form-group">
+                <label>Slot</label>
+                <select name="system.slot">
+                    {{#select system.slot}}
+                    <option value="head">Head</option>
+                    <option value="neck">Neck</option>
+                    <option value="body">Body</option>
+                    <option value="hands">Hands</option>
+                    <option value="ring">Ring</option>
+                    <option value="belt">Belt</option>
+                    <option value="boots">Boots</option>
+                    {{/select}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Effect</label>
+                <textarea name="system.effect">{{system.effect}}</textarea>
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "potion")}}
+            <hr>
+            <h3>Potion Properties</h3>
+            <div class="form-group">
+                <label>Effect</label>
+                <textarea name="system.effect">{{system.effect}}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Duration</label>
+                <input type="text" name="system.duration" value="{{system.duration}}" />
+            </div>
+            {{/if}}
+
+            {{#if (eq system.itemCategory "fleshcraft")}}
+            <hr>
+            <h3>Flesh Craft Properties</h3>
+            <div class="form-group">
+                <label>Effective Level</label>
+                <input type="text" name="system.el" value="{{system.el}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Creature Type</label>
+                <input type="text" name="system.creatureType" value="{{system.creatureType}}" />
+            </div>
+
+            <div class="form-group">
+                <label>HP</label>
+                <input type="text" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Natural Weapons</label>
+                <input type="text" name="system.naturalWeapons" value="{{system.naturalWeapons}}" />
+            </div>
+
+            <div class="form-group">
+                <label>Special Abilities</label>
+                <textarea name="system.specialAbilities">{{system.specialAbilities}}</textarea>
+            </div>
+            {{/if}}
+
+            <!-- Add similar sections for other equipment types as needed -->
+        </div>
+    </section>
+</form>

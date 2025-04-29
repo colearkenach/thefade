@@ -1,0 +1,118 @@
+<form class="{{cssClass}}" autocomplete="off">
+  <header class="sheet-header">
+    <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+    </div>
+  </header>
+
+  {{!-- Sheet Tab Navigation --}}
+  <nav class="sheet-tabs tabs" data-group="primary">
+    <a class="item" data-tab="description">Description</a>
+    <a class="item" data-tab="attributes">Attributes</a>
+    <a class="item" data-tab="abilities">Abilities</a>
+    <a class="item" data-tab="skills">Skills</a>
+  </nav>
+
+  {{!-- Sheet Body --}}
+  <section class="sheet-body">
+    {{!-- Description Tab --}}
+    <div class="tab" data-group="primary" data-tab="description">
+      <textarea name="system.description">{{system.description}}</textarea>
+    </div>
+
+    {{!-- Attributes Tab --}}
+  <div class="tab" data-group="primary" data-tab="attributes">
+      <div class="form-group">
+          <label>Tier</label>
+          <select name="system.tier">
+              {{#select system.tier}}
+              <option value="1">Tier 1</option>
+              <option value="2">Tier 2</option>
+              <option value="3">Tier 3</option>
+              {{/select}}
+          </select>
+      </div>
+
+      <div class="form-group">
+          <label>Base HP</label>
+          <input type="text" name="system.baseHP" value="{{system.baseHP}}" data-dtype="Number" />
+      </div>
+
+      {{#if (gt system.tier 1)}}
+      <div class="form-group">
+          <label>Requirements</label>
+          <textarea name="system.requirements">{{system.requirements}}</textarea>
+      </div>
+      {{/if}}
+  </div>
+    
+    {{!-- Abilities Tab --}}
+    <div class="tab" data-group="primary" data-tab="abilities">
+      <h2>Path Abilities 
+        <a class="ability-add" title="Add Ability"><i class="fas fa-plus"></i></a>
+      </h2>
+      
+      {{#each system.abilities as |ability id|}}
+      <div class="ability-item" data-ability-id="{{id}}">
+        <div class="ability-header flexrow">
+          <input type="text" name="system.abilities.{{id}}.name" value="{{ability.name}}" placeholder="Ability Name"/>
+          <div class="ability-controls">
+            <a class="ability-delete" title="Delete Ability"><i class="fas fa-trash"></i></a>
+          </div>
+        </div>
+        <textarea name="system.abilities.{{id}}.description">{{ability.description}}</textarea>
+      </div>
+      {{/each}}
+    </div>
+
+    {{!-- Skills Tab --}}
+    <div class="tab" data-group="primary" data-tab="skills">
+      <h2>Path Skills
+        <a class="path-skill-create" title="Add Skill"><i class="fas fa-plus"></i></a>
+        <a class="skill-browse" title="Browse Skills"><i class="fas fa-search"></i></a>
+      </h2>
+    
+      <p class="hint">Drag skills from your compendium or character sheet and drop them here to add skills granted by this path.</p>
+      
+      {{#if pathSkills.length}}
+      <ol class="items-list skills-list">
+        <li class="items-header flexrow">
+          <div class="item-name">Name</div>
+          <div class="item-rank">Rank</div>
+          <div class="item-category">Category</div>
+          <div class="item-controls">
+            <a class="item-control path-skill-create" title="Create Skill"><i class="fas fa-plus"></i></a>
+          </div>
+        </li>
+      
+        {{#each pathSkills as |skill|}}
+        <li class="item flexrow" data-item-id="{{skill._id}}">
+          <div class="item-name">{{skill.name}}</div>
+          <div class="item-rank">
+            <select class="path-skill-rank" data-skill-id="{{skill._id}}">
+              {{#select skill.system.rank}}
+              <option value="untrained">Untrained</option>
+              <option value="learned">Learned</option>
+              <option value="practiced">Practiced</option>
+              <option value="adept">Adept</option>
+              <option value="experienced">Experienced</option>
+              <option value="expert">Expert</option>
+              <option value="mastered">Mastered</option>
+              {{/select}}
+            </select>
+          </div>
+          <div class="item-category">{{skill.system.category}}</div>
+          <div class="item-controls">
+            <a class="item-control path-skill-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
+            <a class="item-control path-skill-delete" title="Delete Skill"><i class="fas fa-trash"></i></a>
+          </div>
+        </li>
+        {{/each}}
+      </ol>
+      {{else}}
+      <p>No skills have been added to this path yet.</p>
+      {{/if}}
+    </div>
+  </section>
+</form>

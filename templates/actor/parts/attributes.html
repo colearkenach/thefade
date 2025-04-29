@@ -1,0 +1,100 @@
+<h2>Ability Scores</h2>
+<div class="grid grid-5col">
+
+    <div class="attribute">
+        <label>Physique</label>
+        <div class="attribute-value">
+            <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.value}}" data-dtype="Number" />
+            {{#if system.attributes.physique.speciesBonus}}
+            <span class="species-bonus" title="Species Bonus">+{{system.attributes.physique.speciesBonus}}</span>
+            {{/if}}
+            {{#if system.attributes.physique.flexibleBonus}}
+            <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.physique.flexibleBonus}}</span>
+            {{/if}}
+        </div>
+        <div class="attribute-desc">
+            <p>Strength, toughness, and stamina</p>
+        </div>
+    </div>
+
+    <div class="attribute">
+        <label>Finesse</label>
+        <div class="attribute-value">
+            <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.value}}" data-dtype="Number" />
+            {{#if system.attributes.finesse.speciesBonus}}
+            <span class="species-bonus" title="Species Bonus">+{{system.attributes.finesse.speciesBonus}}</span>
+            {{/if}}
+            {{#if system.attributes.finesse.flexibleBonus}}
+            <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.finesse.flexibleBonus}}</span>
+            {{/if}}
+        </div>
+        <div class="attribute-desc">
+            <p>Agility, dexterity, and reflexes</p>
+        </div>
+    </div>
+
+    <div class="attribute">
+        <label>Mind</label>
+        <div class="attribute-value">
+            <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.value}}" data-dtype="Number" />
+            {{#if system.attributes.mind.speciesBonus}}
+            <span class="species-bonus" title="Species Bonus">+{{system.attributes.mind.speciesBonus}}</span>
+            {{/if}}
+            {{#if system.attributes.mind.flexibleBonus}}
+            <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.mind.flexibleBonus}}</span>
+            {{/if}}
+        </div>
+        <div class="attribute-desc">
+            <p>Intellect, problem-solving, and perception</p>
+        </div>
+    </div>
+
+    <div class="attribute">
+        <label>Presence</label>
+        <div class="attribute-value">
+            <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.value}}" data-dtype="Number" />
+            {{#if system.attributes.presence.speciesBonus}}
+            <span class="species-bonus" title="Species Bonus">+{{system.attributes.presence.speciesBonus}}</span>
+            {{/if}}
+            {{#if system.attributes.presence.flexibleBonus}}
+            <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.presence.flexibleBonus}}</span>
+            {{/if}}
+        </div>
+        <div class="attribute-desc">
+            <p>Charisma, leadership, and social skills</p>
+        </div>
+    </div>
+
+    <div class="attribute">
+        <label>Soul</label>
+        <div class="attribute-value">
+            <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.value}}" data-dtype="Number" />
+            {{#if system.attributes.soul.speciesBonus}}
+            <span class="species-bonus" title="Species Bonus">+{{system.attributes.soul.speciesBonus}}</span>
+            {{/if}}
+            {{#if system.attributes.soul.flexibleBonus}}
+            <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.soul.flexibleBonus}}</span>
+            {{/if}}
+        </div>
+        <div class="attribute-desc">
+            <p>Magical aptitude and willpower</p>
+        </div>
+    </div>
+
+</div>
+
+{{#if system.species.flexibleBonus.value}}
+<div class="flexible-bonus-selector">
+    <label>Apply Species Flexible Bonus (+{{system.species.flexibleBonus.value}})</label>
+    <select name="system.species.flexibleBonus.selectedAttribute">
+        {{#select system.species.flexibleBonus.selectedAttribute}}
+        <option value="">-- Select Ability --</option>
+        <option value="physique">Physique</option>
+        <option value="finesse">Finesse</option>
+        <option value="mind">Mind</option>
+        <option value="presence">Presence</option>
+        <option value="soul">Soul</option>
+        {{/select}}
+    </select>
+</div>
+{{/if}}

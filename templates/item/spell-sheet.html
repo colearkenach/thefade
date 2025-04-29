@@ -1,0 +1,118 @@
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
+      <div class="header-fields">
+        <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+      </div>
+    </header>
+  
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+      <a class="item" data-tab="description">Description</a>
+      <a class="item" data-tab="attributes">Attributes</a>
+    </nav>
+  
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+      {{!-- Description Tab --}}
+      <div class="tab" data-group="primary" data-tab="description">
+        <textarea name="system.description">{{system.description}}</textarea>
+      </div>
+  
+      {{!-- Attributes Tab --}}
+      <div class="tab" data-group="primary" data-tab="attributes">
+        <div class="form-group">
+          <label>School</label>
+          <select name="system.school">
+            {{#select system.school}}
+            <option value="General">General</option>
+            <option value="Alchemy">Alchemy</option>
+            <option value="Divine">Divine</option>
+            <option value="Elementalism">Elementalism</option>
+            <option value="Malevolent">Malevolent</option>
+            <option value="Martial">Martial</option>
+            <option value="Naturalism">Naturalism</option>
+            <option value="Preternaturalism">Preternaturalism</option>
+            <option value="Rituals">Rituals</option>
+            <option value="Runes">Runes</option>
+            <option value="Spiritualism">Spiritualism</option>
+            {{/select}}
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Is Dark Magic?</label>
+          <input type="checkbox" name="system.isDarkMagic" {{checked system.isDarkMagic}}/>
+        </div>
+        
+        <div class="form-group">
+          <label>Damage</label>
+          <input type="text" name="system.damage" value="{{system.damage}}"/>
+        </div>
+        
+        <div class="form-group">
+          <label>Damage Type</label>
+          <select name="system.damageType">
+            {{#select system.damageType}}
+            <option value="">None</option>
+            <option value="B">Bludgeoning (B)</option>
+            <option value="S">Slashing (S)</option>
+            <option value="P">Piercing (P)</option>
+            <option value="F">Fire (F)</option>
+            <option value="C">Cold (C)</option>
+            <option value="A">Acid (A)</option>
+            <option value="E">Electricity (E)</option>
+            <option value="So">Sonic (So)</option>
+            <option value="Sm">Smiting (Sm)</option>
+            <option value="Ex">Expel (Ex)</option>
+            <option value="Psi">Psychokinetic (Psi)</option>
+            <option value="Co">Corruption (Co)</option>
+            <option value="Ut">Untyped (Ut)</option>
+            {{/select}}
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Time/Duration</label>
+          <input type="text" name="system.time" value="{{system.time}}"/>
+        </div>
+        
+        <div class="form-group">
+          <label>Successes Required</label>
+          <input type="text" name="system.successes" value="{{system.successes}}" data-dtype="Number"/>
+        </div>
+        
+        <div class="form-group">
+          <label>Attack</label>
+          <select name="system.attack">
+            {{#select system.attack}}
+            <option value="">None</option>
+            <option value="Avoid">vs. Avoid</option>
+            <option value="Resilience">vs. Resilience</option>
+            <option value="Grit">vs. Grit</option>
+            {{/select}}
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>Range</label>
+          <input type="text" name="system.range" value="{{system.range}}"/>
+        </div>
+        
+        <div class="form-group">
+          <label>Bonus Effect</label>
+          <textarea name="system.bonusEffect">{{system.bonusEffect}}</textarea>
+        </div>
+        
+        <div class="form-group">
+          <label>Mishap Modifier</label>
+          <select name="system.mishapModifier">
+            {{#select system.mishapModifier}}
+            <option value="none">None</option>
+            <option value="corruption">Corruption Damage (Failure = One Stage Worse)</option>
+            {{/select}}
+          </select>
+        </div>
+      </div>
+    </section>
+  </form>

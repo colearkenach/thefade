@@ -1,0 +1,18 @@
+<div class="thefade chat-card">
+    <header class="card-header">
+        <h3>{{name}} Skill Check</h3>
+    </header>
+    <div class="card-content">
+        <p>{{actor}} rolled {{dicePool}}d12:</p>
+        <p>
+            {{#each dieResultsDetails}}
+            <span class="die-result {{this.class}}">{{this.value}}</span>{{#unless @last}}, {{/unless}}
+            {{/each}}
+        </p>
+        <p>Successes: {{successes}} (DT: {{dt}})</p>
+        <p class="{{#if success}}success{{else}}failure{{/if}}">
+            {{#if success}}Success!{{else}}Failure{{/if}}
+        </p>
+        {{#if miscBonus}}<p><em>Includes +{{miscBonus}} bonus dice</em></p>{{/if}}
+    </div>
+</div>

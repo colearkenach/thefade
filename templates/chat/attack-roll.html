@@ -1,0 +1,29 @@
+<div class="thefade chat-card">
+    <header class="card-header">
+        <h3>Attack with {{weaponName}}</h3>
+    </header>
+    <div class="card-content">
+        <p>
+            {{actor}} rolled {{dicePool}}d12:
+            {{#each dieResultsDetails}}
+            <span class="die-result {{this.class}}">{{this.value}}</span>{{#unless @last}}, {{/unless}}
+            {{/each}}
+        </p>
+        <p>Successes: {{successes}} (DT: {{dt}} vs {{target}})</p>
+        <div class="damage-section">
+            {{#if criticalHits}}
+            <p>Base Damage: {{damage}} {{damageType}}</p>
+            <p>Critical Hits: {{criticalHits}}</p>
+            <p>Total Damage: {{totalDamage}} {{damageType}}</p>
+            {{else}}
+            <p>Damage: {{damage}} {{damageType}}</p>
+            {{#if critical}}<p>Critical: {{critical}}</p>{{/if}}
+            {{/if}}
+        </div>
+        <p class="{{#if success}}success{{else}}failure{{/if}}">
+            {{#if success}}Success! The attack hits {{target}}.{{else}}Failure! The attack misses {{target}}.{{/if}}
+        </p>
+        <p>Qualities: {{qualities}}</p>
+        {{#if bonusDice}}<p><em>{{bonusDice}}</em></p>{{/if}}
+    </div>
+</div>

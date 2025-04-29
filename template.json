@@ -1,0 +1,243 @@
+{
+  "Actor": {
+    "types": [ "character" ],
+    "templates": {
+      "base": {
+        "hp": {
+          "value": 0
+        },
+        "attributes": {
+          "physique": {
+            "value": 1
+          },
+          "finesse": {
+            "value": 1
+          },
+          "mind": {
+            "value": 1
+          },
+          "presence": {
+            "value": 1
+          },
+          "soul": {
+            "value": 1
+          }
+        }
+      }
+    },
+    "character": {
+      "templates": [ "base" ],
+      "biography": "",
+      "appearance": "",
+      "sanity": {
+        "value": 10,
+        "miscBonus": 0
+      },
+      "hpMiscBonus": 0,
+      "level": 1,
+      "initiative": 0,
+      "experience": 0,
+      "species": {
+        "name": "",
+        "baseHP": 0,
+        "size": "medium",
+        "creatureType": "humanoid",
+        "creatureSubtype": "",
+        "languages": "",
+        "speciesAbilities": {}
+      },
+      "movement": {
+        "land": 4,
+        "fly": 0,
+        "swim": 0,
+        "climb": 0,
+        "burrow": 0
+      },
+      "defenses": {
+        "resilience": 0,
+        "avoid": 0,
+        "grit": 0,
+        "resilienceBonus": 0,
+        "avoidBonus": 0,
+        "gritBonus": 0,
+        "passiveDodge": 0,
+        "passiveParry": 0,
+        "facing": "front"
+      },
+      "currency": {
+        "serpents": 0
+      },
+      "background": "",
+      "notes": "",
+      "religion": "",
+      "language": "",
+      "aura": {
+        "color": "",
+        "shape": "",
+        "intensity": ""
+      }
+    }
+  },
+  "Item": {
+    "types": [
+      "weapon",
+      "armor",
+      "skill",
+      "path",
+      "spell",
+      "talent",
+      "item",
+      "species",
+      "drug",
+      "poison",
+      "biological",
+      "medical",
+      "travel",
+      "mount",
+      "vehicle",
+      "musical",
+      "potion",
+      "staff",
+      "wand",
+      "gate",
+      "communication",
+      "containment",
+      "dream",
+      "fleshcraft",
+      "magicitem"
+    ],
+    "templates": {
+      "base": {
+        "description": ""
+      },
+      "physical": {
+        "weight": 0,
+        "price": 0,
+        "quantity": 1
+      }
+    },
+    "weapon": {
+      "templates": [ "base", "physical" ],
+      "damage": 0,
+      "damageType": "B",
+      "critical": 4,
+      "handedness": "One-Handed",
+      "range": "Melee",
+      "integrity": 10,
+      "qualities": "",
+      "skill": "Sword",
+      "attribute": "physique",
+      "material": "iron",
+      "miscBonus": 0
+    },
+    "armor": {
+      "templates": [ "base", "physical" ],
+      "ap": 0,
+      "currentAP": 0,
+      "isHeavy": false,
+      "location": "Body",
+      "autoBlock": "",
+      "material": "iron"
+    },
+    "skill": {
+      "templates": [ "base" ],
+      "rank": "untrained",
+      "category": "Combat",
+      "attribute": "physique",
+      "usage": "",
+      "miscBonus": 0
+    },
+    "path": {
+      "templates": [ "base" ],
+      "tier": 1,
+      "baseHP": 0,
+      "skills": "",
+      "requirements": "",
+      "abilities": {},
+      "pathSkills": []
+    },
+    "spell": {
+      "templates": [ "base" ],
+      "school": "General",
+      "isDarkMagic": false,
+      "damage": "",
+      "damageType": "",
+      "time": "Instantaneous",
+      "successes": 3,
+      "attack": "",
+      "range": "",
+      "bonusEffect": "",
+      "mishapModifier": "none"
+    },
+    "talent": {
+      "templates": [ "base" ],
+      "prerequisites": "",
+      "usesPerDay": 0,
+      "associatedPath": ""
+    },
+    "item": {
+      "templates": [ "base", "physical" ],
+      "isMagical": false,
+      "itemCategory": "general",
+      "duration": "",
+      "addiction": "",
+      "overdose": "",
+      "effect": "",
+      "toxicity": "",
+      "poisonType": "injury",
+      "hp": 0,
+      "energy": 0,
+      "avoid": 0,
+      "size": "medium",
+      "movement": 0,
+      "carryCapacity": 0,
+      "drivers": 1,
+      "passengers": 0,
+      "overland": 0,
+      "cargo": "",
+      "vehicleType": "land",
+      "strength": 0,
+      "charges": 20,
+      "usesPerDay": 3,
+      "spellName": "",
+      "spellDescription": "",
+      "school": "General",
+      "range": "",
+      "distance": "",
+      "complexity": "audio",
+      "relayCode": "",
+      "slot": "",
+      "el": 1,
+      "creatureType": "",
+      "specialAbilities": "",
+      "naturalWeapons": ""
+    },
+    "species": {
+      "templates": [ "base" ],
+      "baseHP": 0,
+      "size": "medium",
+      "creatureType": "humanoid",
+      "creatureSubtype": "",
+      "languages": "",
+      "abilityBonuses": {
+        "physique": 0,
+        "finesse": 0,
+        "mind": 0,
+        "presence": 0,
+        "soul": 0
+      },
+      "flexibleBonus": {
+        "value": 0,
+        "selectedAttribute": ""
+      },
+      "movement": {
+        "land": 4,
+        "fly": 0,
+        "swim": 0,
+        "climb": 0,
+        "burrow": 0
+      },
+      "speciesAbilities": {}
+    }
+  }
+}

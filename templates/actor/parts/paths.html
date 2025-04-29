@@ -1,0 +1,89 @@
+<section class="paths-section">
+    <!-- Character Level -->
+    <div class="character-level">
+        <div class="form-group">
+            <label>Character Level</label>
+            <input type="number" name="system.level" value="{{system.level}}" data-dtype="Number" class="level-input" />
+        </div>
+        <div class="form-group">
+            <label>Experience</label>
+            <input type="number" name="system.experience" value="{{system.experience}}" data-dtype="Number" />
+        </div>
+    </div>
+
+    <!-- Paths -->
+    <div class="paths">
+        <h2>
+            Paths
+            <a class="item-create" title="Add Path" data-type="path"><i class="fas fa-plus"></i></a>
+            <a class="path-browse" title="Browse Paths"><i class="fas fa-search"></i></a>
+        </h2>
+
+        {{#each actor.paths as |path id|}}
+        <div class="path-item" data-item-id="{{path._id}}">
+            <div class="path-header flexrow">
+                <h3 class="path-name">{{path.name}} <span class="path-tier">(Tier {{path.system.tier}})</span></h3>
+                <div class="path-controls">
+                    <a class="item-edit" title="Edit Path"><i class="fas fa-edit"></i></a>
+                    <a class="item-delete" title="Delete Path"><i class="fas fa-trash"></i></a>
+                </div>
+            </div>
+
+            <div class="path-details">
+                <div class="path-info">
+                    <div class="path-baseHP">
+                        <label>Base HP:</label>
+                        <span>{{path.system.baseHP}}</span>
+                    </div>
+                    <div class="path-abilities">
+                        <label>Path Abilities:</label>
+                        <div class="path-ability-list">
+                            {{#each path.system.abilities as |ability|}}
+                            <div class="path-ability">
+                                <strong>{{ability.name}}:</strong> {{ability.description}}
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+
+    <!-- Talents -->
+    <div class="talents">
+        <h2>
+            Talents
+            <a class="item-create" title="Add Talent" data-type="talent"><i class="fas fa-plus"></i></a>
+            <a class="talent-browse" title="Browse Talents"><i class="fas fa-search"></i></a>
+        </h2>
+
+        <div class="talents-list">
+            {{#each actor.talents as |talent id|}}
+            <div class="talent-item" data-item-id="{{talent._id}}">
+                <input type="checkbox" id="toggle-talent-{{talent._id}}" class="talent-checkbox">
+                <div class="talent-header">
+                    <label for="toggle-talent-{{talent._id}}" class="talent-name-container">
+                        <div class="talent-name">{{talent.name}}</div>
+                        <i class="fas fa-chevron-down talent-toggle-icon"></i>
+                    </label>
+                    <div class="talent-controls">
+                        <a class="item-edit" title="Edit Talent"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Talent"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                <div class="talent-description">
+                    <p>{{talent.system.description}}</p>
+                    {{#if talent.system.usesPerDay}}
+                    <p><strong>Uses per Day:</strong> {{talent.system.usesPerDay}}</p>
+                    {{/if}}
+                    {{#if talent.system.prerequisites}}
+                    <p><strong>Prerequisites:</strong> {{talent.system.prerequisites}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</section>

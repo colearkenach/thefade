@@ -1,0 +1,1648 @@
+/* The Fade (Abyss) CSS */
+
+/* Custom Font Import */
+@font-face {
+  font-family: 'EideticNeo-Omni';
+  src: url('../fonts/EideticNeo-Omni.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Global Styles */
+.thefade {
+  --primary-color: #2b2d42;
+  --secondary-color: #8d99ae;
+  --tertiary-color: #edf2f4;
+  --accent-color: #ef233c;
+  --dark-accent: #d90429;
+  --text-color: #2b2d42;
+  --light-text: #edf2f4;
+  --dark-text: #2b2d42;
+  --border-color: #8d99ae;
+  --background-color: #edf2f4;
+  --header-background: #2b2d42;
+}
+
+.thefade .window-content {
+  background: var(--background-color);
+  color: var(--text-color);
+  font-family: "EideticNeo-Omni", sans-serif;
+}
+  
+  .thefade input[type="text"],
+  .thefade input[type="number"],
+  .thefade select {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 0.25em;
+    color: var(--text-color);
+  }
+  
+  .thefade textarea {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    padding: 0.5em;
+    height: auto;
+    color: var(--text-color);
+  }
+  
+  .thefade button {
+    background: var(--primary-color);
+    color: var(--light-text);
+    border: none;
+    border-radius: 3px;
+    padding: 0.5em 1em;
+    cursor: pointer;
+  }
+  
+  .thefade button:hover {
+    background: var(--accent-color);
+  }
+  
+  .thefade a {
+    color: var(--accent-color);
+    text-decoration: none;
+  }
+  
+  .thefade a:hover {
+    text-shadow: 0 0 8px var(--accent-color);
+  }
+  
+  /* Sheet Header */
+  .thefade .sheet-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 5px;
+  }
+  
+  .thefade .profile-img {
+    flex: 0 0 100px;
+    height: 100px;
+    margin-right: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+  }
+  
+  .thefade .header-fields {
+    flex: 1;
+  }
+  
+  .thefade .charname {
+    border-bottom: none;
+    margin: 0;
+  }
+  
+  .thefade .charname input {
+    width: 100%;
+    font-size: 2em;
+    font-weight: bold;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    background: transparent;
+  }
+  
+  /* Tabs */
+  .thefade .sheet-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .thefade .sheet-tabs .item {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-radius: 5px 5px 0 0;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+  }
+  
+  .thefade .sheet-tabs .item.active {
+    background: var(--primary-color);
+    color: var(--light-text);
+    border-color: var(--primary-color);
+  }
+  
+  /* Grid Layout */
+  .thefade .grid {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .thefade .grid-2col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .thefade .grid-3col {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .thefade .grid-4col {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .thefade .grid-5col {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  /* Flexbox Layout */
+  .thefade .flexrow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  
+  .thefade .flexcol {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .thefade .flex-center {
+    align-items: center;
+  }
+  
+  .thefade .flex-between {
+    justify-content: space-between;
+  }
+  
+  /* Resources */
+  .thefade .resource {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .thefade .resource label {
+    font-weight: bold;
+  }
+  
+  .thefade .resource-content {
+    margin-top: 5px;
+  }
+  
+  /* Attributes Section */
+  .thefade .attribute {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    text-align: center;
+  }
+  
+  .thefade .attribute label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 1.2em;
+  }
+
+  .small-input {
+    width: 40px !important;
+    text-align: center;
+    margin-left: 4px;
+  }
+  
+  .defense .flexrow {
+    display: flex;
+    align-items: center;
+  }
+  
+  .defense .flexrow span {
+    margin: 0 4px;
+  }
+  
+  .thefade .attribute-value {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+  
+  .thefade .attribute-value input {
+    width: 40px;
+    text-align: center;
+    font-size: 1.2em;
+  }
+  
+  .thefade .attribute-roll {
+    background: var(--accent-color);
+    border: none;
+    color: white;
+    border-radius: 3px;
+    margin-left: 5px;
+    padding: 2px 5px;
+    cursor: pointer;
+  }
+  
+  .thefade .attribute-desc {
+    font-size: 0.8em;
+    color: var(--secondary-color);
+  }
+  
+  /* Skills Section */
+  .thefade .skills-section h2 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-top: 15px;
+  }
+  
+  .thefade .skills-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 5px;
+    border-radius: 3px;
+  }
+  
+  .thefade .items-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .thefade .items-list .item {
+    padding: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .thefade .items-list .item:nth-child(even) {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .thefade .skill-name {
+    flex: 2;
+  }
+  
+  .thefade .skill-rank {
+    flex: 1;
+  }
+  
+  .thefade .skill-attribute {
+    flex: 1;
+  }
+  
+  .thefade .skill-controls {
+    flex: 0 0 60px;
+    text-align: right;
+  }
+  
+  .thefade .skill-controls a {
+    margin: 0 3px;
+  }
+  
+  /* Inventory Section */
+  .thefade .inventory-section h2 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-top: 15px;
+  }
+  
+  .thefade .weapon-header,
+  .thefade .armor-header,
+  .thefade .gear-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 5px;
+    border-radius: 3px;
+  }
+  
+  .thefade .weapon-name,
+  .thefade .armor-name,
+  .thefade .gear-name {
+    flex: 2;
+  }
+  
+  .thefade .weapon-damage,
+  .thefade .weapon-crit,
+  .thefade .weapon-range,
+  .thefade .armor-ap,
+  .thefade .armor-location,
+  .thefade .armor-heavy,
+  .thefade .gear-quantity,
+  .thefade .gear-weight {
+    flex: 1;
+  }
+  
+  .thefade .weapon-qualities,
+  .thefade .gear-description {
+    flex: 3;
+  }
+  
+  .thefade .weapon-controls,
+  .thefade .armor-controls,
+  .thefade .gear-controls {
+    flex: 0 0 60px;
+    text-align: right;
+  }
+  
+  .thefade .weapon-controls a,
+  .thefade .armor-controls a,
+  .thefade .gear-controls a {
+    margin: 0 3px;
+  }
+  
+  /* Currency */
+  .thefade .currency {
+    margin-bottom: 15px;
+  }
+  
+  .thefade .currency-item {
+    text-align: center;
+  }
+  
+  .thefade .currency-item input {
+    width: 60px;
+    text-align: center;
+  }
+  
+  /* Paths Section */
+  .thefade .paths-section h2 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .thefade .path-item {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .thefade .path-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .thefade .path-name {
+    margin: 0;
+  }
+  
+  .thefade .path-tier {
+    font-size: 0.8em;
+    color: var(--secondary-color);
+  }
+  
+  .thefade .path-controls a {
+    margin: 0 3px;
+  }
+  
+  .thefade .path-ability-list {
+    margin-top: 5px;
+  }
+  
+  .thefade .path-ability {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Spells Section */
+  .thefade .spells-section h2 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .thefade .spell-filters {
+    margin-bottom: 10px;
+  }
+  
+  .thefade .spell-school-filter {
+    flex: 1;
+    margin-right: 10px;
+  }
+  
+  .thefade .spell-search {
+    flex: 2;
+  }
+  
+  .thefade .spell-header {
+    font-weight: bold;
+    margin-bottom: 5px;
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 5px;
+    border-radius: 3px;
+  }
+  
+  .thefade .spell-name {
+    flex: 3;
+  }
+  
+  .thefade .spell-school,
+  .thefade .spell-damage,
+  .thefade .spell-time,
+  .thefade .spell-successes,
+  .thefade .spell-attack {
+    flex: 1;
+  }
+  
+  .thefade .spell-controls {
+    flex: 0 0 60px;
+    text-align: right;
+  }
+  
+  .thefade .spell-controls a {
+    margin: 0 3px;
+  }
+  
+  .thefade .spell-details {
+    margin-top: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Item Sheets */
+  .thefade.sheet.item .sheet-header {
+    border-bottom: 2px solid var(--primary-color);
+  }
+  
+  .thefade.sheet.item .form-group {
+    margin-bottom: 10px;
+  }
+  
+  .thefade.sheet.item .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .thefade.sheet.item .form-group input[type="text"],
+  .thefade.sheet.item .form-group input[type="number"],
+  .thefade.sheet.item .form-group select {
+    width: 100%;
+  }
+  
+  .thefade.sheet.item .hint {
+    font-size: 0.8em;
+    color: var(--secondary-color);
+    margin-top: 2px;
+  }
+  
+  /* Ability Items in Path Sheet */
+  .thefade .ability-item {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: rgba(0, 0, 0, 0.05);
+  }
+  
+  .thefade .ability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .thefade .ability-header input {
+    flex: 1;
+    margin-right: 10px;
+  }
+  
+  .thefade .ability-controls a {
+    margin: 0 3px;
+  }
+  
+  /* Spell Mishaps */
+  .thefade .spell-mishap {
+    color: var(--accent-color);
+    font-weight: bold;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .thefade .grid-5col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .thefade .grid-3col {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .thefade .sheet-tabs .item {
+      padding: 3px 6px;
+      font-size: 0.9em;
+    }
+  }
+  
+  @media (max-width: 400px) {
+    .thefade .grid-5col,
+    .thefade .grid-3col,
+    .thefade .grid-2col {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Drop target highlighting */
+.thefade.sheet.item .tab[data-tab="skills"].drop-target {
+  outline: 2px dashed #4b6ecc;
+  background-color: rgba(75, 110, 204, 0.1);
+}
+
+.thefade.sheet.item .skills-list.drop-target {
+  outline: 2px dashed #4b6ecc;
+  background-color: rgba(75, 110, 204, 0.1);
+}
+
+/* Make sure the skills tab is a valid drop target */
+.thefade.sheet.item .tab[data-tab="skills"] {
+  min-height: 100px;
+  position: relative;
+}
+
+/* Skill Choice Styling */
+.skill-choices-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.skill-choice-item {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 5px;
+  border: 1px solid #BBB;
+}
+
+.skill-choice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.skill-choice-category,
+.skill-choice-specific {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.skill-choice-category select,
+.skill-choice-category input {
+  margin-right: 0.5rem;
+}
+
+.skill-choice-specific .flexrow {
+  margin-bottom: 0.5rem;
+}
+
+.skill-choice-specific input {
+  margin-right: 0.5rem;
+}
+
+.skill-choice-description textarea {
+  min-height: 3em;
+  width: 100%;
+}
+
+/* Dialog Styling for Skill Choices */
+.dialog .form-fields label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.dialog .form-fields input[type="radio"] {
+  margin-right: 0.5rem;
+}
+
+/* Species Styling */
+.species-bonus {
+  color: #4a934a;
+  font-weight: bold;
+  margin-left: 5px;
+  font-size: 0.9em;
+}
+
+.ability-bonus input {
+  width: 40px;
+  text-align: center;
+}
+
+.species-details {
+  margin-bottom: 1em;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.species-details label {
+  font-weight: bold;
+}
+
+/* Make sure the ability score input and species bonus display nicely together */
+.attribute-value {
+  display: flex;
+  align-items: center;
+}
+
+.attribute-value input {
+  flex: 0 0 40px;
+}
+
+.attribute-value button {
+  margin-left: auto;
+}
+
+/* Add to thefade.css */
+.species-abilities-list {
+    margin-top: 5px;
+}
+
+.species-ability {
+    margin-bottom: 5px;
+    padding: 5px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+}
+
+.ability-header {
+    margin-bottom: 3px;
+}
+
+.ability-description {
+    font-size: 0.9em;
+    color: var(--secondary-color);
+}
+
+.flexible-bonus {
+    color: #4CAF50;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+.flexible-bonus-selector {
+    margin-bottom: 10px;
+    padding: 5px;
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid #4CAF50;
+    border-radius: 3px;
+}
+
+.die-result.failure {
+    color: red;
+}
+
+.die-result.success {
+    color: green;
+}
+
+.die-result.critical {
+    color: blue;
+}
+
+.defense {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.defense-checkbox {
+    display: none;
+}
+
+.defense-label {
+    display: block;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.defense-checkbox:checked + .defense-label .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.defense-value {
+    display: block;
+    margin: 5px auto;
+    text-align: center;
+}
+
+.defense-value input {
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.defense-details {
+    display: none;
+    margin-top: 10px;
+    padding-top: 5px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.defense-checkbox:checked ~ .defense-details {
+    display: block;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.defense-desc {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+    margin-top: 5px;
+}
+
+.talent-item {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.talent-checkbox {
+    display: none;
+}
+
+.talent-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.talent-name-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    flex: 1;
+}
+
+.talent-name {
+    font-weight: bold;
+    margin: 0;
+}
+
+.talent-toggle-icon {
+    margin-left: 5px;
+}
+
+.talent-checkbox:checked ~ .talent-description {
+    display: block;
+}
+
+.talent-description {
+    display: none;
+    margin-top: 8px;
+    padding-top: 5px;
+    border-top: 1px dashed var(--border-color);
+}
+
+.talent-controls {
+    flex: 0 0 60px;
+    text-align: right;
+}
+
+/* Dimensional Gate Styling */
+.thefade .gate-properties {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+    .thefade .gate-properties .property {
+        padding: 5px;
+        border: 1px solid var(--border-color);
+        border-radius: 3px;
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .thefade .gate-properties .property-name {
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+/* Responsive Layout Adjustments */
+@media (max-width: 600px) {
+    .thefade .gate-properties {
+        grid-template-columns: 1fr;
+    }
+
+    .thefade .magic-tool .charges-container,
+    .thefade .magic-tool .uses-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .thefade .magic-tool .charges-container label,
+        .thefade .magic-tool .uses-container label {
+            margin-bottom: 5px;
+        }
+}
+
+.create-new-item {
+    text-align: right;
+    margin-bottom: 10px;
+}
+
+.create-item-button {
+    background-color: #2b2d42;
+    color: #edf2f4;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+    .create-item-button:hover {
+        background-color: #ef233c;
+    }
+
+.item-browser {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.item-category {
+    margin-bottom: 20px;
+}
+
+    .item-category h3 {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+
+.item-type-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.item-type {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .item-type:hover {
+        background: rgba(var(--accent-color-rgb), 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .item-type img {
+        width: 32px;
+        height: 32px;
+        margin-bottom: 5px;
+    }
+
+.item-type-name {
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+/* Header buttons */
+.sheet-header .header-actions {
+    display: flex;
+    margin-top: 5px;
+}
+
+    .sheet-header .header-actions button {
+        margin-right: 5px;
+        flex: 1;
+        font-size: 0.8em;
+        white-space: nowrap;
+    }
+
+@media (max-width: 600px) {
+    .item-type-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.armor-current-ap {
+    display: flex;
+    align-items: center;
+}
+
+    .armor-current-ap input {
+        width: 40px;
+        text-align: center;
+    }
+
+.reset-armor-button {
+    margin-left: 5px;
+    color: #4b6ecc;
+    cursor: pointer;
+}
+
+    .reset-armor-button:hover {
+        color: #ef233c;
+    }
+
+/* Character level styles */
+.character-level {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+    .character-level .form-group {
+        flex: 1;
+    }
+
+    .character-level label {
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .character-level input {
+        width: 100%;
+        text-align: center;
+    }
+
+.level-input {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.aura-info {
+    margin-top: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.aura-property {
+    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.aura-bonus {
+    margin-left: 8px;
+    font-style: italic;
+}
+
+/* Color-coded aura options */
+select[name="system.aura.color"] option[value="red"] {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+select[name="system.aura.color"] option[value="blue"] {
+    background-color: rgba(0, 0, 255, 0.2);
+}
+
+select[name="system.aura.color"] option[value="green"] {
+    background-color: rgba(0, 128, 0, 0.2);
+}
+
+select[name="system.aura.color"] option[value="yellow"] {
+    background-color: rgba(255, 255, 0, 0.2);
+}
+
+select[name="system.aura.color"] option[value="purple"] {
+    background-color: rgba(128, 0, 128, 0.2);
+}
+
+select[name="system.aura.color"] option[value="orange"] {
+    background-color: rgba(255, 165, 0, 0.2);
+}
+
+select[name="system.aura.color"] option[value="pink"] {
+    background-color: rgba(255, 192, 203, 0.2);
+}
+
+select[name="system.aura.color"] option[value="gold"] {
+    background-color: rgba(255, 215, 0, 0.2);
+}
+
+select[name="system.aura.color"] option[value="silver"] {
+    background-color: rgba(192, 192, 192, 0.2);
+}
+
+select[name="system.aura.color"] option[value="turquoise"] {
+    background-color: rgba(64, 224, 208, 0.2);
+}
+
+select[name="system.aura.color"] option[value="indigo"] {
+    background-color: rgba(75, 0, 130, 0.2);
+}
+
+select[name="system.aura.color"] option[value="brown"] {
+    background-color: rgba(165, 42, 42, 0.2);
+}
+
+select[name="system.aura.color"] option[value="violet"] {
+    background-color: rgba(238, 130, 238, 0.2);
+}
+
+select[name="system.aura.color"] option[value="gray"] {
+    background-color: rgba(128, 128, 128, 0.2);
+}
+
+select[name="system.aura.color"] option[value="black"] {
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+select[name="system.aura.color"] option[value="white"] {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Add this to thefade.css */
+
+/* Improved spell table styling */
+.thefade .spell-header {
+    background: var(--primary-color);
+    color: var(--light-text);
+    padding: 8px;
+    border-radius: 3px 3px 0 0;
+    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: 3fr 2fr 1fr 2fr 1fr 2fr 80px;
+    align-items: center;
+    gap: 8px;
+}
+
+.thefade .spell-item {
+    padding: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: 3fr 2fr 1fr 2fr 1fr 2fr 80px;
+    align-items: center;
+    gap: 8px;
+}
+
+    .thefade .spell-item:nth-child(even) {
+        background: rgba(0, 0, 0, 0.05);
+    }
+
+    .thefade .spell-item:hover {
+        background: rgba(var(--accent-color-rgb), 0.1);
+    }
+
+/* Collapsible spell details */
+.thefade .spell-item-container {
+    margin-bottom: 3px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.thefade .spell-checkbox {
+    display: none;
+}
+
+.thefade .spell-name-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.thefade .spell-toggle-icon {
+    margin-left: 5px;
+    transition: transform 0.3s ease;
+}
+
+.thefade .spell-checkbox:checked ~ .spell-description {
+    display: block;
+}
+
+.thefade .spell-checkbox:checked + .spell-item .spell-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.thefade .spell-description {
+    display: none;
+    padding: 10px;
+    border-top: 1px dashed var(--border-color);
+    margin-top: 0;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.thefade .spell-description-content {
+    margin-bottom: 5px;
+}
+
+.thefade .spell-details {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.thefade .spell-detail-item {
+    padding: 5px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
+
+.thefade .spell-detail-label {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+/* Spell filters styling */
+.thefade .spell-filters {
+    margin-bottom: 15px;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 10px;
+}
+
+.thefade .spell-school-filter,
+.thefade .spell-search {
+    height: 32px;
+    border-radius: 3px;
+}
+
+/* Spell controls */
+.thefade .spell-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 5px;
+}
+
+    .thefade .spell-controls a {
+        margin: 0 3px;
+    }
+
+/* Make spell name clickable for expansion */
+.thefade .spell-name {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+/* School colors */
+.thefade .spell-school {
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+    .thefade .spell-school.general {
+        background: rgba(200, 200, 200, 0.3);
+    }
+
+    .thefade .spell-school.elementalism {
+        background: rgba(255, 100, 0, 0.2);
+    }
+
+    .thefade .spell-school.preternaturalism {
+        background: rgba(128, 0, 128, 0.2);
+    }
+
+    .thefade .spell-school.divine {
+        background: rgba(255, 215, 0, 0.2);
+    }
+
+    .thefade .spell-school.spiritualism {
+        background: rgba(0, 128, 255, 0.2);
+    }
+
+    .thefade .spell-school.naturalism {
+        background: rgba(0, 128, 0, 0.2);
+    }
+
+    .thefade .spell-school.malevolent {
+        background: rgba(50, 50, 50, 0.3);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .thefade .spell-school.alchemy {
+        background: rgba(128, 0, 0, 0.2);
+    }
+
+    .thefade .spell-school.martial {
+        background: rgba(192, 192, 192, 0.3);
+    }
+
+    .thefade .spell-school.rituals {
+        background: rgba(75, 0, 130, 0.2);
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .thefade .spell-school.runes {
+        background: rgba(0, 100, 0, 0.3);
+    }
+
+/* Add to your thefade.css file */
+
+/* Spell Chat Card Styling */
+.thefade.chat-card {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+    .thefade.chat-card .card-header {
+        background: var(--primary-color);
+        color: var(--light-text);
+        padding: 5px;
+        border-radius: 5px 5px 0 0;
+        font-weight: bold;
+    }
+
+        .thefade.chat-card .card-header h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+
+    .thefade.chat-card .card-content {
+        padding: 10px;
+    }
+
+    .thefade.chat-card .spell-casting-section,
+    .thefade.chat-card .spell-attack-section,
+    .thefade.chat-card .damage-section,
+    .thefade.chat-card .spell-description-section {
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .thefade.chat-card .spell-description-section {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .thefade.chat-card h4 {
+        margin: 0 0 5px 0;
+        font-size: 1.1em;
+        color: var(--primary-color);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding-bottom: 3px;
+    }
+
+    .thefade.chat-card .die-result {
+        font-weight: bold;
+    }
+
+        .thefade.chat-card .die-result.success {
+            color: #4a934a;
+        }
+
+        .thefade.chat-card .die-result.critical {
+            color: #1a53a1;
+        }
+
+        .thefade.chat-card .die-result.failure {
+            color: #a15353;
+        }
+
+    .thefade.chat-card .casting-result,
+    .thefade.chat-card .attack-result {
+        font-weight: bold;
+        padding: 3px 6px;
+        border-radius: 3px;
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+        .thefade.chat-card .casting-result.success,
+        .thefade.chat-card .attack-result.success {
+            background-color: rgba(74, 147, 74, 0.2);
+            color: #2a5a2a;
+        }
+
+        .thefade.chat-card .casting-result.failure,
+        .thefade.chat-card .attack-result.failure {
+            background-color: rgba(161, 83, 83, 0.2);
+            color: #5a2a2a;
+        }
+
+    .thefade.chat-card .mishap-section {
+        background-color: rgba(161, 83, 83, 0.1);
+        border: 1px solid rgba(161, 83, 83, 0.3);
+        border-radius: 3px;
+        padding: 5px;
+        margin-top: 5px;
+    }
+
+    .thefade.chat-card .damage-section p {
+        font-size: 1.1em;
+    }
+
+    .thefade.chat-card .damage-section strong {
+        color: #a15353;
+    }
+
+.reset-button,
+.reset-all-armor {
+    cursor: pointer;
+    color: #4b6ecc;
+    margin-left: 5px;
+    transition: color 0.2s ease;
+    display: inline-block;
+}
+
+    .reset-button:hover,
+    .reset-all-armor:hover {
+        color: #ef233c;
+        transform: rotate(180deg);
+        transition: transform 0.5s ease, color 0.2s ease;
+    }
+
+/* Make sure the reset buttons stand out more */
+.reset-all-armor {
+    font-size: 1.1em;
+    padding: 3px 6px;
+    background: rgba(0,0,0,0.05);
+    border-radius: 3px;
+    margin-left: 10px;
+}
+
+.armor-current-ap {
+    display: flex;
+    align-items: center;
+}
+
+    .armor-current-ap input {
+        width: 40px;
+        text-align: center;
+    }
+
+/* Passive Defense Styles */
+.thefade .facing-select {
+    width: 120px !important; /* Make dropdown wider */
+    padding: 5px;
+    border-radius: 3px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    font-weight: normal;
+    font-size: 14px; /* Larger text */
+    text-align: left; /* Left align text */
+}
+
+    .thefade .facing-select option {
+        padding: 5px;
+        font-size: 14px;
+    }
+
+        /* Front facing */
+        .thefade .facing-select option[value="front"] {
+            background-color: rgba(0, 255, 0, 0.1);
+        }
+
+        /* Flank facing */
+        .thefade .facing-select option[value="flank"] {
+            background-color: rgba(255, 255, 0, 0.1);
+        }
+
+        /* Back flank facing */
+        .thefade .facing-select option[value="backflank"] {
+            background-color: rgba(255, 165, 0, 0.1);
+        }
+
+        /* Back facing */
+        .thefade .facing-select option[value="back"] {
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+
+.thefade .defense-details .detail-row span strong {
+    color: var(--primary-color);
+}
+
+/* Passive Defense Section Header */
+.thefade h2 {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+}
+
+/* Defense transition effects */
+.thefade .defense-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+/* Defense Collapsing Functionality */
+.thefade .defense {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.thefade .defense-checkbox {
+    display: none;
+}
+
+.thefade .defense-label {
+    display: block;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.thefade .toggle-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.thefade .defense-checkbox:checked + .defense-label .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.thefade .defense-value {
+    display: block;
+    margin: 5px auto;
+    text-align: center;
+}
+
+.thefade .defense-value input,
+.thefade .defense-value select {
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+    .thefade .defense-value select.facing-select {
+        width: 120px !important;
+        min-width: 120px;
+    }
+
+.thefade .facing-select {
+    width: 100px;
+}
+
+.thefade .defense-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    margin-top: 10px;
+    padding-top: 0;
+    border-top: 1px dashed var(--border-color);
+}
+
+.thefade .defense-checkbox:checked ~ .defense-details {
+    max-height: 200px; /* Set to a value larger than the content will ever be */
+    padding-top: 10px;
+}
+
+.thefade .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.thefade .defense-desc {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+    margin-top: 5px;
+}
+
+/* Improved Defense Styles */
+.thefade .defense {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.thefade .defense-checkbox {
+    display: none;
+}
+
+.thefade .defense-label {
+    display: block;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.thefade .toggle-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.thefade .defense-checkbox:checked + .defense-label .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.thefade .defense-value {
+    display: block;
+    margin: 5px auto;
+    text-align: center;
+}
+
+    .thefade .defense-value input {
+        width: 60px;
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.2em;
+    }
+
+.thefade .facing-select {
+    width: 120px !important;
+    min-width: 120px !important;
+    padding: 5px !important;
+    border-radius: 3px !important;
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid var(--border-color) !important;
+    font-weight: normal !important;
+    font-size: 14px !important;
+    text-align: left !important;
+}
+
+.thefade .defense-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    margin-top: 10px;
+    padding-top: 0;
+    border-top: 1px dashed var(--border-color);
+}
+
+.thefade .defense-checkbox:checked ~ .defense-details {
+    max-height: 200px; /* Set to a value larger than the content will ever be */
+    padding-top: 10px;
+}
+
+.thefade .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.thefade .defense-desc {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--secondary-color);
+    margin-top: 5px;
+}
+
+/* Fix for the defense details display */
+.thefade .detail-row span {
+    display: block;
+    width: 100%;
+}

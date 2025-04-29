@@ -1,0 +1,54 @@
+<div class="thefade chat-card">
+    <header class="card-header">
+        <h3>Casting {{spellName}}</h3>
+    </header>
+    <div class="card-content">
+        <div class="spell-casting-section">
+            <h4>Spell Manifestation</h4>
+            <p>
+                {{actor}} rolled {{dicePool}}d12:
+                {{#each dieResultsDetails}}
+                <span class="die-result {{this.class}}">{{this.value}}</span>{{#unless @last}}, {{/unless}}
+                {{/each}}
+            </p>
+            <p>Successes: {{successes}} ({{required}} required)</p>
+            <p class="casting-result {{#if success}}success{{else}}failure{{/if}}">
+                {{#if success}}The spell is successfully cast!{{else}}The spell fails to manifest...{{/if}}
+            </p>
+
+            {{#if mishap}}
+            <div class="mishap-section">
+                <p><strong>Mishap Severity:</strong> {{mishapSeverity}}</p>
+                <p>Roll on the {{mishapSeverity}} Mishap table!</p>
+            </div>
+            {{/if}}
+        </div>
+
+        {{#if hasAttack}}
+        <div class="spell-attack-section">
+            <h4>Spell Attack</h4>
+            <p>
+                {{actor}} rolled {{attackRoll.dicePool}}d12 vs. {{attackRoll.targetDefense}}:
+                {{#each attackRoll.dieResultsDetails}}
+                <span class="die-result {{this.class}}">{{this.value}}</span>{{#unless @last}}, {{/unless}}
+                {{/each}}
+            </p>
+            <p>Successes: {{attackRoll.successes}} (DT: {{attackRoll.dt}})</p>
+            <p class="attack-result {{#if attackRoll.hits}}success{{else}}failure{{/if}}">
+                {{#if attackRoll.hits}}The spell hits its target!{{else}}The spell misses its target!{{/if}}
+            </p>
+        </div>
+        {{/if}}
+
+        {{#if damage}}
+        <div class="damage-section">
+            <h4>Effect</h4>
+            <p><strong>Damage:</strong> {{damage}} {{damageType}}</p>
+        </div>
+        {{/if}}
+
+        <div class="spell-description-section">
+            <p><strong>Description:</strong> {{description}}</p>
+        </div>
+    </div>
+</div>

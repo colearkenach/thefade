@@ -1,0 +1,475 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+    <header class="sheet-header">
+      <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100"/>
+      <div class="header-fields">
+        <h1 class="charname"><input name="name" type="text" value="{{actor.name}}" placeholder="Name"/></h1>
+        <div class="resource grid grid-2col">
+          <div class="resource">
+            <label>HP</label>
+            <div class="resource-content flexrow flex-center flex-between">
+                <input type="text" name="system.hp.value" value="{{system.hp.value}}" data-dtype="Number" />
+                <span> / </span>
+                <input type="text" name="system.hp.max" value="{{system.hp.max}}" data-dtype="Number" disabled />
+                <span>+</span>
+                <input type="text" name="system.hpMiscBonus" value="{{system.hpMiscBonus}}" data-dtype="Number" title="Misc Bonus" class="small-input" />
+            </div>
+          </div>
+          <div class="resource">
+            <label>Sanity</label>
+            <div class="resource-content flexrow flex-center flex-between">
+                <input type="text" name="system.sanity.value" value="{{system.sanity.value}}" data-dtype="Number" />
+                <span> / </span>
+                <input type="text" name="system.sanity.max" value="{{system.sanity.max}}" data-dtype="Number" disabled />
+                <span>+</span>
+                <input type="text" name="system.sanity.miscBonus" value="{{system.sanity.miscBonus}}" data-dtype="Number" title="Misc Bonus" class="small-input" />
+            </div>
+          </div>
+          <div class="resource-right">
+            <h2>Initiative</h2>
+            <button class="initiative-roll">Roll</button>
+          </div>
+
+          <div class="dice-roller">
+            <h2>Dice Rollerator</h2>
+            <div class="dice-input flexrow">
+              <input type="number" id="dice-count" value="1" min="1"/>D
+              <button class="roll-dice">Roll</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+      <a class="item" data-tab="main">Main</a>
+      <a class="item" data-tab="skills">Skills</a>
+      <a class="item" data-tab="inventory">Inventory</a>
+      <a class="item" data-tab="paths">Paths & Talents</a>
+      <a class="item" data-tab="spells">Spells</a>
+      <a class="item" data-tab="background">Background</a>
+    </nav>
+  
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+      {{!-- Main Tab --}}
+        <div class="tab" data-group="primary" data-tab="main">
+            {{> "systems/thefade/templates/actor/parts/attributes.html"}}
+
+            <!-- Character details -->
+            <div class="species-item" data-item-id="{{species._id}}">
+                <h2>
+                    Species
+                    <a class="species-browse" title="Browse Species"><i class="fas fa-search"></i></a>
+                </h2>
+                <div class="species-details">
+                    <div class="form-group">
+                        <label>Species</label>
+                        <input type="text" name="system.species.name" value="{{system.species.name}}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Creature Type</label>
+                        <input type="text" name="system.species.creatureType" value="{{system.species.creatureType}}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Creature Subtype</label>
+                        <input type="text" name="system.species.creatureSubtype" value="{{system.species.creatureSubtype}}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>Base HP</label>
+                        <input type="text" name="system.species.baseHP" value="{{system.species.baseHP}}" data-dtype="Number" />
+                    </div>
+                    <div class="form-group">
+                        <label>Size</label>
+                        <select name="system.species.size">
+                            {{selectOptions sizeOptions selected=system.species.size}}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Languages</label>
+                        <input type="text" name="system.species.languages" value="{{system.species.languages}}" placeholder="Common, Elvish, etc." />
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Species Abilities
+                            <a class="species-ability-add" title="Add Ability"><i class="fas fa-plus"></i></a>
+                        </label>
+                        <div class="species-abilities-list">
+                            {{#each system.species.speciesAbilities as |ability id|}}
+                            <div class="species-ability" data-ability-id="{{id}}">
+                                <div class="ability-header flexrow">
+                                    <strong>{{ability.name}}</strong>
+                                    <div class="ability-controls">
+                                        <a class="species-ability-edit" title="Edit Ability"><i class="fas fa-edit"></i></a>
+                                        <a class="species-ability-delete" title="Delete Ability"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                </div>
+                                <div class="ability-description">
+                                    {{ability.description}}
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                    </div>
+
+                    <!-- Religion -->
+                    <div class="grid grid-2col">
+                        <div class="form-group">
+                            <label>Religion</label>
+                            <input type="text" name="system.religion" value="{{system.religion}}" />
+                        </div>
+                    </div>
+
+                    <!-- Aura Section -->
+                    <h2>Aura</h2>
+                    <div class="grid grid-3col">
+                        <div class="form-group">
+                            <label>Aura Color</label>
+                            <select name="system.aura.color">
+                                {{#select system.aura.color}}
+                                <option value="">None</option>
+                                <option value="red">Red</option>
+                                <option value="blue">Blue</option>
+                                <option value="green">Green</option>
+                                <option value="yellow">Yellow</option>
+                                <option value="purple">Purple</option>
+                                <option value="orange">Orange</option>
+                                <option value="pink">Pink</option>
+                                <option value="gold">Gold</option>
+                                <option value="silver">Silver</option>
+                                <option value="turquoise">Turquoise</option>
+                                <option value="indigo">Indigo</option>
+                                <option value="brown">Brown</option>
+                                <option value="violet">Violet</option>
+                                <option value="gray">Gray</option>
+                                <option value="black">Black</option>
+                                <option value="white">White</option>
+                                {{/select}}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Aura Shape</label>
+                            <select name="system.aura.shape">
+                                {{#select system.aura.shape}}
+                                <option value="">None</option>
+                                <option value="circular">Circular</option>
+                                <option value="jagged">Jagged</option>
+                                <option value="flowing">Flowing</option>
+                                <option value="spiky">Spiky</option>
+                                <option value="radiant">Radiant</option>
+                                <option value="dense">Dense</option>
+                                <option value="wispy">Wispy</option>
+                                <option value="geometric">Geometric</option>
+                                {{/select}}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Aura Intensity</label>
+                            <select name="system.aura.intensity">
+                                {{#select system.aura.intensity}}
+                                <option value="">None</option>
+                                <option value="faint">Faint</option>
+                                <option value="moderate">Moderate</option>
+                                <option value="intense">Intense</option>
+                                {{/select}}
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Aura Info Display -->
+                    <div class="aura-info">
+                        {{#if system.aura.color}}
+                        <div class="aura-property">
+                            <strong>Color:</strong> {{titleCase system.aura.color}}
+                            <span class="aura-bonus">
+                                {{#if (eq system.aura.color "red")}}One Combat Skill{{/if}}
+                                {{#if (eq system.aura.color "blue")}}Medicine{{/if}}
+                                {{#if (eq system.aura.color "green")}}Herbalism{{/if}}
+                                {{#if (eq system.aura.color "yellow")}}Research{{/if}}
+                                {{#if (eq system.aura.color "purple")}}Arcana{{/if}}
+                                {{#if (eq system.aura.color "orange")}}Etiquette{{/if}}
+                                {{#if (eq system.aura.color "pink")}}Seduction{{/if}}
+                                {{#if (eq system.aura.color "gold")}}Gambling{{/if}}
+                                {{#if (eq system.aura.color "silver")}}Symbology{{/if}}
+                                {{#if (eq system.aura.color "turquoise")}}Sight{{/if}}
+                                {{#if (eq system.aura.color "indigo")}}Ritual{{/if}}
+                                {{#if (eq system.aura.color "brown")}}Athletics{{/if}}
+                                {{#if (eq system.aura.color "violet")}}Spellcasting{{/if}}
+                                {{#if (eq system.aura.color "gray")}}Intimidate{{/if}}
+                                {{#if (eq system.aura.color "black")}}Toxicology{{/if}}
+                                {{#if (eq system.aura.color "white")}}Lore (Religion){{/if}}
+                            </span>
+                        </div>
+                        {{/if}}
+
+                        {{#if system.aura.shape}}
+                        <div class="aura-property">
+                            <strong>Shape:</strong> {{titleCase system.aura.shape}}
+                            <span class="aura-bonus">
+                                {{#if (eq system.aura.shape "circular")}}Etiquette{{/if}}
+                                {{#if (eq system.aura.shape "jagged")}}Trickery{{/if}}
+                                {{#if (eq system.aura.shape "flowing")}}Persuasion{{/if}}
+                                {{#if (eq system.aura.shape "spiky")}}Lockpicking{{/if}}
+                                {{#if (eq system.aura.shape "radiant")}}Deception{{/if}}
+                                {{#if (eq system.aura.shape "dense")}}Medicine{{/if}}
+                                {{#if (eq system.aura.shape "wispy")}}Sneaking{{/if}}
+                                {{#if (eq system.aura.shape "geometric")}}Research{{/if}}
+                            </span>
+                        </div>
+                        {{/if}}
+
+                        {{#if system.aura.intensity}}
+                        <div class="aura-property">
+                            <strong>Intensity:</strong> {{titleCase system.aura.intensity}}
+                            <span class="aura-bonus">
+                                {{#if (eq system.aura.intensity "faint")}}+1D, 3 hex{{/if}}
+                                {{#if (eq system.aura.intensity "moderate")}}+2D, 2 hex{{/if}}
+                                {{#if (eq system.aura.intensity "intense")}}+3D, 1 hex{{/if}}
+                            </span>
+                        </div>
+                        {{/if}}
+                    </div>
+
+                    <!-- Movement -->
+                    <h2>Movement</h2>
+                    <div class="grid grid-3col">
+                        <div class="movement">
+                            <label>Land Speed</label>
+                            <input type="text" name="system.movement.land" value="{{system.movement.land}}" data-dtype="Number" />
+                        </div>
+                        <div class="movement">
+                            <label>Fly Speed</label>
+                            <input type="text" name="system.movement.fly" value="{{system.movement.fly}}" data-dtype="Number" />
+                        </div>
+                        <div class="movement">
+                            <label>Swim Speed</label>
+                            <input type="text" name="system.movement.swim" value="{{system.movement.swim}}" data-dtype="Number" />
+                        </div>
+                        <div class="movement">
+                            <label>Climb Speed</label>
+                            <input type="text" name="system.movement.climb" value="{{system.movement.climb}}" data-dtype="Number" />
+                        </div>
+                        <div class="movement">
+                            <label>Burrow Speed</label>
+                            <input type="text" name="system.movement.burrow" value="{{system.movement.burrow}}" data-dtype="Number" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Defenses -->
+            <h2>Defenses</h2>
+            <div class="grid grid-3col">
+                <!-- Resilience -->
+                <div class="defense">
+                    <input type="checkbox" id="toggle-resilience" class="defense-checkbox">
+                    <label for="toggle-resilience" class="defense-label">Resilience <span class="toggle-icon">▼</span></label>
+                    <div class="defense-value">
+                        <input type="text" value="{{system.totalResilience}}" disabled class="total-value" />
+                    </div>
+                    <div class="defense-details">
+                        <div class="detail-row">
+                            <span>Base:</span>
+                            <input type="text" value="{{system.defenses.resilience}}" disabled class="base-value" />
+                        </div>
+                        <div class="detail-row">
+                            <span>Bonus:</span>
+                            <input type="text" name="system.defenses.resilienceBonus" value="{{system.defenses.resilienceBonus}}" data-dtype="Number" class="small-input" />
+                        </div>
+                    </div>
+                    <div class="defense-desc">vs toxins, fatigue, and disease.</div>
+                </div>
+
+                <!-- Avoid -->
+                <div class="defense">
+                    <input type="checkbox" id="toggle-avoid" class="defense-checkbox">
+                    <label for="toggle-avoid" class="defense-label">Avoid <span class="toggle-icon">▼</span></label>
+                    <div class="defense-value">
+                        <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" />
+                    </div>
+                    <div class="defense-details">
+                        <div class="detail-row">
+                            <span>Base:</span>
+                            <input type="text" value="{{system.defenses.avoid}}" disabled class="base-value" />
+                        </div>
+                        <div class="detail-row">
+                            <span>Bonus:</span>
+                            <input type="text" name="system.defenses.avoidBonus" value="{{system.defenses.avoidBonus}}" data-dtype="Number" class="small-input" />
+                        </div>
+                        <div class="detail-row">
+                            <span>Facing Penalty:</span>
+                            <input type="text" value="{{system.defenses.avoidPenalty}}" disabled class="avoid-penalty" />
+                        </div>
+                    </div>
+                    <div class="defense-desc">vs physical attacks.</div>
+                </div>
+
+                <!-- Grit -->
+                <div class="defense">
+                    <input type="checkbox" id="toggle-grit" class="defense-checkbox">
+                    <label for="toggle-grit" class="defense-label">Grit <span class="toggle-icon">▼</span></label>
+                    <div class="defense-value">
+                        <input type="text" value="{{system.totalGrit}}" disabled class="total-value" />
+                    </div>
+                    <div class="defense-details">
+                        <div class="detail-row">
+                            <span>Base:</span>
+                            <input type="text" value="{{system.defenses.grit}}" disabled class="base-value" />
+                        </div>
+                        <div class="detail-row">
+                            <span>Bonus:</span>
+                            <input type="text" name="system.defenses.gritBonus" value="{{system.defenses.gritBonus}}" data-dtype="Number" class="small-input" />
+                        </div>
+                    </div>
+                    <div class="defense-desc">vs mental and sanity-driven attacks.</div>
+                </div>
+            </div>
+
+            <!-- Passive Defenses -->
+            <h2>Passive Defenses</h2>
+            <div class="grid grid-3col">
+                <!-- Passive Dodge -->
+                <div class="defense">
+                    <input type="checkbox" id="toggle-passive-dodge" class="defense-checkbox">
+                    <label for="toggle-passive-dodge" class="defense-label">Passive Dodge <span class="toggle-icon">▼</span></label>
+                    <div class="defense-value">
+                        <input type="text" value="{{system.defenses.passiveDodge}}" disabled class="total-value passive-dodge-value" />
+                    </div>
+                    <div class="defense-details">
+                        <div class="detail-row">
+                            <span>Calculated from Acrobatics skill or Finesse</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Acrobatics: Adept +1, Expert +2, Mastered +3</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Or Finesse: 1/4 of attribute value</span>
+                        </div>
+                    </div>
+                    <div class="defense-desc">Passive bonus to avoid melee and ranged attacks.</div>
+                </div>
+
+                <!-- Passive Parry -->
+                <div class="defense">
+                    <input type="checkbox" id="toggle-passive-parry" class="defense-checkbox">
+                    <label for="toggle-passive-parry" class="defense-label">Passive Parry <span class="toggle-icon">▼</span></label>
+                    <div class="defense-value">
+                        <input type="text" value="{{system.defenses.passiveParry}}" disabled class="total-value passive-parry-value" />
+                    </div>
+                    <div class="defense-details">
+                        <div class="detail-row">
+                            <span>Based on your highest weapon skill rank</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Practiced +1, Adept +2, Experienced +3</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Expert +4, Mastered +6</span>
+                        </div>
+                    </div>
+                    <div class="defense-desc">Passive bonus to avoid melee attacks only.</div>
+                </div>
+
+                <!-- Facing -->
+                <div class="defense">
+                    <input type="checkbox" id="toggle-facing" class="defense-checkbox">
+                    <label for="toggle-facing" class="defense-label">Facing <span class="toggle-icon">▼</span></label>
+                    <div class="defense-value">
+                        <select id="facing-select" class="facing-select" data-dtype="String">
+                            <option value="front" {{#if (eq (lookup actor.flags.thefade "facing") "front")}} selected{{/if}}>Front</option>
+                            <option value="flank" {{#if (eq (lookup actor.flags.thefade "facing") "flank")}} selected{{/if}}>Flank</option>
+                            <option value="backflank" {{#if (eq (lookup actor.flags.thefade "facing") "backflank")}} selected{{/if}}>Back Flank</option>
+                            <option value="back" {{#if (eq (lookup actor.flags.thefade "facing") "back")}} selected{{/if}}>Back</option>
+                        </select>
+                    </div>
+                    <div class="defense-details">
+                        <div class="detail-row">
+                            <span><strong>Front:</strong> Full defensive bonuses</span>
+                        </div>
+                        <div class="detail-row">
+                            <span><strong>Flank:</strong> Full passive defenses, -1 Avoid</span>
+                        </div>
+                        <div class="detail-row">
+                            <span><strong>Back Flank:</strong> ½ passive dodge, no parry, -2 Avoid</span>
+                        </div>
+                        <div class="detail-row">
+                            <span><strong>Back:</strong> ¼ passive dodge, no parry, -2 Avoid</span>
+                        </div>
+                    </div>
+                    <div class="defense-desc">Current facing determines defensive effectiveness.</div>
+                </div>
+            </div>
+
+            <!-- Debug Info (for development, remove for production) -->
+            <div class="debug-facing" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; background: rgba(0,0,0,0.05);">
+                <h3>Debug Info</h3>
+                <p>Flag Facing: {{lookup actor.flags.thefade "facing"}}</p>
+                <p>Base Passive Dodge: {{lookup actor.flags.thefade "basePassiveDodge"}}</p>
+                <p>Current Passive Dodge: {{lookup actor.flags.thefade "currentPassiveDodge"}}</p>
+                <p>Base Passive Parry: {{lookup actor.flags.thefade "basePassiveParry"}}</p>
+                <p>Current Passive Parry: {{lookup actor.flags.thefade "currentPassiveParry"}}</p>
+                <p>Avoid Penalty: {{lookup actor.flags.thefade "avoidPenalty"}}</p>
+                <p>Total Avoid: {{system.totalAvoid}}</p>
+            </div>
+
+            <!-- Carrying Capacity -->
+            <h2>Carrying Capacity</h2>
+            <div class="grid grid-3col">
+                <div class="capacity">
+                    <label>Light (No Penalty)</label>
+                    <input type="text" value="{{system.carryingCapacity.light}}" disabled />
+                </div>
+                <div class="capacity">
+                    <label>Medium (-½ Speed)</label>
+                    <input type="text" value="{{system.carryingCapacity.medium}}" disabled />
+                </div>
+                <div class="capacity">
+                    <label>Heavy (-½ Speed, -1 Avoid)</label>
+                    <input type="text" value="{{system.carryingCapacity.heavy}}" disabled />
+                </div>
+            </div>
+        </div>
+  
+      {{!-- Skills Tab --}}
+      <div class="tab" data-group="primary" data-tab="skills">
+        {{> "systems/thefade/templates/actor/parts/skills.html"}}
+      </div>
+  
+      {{!-- Inventory Tab --}}
+      <div class="tab" data-group="primary" data-tab="inventory">
+        {{> "systems/thefade/templates/actor/parts/inventory.html"}}
+      </div>
+  
+      {{!-- Paths Tab --}}
+      <div class="tab" data-group="primary" data-tab="paths">
+        {{> "systems/thefade/templates/actor/parts/paths.html"}}
+      </div>
+  
+      {{!-- Spells Tab --}}
+      <div class="tab" data-group="primary" data-tab="spells">
+        {{> "systems/thefade/templates/actor/parts/spells.html"}}
+      </div>
+  
+        {{!-- Background Tab --}}
+        <div class="tab" data-group="primary" data-tab="background">
+            <div class="form-group">
+                <label>Background</label>
+                <textarea name="system.background" rows="10">{{system.background}}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Appearance</label>
+                <textarea name="system.appearance" rows="5">{{system.appearance}}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Notes</label>
+                <textarea name="system.notes" rows="5">{{system.notes}}</textarea>
+            </div>
+        </div>
+    </section>
+</form>

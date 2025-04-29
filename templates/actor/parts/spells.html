@@ -1,0 +1,94 @@
+<section class="spells-section">
+    <h2>
+        Spells
+        <a class="item-create" title="Add Spell" data-type="spell"><i class="fas fa-plus"></i></a>
+        <a class="spell-browse" title="Browse Spells"><i class="fas fa-search"></i></a>
+    </h2>
+
+    <!-- Filter Controls -->
+    <div class="spell-filters">
+        <select class="spell-school-filter">
+            <option value="all">All Schools</option>
+            <option value="General">General</option>
+            <option value="Alchemy">Alchemy</option>
+            <option value="Divine">Divine</option>
+            <option value="Elementalism">Elementalism</option>
+            <option value="Malevolent">Malevolent</option>
+            <option value="Martial">Martial</option>
+            <option value="Naturalism">Naturalism</option>
+            <option value="Preternaturalism">Preternaturalism</option>
+            <option value="Rituals">Rituals</option>
+            <option value="Runes">Runes</option>
+            <option value="Spiritualism">Spiritualism</option>
+        </select>
+        <input type="text" class="spell-search" placeholder="Search spells..." />
+    </div>
+
+    <!-- Spell List -->
+    <div class="spell-header">
+        <div class="spell-name">Name</div>
+        <div class="spell-school">School</div>
+        <div class="spell-damage">Damage</div>
+        <div class="spell-time">Time</div>
+        <div class="spell-successes">Successes</div>
+        <div class="spell-attack">Attack</div>
+        <div class="spell-controls"></div>
+    </div>
+
+    <div class="spells-list">
+        {{#each actor.spells as |spell id|}}
+        <div class="spell-wrapper">
+            <input type="checkbox" id="toggle-spell-{{spell._id}}" class="spell-checkbox">
+            <div class="spell-item" data-item-id="{{spell._id}}" data-school="{{spell.system.school}}">
+                <div class="spell-name">
+                    <label for="toggle-spell-{{spell._id}}" class="spell-name-container">
+                        {{spell.name}}
+                        <i class="fas fa-chevron-down spell-toggle-icon"></i>
+                    </label>
+                </div>
+                <div class="spell-school {{lowercase spell.system.school}}">{{spell.system.school}}</div>
+                <div class="spell-damage">{{#if spell.system.damage}}{{spell.system.damage}} {{spell.system.damageType}}{{else}}-{{/if}}</div>
+                <div class="spell-time">{{spell.system.time}}</div>
+                <div class="spell-successes">{{spell.system.successes}}</div>
+                <div class="spell-attack">{{#if spell.system.attack}}vs. {{spell.system.attack}}{{else}}-{{/if}}</div>
+                <div class="spell-controls">
+                    <a class="cast-spell" title="Cast Spell"><i class="fas fa-magic"></i></a>
+                    <a class="item-edit" title="Edit Spell"><i class="fas fa-edit"></i></a>
+                    <a class="item-delete" title="Delete Spell"><i class="fas fa-trash"></i></a>
+                </div>
+            </div>
+            <div class="spell-description">
+                <div class="spell-description-content">
+                    {{spell.system.description}}
+                </div>
+                <div class="spell-details">
+                    {{#if spell.system.range}}
+                    <div class="spell-detail-item">
+                        <div class="spell-detail-label">Range:</div>
+                        <div class="spell-detail-value">{{spell.system.range}}</div>
+                    </div>
+                    {{/if}}
+                    {{#if spell.system.bonusEffect}}
+                    <div class="spell-detail-item">
+                        <div class="spell-detail-label">Bonus Effect:</div>
+                        <div class="spell-detail-value">{{spell.system.bonusEffect}}</div>
+                    </div>
+                    {{/if}}
+                    {{#if spell.system.mishapModifier}}
+                    <div class="spell-detail-item">
+                        <div class="spell-detail-label">Mishap Modifier:</div>
+                        <div class="spell-detail-value">{{spell.system.mishapModifier}}</div>
+                    </div>
+                    {{/if}}
+                    {{#if spell.system.isDarkMagic}}
+                    <div class="spell-detail-item">
+                        <div class="spell-detail-label">Dark Magic:</div>
+                        <div class="spell-detail-value">Yes</div>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</section>
