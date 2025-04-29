@@ -1,3 +1,8 @@
-2025/04/26-19:00:51.548 cf58 Recovering log #107
-2025/04/26-19:00:51.550 cf58 Delete type=0 #107
-2025/04/26-19:00:51.550 cf58 Delete type=3 #105
+2025/04/29-17:49:12.003 d2b4 Recovering log #112
+2025/04/29-17:49:12.004 d2b4 Delete type=0 #112
+2025/04/29-17:49:12.006 d2b4 Delete type=3 #111
+2025/04/29-18:56:58.733 116c Level-0 table #116: started
+2025/04/29-18:56:58.733 116c Level-0 table #116: 0 bytes OK
+2025/04/29-18:56:58.734 116c Delete type=0 #114
+2025/04/29-18:56:58.738 116c Manual compaction at level-0 from '!folders!DCyS7j1CTIDQYKLs' @ 72057594037927935 : 1 .. '!items!uuN8itOEN8geMG98' @ 0 : 0; will stop at (end)
+2025/04/29-18:56:58.738 116c Manual compaction at level-1 from '!folders!DCyS7j1CTIDQYKLs' @ 72057594037927935 : 1 .. '!items!uuN8itOEN8geMG98' @ 0 : 0; will stop at (end)

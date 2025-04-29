@@ -1646,3 +1646,42 @@ select[name="system.aura.color"] option[value="white"] {
     display: block;
     width: 100%;
 }
+
+.bonus-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 8px 0;
+}
+
+.bonus-option {
+    background: var(--primary-color);
+    color: var(--light-text);
+    border: none;
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    .bonus-option:hover {
+        background: var(--accent-color);
+    }
+
+    .bonus-option.disabled {
+        background: #777;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+.applied-effects {
+    margin-top: 10px;
+    padding: 5px 0;
+}
+
+    .applied-effects p {
+        margin: 5px 0;
+        padding-left: 10px;
+        border-left: 3px solid var(--accent-color);
+    }

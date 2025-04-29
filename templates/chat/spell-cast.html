@@ -16,6 +16,41 @@
                 {{#if success}}The spell is successfully cast!{{else}}The spell fails to manifest...{{/if}}
             </p>
 
+            {{#if success}}
+            {{#if bonusSuccesses}}
+            <p>Bonus Successes: <span class="remaining-successes">{{bonusSuccesses}}</span></p>
+
+            <div class="bonus-options">
+                {{#if damage}}
+                <button class="bonus-option spell-bonus" data-option="increasedamage" data-cost="{{damageIncreaseCost}}">
+                    Increase Damage ({{damageIncreaseCost}} success): +1 damage
+                </button>
+                {{/if}}
+
+                {{#if range}}
+                <button class="bonus-option spell-bonus" data-option="increaserange" data-cost="1">
+                    Increase Range (1 success): +1 hex
+                </button>
+                {{/if}}
+
+                {{#if time}}
+                <button class="bonus-option spell-bonus" data-option="increaseduration" data-cost="{{durationIncreaseCost}}"
+                        data-duration-type="{{#if (eq durationIncreaseCost 2)}}long{{else}}short{{/if}}">
+                    Increase Duration ({{durationIncreaseCost}} success): +1 increment
+                </button>
+                {{/if}}
+
+                {{#if bonusEffect}}
+                <button class="bonus-option spell-custom-bonus" data-option="custombonus" data-cost="1">
+                    {{bonusEffect}} (1 success)
+                </button>
+                {{/if}}
+            </div>
+
+            <div class="applied-effects"></div>
+            {{/if}}
+            {{/if}}
+
             {{#if mishap}}
             <div class="mishap-section">
                 <p><strong>Mishap Severity:</strong> {{mishapSeverity}}</p>
@@ -25,26 +60,92 @@
         </div>
 
         {{#if hasAttack}}
-        <div class="spell-attack-section">
-            <h4>Spell Attack</h4>
-            <p>
-                {{actor}} rolled {{attackRoll.dicePool}}d12 vs. {{attackRoll.targetDefense}}:
-                {{#each attackRoll.dieResultsDetails}}
-                <span class="die-result {{this.class}}">{{this.value}}</span>{{#unless @last}}, {{/unless}}
-                {{/each}}
-            </p>
-            <p>Successes: {{attackRoll.successes}} (DT: {{attackRoll.dt}})</p>
-            <p class="attack-result {{#if attackRoll.hits}}success{{else}}failure{{/if}}">
-                {{#if attackRoll.hits}}The spell hits its target!{{else}}The spell misses its target!{{/if}}
-            </p>
-        </div>
-        {{/if}}
+    <div class="spell-attack-section">
+        <h4>Spell Attack</h4>
+        <p>
+            {{actor}} rolled {{attackRoll.dicePool}}d12 vs. {{attackRoll.targetDefense}}:
+            {{#each attackRoll.dieResultsDetails}}
+            <span class="die-result {{this.class}}">{{this.value}}</span>{{#unless @last}}, {{/unless}}
+            {{/each}}
+        </p>
+        <p>Successes: {{attackRoll.successes}} (DT: {{attackRoll.dt}})</p>
+        <p class="attack-result {{#if attackRoll.hits}}success{{else}}failure{{/if}}">
+            {{#if attackRoll.hits}}The spell hits its target!{{else}}The spell misses its target!{{/if}}
+        </p>
 
-        {{#if damage}}
-        <div class="damage-section">
-            <h4>Effect</h4>
-            <p><strong>Damage:</strong> {{damage}} {{damageType}}</p>
+        {{#if attackRoll.hits}}
+        {{#if attackRoll.bonusSuccesses}}
+        <p>Bonus Successes: <span class="attack-remaining-successes">{{attackRoll.bonusSuccesses}}</span></p>
+
+        <div class="attack-bonus-options">
+            {{#if canCrit}}
+            <button class="bonus-option attack-bonus" data-option="critical" data-cost="4" data-damage="{{damage}}">
+                Critical Hit (4 successes): +{{damage}} damage
+            </button>
+            {{/if}}
+            
+            {{#if (eq damageType "F")}}
+            <button class="bonus-option attack-bonus" data-option="fire" data-cost="2">
+                Fire (2 successes): Target catches fire for 1d6 rounds
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "C")}}
+            <button class="bonus-option attack-bonus" data-option="cold" data-cost="2">
+                Cold (2 successes): Fatigue (Low Intensity) for 1 round
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "A")}}
+            <button class="bonus-option attack-bonus" data-option="acid" data-cost="2">
+                Acid (2 successes): Pain (Low Intensity) for 1 round
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "E")}}
+            <button class="bonus-option attack-bonus" data-option="electricity" data-cost="3">
+                Electricity (3 successes): Chain to adjacent target
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "So")}}
+            <button class="bonus-option attack-bonus" data-option="sonic" data-cost="3" data-damage="{{halfDamage}}">
+                Sonic (3 successes): Deafness for {{halfDamage}} rounds
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "Sm")}}
+            <button class="bonus-option attack-bonus" data-option="smiting" data-cost="3">
+                Smiting (3 successes): Fear (Moderate) for 1d6 rounds
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "Ex")}}
+            <button class="bonus-option attack-bonus" data-option="expel" data-cost="3">
+                Expel (3 successes): Stunned (Moderate) for 1d6 rounds
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "Psi")}}
+            <button class="bonus-option attack-bonus" data-option="psychokinetic-damage" data-cost="2">
+                Psychokinetic (2 successes): Half damage to sanity
+            </button>
+            <button class="bonus-option attack-bonus" data-option="psychokinetic-confusion" data-cost="3">
+                Psychokinetic (3 successes): Confusion for 1d6 rounds
+            </button>
+            {{/if}}
+
+            {{#if (eq damageType "Co")}}
+            <button class="bonus-option attack-bonus" data-option="corruption" data-cost="2">
+                Corruption (2 successes): Half damage unhealable for 24h
+            </button>
+            {{/if}}
         </div>
+
+        <div class="attack-applied-effects"></div>
+        {{/if}}
+        {{/if}}
+    </div>
         {{/if}}
 
         <div class="spell-description-section">

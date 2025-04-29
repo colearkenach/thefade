@@ -10,16 +10,106 @@
             {{/each}}
         </p>
         <p>Successes: {{successes}} (DT: {{dt}} vs {{target}})</p>
+
         <div class="damage-section">
-            {{#if criticalHits}}
             <p>Base Damage: {{damage}} {{damageType}}</p>
-            <p>Critical Hits: {{criticalHits}}</p>
-            <p>Total Damage: {{totalDamage}} {{damageType}}</p>
+
+            {{#if success}}
+            {{#if bonusSuccesses}}
+            <p>Bonus Successes: <span class="remaining-successes">{{bonusSuccesses}}</span></p>
+
+            <div class="bonus-options">
+                {{#if canCritical}}
+                <button class="bonus-option" data-option="critical" data-cost="{{criticalThreshold}}" data-damage="{{damage}}">
+                    Critical Hit ({{criticalThreshold}} successes): +{{damage}} damage
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "F")}}
+                <button class="bonus-option" data-option="fire" data-cost="2">
+                    Fire (2 successes): Target catches fire for 1d6 rounds
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "C")}}
+                <button class="bonus-option" data-option="cold" data-cost="2">
+                    Cold (2 successes): Fatigue (Low Intensity) for 1 round
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "A")}}
+                <button class="bonus-option" data-option="acid" data-cost="2">
+                    Acid (2 successes): Pain (Low Intensity) for 1 round
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "E")}}
+                <button class="bonus-option" data-option="electricity" data-cost="3">
+                    Electricity (3 successes): Chain to adjacent target
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "So")}}
+                <button class="bonus-option" data-option="sonic" data-cost="3" data-damage="{{halfDamage}}">
+                    Sonic (3 successes): Deafness for {{halfDamage}} rounds
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "Sm")}}
+                <button class="bonus-option" data-option="smiting" data-cost="3">
+                    Smiting (3 successes): Fear (Moderate) for 1d6 rounds
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "Ex")}}
+                <button class="bonus-option" data-option="expel" data-cost="3">
+                    Expel (3 successes): Stunned (Moderate) for 1d6 rounds
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "Psi")}}
+            <button class="bonus-option" data-option="psychokinetic-damage" data-cost="2" data-damage="{{halfDamage}}">
+                Psychokinetic (2 successes): {{halfDamage}} to sanity
+            </button>
+                <button class="bonus-option" data-option="psychokinetic-confusion" data-cost="3">
+                    Psychokinetic (3 successes): Confusion for 1d6 rounds
+                </button>
+                {{/if}}
+
+                {{#if (eq damageType "Co")}}
+            <button class="bonus-option" data-option="corruption" data-cost="2" data-damage="{{halfDamage}}">
+                Corruption (2 successes): {{halfDamage}} unhealable for 24h
+            </button>
+                {{/if}}
+            </div>
+
+            <div class="applied-effects"></div>
             {{else}}
             <p>Damage: {{damage}} {{damageType}}</p>
-            {{#if critical}}<p>Critical: {{critical}}</p>{{/if}}
+            {{/if}}
+            {{else}}
+            <p>No damage (attack missed)</p>
             {{/if}}
         </div>
+
+        <!--
+    <div class="damage-section">
+        {{#if criticalHits}}
+        <p>Base Damage: {{damage}} {{damageType}}</p>
+        <p>Critical Hits: {{criticalHits}}</p>
+        <p>Total Damage: {{totalDamage}} {{damageType}}</p>
+        {{else}}
+
+
+        <p>Damage: {{damage}} {{damageType}}</p>
+
+
+
+
+        {{#if critical}}<p>Critical: {{critical}}</p>{{/if}}
+        {{/if}}
+    </div>
+    -->
         <p class="{{#if success}}success{{else}}failure{{/if}}">
             {{#if success}}Success! The attack hits {{target}}.{{else}}Failure! The attack misses {{target}}.{{/if}}
         </p>

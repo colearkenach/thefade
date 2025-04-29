@@ -682,7 +682,6 @@ class TheFadeCharacterSheet extends ActorSheet {
         });
     }
 
-
     /**
      * Update displayed defense values with more direct approach
      */
@@ -742,7 +741,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             console.error("Error updating UI elements:", error);
         }
     }
-
 
     // This method needs to be called when the sheet is first loaded or rendered
     async _initializeDefenseSystem(html) {
@@ -1323,6 +1321,38 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         }
 
+        // After getting targetInfo and targetActor
+        if (targetActor && targetInfo.facing) {
+            const facing = targetInfo.facing;
+            const basePassiveDodge = targetActor.getFlag("thefade", "basePassiveDodge") ||
+                targetActor.system.defenses.passiveDodge || 0;
+            const basePassiveParry = targetActor.getFlag("thefade", "basePassiveParry") ||
+                targetActor.system.defenses.passiveParry || 0;
+
+            // Calculate temporary defense values based on selected facing
+            let tempDodge = basePassiveDodge;
+            let tempParry = basePassiveParry;
+
+            if (facing === "flank") {
+                // Full passive defenses (no changes to dodge/parry)
+            }
+            else if (facing === "backflank") {
+                tempDodge = Math.floor(basePassiveDodge / 2);
+                tempParry = 0;
+            }
+            else if (facing === "back") {
+                tempDodge = Math.floor(basePassiveDodge / 4);
+                tempParry = 0;
+            }
+
+            // Now use these temporary values instead of the actor's current values
+            defaultDT = targetActor.system.totalAvoid || 3;
+
+            // Add the temporary defense values
+            defaultDT += tempDodge;
+            if (!isRanged) defaultDT += tempParry;
+        }
+
         // Get final DT from user
         const dt = await this._getDifficultyThreshold("Attack Difficulty", defaultDT);
         if (dt === null) return; // User cancelled the dialog
@@ -1501,6 +1531,8 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Check against DT
         const attackSucceeds = successes >= dt;
 
+
+        /*
         // Calculate critical hits based on excess successes beyond the DT
         const excessSuccesses = attackSucceeds ? successes - dt : 0;
         const criticalThreshold = parseInt(weaponData.critical) || 4;
@@ -1511,7 +1543,22 @@ class TheFadeCharacterSheet extends ActorSheet {
             criticalDamage = weaponData.totalDamage * criticalHits;
         }
 
-        const totalDamage = weaponData.totalDamage + criticalDamage;
+        */
+
+        // Calculate excess successes for bonus effects
+        const excessSuccesses = attackSucceeds ? successes - dt : 0;
+        const criticalThreshold = parseInt(weaponData.critical) || 4;
+        const halfDamage = Math.max(1, Math.floor(weaponData.damage / 2));
+
+        // Define these values for backwards compatibility with template
+        const criticalHits = 0;
+        const criticalDamage = 0;
+        let totalDamage = weaponData.damage;
+
+        // Include this only if weaponData.totalDamage is defined elsewhere
+        if (weaponData.totalDamage) {
+            totalDamage = weaponData.totalDamage;
+        }
 
         const templateData = {
             actor: this.actor.name,
@@ -1523,6 +1570,10 @@ class TheFadeCharacterSheet extends ActorSheet {
             success: attackSucceeds,
             damage: weaponData.damage,
             damageType: weaponData.damageType,
+            bonusSuccesses: excessSuccesses,
+            criticalThreshold: criticalThreshold,
+            canCritical: excessSuccesses >= criticalThreshold,
+            halfDamage: halfDamage,
             criticalHits: criticalHits,
             totalDamage: totalDamage,
             qualities: weaponData.qualities,
@@ -1537,7 +1588,7 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         const content = await renderTemplate("systems/thefade/templates/chat/attack-roll.html", templateData);
 
-        // Display the result
+        // Display the result 
         roll.toMessage({
             speaker: ChatMessage.getSpeaker({ actor: this.actor }),
             flavor: `Attack with ${weapon.name} (${skillData.rank}) vs ${targetName}`,
@@ -1546,11 +1597,11 @@ class TheFadeCharacterSheet extends ActorSheet {
     }
 
     /**
- * Display a dialog to select target for attack or spell
- * @param {string} title Dialog title
- * @returns {Promise<object|null>} Object with targetId and facingType, or null if cancelled
- * @private
- */
+    * Display a dialog to select target for attack or spell
+    * @param {string} title Dialog title
+    * @returns {Promise<object|null>} Object with targetId and facingType, or null if cancelled
+    * @private
+    */
     async _getTargetInfo(title = "Select Target") {
         return new Promise((resolve) => {
             // Generate list of visible tokens that can be targeted
@@ -1822,13 +1873,11 @@ class TheFadeCharacterSheet extends ActorSheet {
         const requiredSuccesses = parseInt(spellData.successes) || 3;
         const spellSucceeds = successes >= requiredSuccesses;
 
-        // Calculate excess successes for damage boosts
-        const excessSuccesses = spellSucceeds ? successes - requiredSuccesses : 0;
-        let totalDamage = 0;
+        // Calculate bonus successes
+        const bonusSuccesses = spellSucceeds ? successes - requiredSuccesses : 0;
 
-        if (spellData.damage && spellSucceeds) {
-            totalDamage = parseInt(spellData.damage) + excessSuccesses;
-        }
+        // Calculate half damage for damage-type effects
+        const halfDamage = spellData.damage ? Math.max(1, Math.floor(parseInt(spellData.damage) / 2)) : 1;
 
         // Determine if a mishap occurs on failure
         let mishapSeverity = null;
@@ -1851,7 +1900,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
 
             mishapMessage = `<p class="spell-mishap"><strong>Mishap Severity:</strong> ${mishapSeverity}</p>
-              <p>Roll on the ${mishapSeverity} Mishap table!</p>`;
+            <p>Roll on the ${mishapSeverity} Mishap table!</p>`;
         }
 
         // New: Prepare attack roll data if spell has an attack type
@@ -1882,16 +1931,39 @@ class TheFadeCharacterSheet extends ActorSheet {
             const attackDT = 3;
             const attackHits = attackSuccesses >= attackDT;
 
+            // Calculate attack bonus successes
+            const attackBonusSuccesses = attackHits ? attackSuccesses - attackDT : 0;
+
             attackRollData = {
                 dicePool: dicePool,
                 dieResultsDetails: attackResultsDetails,
                 successes: attackSuccesses,
                 dt: attackDT,
                 hits: attackHits,
+                bonusSuccesses: attackBonusSuccesses,
                 targetDefense: spellData.attack,
                 roll: attackRoll
             };
         }
+
+        let isDurationLong = false;
+        if (spellData.time) {
+            // Check if duration contains any of the long duration keywords
+            const longDurations = ['hour', 'day', 'week', 'month', 'year'];
+            isDurationLong = longDurations.some(keyword =>
+                spellData.time.toLowerCase().includes(keyword)
+            );
+        }
+
+        // Add the damage cost based on damage type
+        const damageIncreaseCost = (spellData.damageType === "So" ||
+            spellData.damageType === "Ex" ||
+            spellData.damageType === "Psi") ? 2 : 1;
+
+        // Check if spell can crit based on damage type
+        const canCrit = !(spellData.damageType === "So" ||
+            spellData.damageType === "Ex" ||
+            spellData.damageType === "Psi");
 
         const templateData = {
             actor: this.actor.name,
@@ -1901,14 +1973,22 @@ class TheFadeCharacterSheet extends ActorSheet {
             successes: successes,
             required: requiredSuccesses,
             success: spellSucceeds,
+            bonusSuccesses: bonusSuccesses,
+            bonusEffect: spellData.bonusEffect,
+            durationIncreaseCost: isDurationLong ? 2 : 1,
+            damageIncreaseCost: damageIncreaseCost,
+            canCrit: canCrit && spellData.damage,
             mishap: !spellSucceeds,
             mishapSeverity: mishapSeverity,
             mishapMessage: mishapMessage.replace(/<\/?p[^>]*>/g, '').replace(/<\/?strong[^>]*>/g, ''),
-            damage: spellSucceeds && spellData.damage ? totalDamage : null,
+            damage: spellSucceeds && spellData.damage ? spellData.damage : null,
             damageType: spellData.damageType,
+            halfDamage: halfDamage,
             description: spellData.description,
             hasAttack: !!attackRollData,
-            attackRoll: attackRollData
+            attackRoll: attackRollData,
+            range: spellData.range,
+            time: spellData.time
         };
 
         const content = await renderTemplate("systems/thefade/templates/chat/spell-cast.html", templateData);
@@ -2287,7 +2367,11 @@ Hooks.once('init', async function () {
         return (str || '').toLowerCase();
     });
 
-
+    //// Add in the initialization section
+    //Handlebars.registerHelper('contains', function (str, substring) {
+    //    if (!str) return false;
+    //    return str.includes(substring);
+    //});
 
 });
 
@@ -2686,9 +2770,9 @@ class TheFadeActor extends Actor {
     }
 
     /**
- * Get a Roll object for the actor's initiative
- * @returns {Roll}
- */
+    * Get a Roll object for the actor's initiative
+    * @returns {Roll}
+    */
     getInitiativeRoll() {
         // Get the attributes used for initiative
         const finesseValue = this.system.attributes.finesse?.value || 0;
@@ -2743,6 +2827,316 @@ Hooks.once('ready', async function () {
         });
     }
 });
+
+//Hooks.on("renderChatMessage", (message, html, data) => {
+//});
+
+Hooks.on("renderChatMessage", (message, html, data) => {
+    // Handle weapon attack bonus options
+    if (html.find('.bonus-options').length) {
+        handleBonusOptions(html);
+    }
+
+    // Handle spell manifestation bonus options
+    if (html.find('.spell-bonus').length) {
+        handleSpellBonusOptions(html);
+    }
+
+    // Handle spell attack bonus options
+    if (html.find('.attack-bonus-options').length) {
+        handleAttackBonusOptions(html);
+    }
+});
+
+function handleBonusOptions(html) {
+    if (!html.find('.bonus-options').length) return;
+
+    const bonusOptions = html.find('.bonus-option');
+    const appliedEffects = html.find('.applied-effects');
+    let remainingSuccesses = parseInt(html.find('.remaining-successes').text());
+
+    // Track used effects to ensure each can only be used once
+    const usedEffects = new Set();
+
+    bonusOptions.on('click', async (event) => {
+        const button = event.currentTarget;
+        const option = button.dataset.option;
+        const cost = parseInt(button.dataset.cost);
+
+        // Don't allow selecting the same effect twice (except critical)
+        //if (option !== "critical" && usedEffects.has(option)) {
+        //    ui.notifications.warn(`This effect has already been applied.`);
+        //    return;
+        //}
+
+        // Check if we have enough successes
+        if (remainingSuccesses < cost) {
+            ui.notifications.warn(`Not enough bonus successes remaining.`);
+            return;
+        }
+
+        // Decrement remaining successes
+        remainingSuccesses -= cost;
+        html.find('.remaining-successes').text(remainingSuccesses);
+
+        // Process the effect based on option type
+        let effectHTML = "";
+
+        switch (option) {
+            case "critical":
+                const critDamage = parseInt(button.dataset.damage);
+                effectHTML = `<p><strong>Critical Hit:</strong> +${critDamage} damage - Additional damage from a powerful strike</p>`;
+                break;
+            case "fire":
+                const fireDuration = await new Roll("1d6").evaluate({ async: true });
+                const fireRounds = fireDuration.total + (cost - 2);
+                effectHTML = `<p><strong>Fire:</strong> Target catches fire for ${fireRounds} rounds - 1d6 fire damage per round until extinguished</p>`;
+                usedEffects.add(option);
+                break;
+            case "cold":
+                effectHTML = `<p><strong>Cold:</strong> Fatigue (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to physical actions</p>`;
+                usedEffects.add(option);
+                break;
+            case "acid":
+                effectHTML = `<p><strong>Acid:</strong> Pain (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to concentration</p>`;
+                usedEffects.add(option);
+                break;
+            case "electricity":
+                effectHTML = `<p><strong>Electricity:</strong> Chain lightning - Attack chains to adjacent target for half damage</p>`;
+                usedEffects.add(option);
+                break;
+            case "sonic":
+                const halfDamage = parseInt(button.dataset.damage || 1);
+                effectHTML = `<p><strong>Sonic:</strong> Deafness for ${halfDamage} rounds - Target cannot hear and has disadvantage on awareness checks</p>`;
+                usedEffects.add(option);
+                break;
+            case "smiting":
+                const fearDuration = await new Roll("1d6").evaluate({ async: true });
+                effectHTML = `<p><strong>Smiting:</strong> Fear (Moderate) for ${fearDuration.total} rounds - Target must make a Grit check to take aggressive actions</p>`;
+                usedEffects.add(option);
+                break;
+            case "expel":
+                const stunDuration = await new Roll("1d6").evaluate({ async: true });
+                effectHTML = `<p><strong>Expel:</strong> Stunned (Moderate) for ${stunDuration.total} rounds - Target can take only one action per turn</p>`;
+                usedEffects.add(option);
+                break;
+            case "psychokinetic-damage":
+                effectHTML = `<p><strong>Psychokinetic (Sanity):</strong> Deal half damage to target's sanity as well as HP</p>`;
+                usedEffects.add(option);
+                break;
+            case "psychokinetic-confusion":
+                const confusionDuration = await new Roll("1d6").evaluate({ async: true });
+                effectHTML = `<p><strong>Psychokinetic (Confusion):</strong> Confusion for ${confusionDuration.total} rounds - Target has trouble determining friend from foe</p>`;
+                usedEffects.add(option);
+                break;
+            case "corruption":
+                effectHTML = `<p><strong>Corruption:</strong> Half damage unhealable for 24 hours - Wounds resist magical and natural healing</p>`;
+                usedEffects.add(option);
+                break;
+        }
+
+        // Add effect to display
+        appliedEffects.append(effectHTML);
+
+        // Disable clicked button if it's not critical (can use critical multiple times)
+        //if (option !== "critical") {
+        //    $(button).prop('disabled', true).addClass('disabled');
+        //}
+
+        // Disable all buttons if not enough successes remain
+        bonusOptions.each((i, btn) => {
+            if (parseInt(btn.dataset.cost) > remainingSuccesses) {
+                $(btn).prop('disabled', true).addClass('disabled');
+            }
+        });
+    });
+}
+
+function handleSpellBonusOptions(html) {
+    const bonusOptions = html.find('.spell-bonus, .spell-custom-bonus');
+    const appliedEffects = html.find('.applied-effects');
+    let remainingSuccesses = parseInt(html.find('.remaining-successes').text());
+
+    // Track used effects and counters for multi-use options
+    const usedEffects = new Set();
+    const counters = {
+        damageIncrease: 0,
+        rangeIncrease: 0,
+        durationIncrease: 0
+    };
+
+    bonusOptions.on('click', async (event) => {
+        const button = event.currentTarget;
+        const option = button.dataset.option;
+        const cost = parseInt(button.dataset.cost);
+
+        // For options that can only be used once
+        //if (option !== "increasedamage" && option !== "increaserange" && option !== "increaseduration" && usedEffects.has(option)) {
+        //    ui.notifications.warn(`This effect has already been applied.`);
+        //    return;
+        //}
+
+        if (remainingSuccesses < cost) {
+            ui.notifications.warn(`Not enough bonus successes remaining.`);
+            return;
+        }
+
+        remainingSuccesses -= cost;
+        html.find('.remaining-successes').text(remainingSuccesses);
+
+        let effectHTML = "";
+        switch (option) {
+            case "critical":
+                const critDamage = parseInt(button.dataset.damage);
+                effectHTML = `<p><strong>Critical Hit:</strong> +${critDamage} damage - Additional damage from a powerful magical strike</p>`;
+                usedEffects.add(option);
+                break;
+
+            case "increasedamage":
+                counters.damageIncrease++;
+                effectHTML = `<p><strong>Increased Damage:</strong> +${counters.damageIncrease} to base damage</p>`;
+                break;
+
+            case "increaserange":
+                counters.rangeIncrease++;
+                effectHTML = `<p><strong>Increased Range:</strong> +${counters.rangeIncrease} hex to spell range</p>`;
+                break;
+
+            case "increaseduration":
+                counters.durationIncrease++;
+                effectHTML = `<p><strong>Increased Duration:</strong> +${counters.durationIncrease} time increment</p>`;
+                break;
+
+            case "spellbonus":
+                effectHTML = `<p><strong>Enhanced Effect:</strong> Spell potency increased</p>`;
+                usedEffects.add(option);
+                break;
+
+            case "custombonus":
+                effectHTML = `<p><strong>Bonus Effect:</strong> ${button.textContent.trim()}</p>`;
+                usedEffects.add(option);
+                break;
+        }
+
+        // Add effect to display
+        appliedEffects.append(effectHTML);
+
+        // For single-use options, disable the button
+        //if (option !== "increasedamage" && option !== "increaserange" && option !== "increaseduration") {
+        //    $(button).prop('disabled', true).addClass('disabled');
+        //}
+
+        // Disable all buttons if not enough successes
+        bonusOptions.each((i, btn) => {
+            if (parseInt(btn.dataset.cost) > remainingSuccesses) {
+                $(btn).prop('disabled', true).addClass('disabled');
+            }
+        });
+    });
+}
+
+function handleAttackBonusOptions(html) {
+    const bonusOptions = html.find('.attack-bonus');
+    const appliedEffects = html.find('.attack-applied-effects');
+    let remainingSuccesses = parseInt(html.find('.attack-remaining-successes').text());
+
+    // Track used effects to ensure each can only be used once
+    const usedEffects = new Set();
+
+    bonusOptions.on('click', async (event) => {
+        const button = event.currentTarget;
+        const option = button.dataset.option;
+        const cost = parseInt(button.dataset.cost);
+
+        // Don't allow selecting the same effect twice
+        if (option !== "critical" && usedEffects.has(option)) {
+            ui.notifications.warn(`This effect has already been applied.`);
+            return;
+        }
+
+        // Check if we have enough successes
+        if (remainingSuccesses < cost) {
+            ui.notifications.warn(`Not enough bonus successes remaining.`);
+            return;
+        }
+
+        // Decrement remaining successes
+        remainingSuccesses -= cost;
+        html.find('.attack-remaining-successes').text(remainingSuccesses);
+
+        // Process the effect based on option type
+        let effectHTML = "";
+
+        switch (option) {
+            case "critical":
+                const critDamage = parseInt(button.dataset.damage);
+                effectHTML = `<p><strong>Critical Hit:</strong> +${critDamage} damage - Additional damage from a powerful strike</p>`;
+                break;
+            case "fire":
+                const fireDuration = await new Roll("1d6").evaluate({ async: true });
+                const fireRounds = fireDuration.total + (cost - 2);
+                effectHTML = `<p><strong>Fire:</strong> Target catches fire for ${fireRounds} rounds - 1d6 fire damage per round until extinguished</p>`;
+                break;
+            case "cold":
+                effectHTML = `<p><strong>Cold:</strong> Fatigue (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to physical actions</p>`;
+                break;
+            case "acid":
+                effectHTML = `<p><strong>Acid:</strong> Pain (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to concentration</p>`;
+                break;
+            case "electricity":
+                effectHTML = `<p><strong>Electricity:</strong> Chain lightning - Attack chains to adjacent target for half damage</p>`;
+                break;
+            case "sonic":
+                const halfDamage = parseInt(button.dataset.damage || 1);
+                effectHTML = `<p><strong>Sonic:</strong> Deafness for ${halfDamage} rounds - Target cannot hear and has disadvantage on awareness checks</p>`;
+                break;
+            case "smiting":
+                const fearDuration = await new Roll("1d6").evaluate({ async: true });
+                effectHTML = `<p><strong>Smiting:</strong> Fear (Moderate) for ${fearDuration.total} rounds - Target must make a Grit check to take aggressive actions</p>`;
+                break;
+            case "expel":
+                const stunDuration = await new Roll("1d6").evaluate({ async: true });
+                effectHTML = `<p><strong>Expel:</strong> Stunned (Moderate) for ${stunDuration.total} rounds - Target can take only one action per turn</p>`;
+                break;
+            case "psychokinetic-damage":
+                effectHTML = `<p><strong>Psychokinetic (Sanity):</strong> Deal half damage to target's sanity as well as HP</p>`;
+                break;
+            case "psychokinetic-confusion":
+                const confusionDuration = await new Roll("1d6").evaluate({ async: true });
+                effectHTML = `<p><strong>Psychokinetic (Confusion):</strong> Confusion for ${confusionDuration.total} rounds - Target has trouble determining friend from foe</p>`;
+                break;
+            case "corruption":
+                effectHTML = `<p><strong>Corruption:</strong> Half damage unhealable for 24 hours - Wounds resist magical and natural healing</p>`;
+                break;
+        }
+
+        // Add effect to display
+        appliedEffects.append(effectHTML);
+
+        // Mark effect as used if it's not critical
+        if (option !== "critical") {
+            usedEffects.add(option);
+        }
+
+        // Disable clicked button
+        // $(button).prop('disabled', true).addClass('disabled');
+
+        // Disable all buttons if not enough successes remain
+        bonusOptions.each((i, btn) => {
+            // Disable the button if it's a used one-time effect
+            if (usedEffects.has(btn.dataset.option)) {
+                $(btn).prop('disabled', true).addClass('disabled');
+            }
+
+            // Disable if not enough successes
+            if (parseInt(btn.dataset.cost) > remainingSuccesses) {
+                $(btn).prop('disabled', true).addClass('disabled');
+            }
+        });
+    });
+}
+
+// ITEM FUNCTIONS
 class TheFadeItem extends Item {
     prepareData() {
         super.prepareData();
@@ -2959,6 +3353,8 @@ class TheFadeItem extends Item {
         if (!data.specialAbilities) data.specialAbilities = "";
     }
 }
+
+// ITEM SHEET FUNCTIONS
 class TheFadeItemSheet extends ItemSheet {
     static get defaultOptions() {
         return mergeObject(super.defaultOptions, {
@@ -3740,7 +4136,6 @@ class TheFadeItemSheet extends ItemSheet {
             this.render(true);
         }
     }
-
 
     /**
      * Handle dropping data on the sheet
