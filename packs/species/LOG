@@ -1,3 +1,5 @@
-2025/04/29-18:57:01.984 d2b4 Recovering log #117
-2025/04/29-18:57:01.988 d2b4 Delete type=0 #117
-2025/04/29-18:57:01.988 d2b4 Delete type=3 #115
+2025/05/03-15:27:21.197 d8bc Recovering log #126
+2025/05/03-15:27:21.197 d8bc Level-0 table #128: started
+2025/05/03-15:27:21.198 d8bc Level-0 table #128: 31953 bytes OK
+2025/05/03-15:27:21.200 d8bc Delete type=0 #126
+2025/05/03-15:27:21.200 d8bc Delete type=3 #125

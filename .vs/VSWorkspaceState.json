@@ -3,8 +3,10 @@
     "",
     "\\styles",
     "\\templates",
-    "\\templates\\chat"
+    "\\templates\\actor",
+    "\\templates\\actor\\parts",
+    "\\templates\\item"
   ],
-  "SelectedNode": "\\templates\\chat\\spell-cast.html",
+  "SelectedNode": "\\templates\\item\\species-sheet.html",
   "PreviewInSolutionExplorer": false
 }
