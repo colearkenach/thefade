@@ -3,6 +3,14 @@
   "WorkspaceRootPath": "C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\templates\\item\\species-sheet.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:templates\\item\\species-sheet.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\templates\\actor\\character-sheet.html||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:templates\\actor\\character-sheet.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\styles\\thefade.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:styles\\thefade.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
@@ -27,6 +35,32 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "species-sheet.html",
+              "DocumentMoniker": "C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\templates\\item\\species-sheet.html",
+              "RelativeDocumentMoniker": "templates\\item\\species-sheet.html",
+              "ToolTip": "C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\templates\\item\\species-sheet.html",
+              "RelativeToolTip": "templates\\item\\species-sheet.html",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAACYAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2025-05-03T21:28:17.706Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "character-sheet.html",
+              "DocumentMoniker": "C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\templates\\actor\\character-sheet.html",
+              "RelativeDocumentMoniker": "templates\\actor\\character-sheet.html",
+              "ToolTip": "C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\templates\\actor\\character-sheet.html",
+              "RelativeToolTip": "templates\\actor\\character-sheet.html",
+              "ViewState": "AgIAAIwBAAAAAAAAAAAAAJcBAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2025-05-03T19:27:46.716Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
               "Title": "thefade.css",
               "DocumentMoniker": "C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\styles\\thefade.css",
               "RelativeDocumentMoniker": "styles\\thefade.css",
@@ -39,7 +73,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "thefade.js",
               "DocumentMoniker": "C:\\Users\\colea\\AppData\\Local\\FoundryVTT\\Data\\systems\\thefade\\thefade.js",
               "RelativeDocumentMoniker": "thefade.js",
@@ -47,8 +81,7 @@
               "RelativeToolTip": "thefade.js",
               "ViewState": "AgIAAIULAAAAAAAAAAAAAH8LAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2025-04-29T21:57:18.879Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-29T21:57:18.879Z"
             }
           ]
         }
