@@ -33,6 +33,12 @@
         "value": 10,
         "miscBonus": 0
       },
+      "darkMagic": {
+        "spellsLearned": {},
+        "currentSin": 0,
+        "sinThresholdBonus": 0,
+        "addictionLevel": "none"
+      },
       "hpMiscBonus": 0,
       "level": 1,
       "initiative": 0,

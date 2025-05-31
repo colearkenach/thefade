@@ -101,6 +101,68 @@ class TheFadeCharacterSheet extends ActorSheet {
             return a.name.localeCompare(b.name);
         });
 
+        // Calculate dice pools for skills
+        skills.forEach(skill => {
+            const attributeName = skill.system.attribute;
+            let attrValue = 0;
+
+            if (attributeName.includes('_')) {
+                const attributes = attributeName.split('_');
+                const attr1 = this.actor.system.attributes[attributes[0]]?.value || 0;
+                const attr2 = this.actor.system.attributes[attributes[1]]?.value || 0;
+                attrValue = Math.floor((attr1 + attr2) / 2);
+            } else {
+                attrValue = this.actor.system.attributes[attributeName]?.value || 0;
+            }
+
+            let dicePool = attrValue;
+
+            switch (skill.system.rank) {
+                case "practiced": dicePool += 1; break;
+                case "adept": dicePool += 2; break;
+                case "experienced": dicePool += 3; break;
+                case "expert": dicePool += 4; break;
+                case "mastered": dicePool += 6; break;
+                case "untrained": dicePool = Math.floor(dicePool / 2); break;
+            }
+
+            dicePool += (skill.system.miscBonus || 0);
+            skill.calculatedDice = Math.max(1, dicePool);
+        });
+
+        // Calculate dice pools for weapons
+        // Calculate dice pools for weapons
+        weapons.forEach(weapon => {
+            const skillName = weapon.system.skill;
+            const skill = skills.find(s => s.name === skillName);
+
+            // Add attribute abbreviation
+            const attrAbbreviations = {
+                "none": "N/A",
+                "physique": "PHY",
+                "finesse": "FIN",
+                "mind": "MND",
+                "presence": "PRS",
+                "soul": "SOL"
+            };
+            weapon.attributeAbbr = attrAbbreviations[weapon.system.attribute] || "N/A";
+
+            if (skill) {
+                weapon.calculatedDice = skill.calculatedDice + (weapon.system.miscBonus || 0);
+            } else {
+                // Untrained
+                const attributeName = weapon.system.attribute || "physique";
+                if (attributeName !== "none") {
+                    let attrValue = this.actor.system.attributes[attributeName]?.value || 0;
+                    let dicePool = Math.floor(attrValue / 2);
+                    dicePool += (weapon.system.miscBonus || 0);
+                    weapon.calculatedDice = Math.max(1, dicePool);
+                } else {
+                    weapon.calculatedDice = Math.max(1, weapon.system.miscBonus || 0);
+                }
+            }
+        });
+
         // Assign and return
         actorData.gear = gear;
         actorData.weapons = weapons;
@@ -798,6 +860,9 @@ class TheFadeCharacterSheet extends ActorSheet {
                 });
             }
         });
+
+        // Handle dark magic addiction
+        html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
 
         // Add explicit input change handler
         html.find('input[name], select[name]').change(ev => {
@@ -1501,7 +1566,13 @@ class TheFadeCharacterSheet extends ActorSheet {
         } else if (weaponData.qualities.includes("Brutish")) {
             const bonusDamage = Math.floor(this.actor.system.attributes.physique.value / 2);
             weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
+        } else if (weaponData.attribute && weaponData.attribute !== "none") {
+            // Add half of the weapon's attribute to damage if not "none"
+            const weaponAttribute = weaponData.attribute;
+            const bonusDamage = Math.floor(this.actor.system.attributes[weaponAttribute].value / 2);
+            weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
         } else {
+            // No attribute bonus
             weaponData.totalDamage = parseInt(weaponData.damage);
         }
 
@@ -1530,20 +1601,6 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Check against DT
         const attackSucceeds = successes >= dt;
-
-
-        /*
-        // Calculate critical hits based on excess successes beyond the DT
-        const excessSuccesses = attackSucceeds ? successes - dt : 0;
-        const criticalThreshold = parseInt(weaponData.critical) || 4;
-        const criticalHits = Math.floor(excessSuccesses / criticalThreshold);
-        let criticalDamage = 0;
-
-        if (criticalHits > 0) {
-            criticalDamage = weaponData.totalDamage * criticalHits;
-        }
-
-        */
 
         // Calculate excess successes for bonus effects
         const excessSuccesses = attackSucceeds ? successes - dt : 0;
@@ -1757,6 +1814,110 @@ class TheFadeCharacterSheet extends ActorSheet {
             content: `
       <p>${this.actor.name} rolled for initiative: 1d12 (${dieResult}) + ${averagedFINMND} = ${totalResult}</p>
     `
+        });
+    }
+
+    /**
+     * Handle rolling for Dark Magic Addiction
+     * @param {Event} event   The originating click event
+     * @private
+     */
+    async _onDarkMagicAddictionRoll(event) {
+        event.preventDefault();
+
+        // Get spell DT from user
+        const spellDT = await this._getSpellDT();
+        if (spellDT === null) return; // User cancelled
+
+        // Start with dice equal to spell DT
+        let dicePool = spellDT;
+
+        // Add addiction bonus dice
+        const addictionLevel = this.actor.system.darkMagic?.addictionLevel || "none";
+        const addictionBonuses = {
+            "none": 0,
+            "early": 2,
+            "middle": 4,
+            "late": 6,
+            "terminal": 0
+        };
+
+        const addictionBonus = addictionBonuses[addictionLevel];
+        dicePool += addictionBonus;
+
+        // Ensure minimum of 1 die
+        dicePool = Math.max(1, dicePool);
+
+        // Get target's Grit
+        const grit = this.actor.system.totalGrit || 3;
+
+        // Roll the dice
+        const roll = new Roll(`${dicePool}d12`);
+        await roll.evaluate();
+
+        // Count successes
+        let successes = 0;
+        roll.terms[0].results.forEach(die => {
+            if (die.result >= 8 && die.result <= 11) successes += 1;
+            else if (die.result >= 12) successes += 2;
+        });
+
+        // Check against Grit
+        const rollSucceeds = successes >= grit;
+
+        // Create message
+        let addictionMessage = addictionBonus > 0 ? ` (${spellDT}D from spell + ${addictionBonus}D from ${addictionLevel} addiction)` : ` (${spellDT}D from spell)`;
+
+        roll.toMessage({
+            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+            flavor: `Dark Magic Addiction Check${addictionMessage}`,
+            content: `
+            <p>${this.actor.name} rolled ${dicePool}d12 vs Grit (${grit}).</p>
+            <p>Successes: ${successes}</p>
+            <p class="${rollSucceeds ? 'success' : 'failure'}">
+                ${rollSucceeds ? 'The dark magic takes hold!' : 'Resisted the pull of dark magic.'}
+            </p>
+        `
+        });
+    }
+
+    /**
+     * Display a dialog to get the spell's difficulty threshold
+     * @returns {Promise<number|null>} The spell DT or null if cancelled
+     * @private
+     */
+    async _getSpellDT() {
+        return new Promise((resolve) => {
+            const dialog = new Dialog({
+                title: "Dark Magic Spell Difficulty",
+                content: `
+                <form>
+                    <div class="form-group">
+                        <label>Spell Difficulty Threshold (DT):</label>
+                        <input type="number" name="dt" value="3" min="1" max="10"/>
+                        <p class="hint">Enter the number of successes required for the spell</p>
+                    </div>
+                </form>
+            `,
+                buttons: {
+                    submit: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: "Roll",
+                        callback: html => {
+                            const dt = parseInt(html.find('[name="dt"]').val());
+                            resolve(dt);
+                        }
+                    },
+                    cancel: {
+                        icon: '<i class="fas fa-times"></i>',
+                        label: "Cancel",
+                        callback: () => resolve(null)
+                    }
+                },
+                default: "submit",
+                close: () => resolve(null)
+            });
+            dialog.render(true);
         });
     }
 
@@ -2367,11 +2528,24 @@ Hooks.once('init', async function () {
         return (str || '').toLowerCase();
     });
 
-    //// Add in the initialization section
-    //Handlebars.registerHelper('contains', function (str, substring) {
-    //    if (!str) return false;
-    //    return str.includes(substring);
-    //});
+    // Register times helper for creating numbered checkboxes
+    Handlebars.registerHelper('times', function (n, block) {
+        let accum = '';
+        for (let i = 1; i <= n; ++i)
+            accum += block.fn(i);
+        return accum;
+    });
+
+    // Register concat helper
+    Handlebars.registerHelper('concat', function () {
+        let outStr = '';
+        for (let arg in arguments) {
+            if (typeof arguments[arg] != 'object') {
+                outStr += arguments[arg];
+            }
+        }
+        return outStr;
+    });
 
 });
 
@@ -2767,6 +2941,25 @@ class TheFadeActor extends Actor {
         // Ensure HP and Sanity values don't exceed max
         if (data.hp.value > data.hp.max) data.hp.value = data.hp.max;
         if (data.sanity.value > data.sanity.max) data.sanity.value = data.sanity.max;
+
+        // Calculate Sin Threshold
+        if (!data.darkMagic) {
+            data.darkMagic = {
+                spellsLearned: {},
+                currentSin: 0,
+                sinThresholdBonus: 0,
+                addictionLevel: "none"
+            };
+        }
+
+        // Count dark magic spells learned
+        let darkMagicCount = 0;
+        for (let key in data.darkMagic.spellsLearned) {
+            if (data.darkMagic.spellsLearned[key]) darkMagicCount++;
+        }
+
+        // Calculate sin threshold: Soul - 1 per dark magic spell + bonus
+        data.darkMagic.sinThreshold = data.attributes.soul.value - darkMagicCount + (data.darkMagic.sinThresholdBonus || 0);
     }
 
     /**
@@ -3184,12 +3377,17 @@ class TheFadeItem extends Item {
         const data = itemData.system;
 
         // Initialize armor properties if undefined
-        if (!data.ap) data.ap = 0; // Armored Protection
-        if (data.currentAP === undefined) data.currentAP = data.ap; // Set current AP to max if not defined
+        if (!data.ap) data.ap = 0;
+        if (data.currentAP === undefined) data.currentAP = data.ap;
         if (!data.isHeavy) data.isHeavy = false;
         if (!data.location) data.location = "Body";
         if (!data.weight) data.weight = 1;
-        if (!data.autoBlock) data.autoBlock = ""; // For shields
+        if (!data.autoBlock) data.autoBlock = "";
+
+        // Initialize other limb AP for arms/legs
+        if ((data.location === "Arms" || data.location === "Legs" || data.location == "Arms+" || data.location == "Legs+") && data.otherLimbAP === undefined) {
+            data.otherLimbAP = data.ap;
+        }
     }
 
     _prepareSkillData(itemData) {

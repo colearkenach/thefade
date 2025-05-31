@@ -114,14 +114,17 @@
         </div>
         
         <div class="form-group">
-          <label>Attribute</label>
-          <select name="system.attribute">
-              {{#select system.attribute}}
-              <option value="physique">Physique</option>
-              <option value="finesse">Finesse</option>
-              <option value="soul">Soul</option>
-              {{/select}}
-          </select>
+            <label>Damage Attribute</label>
+            <select name="system.attribute">
+                {{#select system.attribute}}
+                <option value="none">N/A</option>
+                <option value="physique">Physique</option>
+                <option value="finesse">Finesse</option>
+                <option value="mind">Mind</option>
+                <option value="presence">Presence</option>
+                <option value="soul">Soul</option>
+                {{/select}}
+            </select>
         </div>
       </div>
     </section>

@@ -13,6 +13,9 @@
         <h2>Weapons</h2>
         <header class="weapon-header flexrow">
             <div class="weapon-name">Name</div>
+            <div class="weapon-skill">Skill</div>
+            <div class="weapon-dmg-attr">Dmg Attr</div>
+            <div class="weapon-dice">Dice</div>
             <div class="weapon-damage">Damage</div>
             <div class="weapon-crit">Crit</div>
             <div class="weapon-range">Range</div>
@@ -28,6 +31,9 @@
             {{#each actor.weapons as |weapon id|}}
             <li class="item flexrow" data-item-id="{{weapon._id}}">
                 <div class="weapon-name">{{weapon.name}}</div>
+                <div class="weapon-skill">{{weapon.system.skill}}</div>
+                <div class="weapon-dmg-attr">{{weapon.attributeAbbr}}</div>
+                <div class="weapon-dice">{{weapon.calculatedDice}}d12</div>
                 <div class="weapon-damage">{{weapon.system.damage}} {{weapon.system.damageType}}</div>
                 <div class="weapon-crit">{{weapon.system.critical}}</div>
                 <div class="weapon-range">{{weapon.system.range}}</div>
@@ -55,6 +61,7 @@
             <div class="armor-name">Name</div>
             <div class="armor-ap">AP</div>
             <div class="armor-current-ap">Current AP</div>
+            <div class="armor-other-ap">Other Limb AP</div>
             <div class="armor-location">Location</div>
             <div class="armor-heavy">Heavy?</div>
             <div class="armor-controls">
@@ -71,6 +78,13 @@
                 <div class="armor-current-ap">
                     <input type="number" name="system.currentAP" value="{{armor.system.currentAP}}" data-dtype="Number" class="small-input" />
                     <a class="reset-button reset-armor-button" title="Reset to Full AP"><i class="fas fa-sync-alt"></i></a>
+                </div>
+                <div class="armor-other-ap">
+                    {{#if (or (eq armor.system.location "Arms") (eq armor.system.location "Legs"))}}
+                    <input type="number" name="system.otherLimbAP" value="{{armor.system.otherLimbAP}}" data-dtype="Number" class="small-input" />
+                    {{else}}
+                    -
+                    {{/if}}
                 </div>
                 <div class="armor-location">{{armor.system.location}}</div>
                 <div class="armor-heavy">{{#if armor.system.isHeavy}}Yes{{else}}No{{/if}}</div>

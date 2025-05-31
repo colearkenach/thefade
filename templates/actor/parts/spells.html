@@ -1,9 +1,56 @@
 <section class="spells-section">
-    <h2>
-        Sin and Dark Magic
-    </h2>
+    <h2>Sin and Dark Magic</h2>
 
-    <!--Create a tally and system HERE which keeps track of Sin, Sin Threshold, and how many dark magic spells you've used in a day! Complete with a refresh button.-->
+    <div class="sin-dark-magic-section">
+        <!-- Dark Magic Spells Learned -->
+        <div class="dark-magic-spells">
+            <label>Dark Magic Spells Learned:</label>
+            <div class="dark-magic-checkboxes">
+                {{#times 10}}
+                <label class="checkbox-label">
+                    <input type="checkbox" name="system.darkMagic.spellsLearned.spell{{this}}"
+                           {{#if (lookup ../system.darkMagic.spellsLearned (concat "spell" this))}} checked{{/if}} />
+                    <span>{{this}}</span>
+                </label>
+                {{/times}}
+            </div>
+        </div>
+
+        <!-- Sin Management -->
+        <div class="sin-management grid grid-4col">
+            <div class="form-group">
+                <label>Current Sin</label>
+                <input type="number" name="system.darkMagic.currentSin" value="{{system.darkMagic.currentSin}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Sin Threshold</label>
+                <div class="flexrow">
+                    <input type="number" value="{{system.darkMagic.sinThreshold}}" disabled class="sin-threshold-value" />
+                    <span>+</span>
+                    <input type="number" name="system.darkMagic.sinThresholdBonus" value="{{system.darkMagic.sinThresholdBonus}}"
+                           data-dtype="Number" title="Bonus" class="small-input" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Addiction Level</label>
+                <select name="system.darkMagic.addictionLevel">
+                    {{#select system.darkMagic.addictionLevel}}
+                    <option value="none">None</option>
+                    <option value="early">Early Stages (+2D)</option>
+                    <option value="middle">Middle Stage (+4D)</option>
+                    <option value="late">Late Stage (+6D)</option>
+                    <option value="terminal">Terminal (N/A)</option>
+                    {{/select}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <button class="roll-addiction" type="button">Roll for Dark Magic Addiction</button>
+            </div>
+        </div>
+    </div>
 
     <hr />
 
