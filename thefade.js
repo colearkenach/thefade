@@ -129,7 +129,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         }
 
-        // Process Armor (update the armor slot names)
+        // Process Armor
         const equippedArmor = {};
         const unequippedArmor = [];
 
@@ -253,7 +253,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             $(this).css('max-height', this.scrollHeight + 'px');
         });
 
-        // Equip/Unequip Items of Power
+        // Equip/Unequip Items of Power and Armor
         html.find('.item-equip').click(async (event) => {
             event.preventDefault();
             const itemId = $(event.currentTarget).closest('.item').data('item-id');
@@ -284,7 +284,24 @@ class TheFadeCharacterSheet extends ActorSheet {
             const isAttuned = event.currentTarget.checked;
 
             if (item) {
+                // Check attunement limits
+                if (isAttuned) {
+                    const currentAttunements = this.actor.items.filter(i =>
+                        i.system.itemCategory === 'magicitem' && i.system.attunement === true
+                    ).length;
+                    const totalLevel = this.actor.system.level || 1;
+                    const soulAttribute = this.actor.system.attributes?.soul?.value || 1;
+                    const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+
+                    if (currentAttunements >= maxAttunements) {
+                        ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                        event.currentTarget.checked = false;
+                        return;
+                    }
+                }
+
                 await item.update({ 'system.attunement': isAttuned });
+                ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
             }
         });
     }
@@ -3282,66 +3299,6 @@ class TheFadeActor extends Actor {
                 }
             });
         }
-    }
-
-    prepareMagicItems() {
-        const magicItems = this.items.filter(item => item.type === 'magicitem');
-
-        // Initialize magic item slots
-        const equippedSlots = {
-            head: null,
-            neck: null,
-            body: null,
-            hands: null,
-            ring1: null,
-            ring2: null,
-            belt: null,
-            boots: null
-        };
-
-        const unequippedItems = [];
-
-        // Organize magic items by equipped status and slot
-        for (let item of magicItems) {
-            if (item.system.equipped && item.system.slot) {
-                let targetSlot = item.system.slot;
-
-                // Handle ring slots specially
-                if (targetSlot === 'ring') {
-                    if (!equippedSlots.ring1) {
-                        targetSlot = 'ring1';
-                    } else if (!equippedSlots.ring2) {
-                        targetSlot = 'ring2';
-                    } else {
-                        // Both ring slots occupied, treat as unequipped
-                        unequippedItems.push(item);
-                        continue;
-                    }
-                }
-
-                // Check if slot is already occupied
-                if (equippedSlots[targetSlot]) {
-                    // Slot conflict, treat as unequipped
-                    unequippedItems.push(item);
-                } else {
-                    equippedSlots[targetSlot] = item;
-                }
-            } else {
-                unequippedItems.push(item);
-            }
-        }
-
-        // Calculate attunements
-        const currentAttunements = magicItems.filter(item => item.system.attunement === true).length;
-        const totalLevel = this.system.level || 1;
-        const soulAttribute = this.system.attributes.soul.value || 1;
-        const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
-
-        // Update system data
-        this.system.magicItems = equippedSlots;
-        this.system.unequippedMagicItems = unequippedItems;
-        this.system.currentAttunements = currentAttunements;
-        this.system.maxAttunements = maxAttunements;
     }
 
     _prepareCharacterData(actorData) {

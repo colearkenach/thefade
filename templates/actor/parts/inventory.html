@@ -203,6 +203,7 @@
                 <div class="armor-ap">AP</div>
                 <div class="armor-controls">
                     <a class="item-create" title="Add Armor" data-type="armor"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Armor" data-type="armor"><i class="fas fa-search"></i></a>
                 </div>
             </header>
             <div class="items-list armor-items-list">
@@ -352,6 +353,15 @@
         <!-- Unequipped Items of Power -->
         <div class="unequipped-magic-items">
             <h3>Unequipped Items of Power</h3>
+            <header class="gear-header flexrow">
+                <div class="item-name">Name</div>
+                <div class="item-slot">Slot</div>
+                <div class="item-attunement">Attuned</div>
+                <div class="item-controls">
+                    <a class="item-create" title="Add Item of Power" data-type="item" data-category="magicitem"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items of Power" data-type="item" data-category="magicitem"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
             <div class="items-list magic-items-list">
                 {{#each actor.unequippedItemsOfPower as |item id|}}
                 <div class="item flexrow magic-item" data-item-id="{{item._id}}">
@@ -381,6 +391,7 @@
             <div class="gear-description">Description</div>
             <div class="gear-controls">
                 <a class="item-create" title="Add Potion" data-type="item" data-category="potion"><i class="fas fa-plus"></i></a>
+                <a class="item-browse" title="Browse Potions" data-type="item" data-category="potion"><i class="fas fa-search"></i></a>
             </div>
         </header>
         <ol class="items-list">
