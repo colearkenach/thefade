@@ -22,19 +22,7 @@
           "soul": {
             "value": 1
           }
-        },
-        "magicItems": {
-          "head": null,
-          "neck": null, 
-          "body": null,
-          "hands": null,
-          "ring1": null,
-          "ring2": null,
-          "belt": null,
-          "boots": null
-        },
-      "currentAttunements": 0,
-      "maxAttunements": 0
+        }
       }
     },
     "character": {
@@ -82,6 +70,18 @@
         "passiveParry": 0,
         "facing": "front"
       },
+      "magicItems": {
+        "head": null,
+        "neck": null,
+        "body": null,
+        "hands": null,
+        "ring1": null,
+        "ring2": null,
+        "belt": null,
+        "boots": null
+      },
+      "currentAttunements": 0,
+      "maxAttunements": 0,
       "currency": {
         "serpents": 0
       },
@@ -248,13 +248,6 @@
         "value": 0,
         "selectedAttribute": ""
       },
-      "magicitem": {
-      "templates": [ "base", "physical" ],
-      "slot": "head",
-      "effect": "",
-      "attunement": false,
-      "equipped": false
-      },
       "movement": {
         "land": 4,
         "fly": 0,
@@ -263,6 +256,13 @@
         "burrow": 0
       },
       "speciesAbilities": {}
+    },
+    "magicitem": {
+      "templates": [ "base", "physical" ],
+      "slot": "head",
+      "effect": "",
+      "attunement": false,
+      "equipped": false
     }
   }
 }

@@ -587,7 +587,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             event.preventDefault();
 
             const newFacing = this.value;
-            
+
             // console.log(`Facing changed to: ${newFacing}`);
 
             try {
@@ -874,8 +874,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        // Handle dark magic addiction
-        html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
 
         // Add explicit input change handler
         html.find('input[name], select[name]').change(ev => {
@@ -1088,6 +1086,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('.cast-spell').click(this._onCastSpell.bind(this));
         html.find('.initiative-roll').click(this._onInitiativeRoll.bind(this));
         html.find('.roll-dice').click(this._onRollDice.bind(this));
+        html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
 
         html.find('.skill-browse').click(ev => {
             ev.preventDefault();
@@ -1166,64 +1165,64 @@ class TheFadeCharacterSheet extends ActorSheet {
             const element = ev.currentTarget;
             const itemId = element.closest('.magic-item').dataset.itemId;
             const targetSlot = element.dataset.slot;
-            
+
             const item = this.actor.items.get(itemId);
             if (!item) return;
-            
+
             // Check if slot is compatible
             const actualSlot = targetSlot === 'ring' ? this._getAvailableRingSlot() : targetSlot;
             if (!actualSlot) {
                 ui.notifications.warn(`No available ${targetSlot} slot.`);
                 return;
             }
-                
+
             // Equip the item
             this._equipMagicItem(item, actualSlot);
-            });
+        });
 
-            // Handle unequipping magic items
-            html.find('.item-unequip').click(ev => {
-                ev.preventDefault();
-                const element = ev.currentTarget;
-                const itemId = element.closest('.equipped-item').dataset.itemId;
-                
-                const item = this.actor.items.get(itemId);
-                if (item) {
-                    this._unequipMagicItem(item);
-                }
-            });
+        // Handle unequipping magic items
+        html.find('.item-unequip').click(ev => {
+            ev.preventDefault();
+            const element = ev.currentTarget;
+            const itemId = element.closest('.equipped-item').dataset.itemId;
 
-            // Handle attunement checkbox changes
-            html.find('.attunement-checkbox').change(ev => {
-                ev.preventDefault();
-                const element = ev.currentTarget;
-                const itemId = element.dataset.itemId;
-                const isAttuned = element.checked;
-                
-                const item = this.actor.items.get(itemId);
-                if (!item) return;
-                
-                if (isAttuned) {
-                    const currentAttunements = this._getCurrentAttunements();
-                    const maxAttunements = this._getMaxAttunements();
-                    
-                    if (currentAttunements >= maxAttunements) {
-                        ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
-                        element.checked = false;
-                        return;
-                    }
-                }
-                
-                item.update({ "system.attunement": isAttuned });
-                ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
-            });
-                
-                this._initializeFacingDropdown(html);
-                this._updateFacingDirectly(html);
-                this._setupArmorResetListeners(html);
-                // Initialize tooltips
-                this._initializeDataTooltips(html);
+            const item = this.actor.items.get(itemId);
+            if (item) {
+                this._unequipMagicItem(item);
             }
+        });
+
+        // Handle attunement checkbox changes
+        html.find('.attunement-checkbox').change(ev => {
+            ev.preventDefault();
+            const element = ev.currentTarget;
+            const itemId = element.dataset.itemId;
+            const isAttuned = element.checked;
+
+            const item = this.actor.items.get(itemId);
+            if (!item) return;
+
+            if (isAttuned) {
+                const currentAttunements = this._getCurrentAttunements();
+                const maxAttunements = this._getMaxAttunements();
+
+                if (currentAttunements >= maxAttunements) {
+                    ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                    element.checked = false;
+                    return;
+                }
+            }
+
+            item.update({ "system.attunement": isAttuned });
+            ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
+        });
+
+        this._initializeFacingDropdown(html);
+        this._updateFacingDirectly(html);
+        this._setupArmorResetListeners(html);
+        // Initialize tooltips
+        this._initializeDataTooltips(html);
+    }
 
     /*     _onEquipMagicItem(event) {
             event.preventDefault();
@@ -1307,15 +1306,15 @@ class TheFadeCharacterSheet extends ActorSheet {
             "system.equipped": true,
             "system.slot": slot === 'ring1' || slot === 'ring2' ? 'ring' : slot
         };
-        
+
         // Auto-attune when equipping
         const currentAttunements = this.actor.system.currentAttunements || 0;
         const maxAttunements = this.actor.system.maxAttunements || 0;
-        
+
         if (currentAttunements < maxAttunements) {
             updates["system.attunement"] = true;
         }
-        
+
         item.update(updates);
         ui.notifications.info(`${item.name} equipped to ${slot} slot.`);
     }
@@ -1325,7 +1324,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             "system.equipped": false,
             "system.attunement": false
         };
-        
+
         item.update(updates);
         ui.notifications.info(`${item.name} unequipped.`);
     }
@@ -1333,15 +1332,15 @@ class TheFadeCharacterSheet extends ActorSheet {
     _getAvailableRingSlot() {
         const ring1 = this.actor.system.magicItems?.ring1;
         const ring2 = this.actor.system.magicItems?.ring2;
-        
+
         if (!ring1) return 'ring1';
         if (!ring2) return 'ring2';
         return null;
     }
 
     _getCurrentAttunements() {
-        return this.actor.items.filter(item => 
-            item.type === 'magicitem' && 
+        return this.actor.items.filter(item =>
+            item.type === 'magicitem' &&
             item.system.attunement === true
         ).length;
     }
@@ -2475,101 +2474,101 @@ class TheFadeCharacterSheet extends ActorSheet {
         });
     }
 
-/**
- * Initialize data path tooltips for development
- * @param {HTMLElement} html - The rendered HTML
- * @private
- */
-_initializeDataTooltips(html) {
-    let tooltip = null;
+    /**
+     * Initialize data path tooltips for development
+     * @param {HTMLElement} html - The rendered HTML
+     * @private
+     */
+    _initializeDataTooltips(html) {
+        let tooltip = null;
 
-    // Handle mouseenter on form elements and display elements
-    html.on('mouseenter', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function(event) {
-        const element = event.currentTarget;
-        let dataPath = element.name;
-        
-        // For elements without name attributes, try to infer from class or context
-        if (!dataPath) {
-            const classList = element.className;
-            
-            if (classList.includes('total-value')) {
-                // Try to determine what total this represents
-                const parent = $(element).closest('.defense');
-                if (parent.find('label').text().includes('Resilience')) {
-                    dataPath = 'system.totalResilience';
-                } else if (parent.find('label').text().includes('Avoid')) {
+        // Handle mouseenter on form elements and display elements
+        html.on('mouseenter', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function (event) {
+            const element = event.currentTarget;
+            let dataPath = element.name;
+
+            // For elements without name attributes, try to infer from class or context
+            if (!dataPath) {
+                const classList = element.className;
+
+                if (classList.includes('total-value')) {
+                    // Try to determine what total this represents
+                    const parent = $(element).closest('.defense');
+                    if (parent.find('label').text().includes('Resilience')) {
+                        dataPath = 'system.totalResilience';
+                    } else if (parent.find('label').text().includes('Avoid')) {
+                        dataPath = 'system.totalAvoid';
+                    } else if (parent.find('label').text().includes('Grit')) {
+                        dataPath = 'system.totalGrit';
+                    }
+                } else if (classList.includes('avoid-value')) {
                     dataPath = 'system.totalAvoid';
-                } else if (parent.find('label').text().includes('Grit')) {
-                    dataPath = 'system.totalGrit';
-                }
-            } else if (classList.includes('avoid-value')) {
-                dataPath = 'system.totalAvoid';
-            } else if (classList.includes('passive-dodge-value')) {
-                dataPath = 'system.defenses.passiveDodge';
-            } else if (classList.includes('passive-parry-value')) {
-                dataPath = 'system.defenses.passiveParry';
-            } else if (classList.includes('base-value')) {
-                const parent = $(element).closest('.defense');
-                if (parent.find('label').text().includes('Resilience')) {
-                    dataPath = 'system.defenses.resilience';
-                } else if (parent.find('label').text().includes('Avoid')) {
-                    dataPath = 'system.defenses.avoid';
-                } else if (parent.find('label').text().includes('Grit')) {
-                    dataPath = 'system.defenses.grit';
+                } else if (classList.includes('passive-dodge-value')) {
+                    dataPath = 'system.defenses.passiveDodge';
+                } else if (classList.includes('passive-parry-value')) {
+                    dataPath = 'system.defenses.passiveParry';
+                } else if (classList.includes('base-value')) {
+                    const parent = $(element).closest('.defense');
+                    if (parent.find('label').text().includes('Resilience')) {
+                        dataPath = 'system.defenses.resilience';
+                    } else if (parent.find('label').text().includes('Avoid')) {
+                        dataPath = 'system.defenses.avoid';
+                    } else if (parent.find('label').text().includes('Grit')) {
+                        dataPath = 'system.defenses.grit';
+                    }
                 }
             }
-        }
-        
-        if (!dataPath) return;
 
-        // Remove existing tooltip
-        if (tooltip) {
-            tooltip.remove();
-            tooltip = null;
-        }
+            if (!dataPath) return;
 
-        // Create new tooltip
-        tooltip = $(`<div class="data-tooltip">${dataPath}</div>`);
-        $('body').append(tooltip);
+            // Remove existing tooltip
+            if (tooltip) {
+                tooltip.remove();
+                tooltip = null;
+            }
 
-        // Position tooltip
-        const rect = element.getBoundingClientRect();
-        const tooltipWidth = tooltip.outerWidth();
-        
-        let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-        let top = rect.top - tooltip.outerHeight() - 8;
+            // Create new tooltip
+            tooltip = $(`<div class="data-tooltip">${dataPath}</div>`);
+            $('body').append(tooltip);
 
-        // Keep tooltip on screen
-        if (left < 10) left = 10;
-        if (left + tooltipWidth > window.innerWidth - 10) {
-            left = window.innerWidth - tooltipWidth - 10;
-        }
-        if (top < 10) {
-            top = rect.bottom + 8;
-        }
+            // Position tooltip
+            const rect = element.getBoundingClientRect();
+            const tooltipWidth = tooltip.outerWidth();
 
-        tooltip.css({
-            left: left + 'px',
-            top: top + 'px'
+            let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+            let top = rect.top - tooltip.outerHeight() - 8;
+
+            // Keep tooltip on screen
+            if (left < 10) left = 10;
+            if (left + tooltipWidth > window.innerWidth - 10) {
+                left = window.innerWidth - tooltipWidth - 10;
+            }
+            if (top < 10) {
+                top = rect.bottom + 8;
+            }
+
+            tooltip.css({
+                left: left + 'px',
+                top: top + 'px'
+            });
+
+            // Show tooltip
+            setTimeout(() => tooltip.addClass('show'), 10);
         });
 
-        // Show tooltip
-        setTimeout(() => tooltip.addClass('show'), 10);
-    });
-
-    // Handle mouseleave
-    html.on('mouseleave', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function() {
-        if (tooltip) {
-            tooltip.removeClass('show');
-            setTimeout(() => {
-                if (tooltip) {
-                    tooltip.remove();
-                    tooltip = null;
-                }
-            }, 150);
-        }
-    });
-}
+        // Handle mouseleave
+        html.on('mouseleave', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function () {
+            if (tooltip) {
+                tooltip.removeClass('show');
+                setTimeout(() => {
+                    if (tooltip) {
+                        tooltip.remove();
+                        tooltip = null;
+                    }
+                }, 150);
+            }
+        });
+    }
 }
 
 // Register the sheet application
