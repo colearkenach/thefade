@@ -876,12 +876,7 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Handle dark magic addiction
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
-
-        // Magic Item equipment handlers
-        html.find('.item-equip').click(this._onEquipMagicItem.bind(this));
-        html.find('.item-unequip').click(this._onUnequipMagicItem.bind(this));
-        html.find('.attunement-checkbox').change(this._onToggleAttunement.bind(this));
-
+        
         // Add explicit input change handler
         html.find('input[name], select[name]').change(ev => {
             const input = ev.currentTarget;
@@ -1230,133 +1225,131 @@ class TheFadeCharacterSheet extends ActorSheet {
                 this._initializeDataTooltips(html);
             }
 
-        _onEquipMagicItem(event) {
-            event.preventDefault();
-            const element = event.currentTarget;
-            const itemId = element.closest('.magic-item').dataset.itemId;
-            const targetSlot = element.dataset.slot;
-            
-            const item = this.actor.items.get(itemId);
-            if (!item) return;
-            
-            // Check if slot is compatible
-            let actualSlot = targetSlot;
-            if (targetSlot === 'ring') {
-                actualSlot = this._getAvailableRingSlot();
-                if (!actualSlot) {
-                    ui.notifications.warn("No available ring slots.");
-                    return;
-                }
-            }
-            
-            // Check if slot is already occupied
-            const currentEquipped = this.actor.system.magicItems?.[actualSlot];
-            if (currentEquipped) {
-                ui.notifications.warn(`${actualSlot} slot is already occupied by ${currentEquipped.name}.`);
+    _onEquipMagicItem(event) {
+        event.preventDefault();
+        const element = event.currentTarget;
+        const itemId = element.closest('.magic-item').dataset.itemId;
+        const targetSlot = element.dataset.slot;
+        
+        const item = this.actor.items.get(itemId);
+        if (!item) return;
+        
+        // Check if slot is compatible
+        let actualSlot = targetSlot;
+        if (targetSlot === 'ring') {
+            actualSlot = this._getAvailableRingSlot();
+            if (!actualSlot) {
+                ui.notifications.warn("No available ring slots.");
                 return;
             }
-            
-            // Check attunement limits if item requires attunement
-            if (item.system.requiresAttunement && !item.system.attunement) {
-                const currentAttunements = this.actor.system.currentAttunements || 0;
-                const maxAttunements = this.actor.system.maxAttunements || 0;
-                
-                if (currentAttunements >= maxAttunements) {
-                    ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
-                    return;
-                }
-            }
-            
-            // Equip the item
-            this._equipMagicItem(item, actualSlot);
         }
-
-        _onUnequipMagicItem(event) {
-            event.preventDefault();
-            const element = event.currentTarget;
-            const itemId = element.closest('.equipped-item').dataset.itemId;
+        
+        // Check if slot is already occupied
+        const currentEquipped = this.actor.system.magicItems?.[actualSlot];
+        if (currentEquipped) {
+            ui.notifications.warn(`${actualSlot} slot is already occupied by ${currentEquipped.name}.`);
+            return;
+        }
+        
+        // Check attunement limits if item requires attunement
+        if (!item.system.attunement) {
+            const currentAttunements = this.actor.system.currentAttunements || 0;
+            const maxAttunements = this.actor.system.maxAttunements || 0;
             
-            const item = this.actor.items.get(itemId);
-            if (item) {
-                this._unequipMagicItem(item);
+            if (currentAttunements >= maxAttunements) {
+                ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                return;
             }
         }
+        
+        // Equip the item
+        this._equipMagicItem(item, actualSlot);
+    }
 
-        _onToggleAttunement(event) {
-            event.preventDefault();
-            const element = event.currentTarget;
-            const itemId = element.dataset.itemId;
-            const isAttuned = element.checked;
+    _onUnequipMagicItem(event) {
+        event.preventDefault();
+        const element = event.currentTarget;
+        const itemId = element.closest('.equipped-item').dataset.itemId;
+        
+        const item = this.actor.items.get(itemId);
+        if (item) {
+            this._unequipMagicItem(item);
+        }
+    }
+
+    _onToggleAttunement(event) {
+        event.preventDefault();
+        const element = event.currentTarget;
+        const itemId = element.dataset.itemId;
+        const isAttuned = element.checked;
+        
+        const item = this.actor.items.get(itemId);
+        if (!item) return;
+        
+        if (isAttuned) {
+            const currentAttunements = this.actor.system.currentAttunements || 0;
+            const maxAttunements = this.actor.system.maxAttunements || 0;
             
-            const item = this.actor.items.get(itemId);
-            if (!item) return;
-            
-            if (isAttuned) {
-                const currentAttunements = this.actor.system.currentAttunements || 0;
-                const maxAttunements = this.actor.system.maxAttunements || 0;
-                
-                if (currentAttunements >= maxAttunements) {
-                    ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
-                    element.checked = false;
-                    return;
-                }
+            if (currentAttunements >= maxAttunements) {
+                ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                element.checked = false;
+                return;
             }
-            
-            item.update({ "system.attunement": isAttuned });
-            ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
         }
+        
+        item.update({ "system.attunement": isAttuned });
+        ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
+    }
 
-        _equipMagicItem(item, slot) {
-            const updates = {
-                "system.equipped": true,
-                "system.slot": slot === 'ring1' || slot === 'ring2' ? 'ring' : slot
-            };
-            
-            // Auto-attune if required and possible
-            if (item.system.requiresAttunement && !item.system.attunement) {
-                const currentAttunements = this.actor.system.currentAttunements || 0;
-                const maxAttunements = this.actor.system.maxAttunements || 0;
-                
-                if (currentAttunements < maxAttunements) {
-                    updates["system.attunement"] = true;
-                }
-            }
-            
-            item.update(updates);
-            ui.notifications.info(`${item.name} equipped to ${slot} slot.`);
+    _equipMagicItem(item, slot) {
+        const updates = {
+            "system.equipped": true,
+            "system.slot": slot === 'ring1' || slot === 'ring2' ? 'ring' : slot
+        };
+        
+        // Auto-attune when equipping
+        const currentAttunements = this.actor.system.currentAttunements || 0;
+        const maxAttunements = this.actor.system.maxAttunements || 0;
+        
+        if (currentAttunements < maxAttunements) {
+            updates["system.attunement"] = true;
         }
+        
+        item.update(updates);
+        ui.notifications.info(`${item.name} equipped to ${slot} slot.`);
+    }
 
-        _unequipMagicItem(item) {
-            const updates = {
-                "system.equipped": false,
-                "system.attunement": false
-            };
-            
-            item.update(updates);
-            ui.notifications.info(`${item.name} unequipped.`);
-        }
+    _unequipMagicItem(item) {
+        const updates = {
+            "system.equipped": false,
+            "system.attunement": false
+        };
+        
+        item.update(updates);
+        ui.notifications.info(`${item.name} unequipped.`);
+    }
 
-        _getAvailableRingSlot() {
-            const ring1 = this.actor.system.magicItems?.ring1;
-            const ring2 = this.actor.system.magicItems?.ring2;
-            
-            if (!ring1) return 'ring1';
-            if (!ring2) return 'ring2';
-            return null;
-        }
+    _getAvailableRingSlot() {
+        const ring1 = this.actor.system.magicItems?.ring1;
+        const ring2 = this.actor.system.magicItems?.ring2;
+        
+        if (!ring1) return 'ring1';
+        if (!ring2) return 'ring2';
+        return null;
+    }
 
-        _getCurrentAttunements() {
-            return this.actor.items.filter(item => 
-                item.type === 'magicitem' && 
-                item.system.attunement === true
-            ).length;
-        }
+    _getCurrentAttunements() {
+        return this.actor.items.filter(item => 
+            item.type === 'magicitem' && 
+            item.system.attunement === true
+        ).length;
+    }
 
-        _getMaxAttunements() {
-            const totalLevel = this.actor.system.level || 1;
-            const soulAttribute = this.actor.system.attributes.soul.value || 1;
-            return Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
-        }
+    _getMaxAttunements() {
+        const totalLevel = this.actor.system.level || 1;
+        const soulAttribute = this.actor.system.attributes.soul.value || 1;
+        return Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+    }
 
 
     /**
