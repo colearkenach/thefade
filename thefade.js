@@ -78,7 +78,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             i.img = i.img || DEFAULT_TOKEN;
 
             if (i.type === 'item') {
-                // Sort by item category
                 if (i.system.itemCategory === 'magicitem') {
                     itemsOfPower.push(i);
                 } else if (i.system.itemCategory === 'potion') {
@@ -117,36 +116,145 @@ class TheFadeCharacterSheet extends ActorSheet {
             return a.name.localeCompare(b.name);
         });
 
-        // Process Items of Power
+        // Process Items of Power with ring slot logic
         const equippedItemsOfPower = {};
         const unequippedItemsOfPower = [];
 
         for (let item of itemsOfPower) {
             if (item.system.equipped && item.system.slot) {
-                equippedItemsOfPower[item.system.slot] = item;
+                let slot = item.system.slot;
+
+                // Handle ring slots
+                if (slot === 'ring') {
+                    if (!equippedItemsOfPower.ring1) {
+                        slot = 'ring1';
+                    } else if (!equippedItemsOfPower.ring2) {
+                        slot = 'ring2';
+                    } else {
+                        unequippedItemsOfPower.push(item);
+                        continue;
+                    }
+                }
+
+                // Handle boots/feet mapping
+                if (slot === 'feet') slot = 'boots';
+
+                if (equippedItemsOfPower[slot]) {
+                    unequippedItemsOfPower.push(item);
+                } else {
+                    equippedItemsOfPower[slot] = item;
+                }
             } else {
                 unequippedItemsOfPower.push(item);
             }
         }
 
-        // Process Armor
-        const equippedArmor = {};
+        // Process Armor with stacking support
+        const equippedArmor = {
+            head: [],
+            body: [],
+            arms: [],
+            legs: [],
+            shield: []
+        };
         const unequippedArmor = [];
 
         for (let item of armor) {
             if (item.system.equipped && item.system.location) {
-                equippedArmor[item.system.location] = item;
+                let location = item.system.location.toLowerCase();
+
+                // Map location variations
+                if (location.includes('head')) location = 'head';
+                else if (location.includes('body') || location.includes('torso')) location = 'body';
+                else if (location.includes('arm')) location = 'arms';
+                else if (location.includes('leg')) location = 'legs';
+                else if (location.includes('shield')) location = 'shield';
+
+                // Handle stacking - allow multiple if different names or has "+"
+                const canStack = item.system.location.includes('+') ||
+                    !equippedArmor[location].some(existing => existing.name === item.name);
+
+                if (canStack && equippedArmor[location]) {
+                    equippedArmor[location].push(item);
+                } else if (!equippedArmor[location]) {
+                    equippedArmor[location] = [item];
+                } else {
+                    unequippedArmor.push(item);
+                }
             } else {
                 unequippedArmor.push(item);
             }
         }
 
-        // Calculate attunements for Items of Power
+        // Calculate derived armor for limbs
+        const derivedArmor = {
+            leftarm: { current: 0, max: 0 },
+            rightarm: { current: 0, max: 0 },
+            leftleg: { current: 0, max: 0 },
+            rightleg: { current: 0, max: 0 }
+        };
+
+        // Arms armor affects both arms
+        equippedArmor.arms.forEach(armor => {
+            derivedArmor.leftarm.current += armor.system.currentAP || 0;
+            derivedArmor.leftarm.max += armor.system.ap || 0;
+            derivedArmor.rightarm.current += armor.system.currentAP || 0;
+            derivedArmor.rightarm.max += armor.system.ap || 0;
+        });
+
+        // Legs armor affects both legs  
+        equippedArmor.legs.forEach(armor => {
+            derivedArmor.leftleg.current += armor.system.currentAP || 0;
+            derivedArmor.leftleg.max += armor.system.ap || 0;
+            derivedArmor.rightleg.current += armor.system.currentAP || 0;
+            derivedArmor.rightleg.max += armor.system.ap || 0;
+        });
+
+        // Calculate total AP for each location
+        const armorTotals = {};
+        const locations = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg', 'shield'];
+
+        locations.forEach(location => {
+            let armorCurrent = 0;
+            let armorMax = 0;
+
+            // Sum armor AP for direct slots
+            if (equippedArmor[location]) {
+                equippedArmor[location].forEach(armor => {
+                    armorCurrent += armor.system.currentAP || 0;
+                    armorMax += armor.system.ap || 0;
+                });
+            }
+
+            // Add derived armor for limbs
+            if (derivedArmor[location]) {
+                armorCurrent += derivedArmor[location].current;
+                armorMax += derivedArmor[location].max;
+            }
+
+            // Handle natural deflection
+            const nd = actorData.system.naturalDeflection?.[location] || { current: 0, max: 0, stacks: false };
+
+            let totalCurrent, totalMax;
+            if (nd.stacks) {
+                totalCurrent = armorCurrent + (nd.current || 0);
+                totalMax = armorMax + (nd.max || 0);
+            } else {
+                totalCurrent = Math.max(armorCurrent, nd.current || 0);
+                totalMax = Math.max(armorMax, nd.max || 0);
+            }
+
+            armorTotals[location] = {
+                current: totalCurrent,
+                max: totalMax
+            };
+        });
+
+        // Calculate attunements
         const currentAttunements = itemsOfPower.filter(item => item.system.attunement === true).length;
         const totalLevel = actorData.system.level || 1;
         const soulAttribute = actorData.system.attributes?.soul?.value || 1;
         const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
-
 
         // Calculate dice pools for skills
         skills.forEach(skill => {
@@ -209,7 +317,13 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        // Assign and return
+        // Calculate attunements
+        const currentAttunements = itemsOfPower.filter(item => item.system.attunement === true).length;
+        const totalLevel = actorData.system.level || 1;
+        const soulAttribute = actorData.system.attributes?.soul?.value || 1;
+        const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+
+        // Assign data
         actorData.gear = gear;
         actorData.weapons = weapons;
         actorData.armor = armor;
@@ -222,13 +336,25 @@ class TheFadeCharacterSheet extends ActorSheet {
         actorData.unequippedItemsOfPower = unequippedItemsOfPower;
         actorData.equippedArmor = equippedArmor;
         actorData.unequippedArmor = unequippedArmor;
+        actorData.derivedArmor = derivedArmor;
+        actorData.armorTotals = armorTotals;
         actorData.potions = potions;
         actorData.drugs = drugs;
         actorData.currentAttunements = currentAttunements;
         actorData.maxAttunements = maxAttunements;
+
+        // Set system references for template access
+        actorData.system.currentAttunements = currentAttunements;
+        actorData.system.maxAttunements = maxAttunements;
     }
 
     _activateInventoryListeners(html) {
+        // Safety check to ensure html is valid
+        if (!html || !html.length) {
+            console.error("Invalid HTML element passed to _activateInventoryListeners");
+            return;
+        }
+
         // Collapsible sections
         html.find('.collapsible-header').click(event => {
             event.preventDefault();
@@ -253,55 +379,195 @@ class TheFadeCharacterSheet extends ActorSheet {
             $(this).css('max-height', this.scrollHeight + 'px');
         });
 
-        // Equip/Unequip Items of Power and Armor
+        // Equip Items - safer approach with better error handling
         html.find('.item-equip').click(async (event) => {
             event.preventDefault();
-            const itemId = $(event.currentTarget).closest('.item').data('item-id');
-            const item = this.actor.items.get(itemId);
+            console.log("Equip button clicked");
 
-            if (item) {
+            const button = $(event.currentTarget);
+            const itemElement = button.closest('.item, .magic-item, .armor-item');
+
+            if (!itemElement.length) {
+                console.error("Could not find item element");
+                ui.notifications.error("Could not find item to equip");
+                return;
+            }
+
+            const itemId = itemElement.data('item-id') || itemElement.attr('data-item-id');
+            console.log("Item ID:", itemId);
+
+            if (!itemId) {
+                console.error("No item ID found");
+                ui.notifications.error("Could not identify item to equip");
+                return;
+            }
+
+            const item = this.actor.items.get(itemId);
+            if (!item) {
+                console.error("Item not found:", itemId);
+                ui.notifications.error("Item not found in character");
+                return;
+            }
+
+            console.log(`Equipping ${item.name} (${item.type})`);
+
+            // Handle different item types
+            if (item.type === 'armor') {
+                // Check for armor slot conflicts
+                const location = item.system.location;
+                const conflictingArmor = this.actor.items.find(i =>
+                    i.type === 'armor' &&
+                    i.system.equipped === true &&
+                    i.system.location === location &&
+                    i.id !== item.id
+                );
+
+                if (conflictingArmor) {
+                    ui.notifications.warn(`${location} slot is already occupied by ${conflictingArmor.name}.`);
+                    return;
+                }
+            } else if (item.type === 'item' && item.system.itemCategory === 'magicitem') {
+                // Check for magic item slot conflicts
+                let slot = item.system.slot;
+                let actualSlot = slot;
+
+                // Handle ring slots - find available ring slot
+                if (slot === 'ring') {
+                    const ring1Item = this.actor.items.find(i =>
+                        i.type === 'item' &&
+                        i.system.itemCategory === 'magicitem' &&
+                        i.system.equipped === true &&
+                        i.system.slot === 'ring' &&
+                        equippedItemsOfPower.ring1 && equippedItemsOfPower.ring1.id === i.id
+                    );
+
+                    const ring2Item = this.actor.items.find(i =>
+                        i.type === 'item' &&
+                        i.system.itemCategory === 'magicitem' &&
+                        i.system.equipped === true &&
+                        i.system.slot === 'ring' &&
+                        equippedItemsOfPower.ring2 && equippedItemsOfPower.ring2.id === i.id
+                    );
+
+                    if (!ring1Item) {
+                        actualSlot = 'ring1';
+                    } else if (!ring2Item) {
+                        actualSlot = 'ring2';
+                    } else {
+                        ui.notifications.warn("Both ring slots are occupied.");
+                        return;
+                    }
+                } else {
+                    // For non-ring slots, check normal conflicts
+                    const conflictingItem = this.actor.items.find(i =>
+                        i.type === 'item' &&
+                        i.system.itemCategory === 'magicitem' &&
+                        i.system.equipped === true &&
+                        i.system.slot === slot &&
+                        i.id !== item.id
+                    );
+
+                    if (conflictingItem) {
+                        ui.notifications.warn(`${slot} slot is already occupied by ${conflictingItem.name}.`);
+                        return;
+                    }
+                }
+            }
+
+            try {
                 await item.update({ 'system.equipped': true });
+                ui.notifications.info(`${item.name} equipped.`);
                 this.render(false);
+            } catch (error) {
+                console.error("Error equipping item:", error);
+                ui.notifications.error("Failed to equip item");
             }
         });
 
+        // Unequip Items
         html.find('.item-unequip').click(async (event) => {
             event.preventDefault();
-            const itemId = $(event.currentTarget).closest('.equipped-item').data('item-id');
-            const item = this.actor.items.get(itemId);
+            console.log("Unequip button clicked");
 
-            if (item) {
+            const button = $(event.currentTarget);
+            const equippedItem = button.closest('.equipped-item');
+
+            if (!equippedItem.length) {
+                console.error("Could not find equipped item element");
+                return;
+            }
+
+            const itemId = equippedItem.data('item-id') || equippedItem.attr('data-item-id');
+            console.log("Unequipping item ID:", itemId);
+
+            if (!itemId) {
+                console.error("No item ID found for unequip");
+                return;
+            }
+
+            const item = this.actor.items.get(itemId);
+            if (!item) {
+                console.error("Item not found for unequip:", itemId);
+                return;
+            }
+
+            try {
                 await item.update({ 'system.equipped': false });
+                ui.notifications.info(`${item.name} unequipped.`);
                 this.render(false);
+            } catch (error) {
+                console.error("Error unequipping item:", error);
+                ui.notifications.error("Failed to unequip item");
             }
         });
 
         // Attunement checkbox
         html.find('.attunement-checkbox').change(async (event) => {
             event.preventDefault();
-            const itemId = $(event.currentTarget).data('item-id');
-            const item = this.actor.items.get(itemId);
+            const checkbox = $(event.currentTarget);
+            const itemId = checkbox.data('item-id') || checkbox.attr('data-item-id');
             const isAttuned = event.currentTarget.checked;
 
-            if (item) {
-                // Check attunement limits
-                if (isAttuned) {
-                    const currentAttunements = this.actor.items.filter(i =>
-                        i.system.itemCategory === 'magicitem' && i.system.attunement === true
-                    ).length;
-                    const totalLevel = this.actor.system.level || 1;
-                    const soulAttribute = this.actor.system.attributes?.soul?.value || 1;
-                    const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+            console.log(`Attunement change: ${itemId}, attuned: ${isAttuned}`);
 
-                    if (currentAttunements >= maxAttunements) {
-                        ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
-                        event.currentTarget.checked = false;
-                        return;
-                    }
+            if (!itemId) {
+                console.error("No item ID found for attunement");
+                return;
+            }
+
+            const item = this.actor.items.get(itemId);
+            if (!item) {
+                console.error("Item not found for attunement:", itemId);
+                return;
+            }
+
+            // Check attunement limits
+            if (isAttuned) {
+                const currentAttunements = this.actor.items.filter(i =>
+                    i.type === 'item' &&
+                    i.system.itemCategory === 'magicitem' &&
+                    i.system.attunement === true
+                ).length;
+
+                const totalLevel = this.actor.system.level || 1;
+                const soulAttribute = this.actor.system.attributes?.soul?.value || 1;
+                const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+
+                console.log(`Attunement check: ${currentAttunements}/${maxAttunements}`);
+
+                if (currentAttunements >= maxAttunements) {
+                    ui.notifications.warn(`Cannot attune to more items. Current: ${currentAttunements}, Max: ${maxAttunements}`);
+                    event.currentTarget.checked = false;
+                    return;
                 }
+            }
 
+            try {
                 await item.update({ 'system.attunement': isAttuned });
                 ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
+            } catch (error) {
+                console.error("Error updating attunement:", error);
+                ui.notifications.error("Failed to update attunement");
             }
         });
     }
@@ -387,7 +653,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Calculate Passive Parry based on highest weapon skill
         let highestParry = 0;
         const weaponSkills = actor.items.filter(i =>
-            i.type === 'skill' && ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Heavy Weaponry', 'Unarmed'].includes(i.name));
+            i.type === 'skill' && ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Unarmed'].includes(i.name));
 
         weaponSkills.forEach(skill => {
             let parryValue = 0;
@@ -3282,23 +3548,33 @@ class TheFadeActor extends Actor {
 
         // Ensure naturalDeflection exists as an object with all body parts
         if (!data.naturalDeflection || typeof data.naturalDeflection !== 'object') {
-            data.naturalDeflection = {
-                head: 0,
-                body: 0,
-                leftarm: 0,
-                rightarm: 0,
-                leftleg: 0,
-                rightleg: 0
-            };
-        } else {
-            // Ensure all body parts exist
-            const bodyParts = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg'];
-            bodyParts.forEach(part => {
-                if (data.naturalDeflection[part] === undefined) {
-                    data.naturalDeflection[part] = 0;
-                }
-            });
+            data.naturalDeflection = {};
         }
+
+        const bodyParts = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg'];
+        bodyParts.forEach(part => {
+            if (!data.naturalDeflection[part] || typeof data.naturalDeflection[part] !== 'object') {
+                data.naturalDeflection[part] = {
+                    current: 0,
+                    max: 0,
+                    stacks: false
+                };
+            }
+
+            // Ensure all properties exist
+            if (data.naturalDeflection[part].current === undefined) data.naturalDeflection[part].current = 0;
+            if (data.naturalDeflection[part].max === undefined) data.naturalDeflection[part].max = 0;
+            if (data.naturalDeflection[part].stacks === undefined) data.naturalDeflection[part].stacks = false;
+        });
+
+        // Initialize arrays to prevent iteration errors
+        if (!data.itemsOfPower) data.itemsOfPower = [];
+        if (!data.equippedItemsOfPower) data.equippedItemsOfPower = {};
+        if (!data.unequippedItemsOfPower) data.unequippedItemsOfPower = [];
+        if (!data.equippedArmor) data.equippedArmor = {};
+        if (!data.unequippedArmor) data.unequippedArmor = [];
+        if (!data.potions) data.potions = [];
+        if (!data.drugs) data.drugs = [];
     }
 
     _prepareCharacterData(actorData) {
@@ -3404,31 +3680,6 @@ class TheFadeActor extends Actor {
         // Calculate sin threshold: Soul - 1 per dark magic spell + bonus
         data.darkMagic.sinThreshold = data.attributes.soul.value - darkMagicCount + (data.darkMagic.sinThresholdBonus || 0);
 
-        // Sort Items of Power into equipped/unequipped
-        for (let item of data.itemsOfPower) {
-            if (item.system.equipped && item.system.slot) {
-                data.equippedItemsOfPower[item.system.slot] = item;
-            } else {
-                data.unequippedItemsOfPower.push(item);
-            }
-        }
-
-        // Prepare armor with slots
-        data.equippedArmor = {};
-        data.unequippedArmor = [];
-        const armorSlots = ['head', 'torso', 'arms', 'legs'];
-
-        for (let armor of data.armor) {
-            if (armor.system.equipped && armor.system.location) {
-                data.equippedArmor[armor.system.location] = armor;
-            } else {
-                data.unequippedArmor.push(armor);
-            }
-        }
-
-        // Prepare potions and drugs
-        data.potions = items.filter(i => i.system.itemCategory === "potion");
-        data.drugs = items.filter(i => i.system.itemCategory === "drug");
     }
 
     /**
@@ -3846,12 +4097,13 @@ class TheFadeItem extends Item {
         const data = itemData.system;
 
         // Initialize armor properties if undefined
-        if (!data.ap) data.ap = 0;
-        if (data.currentAP === undefined) data.currentAP = data.ap;
+        if (!data.ap) data.ap = 0; // Armored Protection
+        if (data.currentAP === undefined) data.currentAP = data.ap; // Set current AP to max if not defined
         if (!data.isHeavy) data.isHeavy = false;
-        if (!data.location) data.location = "Body";
+        if (!data.location) data.location = "body"; // Use lowercase to match template
         if (!data.weight) data.weight = 1;
-        if (!data.autoBlock) data.autoBlock = "";
+        if (!data.autoBlock) data.autoBlock = ""; // For shields
+        if (!data.equipped) data.equipped = false; // Ensure equipped property exists
 
         // Initialize other limb AP for arms/legs
         if ((data.location === "Arms" || data.location === "Legs" || data.location == "Arms+" || data.location == "Legs+") && data.otherLimbAP === undefined) {

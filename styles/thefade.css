@@ -2148,3 +2148,150 @@ select[name="system.aura.color"] option[value="white"] {
     .collapsible-content.collapsed {
         max-height: 0 !important;
     }
+
+/* Complex Armor System Styles */
+.armor-slot-container {
+    border: 1px solid var(--border-color);
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 5px;
+}
+
+.slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.total-ap {
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.natural-deflection-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+    padding: 8px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 3px;
+}
+
+.nd-input {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+    .nd-input input {
+        width: 50px;
+        text-align: center;
+    }
+
+.nd-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 0.9em;
+}
+
+.derived-ap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+    background: rgba(255, 165, 0, 0.1);
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.equipped-armor-list {
+    margin-top: 10px;
+}
+
+.equipped-armor-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.armor-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+.armor-info {
+    flex: 1;
+}
+
+.armor-name {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.armor-ap {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.armor-current-ap {
+    width: 40px;
+    text-align: center;
+}
+
+.armor-controls {
+    display: flex;
+    gap: 5px;
+}
+
+    .armor-controls button,
+    .reduce-nd,
+    .reduce-derived-ap {
+        background: var(--secondary-color);
+        border: none;
+        color: white;
+        padding: 4px 6px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.8em;
+    }
+
+        .armor-controls button:hover,
+        .reduce-nd:hover,
+        .reduce-derived-ap:hover {
+            background: var(--accent-color);
+        }
+
+.arms-section,
+.legs-section {
+    border: 2px solid var(--secondary-color);
+    padding: 15px;
+    margin: 15px 0;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+    .arms-section h3,
+    .legs-section h3 {
+        margin-top: 0;
+        color: var(--secondary-color);
+    }
