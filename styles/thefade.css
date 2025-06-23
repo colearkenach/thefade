@@ -1994,3 +1994,157 @@ select[name="system.aura.color"] option[value="white"] {
     font-size: 0.7em;
     color: #ff9800;
 }
+
+/* Natural Deflection within slots */
+.slot-container .natural-def-input {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+    font-size: 0.8em;
+}
+
+    .slot-container .natural-def-input label {
+        font-size: 0.75em;
+        color: var(--secondary-color);
+        margin: 0;
+    }
+
+    .slot-container .natural-def-input input {
+        width: 40px;
+        text-align: center;
+        padding: 2px;
+        font-size: 0.8em;
+    }
+
+/* Remove the old natural deflection section styles */
+.natural-deflection {
+    display: none;
+}
+
+/* Armor Slots */
+.armor-slots, .equipment-slots {
+    margin-bottom: 15px;
+}
+
+.slot-container {
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 8px;
+    margin: 5px;
+    background: rgba(0, 0, 0, 0.05);
+    flex: 1;
+}
+
+.slot-label {
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+    text-align: center;
+    color: var(--secondary-color);
+}
+
+.slot-content {
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.equipped-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+}
+
+    .equipped-item .item-name {
+        font-weight: bold;
+        margin-bottom: 3px;
+    }
+
+    .equipped-item .armor-ap {
+        font-size: 0.8em;
+        color: var(--accent-color);
+        margin-bottom: 5px;
+    }
+
+    .equipped-item .item-controls {
+        display: flex;
+        gap: 5px;
+    }
+
+.empty-slot {
+    color: #999;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* Unequipped sections */
+.unequipped-armor, .unequipped-magic-items {
+    margin-top: 15px;
+}
+
+    .unequipped-armor h3, .unequipped-magic-items h3 {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+
+/* Attunement indicator */
+.attunement-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ccc;
+    margin: 2px;
+}
+
+    .attunement-indicator.attuned {
+        background: var(--accent-color);
+        box-shadow: 0 0 5px var(--accent-color);
+    }
+
+/* Potions and Drugs sections */
+.potions-section, .drugs-section {
+    margin-bottom: 20px;
+}
+
+    .potions-section h2, .drugs-section h2 {
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 5px;
+        margin-bottom: 10px;
+    }
+
+/* Collapsible All Gear */
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    transition: color 0.2s ease;
+}
+
+    .collapsible-header:hover {
+        color: var(--accent-color);
+    }
+
+    .collapsible-header i {
+        transition: transform 0.2s ease;
+        margin-right: 8px;
+    }
+
+    .collapsible-header.collapsed i {
+        transform: rotate(-90deg);
+    }
+
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+    .collapsible-content.collapsed {
+        max-height: 0 !important;
+    }

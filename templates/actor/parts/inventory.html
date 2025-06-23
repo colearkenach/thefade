@@ -14,37 +14,35 @@
         <header class="weapon-header flexrow">
             <div class="weapon-name">Name</div>
             <div class="weapon-skill">Skill</div>
-            <div class="weapon-dmg-attr">Dmg Attr</div>
+            <div class="weapon-skill-attr">Attr</div>
             <div class="weapon-dice">Dice</div>
+            <div class="weapon-dmg-attr">Dmg Attr</div>
             <div class="weapon-damage">Damage</div>
             <div class="weapon-crit">Crit</div>
             <div class="weapon-range">Range</div>
-            <div class="weapon-bonus">Bonus</div>
             <div class="weapon-qualities">Qualities</div>
             <div class="weapon-controls">
                 <a class="item-create" title="Add Weapon" data-type="weapon"><i class="fas fa-plus"></i></a>
-                <a class="weapon-browse" title="Browse Weapons"><i class="fas fa-search"></i></a>
+                <a class="item-browse" title="Browse Weapons" data-type="weapon"><i class="fas fa-search"></i></a>
             </div>
         </header>
 
         <ol class="items-list">
-            {{#each actor.weapons as |weapon id|}}
-            <li class="item flexrow" data-item-id="{{weapon._id}}">
-                <div class="weapon-name">{{weapon.name}}</div>
-                <div class="weapon-skill">{{weapon.system.skill}}</div>
-                <div class="weapon-dmg-attr">{{weapon.attributeAbbr}}</div>
-                <div class="weapon-dice">{{weapon.calculatedDice}}d12</div>
-                <div class="weapon-damage">{{weapon.system.damage}} {{weapon.system.damageType}}</div>
-                <div class="weapon-crit">{{weapon.system.critical}}</div>
-                <div class="weapon-range">{{weapon.system.range}}</div>
-                <div class="weapon-bonus">
-                    <input type="number" name="system.miscBonus" value="{{weapon.system.miscBonus}}" data-dtype="Number" data-item-id="{{weapon._id}}" class="small-input" />
-                </div>
-                <div class="weapon-qualities">{{weapon.system.qualities}}</div>
+            {{#each actor.weapons as |item id|}}
+            <li class="item flexrow" data-item-id="{{item._id}}">
+                <div class="weapon-name">{{item.name}}</div>
+                <div class="weapon-skill">{{item.system.skill}}</div>
+                <div class="weapon-skill-attr">{{item.system.skillAttribute}}</div>
+                <div class="weapon-dice">{{item.system.dice}}</div>
+                <div class="weapon-dmg-attr">{{item.system.damageAttribute}}</div>
+                <div class="weapon-damage">{{item.system.damage}}</div>
+                <div class="weapon-crit">{{item.system.crit}}</div>
+                <div class="weapon-range">{{item.system.range}}</div>
+                <div class="weapon-qualities">{{item.system.qualities}}</div>
                 <div class="weapon-controls">
-                    <a class="attack-roll" title="Attack with Weapon"><i class="fas fa-dice-d12"></i></a>
-                    <a class="item-edit" title="Edit Weapon"><i class="fas fa-edit"></i></a>
-                    <a class="item-delete" title="Delete Weapon"><i class="fas fa-trash"></i></a>
+                    <a class="item-attack" title="Attack with {{item.name}}"><i class="fas fa-dice-d12"></i></a>
+                    <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                    <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
                 </div>
             </li>
             {{/each}}
@@ -52,71 +50,23 @@
     </div>
 
     <!-- Armor -->
-    <div class="armor">
-        <h2>
-            Armor
-            <a class="reset-all-armor" title="Reset All Armor"><i class="fas fa-sync-alt"></i></a>
-        </h2>
-        <header class="armor-header flexrow">
-            <div class="armor-name">Name</div>
-            <div class="armor-ap">AP</div>
-            <div class="armor-current-ap">Current AP</div>
-            <div class="armor-other-ap">Other Limb AP</div>
-            <div class="armor-location">Location</div>
-            <div class="armor-heavy">Heavy?</div>
-            <div class="armor-controls">
-                <a class="item-create" title="Add Armor" data-type="armor"><i class="fas fa-plus"></i></a>
-                <a class="armor-browse" title="Browse Armor"><i class="fas fa-search"></i></a>
-            </div>
-        </header>
+    <div class="armor-section">
+        <h2>Armor</h2>
 
-        <ol class="items-list">
-            {{#each actor.armor as |armor id|}}
-            <li class="item flexrow" data-item-id="{{armor._id}}">
-                <div class="armor-name">{{armor.name}}</div>
-                <div class="armor-ap">{{armor.system.ap}}</div>
-                <div class="armor-current-ap">
-                    <input type="number" name="system.currentAP" value="{{armor.system.currentAP}}" data-dtype="Number" class="small-input" />
-                    <a class="reset-button reset-armor-button" title="Reset to Full AP"><i class="fas fa-sync-alt"></i></a>
-                </div>
-                <div class="armor-other-ap">
-                    {{#if (or (eq armor.system.location "Arms") (eq armor.system.location "Legs"))}}
-                    <input type="number" name="system.otherLimbAP" value="{{armor.system.otherLimbAP}}" data-dtype="Number" class="small-input" />
-                    {{else}}
-                    -
-                    {{/if}}
-                </div>
-                <div class="armor-location">{{armor.system.location}}</div>
-                <div class="armor-heavy">{{#if armor.system.isHeavy}}Yes{{else}}No{{/if}}</div>
-                <div class="armor-controls">
-                    <a class="item-edit" title="Edit Armor"><i class="fas fa-edit"></i></a>
-                    <a class="item-delete" title="Delete Armor"><i class="fas fa-trash"></i></a>
-                </div>
-            </li>
-            {{/each}}
-        </ol>
-    </div>
-
-    <!-- Magical Items / Items of Power -->
-    <div class="magical-items">
-        <h2>
-            Items of Power
-            <span class="attunement-limit">
-                Attuned: <span class="current-attunements">{{actor.currentAttunements}}</span> / 
-                <span class="max-attunements">{{actor.maxAttunements}}</span>
-            </span>
-        </h2>
-        
-        <!-- Equipment Slots -->
-        <div class="equipment-slots">
+        <!-- Armor Slots with Natural Deflection -->
+        <div class="armor-slots">
             <div class="slot-row flexrow">
                 <div class="slot-container" data-slot="head">
                     <div class="slot-label">Head</div>
+                    <div class="natural-def-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.head" value="{{actor.system.naturalDeflection.head}}" data-dtype="Number" min="0" />
+                    </div>
                     <div class="slot-content" data-slot="head">
-                        {{#if actor.magicItems.head}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.head._id}}">
-                            <span class="item-name">{{actor.magicItems.head.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.head.system.attunement}}attuned{{/if}}"></span>
+                        {{#if actor.equippedArmor.head}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedArmor.head._id}}">
+                            <span class="item-name">{{actor.equippedArmor.head.name}}</span>
+                            <span class="armor-ap">{{actor.equippedArmor.head.system.currentAP}}/{{actor.equippedArmor.head.system.ap}}</span>
                             <div class="item-controls">
                                 <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
@@ -127,32 +77,18 @@
                         {{/if}}
                     </div>
                 </div>
-                
-                <div class="slot-container" data-slot="neck">
-                    <div class="slot-label">Neck</div>
-                    <div class="slot-content" data-slot="neck">
-                        {{#if actor.magicItems.neck}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.neck._id}}">
-                            <span class="item-name">{{actor.magicItems.neck.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.neck.system.attunement}}attuned{{/if}}"></span>
-                            <div class="item-controls">
-                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                            </div>
-                        </div>
-                        {{else}}
-                        <div class="empty-slot">Empty</div>
-                        {{/if}}
-                    </div>
-                </div>
-                
+
                 <div class="slot-container" data-slot="body">
                     <div class="slot-label">Body</div>
+                    <div class="natural-def-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.body" value="{{actor.system.naturalDeflection.body}}" data-dtype="Number" min="0" />
+                    </div>
                     <div class="slot-content" data-slot="body">
-                        {{#if actor.magicItems.body}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.body._id}}">
-                            <span class="item-name">{{actor.magicItems.body.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.body.system.attunement}}attuned{{/if}}"></span>
+                        {{#if actor.equippedArmor.body}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedArmor.body._id}}">
+                            <span class="item-name">{{actor.equippedArmor.body.name}}</span>
+                            <span class="armor-ap">{{actor.equippedArmor.body.system.currentAP}}/{{actor.equippedArmor.body.system.ap}}</span>
                             <div class="item-controls">
                                 <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
@@ -164,15 +100,19 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="slot-row flexrow">
-                <div class="slot-container" data-slot="hands">
-                    <div class="slot-label">Hands</div>
-                    <div class="slot-content" data-slot="hands">
-                        {{#if actor.magicItems.hands}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.hands._id}}">
-                            <span class="item-name">{{actor.magicItems.hands.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.hands.system.attunement}}attuned{{/if}}"></span>
+                <div class="slot-container" data-slot="leftarm">
+                    <div class="slot-label">Left Arm</div>
+                    <div class="natural-def-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.leftarm" value="{{actor.system.naturalDeflection.leftarm}}" data-dtype="Number" min="0" />
+                    </div>
+                    <div class="slot-content" data-slot="leftarm">
+                        {{#if actor.equippedArmor.leftarm}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedArmor.leftarm._id}}">
+                            <span class="item-name">{{actor.equippedArmor.leftarm.name}}</span>
+                            <span class="armor-ap">{{actor.equippedArmor.leftarm.system.currentAP}}/{{actor.equippedArmor.leftarm.system.ap}}</span>
                             <div class="item-controls">
                                 <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
@@ -183,32 +123,18 @@
                         {{/if}}
                     </div>
                 </div>
-                
-                <div class="slot-container" data-slot="belt">
-                    <div class="slot-label">Belt</div>
-                    <div class="slot-content" data-slot="belt">
-                        {{#if actor.magicItems.belt}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.belt._id}}">
-                            <span class="item-name">{{actor.magicItems.belt.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.belt.system.attunement}}attuned{{/if}}"></span>
-                            <div class="item-controls">
-                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                            </div>
-                        </div>
-                        {{else}}
-                        <div class="empty-slot">Empty</div>
-                        {{/if}}
+
+                <div class="slot-container" data-slot="rightarm">
+                    <div class="slot-label">Right Arm</div>
+                    <div class="natural-def-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.rightarm" value="{{actor.system.naturalDeflection.rightarm}}" data-dtype="Number" min="0" />
                     </div>
-                </div>
-                
-                <div class="slot-container" data-slot="boots">
-                    <div class="slot-label">Boots</div>
-                    <div class="slot-content" data-slot="boots">
-                        {{#if actor.magicItems.boots}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.boots._id}}">
-                            <span class="item-name">{{actor.magicItems.boots.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.boots.system.attunement}}attuned{{/if}}"></span>
+                    <div class="slot-content" data-slot="rightarm">
+                        {{#if actor.equippedArmor.rightarm}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedArmor.rightarm._id}}">
+                            <span class="item-name">{{actor.equippedArmor.rightarm.name}}</span>
+                            <span class="armor-ap">{{actor.equippedArmor.rightarm.system.currentAP}}/{{actor.equippedArmor.rightarm.system.ap}}</span>
                             <div class="item-controls">
                                 <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
@@ -220,16 +146,19 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Ring slots (separate row, 2 slots) -->
-            <div class="slot-row flexrow ring-slots">
-                <div class="slot-container" data-slot="ring1">
-                    <div class="slot-label">Ring 1</div>
-                    <div class="slot-content" data-slot="ring1">
-                        {{#if actor.magicItems.ring1}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.ring1._id}}">
-                            <span class="item-name">{{actor.magicItems.ring1.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.ring1.system.attunement}}attuned{{/if}}"></span>
+
+            <div class="slot-row flexrow">
+                <div class="slot-container" data-slot="leftleg">
+                    <div class="slot-label">Left Leg</div>
+                    <div class="natural-def-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.leftleg" value="{{actor.system.naturalDeflection.leftleg}}" data-dtype="Number" min="0" />
+                    </div>
+                    <div class="slot-content" data-slot="leftleg">
+                        {{#if actor.equippedArmor.leftleg}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedArmor.leftleg._id}}">
+                            <span class="item-name">{{actor.equippedArmor.leftleg.name}}</span>
+                            <span class="armor-ap">{{actor.equippedArmor.leftleg.system.currentAP}}/{{actor.equippedArmor.leftleg.system.ap}}</span>
                             <div class="item-controls">
                                 <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
@@ -240,14 +169,18 @@
                         {{/if}}
                     </div>
                 </div>
-                
-                <div class="slot-container" data-slot="ring2">
-                    <div class="slot-label">Ring 2</div>
-                    <div class="slot-content" data-slot="ring2">
-                        {{#if actor.magicItems.ring2}}
-                        <div class="equipped-item" data-item-id="{{actor.magicItems.ring2._id}}">
-                            <span class="item-name">{{actor.magicItems.ring2.name}}</span>
-                            <span class="attunement-indicator {{#if actor.magicItems.ring2.system.attunement}}attuned{{/if}}"></span>
+
+                <div class="slot-container" data-slot="rightleg">
+                    <div class="slot-label">Right Leg</div>
+                    <div class="natural-def-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.rightleg" value="{{actor.system.naturalDeflection.rightleg}}" data-dtype="Number" min="0" />
+                    </div>
+                    <div class="slot-content" data-slot="rightleg">
+                        {{#if actor.equippedArmor.rightleg}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedArmor.rightleg._id}}">
+                            <span class="item-name">{{actor.equippedArmor.rightleg.name}}</span>
+                            <span class="armor-ap">{{actor.equippedArmor.rightleg.system.currentAP}}/{{actor.equippedArmor.rightleg.system.ap}}</span>
                             <div class="item-controls">
                                 <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
@@ -260,24 +193,172 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Unequipped Magic Items -->
-        <div class="unequipped-magic-items">
-            <h3>
-                Unequipped Magic Items
-                <div class="magic-item-controls">
-                    <a class="item-create" title="Add Magic Item" data-type="magicitem"><i class="fas fa-plus"></i></a>
-                    <a class="magicitem-browse" title="Browse Magic Items"><i class="fas fa-search"></i></a>
+
+        <!-- Unequipped Armor -->
+        <div class="unequipped-armor">
+            <h3>Unequipped Armor</h3>
+            <header class="gear-header flexrow">
+                <div class="armor-name">Name</div>
+                <div class="armor-location">Location</div>
+                <div class="armor-ap">AP</div>
+                <div class="armor-controls">
+                    <a class="item-create" title="Add Armor" data-type="armor"><i class="fas fa-plus"></i></a>
                 </div>
-            </h3>
-            
+            </header>
+            <div class="items-list armor-items-list">
+                {{#each actor.unequippedArmor as |item id|}}
+                <div class="item flexrow armor-item" data-item-id="{{item._id}}">
+                    <div class="armor-name">{{item.name}}</div>
+                    <div class="armor-location">{{item.system.location}}</div>
+                    <div class="armor-ap">{{item.system.currentAP}}/{{item.system.ap}}</div>
+                    <div class="armor-controls">
+                        <a class="item-equip" title="Equip Armor" data-slot="{{item.system.location}}"><i class="fas fa-shield-alt"></i></a>
+                        <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+
+    <!-- Items of Power -->
+    <div class="magical-items">
+        <h2>
+            Items of Power
+            <span class="attunement-limit">
+                Attuned: <span class="current-attunements">{{actor.currentAttunements}}</span> /
+                <span class="max-attunements">{{actor.maxAttunements}}</span>
+            </span>
+        </h2>
+
+        <!-- Equipment Slots -->
+        <div class="equipment-slots">
+            <div class="slot-row flexrow">
+                <div class="slot-container" data-slot="head">
+                    <div class="slot-label">Head</div>
+                    <div class="slot-content" data-slot="head">
+                        {{#if actor.equippedItemsOfPower.head}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedItemsOfPower.head._id}}">
+                            <span class="item-name">{{actor.equippedItemsOfPower.head.name}}</span>
+                            <span class="attunement-indicator {{#if actor.equippedItemsOfPower.head.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+
+                <div class="slot-container" data-slot="neck">
+                    <div class="slot-label">Neck</div>
+                    <div class="slot-content" data-slot="neck">
+                        {{#if actor.equippedItemsOfPower.neck}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedItemsOfPower.neck._id}}">
+                            <span class="item-name">{{actor.equippedItemsOfPower.neck.name}}</span>
+                            <span class="attunement-indicator {{#if actor.equippedItemsOfPower.neck.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="slot-row flexrow">
+                <div class="slot-container" data-slot="body">
+                    <div class="slot-label">Body</div>
+                    <div class="slot-content" data-slot="body">
+                        {{#if actor.equippedItemsOfPower.body}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedItemsOfPower.body._id}}">
+                            <span class="item-name">{{actor.equippedItemsOfPower.body.name}}</span>
+                            <span class="attunement-indicator {{#if actor.equippedItemsOfPower.body.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+
+                <div class="slot-container" data-slot="hands">
+                    <div class="slot-label">Hands</div>
+                    <div class="slot-content" data-slot="hands">
+                        {{#if actor.equippedItemsOfPower.hands}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedItemsOfPower.hands._id}}">
+                            <span class="item-name">{{actor.equippedItemsOfPower.hands.name}}</span>
+                            <span class="attunement-indicator {{#if actor.equippedItemsOfPower.hands.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="slot-row flexrow">
+                <div class="slot-container" data-slot="feet">
+                    <div class="slot-label">Feet</div>
+                    <div class="slot-content" data-slot="feet">
+                        {{#if actor.equippedItemsOfPower.feet}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedItemsOfPower.feet._id}}">
+                            <span class="item-name">{{actor.equippedItemsOfPower.feet.name}}</span>
+                            <span class="attunement-indicator {{#if actor.equippedItemsOfPower.feet.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+
+                <div class="slot-container" data-slot="ring">
+                    <div class="slot-label">Ring</div>
+                    <div class="slot-content" data-slot="ring">
+                        {{#if actor.equippedItemsOfPower.ring}}
+                        <div class="equipped-item" data-item-id="{{actor.equippedItemsOfPower.ring._id}}">
+                            <span class="item-name">{{actor.equippedItemsOfPower.ring.name}}</span>
+                            <span class="attunement-indicator {{#if actor.equippedItemsOfPower.ring.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unequipped Items of Power -->
+        <div class="unequipped-magic-items">
+            <h3>Unequipped Items of Power</h3>
             <div class="items-list magic-items-list">
-                {{#each actor.unequippedMagicItems as |item id|}}
+                {{#each actor.unequippedItemsOfPower as |item id|}}
                 <div class="item flexrow magic-item" data-item-id="{{item._id}}">
                     <div class="item-name">{{item.name}}</div>
                     <div class="item-slot">{{item.system.slot}}</div>
                     <div class="item-attunement">
-                        <input type="checkbox" data-item-id="{{item._id}}" class="attunement-checkbox" title="Attune" />
+                        <input type="checkbox" data-item-id="{{item._id}}" class="attunement-checkbox" title="Attune" {{#if item.system.attunement}} checked{{/if}} />
                     </div>
                     <div class="item-controls">
                         <a class="item-equip" title="Equip Item" data-slot="{{item.system.slot}}"><i class="fas fa-hand-paper"></i></a>
@@ -290,22 +371,20 @@
         </div>
     </div>
 
-    <!-- General Gear -->
-    <div class="gear">
-        <h2>Gear</h2>
+    <!-- Potions -->
+    <div class="potions-section">
+        <h2>Potions</h2>
         <header class="gear-header flexrow">
             <div class="gear-name">Name</div>
             <div class="gear-quantity">Qty</div>
             <div class="gear-weight">Weight</div>
             <div class="gear-description">Description</div>
             <div class="gear-controls">
-                <a class="item-create" title="Add Item" data-type="item"><i class="fas fa-plus"></i></a>
-                <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                <a class="item-create" title="Add Potion" data-type="item" data-category="potion"><i class="fas fa-plus"></i></a>
             </div>
         </header>
-
         <ol class="items-list">
-            {{#each actor.gear as |item id|}}
+            {{#each actor.potions as |item id|}}
             <li class="item flexrow" data-item-id="{{item._id}}">
                 <div class="gear-name">{{item.name}}</div>
                 <div class="gear-quantity">
@@ -320,5 +399,71 @@
             </li>
             {{/each}}
         </ol>
+    </div>
+
+    <!-- Drugs -->
+    <div class="drugs-section">
+        <h2>Drugs</h2>
+        <header class="gear-header flexrow">
+            <div class="gear-name">Name</div>
+            <div class="gear-quantity">Qty</div>
+            <div class="gear-weight">Weight</div>
+            <div class="gear-description">Description</div>
+            <div class="gear-controls">
+                <a class="item-create" title="Add Drug" data-type="item" data-category="drug"><i class="fas fa-plus"></i></a>
+            </div>
+        </header>
+        <ol class="items-list">
+            {{#each actor.drugs as |item id|}}
+            <li class="item flexrow" data-item-id="{{item._id}}">
+                <div class="gear-name">{{item.name}}</div>
+                <div class="gear-quantity">
+                    <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                </div>
+                <div class="gear-weight">{{item.system.weight}}</div>
+                <div class="gear-description">{{item.system.description}}</div>
+                <div class="gear-controls">
+                    <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                    <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                </div>
+            </li>
+            {{/each}}
+        </ol>
+    </div>
+
+    <!-- All Gear (Collapsible) -->
+    <div class="all-gear">
+        <h2 class="collapsible-header" data-target="all-gear-content">
+            <i class="fas fa-chevron-down"></i> All Gear
+        </h2>
+        <div class="collapsible-content" id="all-gear-content">
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Item" data-type="item"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+
+            <ol class="items-list">
+                {{#each actor.gear as |item id|}}
+                <li class="item flexrow" data-item-id="{{item._id}}">
+                    <div class="gear-name">{{item.name}}</div>
+                    <div class="gear-quantity">
+                        <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                    </div>
+                    <div class="gear-weight">{{item.system.weight}}</div>
+                    <div class="gear-description">{{item.system.description}}</div>
+                    <div class="gear-controls">
+                        <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
+                {{/each}}
+            </ol>
+        </div>
     </div>
 </section>

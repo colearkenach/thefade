@@ -69,13 +69,25 @@ class TheFadeCharacterSheet extends ActorSheet {
         const spells = [];
         const skills = [];
         const talents = [];
+        const itemsOfPower = [];
+        const potions = [];
+        const drugs = [];
 
         // Iterate through items, allocating to containers
         for (let i of sheetData.items) {
             i.img = i.img || DEFAULT_TOKEN;
 
             if (i.type === 'item') {
-                gear.push(i);
+                // Sort by item category
+                if (i.system.itemCategory === 'magicitem') {
+                    itemsOfPower.push(i);
+                } else if (i.system.itemCategory === 'potion') {
+                    potions.push(i);
+                } else if (i.system.itemCategory === 'drug') {
+                    drugs.push(i);
+                } else {
+                    gear.push(i);
+                }
             }
             else if (i.type === 'weapon') {
                 weapons.push(i);
@@ -99,13 +111,42 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Sort skills by category and name
         skills.sort((a, b) => {
-            // First sort by category
             if (a.system.category !== b.system.category) {
                 return a.system.category.localeCompare(b.system.category);
             }
-            // Then sort by name
             return a.name.localeCompare(b.name);
         });
+
+        // Process Items of Power
+        const equippedItemsOfPower = {};
+        const unequippedItemsOfPower = [];
+
+        for (let item of itemsOfPower) {
+            if (item.system.equipped && item.system.slot) {
+                equippedItemsOfPower[item.system.slot] = item;
+            } else {
+                unequippedItemsOfPower.push(item);
+            }
+        }
+
+        // Process Armor (update the armor slot names)
+        const equippedArmor = {};
+        const unequippedArmor = [];
+
+        for (let item of armor) {
+            if (item.system.equipped && item.system.location) {
+                equippedArmor[item.system.location] = item;
+            } else {
+                unequippedArmor.push(item);
+            }
+        }
+
+        // Calculate attunements for Items of Power
+        const currentAttunements = itemsOfPower.filter(item => item.system.attunement === true).length;
+        const totalLevel = actorData.system.level || 1;
+        const soulAttribute = actorData.system.attributes?.soul?.value || 1;
+        const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+
 
         // Calculate dice pools for skills
         skills.forEach(skill => {
@@ -136,7 +177,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             skill.calculatedDice = Math.max(1, dicePool);
         });
 
-        // Calculate dice pools for weapons
         // Calculate dice pools for weapons
         weapons.forEach(weapon => {
             const skillName = weapon.system.skill;
@@ -177,6 +217,76 @@ class TheFadeCharacterSheet extends ActorSheet {
         actorData.spells = spells;
         actorData.skills = skills;
         actorData.talents = talents;
+        actorData.itemsOfPower = itemsOfPower;
+        actorData.equippedItemsOfPower = equippedItemsOfPower;
+        actorData.unequippedItemsOfPower = unequippedItemsOfPower;
+        actorData.equippedArmor = equippedArmor;
+        actorData.unequippedArmor = unequippedArmor;
+        actorData.potions = potions;
+        actorData.drugs = drugs;
+        actorData.currentAttunements = currentAttunements;
+        actorData.maxAttunements = maxAttunements;
+    }
+
+    _activateInventoryListeners(html) {
+        // Collapsible sections
+        html.find('.collapsible-header').click(event => {
+            event.preventDefault();
+            const header = $(event.currentTarget);
+            const targetId = header.data('target');
+            const content = html.find(`#${targetId}`);
+            const icon = header.find('i');
+
+            if (content.hasClass('collapsed')) {
+                content.removeClass('collapsed');
+                content.css('max-height', content[0].scrollHeight + 'px');
+                header.removeClass('collapsed');
+            } else {
+                content.addClass('collapsed');
+                content.css('max-height', '0');
+                header.addClass('collapsed');
+            }
+        });
+
+        // Initialize collapsed state - expand by default
+        html.find('.collapsible-content').each(function () {
+            $(this).css('max-height', this.scrollHeight + 'px');
+        });
+
+        // Equip/Unequip Items of Power
+        html.find('.item-equip').click(async (event) => {
+            event.preventDefault();
+            const itemId = $(event.currentTarget).closest('.item').data('item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (item) {
+                await item.update({ 'system.equipped': true });
+                this.render(false);
+            }
+        });
+
+        html.find('.item-unequip').click(async (event) => {
+            event.preventDefault();
+            const itemId = $(event.currentTarget).closest('.equipped-item').data('item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (item) {
+                await item.update({ 'system.equipped': false });
+                this.render(false);
+            }
+        });
+
+        // Attunement checkbox
+        html.find('.attunement-checkbox').change(async (event) => {
+            event.preventDefault();
+            const itemId = $(event.currentTarget).data('item-id');
+            const item = this.actor.items.get(itemId);
+            const isAttuned = event.currentTarget.checked;
+
+            if (item) {
+                await item.update({ 'system.attunement': isAttuned });
+            }
+        });
     }
 
     /**
@@ -849,6 +959,8 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Initialize defense system with flags
         this._initializeDefenseSystem(html);
+
+        this._activateInventoryListeners(html);
 
         // Add regular input change handler for other fields
         html.find('input[name], select[name]:not([name="system.defenses.facing"])').change(ev => {
@@ -3149,7 +3261,27 @@ class TheFadeActor extends Actor {
             });
         }
 
-        this.prepareMagicItems();
+        // this.prepareMagicItems();
+
+        // Ensure naturalDeflection exists as an object with all body parts
+        if (!data.naturalDeflection || typeof data.naturalDeflection !== 'object') {
+            data.naturalDeflection = {
+                head: 0,
+                body: 0,
+                leftarm: 0,
+                rightarm: 0,
+                leftleg: 0,
+                rightleg: 0
+            };
+        } else {
+            // Ensure all body parts exist
+            const bodyParts = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg'];
+            bodyParts.forEach(part => {
+                if (data.naturalDeflection[part] === undefined) {
+                    data.naturalDeflection[part] = 0;
+                }
+            });
+        }
     }
 
     prepareMagicItems() {
@@ -3314,6 +3446,32 @@ class TheFadeActor extends Actor {
 
         // Calculate sin threshold: Soul - 1 per dark magic spell + bonus
         data.darkMagic.sinThreshold = data.attributes.soul.value - darkMagicCount + (data.darkMagic.sinThresholdBonus || 0);
+
+        // Sort Items of Power into equipped/unequipped
+        for (let item of data.itemsOfPower) {
+            if (item.system.equipped && item.system.slot) {
+                data.equippedItemsOfPower[item.system.slot] = item;
+            } else {
+                data.unequippedItemsOfPower.push(item);
+            }
+        }
+
+        // Prepare armor with slots
+        data.equippedArmor = {};
+        data.unequippedArmor = [];
+        const armorSlots = ['head', 'torso', 'arms', 'legs'];
+
+        for (let armor of data.armor) {
+            if (armor.system.equipped && armor.system.location) {
+                data.equippedArmor[armor.system.location] = armor;
+            } else {
+                data.unequippedArmor.push(armor);
+            }
+        }
+
+        // Prepare potions and drugs
+        data.potions = items.filter(i => i.system.itemCategory === "potion");
+        data.drugs = items.filter(i => i.system.itemCategory === "drug");
     }
 
     /**
@@ -3919,6 +4077,10 @@ class TheFadeItemSheet extends ItemSheet {
 
     get template() {
         const path = "systems/thefade/templates/item";
+        // Magic items use the generic item sheet (they already have conditional sections in item-sheet.html)
+        if (this.item.type === "magicitem") {
+            return `${path}/item-sheet.html`;
+        }
         return `${path}/${this.item.type}-sheet.html`;
     }
 
