@@ -2461,3 +2461,376 @@ select[name="system.aura.color"] option[value="white"] {
     .reduce-total-ap:hover {
         background: #c82333;
     }
+
+/* Custom Skills Bar */
+.custom-skills-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+}
+
+    .custom-skills-bar label {
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-right: 10px;
+    }
+
+    .custom-skills-bar button {
+        background: var(--secondary-color);
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.85em;
+        transition: background-color 0.2s ease;
+    }
+
+        .custom-skills-bar button:hover {
+            background: var(--accent-color);
+        }
+
+        .custom-skills-bar button i {
+            margin-right: 3px;
+        }
+
+/* Custom Skill Indicators */
+.custom-skill {
+    background: rgba(var(--accent-color-rgb), 0.1);
+    border-left: 3px solid var(--accent-color);
+}
+
+.custom-badge {
+    display: inline-block;
+    background: var(--accent-color);
+    color: white;
+    font-size: 0.7em;
+    padding: 2px 5px;
+    border-radius: 2px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.choice-badge {
+    display: inline-block;
+    background: #17a2b8;
+    color: white;
+    font-size: 0.7em;
+    padding: 2px 5px;
+    border-radius: 2px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+/* Core Skill Indicator */
+.core-skill-indicator {
+    color: var(--primary-color);
+    opacity: 0.6;
+    cursor: help;
+}
+
+    .core-skill-indicator:hover {
+        opacity: 1;
+    }
+
+/* Skill Controls Styling */
+.skill-controls {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+    .skill-controls a, .skill-controls span {
+        padding: 2px 4px;
+        border-radius: 2px;
+        transition: background-color 0.2s ease;
+    }
+
+        .skill-controls a:hover {
+            background: rgba(var(--accent-color-rgb), 0.2);
+        }
+
+/* Initialize Skills Button */
+.initialize-skills {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+    .initialize-skills:hover {
+        background: #218838;
+    }
+
+/* Skill Examples in Path Sheet */
+.skill-examples {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+    .skill-examples h4 {
+        margin-top: 0;
+        color: var(--primary-color);
+    }
+
+    .skill-examples ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .skill-examples li {
+        margin-bottom: 5px;
+    }
+
+/* Dialog Styling for Custom Skills */
+.dialog .form-group {
+    margin-bottom: 15px;
+}
+
+.dialog .hint {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.dialog .skill-choices {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    border-radius: 3px;
+}
+
+    .dialog .skill-choices label {
+        display: block;
+        margin-bottom: 5px;
+        cursor: pointer;
+    }
+
+    .dialog .skill-choices input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+.path-skill-entry {
+    transition: background-color 0.2s ease;
+}
+
+    .path-skill-entry.specific {
+        border-left: 3px solid #28a745;
+    }
+
+    .path-skill-entry.custom {
+        border-left: 3px solid #007bff;
+    }
+
+    .path-skill-entry.choice {
+        border-left: 3px solid #ffc107;
+    }
+
+/* Entry Type Badges */
+.entry-type-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.7em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+    .entry-type-badge.specific {
+        background-color: #28a745;
+    }
+
+    .entry-type-badge.custom {
+        background-color: #007bff;
+    }
+
+    .entry-type-badge.choice {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .entry-type-badge.unknown {
+        background-color: #6c757d;
+    }
+
+/* Choice and Custom Badges */
+.choice-badge {
+    display: inline-block;
+    background: #ffc107;
+    color: #000;
+    font-size: 0.7em;
+    padding: 2px 5px;
+    border-radius: 2px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+.custom-badge {
+    display: inline-block;
+    background: #007bff;
+    color: white;
+    font-size: 0.7em;
+    padding: 2px 5px;
+    border-radius: 2px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+/* No Skills Message Styling */
+.no-skills-message {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 20px;
+    border-radius: 5px;
+    margin: 15px 0;
+    border: 2px dashed var(--border-color);
+}
+
+    .no-skills-message h4 {
+        margin-top: 0;
+        color: var(--primary-color);
+    }
+
+.skill-entry-examples {
+    margin: 15px 0;
+}
+
+.example-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.example-category h5 {
+    color: var(--secondary-color);
+    margin-bottom: 8px;
+}
+
+.example-category ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.example-category li {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+}
+
+/* Quick Add Buttons */
+.quick-add-buttons {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+    .quick-add-buttons h5 {
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+
+.quick-add-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    margin: 2px;
+    transition: background-color 0.2s ease;
+}
+
+    .quick-add-btn:hover {
+        background: var(--accent-color);
+    }
+
+/* Path Skills Legend */
+.path-skills-legend {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    border: 1px solid var(--border-color);
+}
+
+    .path-skills-legend h4 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+
+.legend-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9em;
+}
+
+/* Skill Entry Name Styling */
+.skill-entry-name {
+    font-weight: bold;
+}
+
+/* Path Skill Entry Controls */
+.path-skill-entry .item-controls {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+    .path-skill-entry .item-controls a {
+        padding: 2px 4px;
+        border-radius: 2px;
+        transition: background-color 0.2s ease;
+    }
+
+        .path-skill-entry .item-controls a:hover {
+            background: rgba(var(--accent-color-rgb), 0.2);
+        }
+
+/* Form Groups in Path Skill Dialog */
+.dialog .form-group {
+    margin-bottom: 15px;
+}
+
+    .dialog .form-group label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: var(--primary-color);
+    }
+
+    .dialog .form-group select,
+    .dialog .form-group input {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid var(--border-color);
+        border-radius: 3px;
+    }
+
+.dialog .hint {
+    font-size: 0.85em;
+    color: #666;
+    margin-top: 3px;
+    font-style: italic;
+}

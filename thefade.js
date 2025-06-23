@@ -578,6 +578,39 @@ class TheFadeCharacterSheet extends ActorSheet {
         const soulAttributeValue = actorData.system.attributes?.soul?.value || 1;
         const maximumAttunements = Math.max(0, Math.floor(characterLevel / 4) + soulAttributeValue);
 
+        // Ensure all characters have default skills
+        if (skills.length < DEFAULT_SKILLS.length) {
+            // Character is missing some default skills - this should trigger initialization
+            console.log(`${actorData.name} is missing default skills. Consider running skill initialization.`);
+        }
+
+        // Sort skills by category, then by name, with custom skills marked
+        skills.sort((a, b) => {
+            // First sort by category
+            if (a.system.category !== b.system.category) {
+                return a.system.category.localeCompare(b.system.category);
+            }
+
+            // Within category, sort core skills first, then custom skills
+            if (a.system.isCore !== b.system.isCore) {
+                return a.system.isCore ? -1 : 1;
+            }
+
+            // Finally sort by name
+            return a.name.localeCompare(b.name);
+        });
+
+        // Add display flags for skills
+        skills.forEach(skill => {
+            skill.isCustomSkill = !skill.system.isCore;
+            skill.canDelete = !skill.system.isCore;
+
+            // Add skill type display for custom skills
+            if (skill.system.skillType) {
+                skill.skillTypeDisplay = skill.system.skillType.charAt(0).toUpperCase() + skill.system.skillType.slice(1);
+            }
+        });
+
         // Assign data
         actorData.gear = gear;
         actorData.weapons = weapons;
@@ -2755,7 +2788,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-
         // Add explicit input change handler
         html.find('input[name], select[name]').change(ev => {
             const input = ev.currentTarget;
@@ -2896,23 +2928,28 @@ class TheFadeCharacterSheet extends ActorSheet {
         });
 
         // Existing listeners remain the same
-        html.find('.item-create').click(ev => {
+        //html.find('.item-create').click(ev => {
+        //    ev.preventDefault();
+        //    const header = ev.currentTarget;
+        //    const type = header.dataset.type;
+
+        //    const data = duplicate(header.dataset);
+        //    const name = `New ${type.capitalize()}`;
+
+        //    const itemData = {
+        //        name: name,
+        //        type: type,
+        //        system: data
+        //    };
+
+        //    delete itemData.system["type"];
+
+        //    return this.actor.createEmbeddedDocuments("Item", [itemData]);
+        //});
+
+        html.find('.item-create[data-type="skill"]').click(ev => {
             ev.preventDefault();
-            const header = ev.currentTarget;
-            const type = header.dataset.type;
-
-            const data = duplicate(header.dataset);
-            const name = `New ${type.capitalize()}`;
-
-            const itemData = {
-                name: name,
-                type: type,
-                system: data
-            };
-
-            delete itemData.system["type"];
-
-            return this.actor.createEmbeddedDocuments("Item", [itemData]);
+            ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
         });
 
         html.find('.item-edit').click(ev => {
@@ -2926,12 +2963,57 @@ class TheFadeCharacterSheet extends ActorSheet {
             item.sheet.render(true);
         });
 
-        html.find('.item-delete').click(ev => {
+        //html.find('.item-delete').click(ev => {
+        //    const li = $(ev.currentTarget).closest("[data-item-id]");
+        //    const itemId = li.data("itemId");
+
+        //    if (!itemId) return;
+
+        //    this.actor.deleteEmbeddedDocuments("Item", [itemId]);
+        //    li.slideUp(200, () => this.render(false));
+        //});
+
+        html.find('.item-delete').off('click').click(ev => {
             const li = $(ev.currentTarget).closest("[data-item-id]");
             const itemId = li.data("itemId");
 
             if (!itemId) return;
 
+            const item = this.actor.items.get(itemId);
+            if (!item) return;
+
+            // Prevent deletion of core skills
+            if (item.type === 'skill' && item.system.isCore) {
+                ui.notifications.warn("Core skills cannot be deleted.");
+                return;
+            }
+
+            // Allow deletion of custom skills only
+            if (item.type === 'skill' && !item.system.isCore) {
+                const confirmDialog = new Dialog({
+                    title: "Delete Custom Skill",
+                    content: `<p>Are you sure you want to delete the custom skill "${item.name}"?</p>`,
+                    buttons: {
+                        delete: {
+                            icon: '<i class="fas fa-trash"></i>',
+                            label: "Delete",
+                            callback: () => {
+                                this.actor.deleteEmbeddedDocuments("Item", [itemId]);
+                                li.slideUp(200, () => this.render(false));
+                            }
+                        },
+                        cancel: {
+                            icon: '<i class="fas fa-times"></i>',
+                            label: "Cancel"
+                        }
+                    },
+                    default: "cancel"
+                });
+                confirmDialog.render(true);
+                return;
+            }
+
+            // Regular deletion for non-skill items
             this.actor.deleteEmbeddedDocuments("Item", [itemId]);
             li.slideUp(200, () => this.render(false));
         });
@@ -2988,7 +3070,7 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         html.find('.skill-browse').click(ev => {
             ev.preventDefault();
-            openCompendiumBrowser("skill", this.actor);
+            ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
         });
 
         html.find('.path-browse').click(ev => {
@@ -3024,6 +3106,32 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('.item-browse').click(ev => {
             ev.preventDefault();
             openCompendiumBrowser("item", this.actor);
+        });
+
+        // Add custom skill creation buttons
+        html.find('.add-custom-craft').click(async ev => {
+            ev.preventDefault();
+            await showCustomSkillDialog(this.actor);
+            this.render(false);
+        });
+
+        html.find('.add-custom-lore').click(async ev => {
+            ev.preventDefault();
+            await createCustomSkill(this.actor, "lore", await getCustomSkillSubtype("Lore", "e.g., Anthropology, History"), "learned");
+            this.render(false);
+        });
+
+        html.find('.add-custom-perform').click(async ev => {
+            ev.preventDefault();
+            await createCustomSkill(this.actor, "perform", await getCustomSkillSubtype("Perform", "e.g., Singing, Dancing"), "learned");
+            this.render(false);
+        });
+
+        // Add universal custom skill button
+        html.find('.add-custom-skill').click(async ev => {
+            ev.preventDefault();
+            await showCustomSkillDialog(this.actor);
+            this.render(false);
         });
 
         // Handle spell filtering
@@ -3087,6 +3195,51 @@ class TheFadeCharacterSheet extends ActorSheet {
         this._setupArmorResetListeners(html);
         // Initialize tooltips
         // this._initializeDataTooltips(html);
+
+        if (this.actor.isOwner) {
+            html.find('.initialize-skills').click(async ev => {
+                ev.preventDefault();
+                await initializeDefaultSkills(this.actor);
+                this.render(false);
+            });
+        }
+
+        /**
+        * Helper function to get subtype for custom skills
+        */
+        async function getCustomSkillSubtype(skillType, placeholder) {
+            return new Promise((resolve) => {
+                const dialog = new Dialog({
+                    title: `Add ${skillType} Skill`,
+                    content: `
+                <form>
+                    <div class="form-group">
+                        <label>${skillType} Type:</label>
+                        <input type="text" id="subtype-input" placeholder="${placeholder}" />
+                    </div>
+                </form>
+            `,
+                    buttons: {
+                        create: {
+                            icon: '<i class="fas fa-plus"></i>',
+                            label: "Create",
+                            callback: html => {
+                                const subtype = html.find('#subtype-input').val().trim();
+                                resolve(subtype || null);
+                            }
+                        },
+                        cancel: {
+                            icon: '<i class="fas fa-times"></i>',
+                            label: "Cancel",
+                            callback: () => resolve(null)
+                        }
+                    },
+                    default: "create",
+                    close: () => resolve(null)
+                });
+                dialog.render(true);
+            });
+        }
     }
 
     /**
@@ -3956,27 +4109,75 @@ class TheFadeItemSheet extends ItemSheet {
     _preparePathSkills(sheetData) {
         if (this.item.type !== 'path') return;
 
-        // Get the path skills from the item data
         const pathSkills = [];
 
-        // If the path has skills stored in its data
         if (this.item.system.pathSkills && Array.isArray(this.item.system.pathSkills)) {
             for (const skillData of this.item.system.pathSkills) {
-                // Create a proper skill object for the template
-                pathSkills.push({
+                const processedSkill = {
                     _id: skillData._id || randomID(16),
                     name: skillData.name,
                     system: skillData.system || {},
                     img: skillData.img || "icons/svg/item-bag.svg"
-                });
+                };
+
+                // Determine entry type and set display properties
+                const entryType = skillData.system.entryType || PATH_SKILL_TYPES.SPECIFIC_SKILL;
+
+                switch (entryType) {
+                    case PATH_SKILL_TYPES.SPECIFIC_SKILL:
+                        processedSkill.entryTypeDisplay = "Core Skill";
+                        processedSkill.entryTypeClass = "specific";
+                        processedSkill.isChoiceEntry = false;
+                        processedSkill.isCustomEntry = false;
+                        break;
+
+                    case PATH_SKILL_TYPES.SPECIFIC_CUSTOM:
+                        processedSkill.entryTypeDisplay = "Custom Skill";
+                        processedSkill.entryTypeClass = "custom";
+                        processedSkill.isChoiceEntry = false;
+                        processedSkill.isCustomEntry = true;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_CATEGORY:
+                        processedSkill.entryTypeDisplay = "Choose Category";
+                        processedSkill.entryTypeClass = "choice";
+                        processedSkill.isChoiceEntry = true;
+                        processedSkill.isCustomEntry = false;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_LORE:
+                        processedSkill.entryTypeDisplay = "Choose Lore";
+                        processedSkill.entryTypeClass = "choice";
+                        processedSkill.isChoiceEntry = true;
+                        processedSkill.isCustomEntry = true;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_PERFORM:
+                        processedSkill.entryTypeDisplay = "Choose Perform";
+                        processedSkill.entryTypeClass = "choice";
+                        processedSkill.isChoiceEntry = true;
+                        processedSkill.isCustomEntry = true;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_CRAFT:
+                        processedSkill.entryTypeDisplay = "Choose Craft";
+                        processedSkill.entryTypeClass = "choice";
+                        processedSkill.isChoiceEntry = true;
+                        processedSkill.isCustomEntry = true;
+                        break;
+
+                    default:
+                        processedSkill.entryTypeDisplay = "Unknown";
+                        processedSkill.entryTypeClass = "unknown";
+                        processedSkill.isChoiceEntry = false;
+                        processedSkill.isCustomEntry = false;
+                }
+
+                pathSkills.push(processedSkill);
             }
         }
 
-        // Add the path skills to the sheet data
         sheetData.pathSkills = pathSkills;
-
-        // Debug info
-        // console.log("Path Skills prepared:", pathSkills);
     }
 
     /**
@@ -4073,45 +4274,12 @@ class TheFadeItemSheet extends ItemSheet {
         });
 
         // Add skill to path
-        html.find('.path-skill-create').click(async ev => {
+        html.find('.path-skill-create').off('click').click(async ev => {
             ev.preventDefault();
 
-            // Create a new skill item
-            const itemData = {
-                name: "New Skill",
-                type: "skill",
-                system: {
-                    rank: "learned",
-                    category: "Combat",
-                    attribute: "physique",
-                    description: ""
-                }
-            };
+            if (this.item.type !== 'path') return;
 
-            // Set up path skills array if it doesn't exist
-            if (!this.item.system.pathSkills) {
-                await this.item.update({ "system.pathSkills": [] });
-            }
-
-            // Create the skill as a temporary item
-            const skill = await Item.create(itemData, { temporary: true });
-
-            // Generate a unique ID for this skill
-            const skillId = randomID(16);
-            const skillObject = skill.toObject();
-            skillObject._id = skillId;
-
-            // Add it to the path's skills array
-            const pathSkills = duplicate(this.item.system.pathSkills || []);
-            pathSkills.push(skillObject);
-
-            await this.item.update({ "system.pathSkills": pathSkills });
-
-            // Refresh the sheet after adding a skill
-            this.render(true);
-
-            // Open the skill sheet for editing
-            skill.sheet.render(true);
+            await this._showPathSkillCreationDialog();
         });
 
         // Edit path skill
@@ -4213,44 +4381,12 @@ class TheFadeItemSheet extends ItemSheet {
         });
 
         // Handle skill browsing
-        html.find('.skill-browse').click(ev => {
+        html.find('.skill-browse').off('click').click(ev => {
             ev.preventDefault();
 
-            // Call our new generic browser function
-            openCompendiumBrowser("skill");
+            if (this.item.type !== 'path') return;
 
-            // Listen for the custom event we'll dispatch when an item is selected
-            const self = this;
-            const handler = function (e) {
-                const skill = e.detail.item;
-
-                if (skill && skill.type === "skill") {
-                    // Add the skill to the path
-                    const pathSkills = duplicate(self.item.system.pathSkills || []);
-
-                    // Generate a unique ID for this skill
-                    const skillId = randomID(16);
-                    const skillObject = skill.toObject();
-                    skillObject._id = skillId;
-
-                    // Check if the skill already exists
-                    const exists = pathSkills.some(s => s.name === skillObject.name);
-
-                    if (!exists) {
-                        pathSkills.push(skillObject);
-                        self.item.update({ "system.pathSkills": pathSkills });
-                        ui.notifications.info(`Added ${skill.name} to ${self.item.name}.`);
-                        self.render(true);
-                    } else {
-                        ui.notifications.warn(`${skill.name} is already added to this path.`);
-                    }
-                }
-
-                // Clean up the event listener
-                document.removeEventListener("compendiumSelection", handler);
-            };
-
-            document.addEventListener("compendiumSelection", handler);
+            this._showPathSkillBrowserDialog();
         });
 
         // Add a button to handle adding path skills to a character
@@ -4279,13 +4415,13 @@ class TheFadeItemSheet extends ItemSheet {
                 const dialog = new Dialog({
                     title: "Add Path Skills to Character",
                     content: `<form>
-                      <p>Select a character to add the skills from ${this.item.name}:</p>
-                      <div class="form-group">
-                        <select id="character-select" name="characterId">
-                          ${characterOptions}
-                        </select>
-                      </div>
-                    </form>`,
+                    <p>Select a character to add the skills from ${this.item.name}:</p>
+                    <div class="form-group">
+                    <select id="character-select" name="characterId">
+                        ${characterOptions}
+                    </select>
+                    </div>
+                </form>`,
                     buttons: {
                         add: {
                             icon: '<i class="fas fa-plus"></i>',
@@ -4662,172 +4798,707 @@ class TheFadeItemSheet extends ItemSheet {
                 ui.notifications.error("Error resetting all armor. Check console for details.");
             }
         });
-    }
 
-    /**
-    * Handle ability deletion (both path and species abilities)
-    * @param {Event} event - Delete event
-    */
-    async _onAbilityDelete(event) {
-        event.preventDefault();
+        /**
+        * Show dialog for creating different types of path skill entries
+        */
+        async _showPathSkillCreationDialog() {
+            return new Promise((resolve) => {
+                const dialog = new Dialog({
+                    title: "Add Path Skill Entry",
+                    content: `
+                        <form>
+                            <div class="form-group">
+                                <label>Entry Type:</label>
+                                <select id="entry-type" name="entryType">
+                                    <option value="specific-skill">Specific Core Skill</option>
+                                    <option value="custom-craft">Custom Craft Skill</option>
+                                    <option value="custom-lore">Lore Skill</option>
+                                    <option value="custom-perform">Perform Skill</option>
+                                    <option value="choose-category">Choose from Category</option>
+                                    <option value="choose-lore">Choose Lore Skills</option>
+                                    <option value="choose-perform">Choose Perform Skills</option>
+                                    <option value="choose-craft">Choose Custom Craft Skills</option>
+                                </select>
+                            </div>
+                    
+                            <!-- Specific Skill Selection -->
+                            <div class="form-group" id="specific-skill-group" style="display: none;">
+                                <label>Core Skill:</label>
+                                <select id="specific-skill" name="specificSkill">
+                                    ${this._generateCoreSkillOptions()}
+                                </select>
+                            </div>
+                    
+                            <!-- Custom Skill Name -->
+                            <div class="form-group" id="custom-name-group" style="display: none;">
+                                <label id="custom-name-label">Skill Name:</label>
+                                <input type="text" id="custom-name" name="customName" placeholder="" />
+                                <p class="hint" id="custom-name-hint"></p>
+                            </div>
+                    
+                            <!-- Choose Category -->
+                            <div class="form-group" id="choose-category-group" style="display: none;">
+                                <label>Skill Category:</label>
+                                <select id="choose-category" name="chooseCategory">
+                                    <option value="Combat">Combat</option>
+                                    <option value="Craft">Craft</option>
+                                    <option value="Knowledge">Knowledge</option>
+                                    <option value="Magical">Magical</option>
+                                    <option value="Physical">Physical</option>
+                                    <option value="Sense">Sense</option>
+                                    <option value="Social">Social</option>
+                                </select>
+                            </div>
+                    
+                            <!-- Number to Choose -->
+                            <div class="form-group" id="choose-count-group" style="display: none;">
+                                <label>Number to Choose:</label>
+                                <input type="number" id="choose-count" name="chooseCount" value="1" min="1" max="5" />
+                            </div>
+                    
+                            <!-- Target Rank -->
+                            <div class="form-group">
+                                <label>Target Rank:</label>
+                                <select id="target-rank" name="targetRank">
+                                    <option value="learned" selected>Learned</option>
+                                    <option value="practiced">Practiced</option>
+                                    <option value="adept">Adept</option>
+                                    <option value="experienced">Experienced</option>
+                                    <option value="expert">Expert</option>
+                                    <option value="mastered">Mastered</option>
+                                </select>
+                            </div>
+                        </form>
+                
+                        <script>
+                            document.getElementById('entry-type').addEventListener('change', function() {
+                                const type = this.value;
+                        
+                                // Hide all conditional groups
+                                document.getElementById('specific-skill-group').style.display = 'none';
+                                document.getElementById('custom-name-group').style.display = 'none';
+                                document.getElementById('choose-category-group').style.display = 'none';
+                                document.getElementById('choose-count-group').style.display = 'none';
+                        
+                                // Show relevant groups based on type
+                                if (type === 'specific-skill') {
+                                    document.getElementById('specific-skill-group').style.display = 'block';
+                                } else if (type === 'custom-craft') {
+                                    document.getElementById('custom-name-group').style.display = 'block';
+                                    document.getElementById('custom-name-label').textContent = 'Craft Skill Name:';
+                                    document.getElementById('custom-name').placeholder = 'e.g., Soapmaking, Sculpting';
+                                    document.getElementById('custom-name-hint').textContent = 'Enter the name of the custom craft skill';
+                                } else if (type === 'custom-lore') {
+                                    document.getElementById('custom-name-group').style.display = 'block';
+                                    document.getElementById('custom-name-label').textContent = 'Lore Subject:';
+                                    document.getElementById('custom-name').placeholder = 'e.g., Religion, History';
+                                    document.getElementById('custom-name-hint').textContent = 'Enter the subject for this Lore skill';
+                                } else if (type === 'custom-perform') {
+                                    document.getElementById('custom-name-group').style.display = 'block';
+                                    document.getElementById('custom-name-label').textContent = 'Performance Type:';
+                                    document.getElementById('custom-name').placeholder = 'e.g., Singing, Dancing';
+                                    document.getElementById('custom-name-hint').textContent = 'Enter the type of performance';
+                                } else if (type === 'choose-category') {
+                                    document.getElementById('choose-category-group').style.display = 'block';
+                                    document.getElementById('choose-count-group').style.display = 'block';
+                                } else if (type.startsWith('choose-')) {
+                                    document.getElementById('choose-count-group').style.display = 'block';
+                                }
+                            });
+                        </script>
+                    `,
+                    buttons: {
+                        add: {
+                            icon: '<i class="fas fa-plus"></i>',
+                            label: "Add Entry",
+                            callback: async html => {
+                                await this._processPathSkillEntry(html);
+                                resolve(true);
+                            }
+                        },
+                        cancel: {
+                            icon: '<i class="fas fa-times"></i>',
+                            label: "Cancel",
+                            callback: () => resolve(false)
+                        }
+                    },
+                    default: "add",
+                    close: () => resolve(false)
+                });
 
-        const abilityItem = event.currentTarget.closest(".ability-item");
-        if (!abilityItem) return;
-
-        const abilityId = abilityItem.dataset.abilityId;
-        if (!abilityId) return;
-
-        // Determine whether we're dealing with path or species
-        let updateData = {};
-
-        if (this.item.type === 'path') {
-            const abilities = duplicate(this.item.system.abilities || {});
-            if (abilities[abilityId]) {
-                delete abilities[abilityId];
-                updateData = { "system.abilities": abilities };
-            }
+                dialog.render(true);
+            });
         }
-        else if (this.item.type === 'species') {
-            const abilities = duplicate(this.item.system.speciesAbilities || {});
-            if (abilities[abilityId]) {
-                delete abilities[abilityId];
-                updateData = { "system.speciesAbilities": abilities };
-            }
+
+        /**
+        * Generate options for core skills dropdown
+        */
+        _generateCoreSkillOptions() {
+            const options = DEFAULT_SKILLS.map(skill =>
+                `<option value="${skill.name}">${skill.name} (${skill.category})</option>`
+            ).join('');
+            return options;
         }
 
-        // Only update if we found something to delete
-        if (Object.keys(updateData).length > 0) {
-            await this.item.update(updateData);
+        /**
+        * Process the path skill entry creation
+        */
+        async _processPathSkillEntry(html) {
+            const entryType = html.find('#entry-type').val();
+            const targetRank = html.find('#target-rank').val();
+
+            let skillEntry;
+
+            switch (entryType) {
+                case 'specific-skill':
+                    const skillName = html.find('#specific-skill').val();
+                    const coreSkill = DEFAULT_SKILLS.find(s => s.name === skillName);
+                    if (!coreSkill) {
+                        ui.notifications.error("Core skill not found");
+                        return;
+                    }
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: skillName,
+                        system: {
+                            rank: targetRank,
+                            category: coreSkill.category,
+                            attribute: coreSkill.attribute,
+                            entryType: PATH_SKILL_TYPES.SPECIFIC_SKILL
+                        }
+                    };
+                    break;
+
+                case 'custom-craft':
+                    const craftName = html.find('#custom-name').val().trim();
+                    if (!craftName) {
+                        ui.notifications.error("Craft skill name is required");
+                        return;
+                    }
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: craftName,
+                        system: {
+                            rank: targetRank,
+                            category: "Craft",
+                            attribute: "mind", // Default, can be changed
+                            entryType: PATH_SKILL_TYPES.SPECIFIC_CUSTOM,
+                            skillType: "craft",
+                            subtype: craftName
+                        }
+                    };
+                    break;
+
+                case 'custom-lore':
+                    const loreSubject = html.find('#custom-name').val().trim();
+                    if (!loreSubject) {
+                        ui.notifications.error("Lore subject is required");
+                        return;
+                    }
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: `Lore (${loreSubject})`,
+                        system: {
+                            rank: targetRank,
+                            category: "Knowledge",
+                            attribute: "mind",
+                            entryType: PATH_SKILL_TYPES.SPECIFIC_CUSTOM,
+                            skillType: "lore",
+                            subtype: loreSubject
+                        }
+                    };
+                    break;
+
+                case 'custom-perform':
+                    const performType = html.find('#custom-name').val().trim();
+                    if (!performType) {
+                        ui.notifications.error("Performance type is required");
+                        return;
+                    }
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: `Perform (${performType})`,
+                        system: {
+                            rank: targetRank,
+                            category: "Physical",
+                            attribute: "finesse_presence",
+                            entryType: PATH_SKILL_TYPES.SPECIFIC_CUSTOM,
+                            skillType: "perform",
+                            subtype: performType
+                        }
+                    };
+                    break;
+
+                case 'choose-category':
+                    const category = html.find('#choose-category').val();
+                    const count = parseInt(html.find('#choose-count').val());
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: `Choose ${count} ${category} Skill${count > 1 ? 's' : ''}`,
+                        system: {
+                            rank: targetRank,
+                            category: category,
+                            attribute: "varies",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_CATEGORY,
+                            chooseCount: count,
+                            chooseCategory: category
+                        }
+                    };
+                    break;
+
+                case 'choose-lore':
+                    const loreCount = parseInt(html.find('#choose-count').val());
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: `Choose ${loreCount} Lore Skill${loreCount > 1 ? 's' : ''}`,
+                        system: {
+                            rank: targetRank,
+                            category: "Knowledge",
+                            attribute: "mind",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_LORE,
+                            chooseCount: loreCount
+                        }
+                    };
+                    break;
+
+                case 'choose-perform':
+                    const performCount = parseInt(html.find('#choose-count').val());
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: `Choose ${performCount} Perform Skill${performCount > 1 ? 's' : ''}`,
+                        system: {
+                            rank: targetRank,
+                            category: "Physical",
+                            attribute: "finesse_presence",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_PERFORM,
+                            chooseCount: performCount
+                        }
+                    };
+                    break;
+
+                case 'choose-craft':
+                    const craftCount = parseInt(html.find('#choose-count').val());
+
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: `Choose ${craftCount} Custom Craft Skill${craftCount > 1 ? 's' : ''}`,
+                        system: {
+                            rank: targetRank,
+                            category: "Craft",
+                            attribute: "varies",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_CRAFT,
+                            chooseCount: craftCount
+                        }
+                    };
+                    break;
+
+                default:
+                    ui.notifications.error("Invalid entry type");
+                    return;
+            }
+
+            // Add to path skills
+            const pathSkills = duplicate(this.item.system.pathSkills || []);
+            pathSkills.push(skillEntry);
+
+            await this.item.update({ "system.pathSkills": pathSkills });
             this.render(true);
+            ui.notifications.info(`Added "${skillEntry.name}" to path skills`);
         }
-    }
 
-    /**
-    * Handle dropping data on the item sheet
-    * @param {Event} event - Drop event
-    */
-    async _onDrop(event) {
-        // console.log("Drop event triggered on path sheet");
-        event.preventDefault();
+        /**
+        * Modified path skill application - replace the existing applyPathSkillModifications function
+        */
+        async function applyPathSkillModifications(actor, path) {
+            if (!path.system.pathSkills || path.system.pathSkills.length === 0) {
+                return;
+            }
 
-        // Get dropped data
-        let dragData;
-        try {
-            // Use originalEvent as a fallback if available
-            const dataTransfer = event.dataTransfer || (event.originalEvent && event.originalEvent.dataTransfer);
+            let skillsModified = 0;
+            let customSkillsCreated = 0;
+            let choicesMade = 0;
 
-            if (!dataTransfer) {
-                console.error("No dataTransfer found in the event");
+            for (const pathSkill of path.system.pathSkills) {
+                const entryType = pathSkill.system.entryType;
+
+                switch (entryType) {
+                    case PATH_SKILL_TYPES.SPECIFIC_SKILL:
+                        // Improve existing core skill
+                        const coreSkill = actor.items.find(i =>
+                            i.type === 'skill' && i.name === pathSkill.name
+                        );
+
+                        if (coreSkill) {
+                            const currentRankValue = getRankValue(coreSkill.system.rank);
+                            const pathRankValue = getRankValue(pathSkill.system.rank);
+
+                            if (pathRankValue > currentRankValue) {
+                                await coreSkill.update({ "system.rank": pathSkill.system.rank });
+                                skillsModified++;
+                            }
+                        }
+                        break;
+
+                    case PATH_SKILL_TYPES.SPECIFIC_CUSTOM:
+                        // Create specific custom skill
+                        const skillType = pathSkill.system.skillType;
+                        const subtype = pathSkill.system.subtype;
+
+                        await createCustomSkill(actor, skillType, subtype, pathSkill.system.rank);
+                        customSkillsCreated++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_CATEGORY:
+                        // Show dialog to choose from category
+                        await showChooseRegularSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.chooseCategory,
+                            pathSkill.system.rank
+                        );
+                        choicesMade++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_LORE:
+                        // Show dialog to create lore skills
+                        await showChooseLoreSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.rank
+                        );
+                        choicesMade++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_PERFORM:
+                        // Show dialog to create perform skills
+                        await showChoosePerformSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.rank
+                        );
+                        choicesMade++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_CRAFT:
+                        // Show dialog to create craft skills
+                        await showChooseCraftSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.rank
+                        );
+                        choicesMade++;
+                        break;
+                }
+            }
+
+            // Show results
+            let message = [];
+            if (skillsModified > 0) message.push(`${skillsModified} skills improved`);
+            if (customSkillsCreated > 0) message.push(`${customSkillsCreated} custom skills added`);
+            if (choicesMade > 0) message.push(`${choicesMade} skill choices made`);
+
+            if (message.length > 0) {
+                ui.notifications.info(`${path.name} applied to ${actor.name}: ${message.join(', ')}`);
+            }
+        }
+
+        /**
+        * Show dialog for browsing and adding existing skills to paths
+        * This is for adding core skills to paths via browsing
+        */
+        _showPathSkillBrowserDialog() {
+            // Open skill compendium for browsing
+            openCompendiumBrowser("skill");
+
+            // Listen for skill selection
+            const self = this;
+            const handler = function (e) {
+                const skill = e.detail.item;
+
+                if (skill && skill.type === "skill") {
+                    // Add as specific skill entry
+                    const pathSkills = duplicate(self.item.system.pathSkills || []);
+
+                    // Check if already exists
+                    const exists = pathSkills.some(s => s.name === skill.name);
+
+                    if (!exists) {
+                        const skillEntry = {
+                            _id: randomID(16),
+                            name: skill.name,
+                            system: {
+                                rank: "learned",
+                                category: skill.system.category,
+                                attribute: skill.system.attribute,
+                                entryType: PATH_SKILL_TYPES.SPECIFIC_SKILL
+                            }
+                        };
+
+                        pathSkills.push(skillEntry);
+                        self.item.update({ "system.pathSkills": pathSkills });
+                        ui.notifications.info(`Added ${skill.name} to path skills`);
+                        self.render(true);
+                    } else {
+                        ui.notifications.warn(`${skill.name} is already in this path`);
+                    }
+                }
+
+                document.removeEventListener("compendiumSelection", handler);
+            };
+
+            document.addEventListener("compendiumSelection", handler);
+        }
+
+        /**
+        * Handle ability deletion (both path and species abilities)
+        * @param {Event} event - Delete event
+        */
+        async _onAbilityDelete(event) {
+            event.preventDefault();
+
+            const abilityItem = event.currentTarget.closest(".ability-item");
+            if (!abilityItem) return;
+
+            const abilityId = abilityItem.dataset.abilityId;
+            if (!abilityId) return;
+
+            // Determine whether we're dealing with path or species
+            let updateData = {};
+
+            if (this.item.type === 'path') {
+                const abilities = duplicate(this.item.system.abilities || {});
+                if (abilities[abilityId]) {
+                    delete abilities[abilityId];
+                    updateData = { "system.abilities": abilities };
+                }
+            }
+            else if (this.item.type === 'species') {
+                const abilities = duplicate(this.item.system.speciesAbilities || {});
+                if (abilities[abilityId]) {
+                    delete abilities[abilityId];
+                    updateData = { "system.speciesAbilities": abilities };
+                }
+            }
+
+            // Only update if we found something to delete
+            if (Object.keys(updateData).length > 0) {
+                await this.item.update(updateData);
+                this.render(true);
+            }
+        }
+
+        /**
+        * Handle dropping data on the item sheet
+        * @param {Event} event - Drop event
+        */
+        async _onDrop(event) {
+            // console.log("Drop event triggered on path sheet");
+            event.preventDefault();
+
+            // Get dropped data
+            let dragData;
+            try {
+                // Use originalEvent as a fallback if available
+                const dataTransfer = event.dataTransfer || (event.originalEvent && event.originalEvent.dataTransfer);
+
+                if (!dataTransfer) {
+                    console.error("No dataTransfer found in the event");
+                    return false;
+                }
+
+                const data = dataTransfer.getData('text/plain');
+                if (!data) {
+                    console.error("No data found in dataTransfer");
+                    return false;
+                }
+
+                dragData = JSON.parse(data);
+                // console.log("Dropped data:", dragData);
+            } catch (err) {
+                console.error("Error parsing drop data:", err);
                 return false;
             }
 
-            const data = dataTransfer.getData('text/plain');
-            if (!data) {
-                console.error("No data found in dataTransfer");
-                return false;
+            // Only process if this is a path sheet
+            if (this.item.type !== 'path') {
+                // console.log("Not a path sheet");
+                return super._onDrop(event);
             }
 
-            dragData = JSON.parse(data);
-            // console.log("Dropped data:", dragData);
-        } catch (err) {
-            console.error("Error parsing drop data:", err);
-            return false;
-        }
+            // Handle dropping a skill
+            if (dragData.type === "Item") {
+                // console.log("Item drop detected");
+                let skillDoc;
 
-        // Only process if this is a path sheet
-        if (this.item.type !== 'path') {
-            // console.log("Not a path sheet");
+                // Try to load the item from various sources
+                try {
+                    // From UUID
+                    if (dragData.uuid) {
+                        // console.log("Loading from UUID:", dragData.uuid);
+                        skillDoc = await fromUuid(dragData.uuid);
+                    }
+                    // From compendium
+                    else if (dragData.pack && dragData.id) {
+                        // console.log("Loading from compendium:", dragData.pack, dragData.id);
+                        const pack = game.packs.get(dragData.pack);
+                        if (pack) {
+                            skillDoc = await pack.getDocument(dragData.id);
+                        }
+                    }
+                    // Directly from data
+                    else if (dragData.data) {
+                        // console.log("Using raw data");
+                        skillDoc = dragData.data;
+                    }
+                } catch (err) {
+                    console.error("Error loading item:", err);
+                    return false;
+                }
+
+                // Check if we got a skill
+                if (!skillDoc) {
+                    // console.log("No skill document found");
+                    return false;
+                }
+
+                // Check if it's a skill type
+                const isSkill = skillDoc.type === "skill" ||
+                    (skillDoc.data && skillDoc.data.type === "skill") ||
+                    (skillDoc.system && skillDoc.system.rank);
+
+                if (!isSkill) {
+                    ui.notifications.warn("Only skills can be added to paths.");
+                    return false;
+                }
+
+                // Get skill data
+                let skillData;
+                if (skillDoc.toObject) {
+                    skillData = skillDoc.toObject();
+                } else {
+                    skillData = duplicate(skillDoc);
+                }
+
+                // console.log("Skill data:", skillData);
+
+                // Initialize path skills array if needed
+                let pathSkills = duplicate(this.item.system.pathSkills || []);
+                if (!Array.isArray(pathSkills)) {
+                    pathSkills = [];
+                }
+
+                // Check for duplicate
+                const isDuplicate = pathSkills.some(s => s.name === skillData.name);
+                if (isDuplicate) {
+                    ui.notifications.warn(`${skillData.name} is already added to this path.`);
+                    return false;
+                }
+
+                // Add unique ID if needed
+                if (!skillData._id) {
+                    skillData._id = randomID(16);
+                }
+
+                // Add to path skills and update
+                pathSkills.push(skillData);
+                await this.item.update({
+                    "system.pathSkills": pathSkills
+                });
+
+                // Show success and refresh
+                ui.notifications.info(`Added ${skillData.name} to ${this.item.name}`);
+                this.render(true);
+                return true;
+            }
+
+            // Pass to parent for other drop types
             return super._onDrop(event);
         }
 
-        // Handle dropping a skill
-        if (dragData.type === "Item") {
-            // console.log("Item drop detected");
-            let skillDoc;
+        // Quick-add buttons for common path skill entries
+        document.addEventListener('quickAddPathSkill', async (e) => {
+            if (this.item.type !== 'path') return;
 
-            // Try to load the item from various sources
-            try {
-                // From UUID
-                if (dragData.uuid) {
-                    // console.log("Loading from UUID:", dragData.uuid);
-                    skillDoc = await fromUuid(dragData.uuid);
-                }
-                // From compendium
-                else if (dragData.pack && dragData.id) {
-                    // console.log("Loading from compendium:", dragData.pack, dragData.id);
-                    const pack = game.packs.get(dragData.pack);
-                    if (pack) {
-                        skillDoc = await pack.getDocument(dragData.id);
-                    }
-                }
-                // Directly from data
-                else if (dragData.data) {
-                    // console.log("Using raw data");
-                    skillDoc = dragData.data;
-                }
-            } catch (err) {
-                console.error("Error loading item:", err);
-                return false;
+            const type = e.detail.type;
+            let skillEntry;
+
+            switch (type) {
+                case 'choose-combat-1':
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: "Choose 1 Combat Skill",
+                        system: {
+                            rank: "learned",
+                            category: "Combat",
+                            attribute: "varies",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_CATEGORY,
+                            chooseCount: 1,
+                            chooseCategory: "Combat"
+                        }
+                    };
+                    break;
+
+                case 'choose-social-1':
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: "Choose 1 Social Skill",
+                        system: {
+                            rank: "learned",
+                            category: "Social",
+                            attribute: "presence",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_CATEGORY,
+                            chooseCount: 1,
+                            chooseCategory: "Social"
+                        }
+                    };
+                    break;
+
+                case 'choose-lore-1':
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: "Choose 1 Lore Skill",
+                        system: {
+                            rank: "learned",
+                            category: "Knowledge",
+                            attribute: "mind",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_LORE,
+                            chooseCount: 1
+                        }
+                    };
+                    break;
+
+                case 'choose-craft-1':
+                    skillEntry = {
+                        _id: randomID(16),
+                        name: "Choose 1 Custom Craft Skill",
+                        system: {
+                            rank: "learned",
+                            category: "Craft",
+                            attribute: "varies",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_CRAFT,
+                            chooseCount: 1
+                        }
+                    };
+                    break;
             }
 
-            // Check if we got a skill
-            if (!skillDoc) {
-                // console.log("No skill document found");
-                return false;
+            if (skillEntry) {
+                const pathSkills = duplicate(this.item.system.pathSkills || []);
+                pathSkills.push(skillEntry);
+
+                await this.item.update({ "system.pathSkills": pathSkills });
+                this.render(true);
+                ui.notifications.info(`Added "${skillEntry.name}" to path skills`);
             }
-
-            // Check if it's a skill type
-            const isSkill = skillDoc.type === "skill" ||
-                (skillDoc.data && skillDoc.data.type === "skill") ||
-                (skillDoc.system && skillDoc.system.rank);
-
-            if (!isSkill) {
-                ui.notifications.warn("Only skills can be added to paths.");
-                return false;
-            }
-
-            // Get skill data
-            let skillData;
-            if (skillDoc.toObject) {
-                skillData = skillDoc.toObject();
-            } else {
-                skillData = duplicate(skillDoc);
-            }
-
-            // console.log("Skill data:", skillData);
-
-            // Initialize path skills array if needed
-            let pathSkills = duplicate(this.item.system.pathSkills || []);
-            if (!Array.isArray(pathSkills)) {
-                pathSkills = [];
-            }
-
-            // Check for duplicate
-            const isDuplicate = pathSkills.some(s => s.name === skillData.name);
-            if (isDuplicate) {
-                ui.notifications.warn(`${skillData.name} is already added to this path.`);
-                return false;
-            }
-
-            // Add unique ID if needed
-            if (!skillData._id) {
-                skillData._id = randomID(16);
-            }
-
-            // Add to path skills and update
-            pathSkills.push(skillData);
-            await this.item.update({
-                "system.pathSkills": pathSkills
-            });
-
-            // Show success and refresh
-            ui.notifications.info(`Added ${skillData.name} to ${this.item.name}`);
-            this.render(true);
-            return true;
-        }
-
-        // Pass to parent for other drop types
-        return super._onDrop(event);
+        }.bind(this));
     }
 }
 
@@ -5283,6 +5954,28 @@ function handleAttackBonusOptions(html) {
     });
 }
 
+/**
+* Chat message rendering hook - add interactive elements to chat
+*/
+Hooks.on("renderChatMessage", (message, html, data) => {
+    // Handle weapon attack bonus options
+    if (html.find('.bonus-options').length) {
+        handleBonusOptions(html);
+    }
+
+    // Handle spell manifestation bonus options
+    if (html.find('.spell-bonus').length) {
+        handleSpellBonusOptions(html);
+    }
+
+    // Handle spell attack bonus options
+    if (html.find('.attack-bonus-options').length) {
+        handleAttackBonusOptions(html);
+    }
+});
+
+
+
 // ====================================================================
 // 5. SYSTEM HOOKS & INITIALIZATION
 // ====================================================================
@@ -5480,53 +6173,16 @@ Hooks.once('init', async function () {
 * Item creation hook - handle path and species application
 */
 Hooks.on("createItem", async (item, options, userId) => {
-    // Handle Path addition to characters
+    // Handle Path addition to characters - use new skill modification system
     if (item.type === 'path' && item.parent && item.parent.type === 'character' && game.user.id === userId) {
         const actor = item.parent;
         const path = item;
 
-        if (path.system.pathSkills && path.system.pathSkills.length > 0) {
-            const skillsToAdd = [];
-            let skillsUpgraded = 0;
+        // Initialize default skills if character doesn't have them
+        await initializeDefaultSkills(actor);
 
-            for (const pathSkill of path.system.pathSkills) {
-                const existingSkill = actor.items.find(i =>
-                    i.type === 'skill' && i.name === pathSkill.name
-                );
-
-                if (!existingSkill) {
-                    const newSkill = duplicate(pathSkill);
-                    delete newSkill._id;
-                    skillsToAdd.push(newSkill);
-                } else {
-                    const pathRankValue = getRankValue(pathSkill.system.rank);
-                    const existingRankValue = getRankValue(existingSkill.system.rank);
-
-                    if (pathRankValue > existingRankValue) {
-                        await existingSkill.update({
-                            "system.rank": pathSkill.system.rank
-                        });
-                        skillsUpgraded++;
-                    }
-                }
-            }
-
-            if (skillsToAdd.length > 0) {
-                await actor.createEmbeddedDocuments("Item", skillsToAdd);
-            }
-
-            let message = "";
-            if (skillsToAdd.length > 0) {
-                message += `${skillsToAdd.length} skills added. `;
-            }
-            if (skillsUpgraded > 0) {
-                message += `${skillsUpgraded} skills upgraded.`;
-            }
-
-            if (message) {
-                ui.notifications.info(`Skills from ${path.name} applied to ${actor.name}: ${message}`);
-            }
-        }
+        // Apply path skill modifications instead of adding skills
+        await applyPathSkillModifications(actor, path);
     }
 
     // Handle Species addition to characters
@@ -5546,6 +6202,8 @@ Hooks.on("createItem", async (item, options, userId) => {
         };
 
         await actor.update(deletions);
+
+        await initializeDefaultSkills(actor);
 
         // Apply new species data
         await actor.update({
@@ -5605,28 +6263,28 @@ Hooks.on("createItem", async (item, options, userId) => {
  * System ready hook - final setup after all systems loaded
  */
 Hooks.once('ready', async function () {
-    // Add GM token fix button
     if (game.user.isGM) {
-        let fixButton = $(`<button id="fade-fix-tokens">Fix Token Resources</button>`);
-        fixButton.click(async function () {
-            ui.notifications.info("Updating all Fade token resource bars...");
+        let initButton = $(`<button id="fade-init-skills">Initialize All Character Skills</button>`);
+        initButton.click(async function () {
+            ui.notifications.info("Initializing skills for all characters...");
 
-            const tokens = canvas.tokens.placeables.filter(t =>
-                t.actor && t.actor.type === "character" && t.document.actorLink
-            );
-
+            const characters = game.actors.filter(a => a.type === "character");
             let count = 0;
-            for (let token of tokens) {
-                const actor = token.actor;
 
-                await token.document.update({
-                    "actorData.system.hp.max": actor.system.hp.max,
-                    "actorData.system.sanity.max": actor.system.sanity.max
-                });
+            for (let character of characters) {
+                await initializeDefaultSkills(character);
                 count++;
             }
 
-            ui.notifications.info(`Updated ${count} tokens on the current scene.`);
+            ui.notifications.info(`Initialized skills for ${count} characters.`);
+        });
+
+        $('#controls').append(initButton);
+        initButton.css({
+            "position": "fixed",
+            "bottom": "60px", // Above the existing fix button
+            "left": "10px",
+            "z-index": "1000"
         });
 
         $('#controls').append(fixButton);
@@ -5639,30 +6297,643 @@ Hooks.once('ready', async function () {
     }
 });
 
+// --------------------------------------------------------------------
+// CHARACTER INITIALIZATION FUNCTIONS
+// --------------------------------------------------------------------
+
 /**
-* Chat message rendering hook - add interactive elements to chat
+* Initialize default skills for a new character
+* Call this when creating a new character or when migrating existing characters
 */
-Hooks.on("renderChatMessage", (message, html, data) => {
-    // Handle weapon attack bonus options
-    if (html.find('.bonus-options').length) {
-        handleBonusOptions(html);
+async function initializeDefaultSkills(actor) {
+    if (actor.type !== 'character') return;
+
+    const skillsToCreate = [];
+
+    for (const skill of DEFAULT_SKILLS) {
+        // Check if character already has this skill
+        const existingSkill = actor.items.find(i =>
+            i.type === 'skill' && i.name === skill.name
+        );
+
+        if (!existingSkill) {
+            skillsToCreate.push({
+                name: skill.name,
+                type: "skill",
+                system: {
+                    rank: skill.rank,
+                    category: skill.category,
+                    attribute: skill.attribute,
+                    description: "",
+                    miscBonus: 0,
+                    isCore: true // Flag to mark as core skill
+                }
+            });
+        }
     }
 
-    // Handle spell manifestation bonus options
-    if (html.find('.spell-bonus').length) {
-        handleSpellBonusOptions(html);
+    if (skillsToCreate.length > 0) {
+        await actor.createEmbeddedDocuments("Item", skillsToCreate);
+        ui.notifications.info(`Added ${skillsToCreate.length} missing default skills to ${actor.name}.`);
+    }
+}
+
+/**
+ * Create a custom skill (Custom Craft, Lore, or Perform)
+ */
+async function createCustomSkill(actor, skillType, subtype, rank = "untrained") {
+    if (!subtype || subtype.trim() === "") {
+        ui.notifications.error("Subtype is required for custom skills.");
+        return null;
     }
 
-    // Handle spell attack bonus options
-    if (html.find('.attack-bonus-options').length) {
-        handleAttackBonusOptions(html);
+    let skillName, category, attribute;
+
+    switch (skillType.toLowerCase()) {
+        case "craft":
+            skillName = subtype.trim(); // Custom crafts are just the name (e.g., "Soapmaking")
+            category = "Craft";
+            attribute = "mind"; // Default to mind, but can be changed
+            break;
+
+        case "lore":
+            skillName = `Lore (${subtype.trim()})`;
+            category = "Knowledge";
+            attribute = "mind";
+            break;
+
+        case "perform":
+            skillName = `Perform (${subtype.trim()})`;
+            category = "Physical";
+            attribute = "finesse_presence"; // Combined attribute
+            break;
+
+        default:
+            ui.notifications.error("Invalid custom skill type. Must be Craft, Lore, or Perform.");
+            return null;
     }
-});
 
+    // Check if skill already exists
+    const existingSkill = actor.items.find(i =>
+        i.type === 'skill' && i.name === skillName
+    );
 
+    if (existingSkill) {
+        ui.notifications.warn(`${skillName} already exists.`);
+        return existingSkill;
+    }
 
+    const skillData = {
+        name: skillName,
+        type: "skill",
+        system: {
+            rank: rank,
+            category: category,
+            attribute: attribute,
+            description: "",
+            miscBonus: 0,
+            isCore: false, // Mark as custom skill
+            skillType: skillType.toLowerCase(),
+            subtype: subtype.trim()
+        }
+    };
 
+    const createdSkills = await actor.createEmbeddedDocuments("Item", [skillData]);
+    ui.notifications.info(`Created custom skill: ${skillName}`);
+    return createdSkills[0];
+}
 
+/**
+ * Show dialog to create custom skill
+ */
+async function showCustomSkillDialog(actor) {
+    return new Promise((resolve) => {
+        const dialog = new Dialog({
+            title: "Create Custom Skill",
+            content: `
+                <form>
+                    <div class="form-group">
+                        <label>Skill Type:</label>
+                        <select id="skill-type" name="skillType">
+                            <option value="craft">Custom Craft</option>
+                            <option value="lore">Lore</option>
+                            <option value="perform">Perform</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label id="subtype-label">Skill Name:</label>
+                        <input type="text" id="skill-subtype" name="subtype" placeholder="e.g., Soapmaking" />
+                        <p class="hint" id="skill-hint">Enter the name of your custom craft skill</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Starting Rank:</label>
+                        <select id="skill-rank" name="rank">
+                            <option value="untrained">Untrained</option>
+                            <option value="learned" selected>Learned</option>
+                            <option value="practiced">Practiced</option>
+                            <option value="adept">Adept</option>
+                            <option value="experienced">Experienced</option>
+                            <option value="expert">Expert</option>
+                            <option value="mastered">Mastered</option>
+                        </select>
+                    </div>
+                </form>
+                <script>
+                    document.getElementById('skill-type').addEventListener('change', function() {
+                        const type = this.value;
+                        const label = document.getElementById('subtype-label');
+                        const input = document.getElementById('skill-subtype');
+                        const hint = document.getElementById('skill-hint');
+                        
+                        if (type === 'craft') {
+                            label.textContent = 'Skill Name:';
+                            input.placeholder = 'e.g., Soapmaking, Sculpting, Masonry';
+                            hint.textContent = 'Enter the name of your custom craft skill';
+                        } else if (type === 'lore') {
+                            label.textContent = 'Lore Subject:';
+                            input.placeholder = 'e.g., Anthropology, History, Geography';
+                            hint.textContent = 'Enter the subject area for this Lore skill';
+                        } else if (type === 'perform') {
+                            label.textContent = 'Performance Type:';
+                            input.placeholder = 'e.g., Singing, Dancing, Comedy';
+                            hint.textContent = 'Enter the type of performance for this skill';
+                        }
+                    });
+                </script>
+            `,
+            buttons: {
+                create: {
+                    icon: '<i class="fas fa-plus"></i>',
+                    label: "Create Skill",
+                    callback: async html => {
+                        const skillType = html.find('#skill-type').val();
+                        const subtype = html.find('#skill-subtype').val();
+                        const rank = html.find('#skill-rank').val();
 
+                        const skill = await createCustomSkill(actor, skillType, subtype, rank);
+                        resolve(skill);
+                    }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: "Cancel",
+                    callback: () => resolve(null)
+                }
+            },
+            default: "create",
+            close: () => resolve(null)
+        });
+        dialog.render(true);
+    });
+}
 
+// --------------------------------------------------------------------
+// PATH SKILL MODIFICATION SYSTEM
+// --------------------------------------------------------------------
 
+/**
+* Apply skill modifications from a path to a character
+* Instead of adding skills, this modifies existing skill ranks
+*/
+async function applyPathSkillModifications(actor, path) {
+    if (!path.system.pathSkills || path.system.pathSkills.length === 0) {
+        return;
+    }
+
+    let skillsModified = 0;
+    let customSkillsCreated = 0;
+
+    for (const pathSkill of path.system.pathSkills) {
+        // Check if this is a "Choose X skills" type
+        if (pathSkill.name.toLowerCase().includes("choose")) {
+            await handleChooseSkillsOption(actor, pathSkill);
+            continue;
+        }
+
+        // Handle specific skill modifications
+        const isCustomType = ["lore", "perform"].some(type =>
+            pathSkill.name.toLowerCase().includes(type.toLowerCase())
+        );
+
+        const isCraftSkill = pathSkill.system?.skillType === "craft" ||
+            (pathSkill.system?.category === "Craft" && !DEFAULT_SKILLS.find(s => s.name === pathSkill.name));
+
+        if (isCustomType || isCraftSkill) {
+            // Create the custom skill and set it to the path's rank
+            let skillType, subtype;
+
+            if (pathSkill.name.includes("Lore (")) {
+                skillType = "lore";
+                subtype = pathSkill.name.match(/Lore \((.+?)\)/)[1];
+            } else if (pathSkill.name.includes("Perform (")) {
+                skillType = "perform";
+                subtype = pathSkill.name.match(/Perform \((.+?)\)/)[1];
+            } else {
+                skillType = "craft";
+                subtype = pathSkill.name;
+            }
+
+            await createCustomSkill(actor, skillType, subtype, pathSkill.system.rank);
+            customSkillsCreated++;
+        } else {
+            // Modify existing skill rank
+            const existingSkill = actor.items.find(i =>
+                i.type === 'skill' && i.name === pathSkill.name
+            );
+
+            if (existingSkill) {
+                const currentRankValue = getRankValue(existingSkill.system.rank);
+                const pathRankValue = getRankValue(pathSkill.system.rank);
+
+                if (pathRankValue > currentRankValue) {
+                    await existingSkill.update({
+                        "system.rank": pathSkill.system.rank
+                    });
+                    skillsModified++;
+                }
+            }
+        }
+    }
+
+    // Show results
+    let message = [];
+    if (skillsModified > 0) message.push(`${skillsModified} skills improved`);
+    if (customSkillsCreated > 0) message.push(`${customSkillsCreated} custom skills added`);
+
+    if (message.length > 0) {
+        ui.notifications.info(`${path.name} applied to ${actor.name}: ${message.join(', ')}`);
+    }
+}
+
+/**
+* Handle "Choose X skills" options from paths
+*/
+async function handleChooseSkillsOption(actor, pathSkill) {
+    // Parse the instruction (e.g., "Choose 2 Combat Skills", "Choose 3 Lore Skills")
+    const instruction = pathSkill.name;
+    const match = instruction.match(/choose (\d+) (.+?) skills?/i);
+
+    if (!match) {
+        ui.notifications.warn(`Could not parse skill choice instruction: ${instruction}`);
+        return;
+    }
+
+    const numToChoose = parseInt(match[1]);
+    const skillCategory = match[2].toLowerCase();
+
+    if (skillCategory.includes("lore")) {
+        // Special handling for Lore skills
+        await showChooseLoreSkillsDialog(actor, numToChoose, pathSkill.system.rank);
+    } else if (skillCategory.includes("perform")) {
+        // Special handling for Perform skills
+        await showChoosePerformSkillsDialog(actor, numToChoose, pathSkill.system.rank);
+    } else if (skillCategory.includes("craft")) {
+        // Special handling for Craft skills
+        await showChooseCraftSkillsDialog(actor, numToChoose, pathSkill.system.rank);
+    } else {
+        // Regular skill category choice
+        await showChooseRegularSkillsDialog(actor, numToChoose, skillCategory, pathSkill.system.rank);
+    }
+}
+
+/**
+* Show dialog for choosing regular skills from a category
+*/
+async function showChooseRegularSkillsDialog(actor, numToChoose, category, rank) {
+    const categorySkills = DEFAULT_SKILLS.filter(skill =>
+        skill.category.toLowerCase() === category
+    );
+
+    if (categorySkills.length === 0) {
+        ui.notifications.warn(`No skills found for category: ${category}`);
+        return;
+    }
+
+    return new Promise((resolve) => {
+        const skillOptions = categorySkills.map(skill =>
+            `<label><input type="checkbox" value="${skill.name}"> ${skill.name}</label>`
+        ).join('<br>');
+
+        const dialog = new Dialog({
+            title: `Choose ${numToChoose} ${category} Skills`,
+            content: `
+                <form>
+                    <p>Select ${numToChoose} skills to improve to ${rank} rank:</p>
+                    <div class="skill-choices">
+                        ${skillOptions}
+                    </div>
+                </form>
+            `,
+            buttons: {
+                apply: {
+                    icon: '<i class="fas fa-check"></i>',
+                    label: "Apply",
+                    callback: async html => {
+                        const selected = [];
+                        html.find('input[type="checkbox"]:checked').each(function () {
+                            selected.push(this.value);
+                        });
+
+                        if (selected.length !== numToChoose) {
+                            ui.notifications.warn(`You must select exactly ${numToChoose} skills.`);
+                            return false;
+                        }
+
+                        // Apply the rank improvements
+                        for (const skillName of selected) {
+                            const skill = actor.items.find(i =>
+                                i.type === 'skill' && i.name === skillName
+                            );
+
+                            if (skill) {
+                                const currentRankValue = getRankValue(skill.system.rank);
+                                const newRankValue = getRankValue(rank);
+
+                                if (newRankValue > currentRankValue) {
+                                    await skill.update({ "system.rank": rank });
+                                }
+                            }
+                        }
+
+                        ui.notifications.info(`Applied ${rank} rank to ${selected.length} ${category} skills.`);
+                        resolve(true);
+                    }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: "Cancel",
+                    callback: () => resolve(false)
+                }
+            },
+            default: "apply"
+        });
+        dialog.render(true);
+    });
+}
+
+/**
+* Show dialog for choosing Lore skills to create
+*/
+async function showChooseLoreSkillsDialog(actor, numToChoose, rank) {
+    return new Promise((resolve) => {
+        let loreForms = '';
+        for (let i = 0; i < numToChoose; i++) {
+            loreForms += `
+                <div class="form-group">
+                    <label>Lore Subject ${i + 1}:</label>
+                    <input type="text" name="lore${i}" placeholder="e.g., Anthropology, History" />
+                </div>
+            `;
+        }
+
+        const dialog = new Dialog({
+            title: `Choose ${numToChoose} Lore Skills`,
+            content: `
+                <form>
+                    <p>Enter the subjects for ${numToChoose} Lore skills (rank: ${rank}):</p>
+                    ${loreForms}
+                </form>
+            `,
+            buttons: {
+                create: {
+                    icon: '<i class="fas fa-plus"></i>',
+                    label: "Create Skills",
+                    callback: async html => {
+                        const loreSubjects = [];
+                        for (let i = 0; i < numToChoose; i++) {
+                            const subject = html.find(`input[name="lore${i}"]`).val().trim();
+                            if (subject) {
+                                loreSubjects.push(subject);
+                            }
+                        }
+
+                        if (loreSubjects.length !== numToChoose) {
+                            ui.notifications.warn(`You must enter ${numToChoose} lore subjects.`);
+                            return false;
+                        }
+
+                        // Create the lore skills
+                        for (const subject of loreSubjects) {
+                            await createCustomSkill(actor, "lore", subject, rank);
+                        }
+
+                        resolve(true);
+                    }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: "Cancel",
+                    callback: () => resolve(false)
+                }
+            },
+            default: "create"
+        });
+        dialog.render(true);
+    });
+}
+
+/**
+* Show dialog for choosing Perform skills to create
+*/
+async function showChoosePerformSkillsDialog(actor, numToChoose, rank) {
+    return new Promise((resolve) => {
+        let performForms = '';
+        for (let i = 0; i < numToChoose; i++) {
+            performForms += `
+                <div class="form-group">
+                    <label>Performance Type ${i + 1}:</label>
+                    <input type="text" name="perform${i}" placeholder="e.g., Singing, Dancing" />
+                </div>
+            `;
+        }
+
+        const dialog = new Dialog({
+            title: `Choose ${numToChoose} Perform Skills`,
+            content: `
+                <form>
+                    <p>Enter the types for ${numToChoose} Perform skills (rank: ${rank}):</p>
+                    ${performForms}
+                </form>
+            `,
+            buttons: {
+                create: {
+                    icon: '<i class="fas fa-plus"></i>',
+                    label: "Create Skills",
+                    callback: async html => {
+                        const performTypes = [];
+                        for (let i = 0; i < numToChoose; i++) {
+                            const type = html.find(`input[name="perform${i}"]`).val().trim();
+                            if (type) {
+                                performTypes.push(type);
+                            }
+                        }
+
+                        if (performTypes.length !== numToChoose) {
+                            ui.notifications.warn(`You must enter ${numToChoose} performance types.`);
+                            return false;
+                        }
+
+                        // Create the perform skills
+                        for (const type of performTypes) {
+                            await createCustomSkill(actor, "perform", type, rank);
+                        }
+
+                        resolve(true);
+                    }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: "Cancel",
+                    callback: () => resolve(false)
+                }
+            },
+            default: "create"
+        });
+        dialog.render(true);
+    });
+}
+
+/**
+* Show dialog for choosing Craft skills to create
+*/
+async function showChooseCraftSkillsDialog(actor, numToChoose, rank) {
+    return new Promise((resolve) => {
+        let craftForms = '';
+        for (let i = 0; i < numToChoose; i++) {
+            craftForms += `
+                <div class="form-group">
+                    <label>Craft Skill ${i + 1}:</label>
+                    <input type="text" name="craft${i}" placeholder="e.g., Soapmaking, Sculpting" />
+                </div>
+            `;
+        }
+
+        const dialog = new Dialog({
+            title: `Choose ${numToChoose} Craft Skills`,
+            content: `
+                <form>
+                    <p>Enter the names for ${numToChoose} custom Craft skills (rank: ${rank}):</p>
+                    ${craftForms}
+                </form>
+            `,
+            buttons: {
+                create: {
+                    icon: '<i class="fas fa-plus"></i>',
+                    label: "Create Skills",
+                    callback: async html => {
+                        const craftNames = [];
+                        for (let i = 0; i < numToChoose; i++) {
+                            const name = html.find(`input[name="craft${i}"]`).val().trim();
+                            if (name) {
+                                craftNames.push(name);
+                            }
+                        }
+
+                        if (craftNames.length !== numToChoose) {
+                            ui.notifications.warn(`You must enter ${numToChoose} craft skill names.`);
+                            return false;
+                        }
+
+                        // Create the craft skills
+                        for (const name of craftNames) {
+                            await createCustomSkill(actor, "craft", name, rank);
+                        }
+
+                        resolve(true);
+                    }
+                },
+                cancel: {
+                    icon: '<i class="fas fa-times"></i>',
+                    label: "Cancel",
+                    callback: () => resolve(false)
+                }
+            },
+            default: "create"
+        });
+        dialog.render(true);
+    });
+}
+
+// --------------------------------------------------------------------
+// PATHS AND SKILLS CONFIGURATION
+// --------------------------------------------------------------------
+
+/**
+ * Default skills that every character should have (from The Fade Abyss)
+ */
+const DEFAULT_SKILLS = [
+    // Combat Skills
+    { name: "Axe", category: "Combat", attribute: "physique", rank: "untrained" },
+    { name: "Bow", category: "Combat", attribute: "finesse", rank: "untrained" },
+    { name: "Cudgel", category: "Combat", attribute: "physique", rank: "untrained" },
+    { name: "Firearm", category: "Combat", attribute: "finesse", rank: "untrained" },
+    { name: "Polearm", category: "Combat", attribute: "physique", rank: "untrained" },
+    { name: "Sword", category: "Combat", attribute: "physique", rank: "untrained" },
+    { name: "Thrown", category: "Combat", attribute: "finesse", rank: "untrained" },
+    { name: "Unarmed", category: "Combat", attribute: "physique", rank: "untrained" }, // Default to PHY, can be changed
+
+    // Craft Skills
+    { name: "Blacksmithing", category: "Craft", attribute: "physique", rank: "untrained" },
+    { name: "Carpentry", category: "Craft", attribute: "finesse", rank: "untrained" },
+    { name: "Chemistry", category: "Craft", attribute: "mind", rank: "untrained" },
+    { name: "Cooking", category: "Craft", attribute: "mind", rank: "untrained" },
+    { name: "Herbalism", category: "Craft", attribute: "mind", rank: "untrained" },
+    { name: "Toxicology", category: "Craft", attribute: "mind", rank: "untrained" },
+
+    // Knowledge Skills
+    { name: "Appraise", category: "Knowledge", attribute: "mind", rank: "untrained" },
+    { name: "Gambling", category: "Knowledge", attribute: "mind", rank: "untrained" },
+    { name: "Insight", category: "Knowledge", attribute: "mind", rank: "untrained" },
+    { name: "Linguistics", category: "Knowledge", attribute: "mind", rank: "untrained" },
+    { name: "Medicine", category: "Knowledge", attribute: "mind", rank: "untrained" },
+    { name: "Research", category: "Knowledge", attribute: "mind", rank: "untrained" },
+    { name: "Symbology", category: "Knowledge", attribute: "mind", rank: "untrained" },
+    { name: "Tracking", category: "Knowledge", attribute: "mind", rank: "untrained" },
+
+    // Magical Skills
+    { name: "Arcana", category: "Magical", attribute: "mind", rank: "untrained" },
+    { name: "Spellcasting", category: "Magical", attribute: "soul", rank: "untrained" },
+    { name: "Ritual", category: "Magical", attribute: "mind_soul", rank: "untrained" }, // Combined attribute
+
+    // Physical Skills
+    { name: "Acrobatics", category: "Physical", attribute: "finesse", rank: "untrained" },
+    { name: "Athletics", category: "Physical", attribute: "physique", rank: "untrained" },
+    { name: "Contortion", category: "Physical", attribute: "physique_finesse", rank: "untrained" }, // Combined attribute
+    { name: "Drive", category: "Physical", attribute: "finesse", rank: "untrained" },
+    { name: "Flight", category: "Physical", attribute: "physique_finesse", rank: "untrained" }, // Combined attribute
+    { name: "Hunting", category: "Physical", attribute: "physique_mind", rank: "untrained" }, // Combined attribute
+    { name: "Lockpicking", category: "Physical", attribute: "finesse", rank: "untrained" },
+    { name: "Ride", category: "Physical", attribute: "finesse", rank: "untrained" },
+    { name: "Rope Use", category: "Physical", attribute: "finesse", rank: "untrained" },
+    { name: "Sneaking", category: "Physical", attribute: "finesse", rank: "untrained" },
+    { name: "Trickery", category: "Physical", attribute: "finesse", rank: "untrained" },
+
+    // Sense Skills
+    { name: "Hearing", category: "Sense", attribute: "mind", rank: "untrained" },
+    { name: "Sight", category: "Sense", attribute: "mind", rank: "untrained" },
+    { name: "Smell", category: "Sense", attribute: "mind", rank: "untrained" },
+    { name: "Taste", category: "Sense", attribute: "mind", rank: "untrained" },
+    { name: "Touch", category: "Sense", attribute: "mind", rank: "untrained" },
+
+    // Social Skills
+    { name: "Animal Handling", category: "Social", attribute: "presence", rank: "untrained" },
+    { name: "Deception", category: "Social", attribute: "presence", rank: "untrained" },
+    { name: "Disguise", category: "Social", attribute: "presence", rank: "untrained" },
+    { name: "Etiquette", category: "Social", attribute: "presence", rank: "untrained" },
+    { name: "Haggling", category: "Social", attribute: "presence", rank: "untrained" },
+    { name: "Intimidate", category: "Social", attribute: "presence", rank: "untrained" },
+    { name: "Persuasion", category: "Social", attribute: "presence", rank: "untrained" },
+    { name: "Seduction", category: "Social", attribute: "presence", rank: "untrained" }
+];
+
+/**
+* Types of skill entries that can be added to paths
+*/
+const PATH_SKILL_TYPES = {
+    SPECIFIC_SKILL: "specific",           // e.g., "Sword", "Medicine"
+    SPECIFIC_CUSTOM: "specific-custom",   // e.g., "Lore (Religion)", "Perform (Singing)"
+    CHOOSE_CATEGORY: "choose-category",   // e.g., "Choose 1 Combat Skills"
+    CHOOSE_LORE: "choose-lore",          // e.g., "Choose 2 Lore Skills"
+    CHOOSE_PERFORM: "choose-perform",     // e.g., "Choose 1 Perform Skills"
+    CHOOSE_CRAFT: "choose-craft"         // e.g., "Choose 3 Custom Craft Skills"
+};

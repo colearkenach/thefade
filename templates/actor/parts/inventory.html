@@ -54,381 +54,377 @@
     <div class="armor-section">
         <h2>Armor</h2>
 
-        <!-- Armor -->
-        <div class="armor-section">
-            <h2>Armor</h2>
-
-            <!-- Armor Slots with Natural Deflection and AP tracking -->
-            <div class="armor-slots">
-                <!-- Head Slot -->
-                <div class="armor-slot-container" data-slot="head">
-                    <div class="slot-header">
-                        <h3>Head</h3>
-                        <div class="total-ap">
-                            Total AP: <span class="current-total-ap">{{actor.armorTotals.head.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.head.max}}</span>
-                        </div>
-                    </div>
-
-                    <!-- Natural Deflection -->
-                    <div class="natural-deflection-row">
-                        <div class="nd-input">
-                            <label>Natural Deflection:</label>
-                            <input type="number" name="system.naturalDeflection.head.current" value="{{actor.system.naturalDeflection.head.current}}" data-dtype="Number" min="0" class="nd-current" />
-                            <span>/</span>
-                            <input type="number" name="system.naturalDeflection.head.max" value="{{actor.system.naturalDeflection.head.max}}" data-dtype="Number" min="0" class="nd-max" />
-                        </div>
-                        <div class="nd-controls">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="system.naturalDeflection.head.stacks" {{#if actor.system.naturalDeflection.head.stacks}} checked{{/if}} />
-                                Stacks with armor
-                            </label>
-                            <div class="nd-action-buttons">
-                                <button type="button" class="reduce-nd" data-location="head" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
-                                <button type="button" class="reset-nd" data-location="head" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Equipped Armor -->
-                    <div class="equipped-armor-list">
-                        {{#each actor.equippedArmor.head as |armor|}}
-                        <div class="equipped-armor-item" data-item-id="{{armor._id}}">
-                            <img src="{{armor.img}}" class="armor-icon" />
-                            <div class="armor-info">
-                                <div class="armor-name">{{armor.name}}</div>
-                                <div class="armor-ap">
-                                    <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
-                                    <span>/</span>
-                                    <span class="armor-max-ap">{{armor.system.ap}}</span>
-                                </div>
-                            </div>
-                            <div class="armor-controls">
-                                <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
-                                <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
-                                <button type="button" class="reduce-total-ap" data-location="head" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
-                                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                            </div>
-                        </div>
-                        {{/each}}
+        <!-- Armor Slots with Natural Deflection and AP tracking -->
+        <div class="armor-slots">
+            <!-- Head Slot -->
+            <div class="armor-slot-container" data-slot="head">
+                <div class="slot-header">
+                    <h3>Head</h3>
+                    <div class="total-ap">
+                        Total AP: <span class="current-total-ap">{{actor.armorTotals.head.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.head.max}}</span>
                     </div>
                 </div>
 
-                <!-- Body Slot -->
-                <div class="armor-slot-container" data-slot="body">
-                    <div class="slot-header">
-                        <h3>Body</h3>
-                        <div class="total-ap">
-                            Total AP: <span class="current-total-ap">{{actor.armorTotals.body.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.body.max}}</span>
-                        </div>
+                <!-- Natural Deflection -->
+                <div class="natural-deflection-row">
+                    <div class="nd-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.head.current" value="{{actor.system.naturalDeflection.head.current}}" data-dtype="Number" min="0" class="nd-current" />
+                        <span>/</span>
+                        <input type="number" name="system.naturalDeflection.head.max" value="{{actor.system.naturalDeflection.head.max}}" data-dtype="Number" min="0" class="nd-max" />
                     </div>
-
-                    <div class="natural-deflection-row">
-                        <div class="nd-input">
-                            <label>Natural Deflection:</label>
-                            <input type="number" name="system.naturalDeflection.body.current" value="{{actor.system.naturalDeflection.body.current}}" data-dtype="Number" min="0" class="nd-current" />
-                            <span>/</span>
-                            <input type="number" name="system.naturalDeflection.body.max" value="{{actor.system.naturalDeflection.body.max}}" data-dtype="Number" min="0" class="nd-max" />
+                    <div class="nd-controls">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="system.naturalDeflection.head.stacks" {{#if actor.system.naturalDeflection.head.stacks}} checked{{/if}} />
+                            Stacks with armor
+                        </label>
+                        <div class="nd-action-buttons">
+                            <button type="button" class="reduce-nd" data-location="head" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
+                            <button type="button" class="reset-nd" data-location="head" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
                         </div>
-                        <div class="nd-controls">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="system.naturalDeflection.body.stacks" {{#if actor.system.naturalDeflection.body.stacks}} checked{{/if}} />
-                                Stacks with armor
-                            </label>
-                            <div class="nd-action-buttons">
-                                <button type="button" class="reduce-nd" data-location="body" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
-                                <button type="button" class="reset-nd" data-location="body" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="equipped-armor-list">
-                        {{#each actor.equippedArmor.body as |armor|}}
-                        <div class="equipped-armor-item" data-item-id="{{armor._id}}">
-                            <img src="{{armor.img}}" class="armor-icon" />
-                            <div class="armor-info">
-                                <div class="armor-name">{{armor.name}}</div>
-                                <div class="armor-ap">
-                                    <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
-                                    <span>/</span>
-                                    <span class="armor-max-ap">{{armor.system.ap}}</span>
-                                </div>
-                            </div>
-                            <div class="armor-controls">
-                                <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
-                                <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
-                                <button type="button" class="reduce-total-ap" data-location="body" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
-                                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                            </div>
-                        </div>
-                        {{/each}}
                     </div>
                 </div>
 
-                <!-- Arms Section -->
-                <div class="arms-section">
-                    <h3>Arms</h3>
-
-                    <!-- Left Arm -->
-                    <div class="armor-slot-container" data-slot="leftarm">
-                        <div class="slot-header">
-                            <h4>Left Arm</h4>
-                            <div class="total-ap">
-                                Total AP: <span class="current-total-ap">{{actor.armorTotals.leftarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftarm.max}}</span>
-                            </div>
-                        </div>
-
-                        <div class="natural-deflection-row">
-                            <div class="nd-input">
-                                <label>Natural Deflection:</label>
-                                <input type="number" name="system.naturalDeflection.leftarm.current" value="{{actor.system.naturalDeflection.leftarm.current}}" data-dtype="Number" min="0" class="nd-current" />
+                <!-- Equipped Armor -->
+                <div class="equipped-armor-list">
+                    {{#each actor.equippedArmor.head as |armor|}}
+                    <div class="equipped-armor-item" data-item-id="{{armor._id}}">
+                        <img src="{{armor.img}}" class="armor-icon" />
+                        <div class="armor-info">
+                            <div class="armor-name">{{armor.name}}</div>
+                            <div class="armor-ap">
+                                <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
                                 <span>/</span>
-                                <input type="number" name="system.naturalDeflection.leftarm.max" value="{{actor.system.naturalDeflection.leftarm.max}}" data-dtype="Number" min="0" class="nd-max" />
-                            </div>
-                            <div class="nd-controls">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="system.naturalDeflection.leftarm.stacks" {{#if actor.system.naturalDeflection.leftarm.stacks}} checked{{/if}} />
-                                    Stacks
-                                </label>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="leftarm" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
-                                    <button type="button" class="reset-nd" data-location="leftarm" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
-                                </div>
+                                <span class="armor-max-ap">{{armor.system.ap}}</span>
                             </div>
                         </div>
-
-                        <!-- Derived from Arms armor -->
-                        <div class="derived-ap">
-                            <label>Derived from Arms armor:</label>
-                            <span class="derived-current">{{actor.derivedArmor.leftarm.current}}</span> / <span class="derived-max">{{actor.derivedArmor.leftarm.max}}</span>
-                            <button type="button" class="reduce-derived-ap" data-location="leftarm" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
+                        <div class="armor-controls">
+                            <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
+                            <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="button" class="reduce-total-ap" data-location="head" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
+                            <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
                         </div>
                     </div>
-
-                    <!-- Right Arm -->
-                    <div class="armor-slot-container" data-slot="rightarm">
-                        <div class="slot-header">
-                            <h4>Right Arm</h4>
-                            <div class="total-ap">
-                                Total AP: <span class="current-total-ap">{{actor.armorTotals.rightarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightarm.max}}</span>
-                            </div>
-                        </div>
-
-                        <div class="natural-deflection-row">
-                            <div class="nd-input">
-                                <label>Natural Deflection:</label>
-                                <input type="number" name="system.naturalDeflection.rightarm.current" value="{{actor.system.naturalDeflection.rightarm.current}}" data-dtype="Number" min="0" class="nd-current" />
-                                <span>/</span>
-                                <input type="number" name="system.naturalDeflection.rightarm.max" value="{{actor.system.naturalDeflection.rightarm.max}}" data-dtype="Number" min="0" class="nd-max" />
-                            </div>
-                            <div class="nd-controls">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="system.naturalDeflection.rightarm.stacks" {{#if actor.system.naturalDeflection.rightarm.stacks}} checked{{/if}} />
-                                    Stacks
-                                </label>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="rightarm" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
-                                    <button type="button" class="reset-nd" data-location="rightarm" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="derived-ap">
-                            <label>Derived from Arms armor:</label>
-                            <span class="derived-current">{{actor.derivedArmor.rightarm.current}}</span> / <span class="derived-max">{{actor.derivedArmor.rightarm.max}}</span>
-                            <button type="button" class="reduce-derived-ap" data-location="rightarm" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Arms Armor (affects both arms) -->
-                    <div class="equipped-armor-list">
-                        <h5>Arms Armor</h5>
-                        {{#each actor.equippedArmor.arms as |armor|}}
-                        <div class="equipped-armor-item" data-item-id="{{armor._id}}">
-                            <img src="{{armor.img}}" class="armor-icon" />
-                            <div class="armor-info">
-                                <div class="armor-name">{{armor.name}}</div>
-                                <div class="armor-ap">
-                                    <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
-                                    <span>/</span>
-                                    <span class="armor-max-ap">{{armor.system.ap}}</span>
-                                </div>
-                            </div>
-                            <div class="armor-controls">
-                                <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
-                                <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
-                                <button type="button" class="reduce-total-ap" data-location="arms" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
-                                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                            </div>
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-
-                <!-- Legs Section (similar to Arms) -->
-                <div class="legs-section">
-                    <h3>Legs</h3>
-
-                    <!-- Left Leg -->
-                    <div class="armor-slot-container" data-slot="leftleg">
-                        <div class="slot-header">
-                            <h4>Left Leg</h4>
-                            <div class="total-ap">
-                                Total AP: <span class="current-total-ap">{{actor.armorTotals.leftleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftleg.max}}</span>
-                            </div>
-                        </div>
-
-                        <div class="natural-deflection-row">
-                            <div class="nd-input">
-                                <label>Natural Deflection:</label>
-                                <input type="number" name="system.naturalDeflection.leftleg.current" value="{{actor.system.naturalDeflection.leftleg.current}}" data-dtype="Number" min="0" class="nd-current" />
-                                <span>/</span>
-                                <input type="number" name="system.naturalDeflection.leftleg.max" value="{{actor.system.naturalDeflection.leftleg.max}}" data-dtype="Number" min="0" class="nd-max" />
-                            </div>
-                            <div class="nd-controls">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="system.naturalDeflection.leftleg.stacks" {{#if actor.system.naturalDeflection.leftleg.stacks}} checked{{/if}} />
-                                    Stacks
-                                </label>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="leftleg" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
-                                    <button type="button" class="reset-nd" data-location="leftleg" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="derived-ap">
-                            <label>Derived from Legs armor:</label>
-                            <span class="derived-current">{{actor.derivedArmor.leftleg.current}}</span> / <span class="derived-max">{{actor.derivedArmor.leftleg.max}}</span>
-                            <button type="button" class="reduce-derived-ap" data-location="leftleg" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Right Leg -->
-                    <div class="armor-slot-container" data-slot="rightleg">
-                        <div class="slot-header">
-                            <h4>Right Leg</h4>
-                            <div class="total-ap">
-                                Total AP: <span class="current-total-ap">{{actor.armorTotals.rightleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightleg.max}}</span>
-                            </div>
-                        </div>
-
-                        <div class="natural-deflection-row">
-                            <div class="nd-input">
-                                <label>Natural Deflection:</label>
-                                <input type="number" name="system.naturalDeflection.rightleg.current" value="{{actor.system.naturalDeflection.rightleg.current}}" data-dtype="Number" min="0" class="nd-current" />
-                                <span>/</span>
-                                <input type="number" name="system.naturalDeflection.rightleg.max" value="{{actor.system.naturalDeflection.rightleg.max}}" data-dtype="Number" min="0" class="nd-max" />
-                            </div>
-                            <div class="nd-controls">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" name="system.naturalDeflection.rightleg.stacks" {{#if actor.system.naturalDeflection.rightleg.stacks}} checked{{/if}} />
-                                    Stacks
-                                </label>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="rightleg" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
-                                    <button type="button" class="reset-nd" data-location="rightleg" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="derived-ap">
-                            <label>Derived from Legs armor:</label>
-                            <span class="derived-current">{{actor.derivedArmor.rightleg.current}}</span> / <span class="derived-max">{{actor.derivedArmor.rightleg.max}}</span>
-                            <button type="button" class="reduce-derived-ap" data-location="rightleg" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
-                        </div>
-                    </div>
-
-                    <!-- Legs Armor -->
-                    <div class="equipped-armor-list">
-                        <h5>Legs Armor</h5>
-                        {{#each actor.equippedArmor.legs as |armor|}}
-                        <div class="equipped-armor-item" data-item-id="{{armor._id}}">
-                            <img src="{{armor.img}}" class="armor-icon" />
-                            <div class="armor-info">
-                                <div class="armor-name">{{armor.name}}</div>
-                                <div class="armor-ap">
-                                    <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
-                                    <span>/</span>
-                                    <span class="armor-max-ap">{{armor.system.ap}}</span>
-                                </div>
-                            </div>
-                            <div class="armor-controls">
-                                <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
-                                <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
-                                <button type="button" class="reduce-total-ap" data-location="legs" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
-                                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                            </div>
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-
-                <!-- Shield Slot -->
-                <div class="armor-slot-container" data-slot="shield">
-                    <div class="slot-header">
-                        <h3>Shield</h3>
-                        <div class="total-ap">
-                            Total AP: <span class="current-total-ap">{{actor.armorTotals.shield.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.shield.max}}</span>
-                        </div>
-                    </div>
-
-                    <div class="equipped-armor-list">
-                        {{#each actor.equippedArmor.shield as |armor|}}
-                        <div class="equipped-armor-item" data-item-id="{{armor._id}}">
-                            <img src="{{armor.img}}" class="armor-icon" />
-                            <div class="armor-info">
-                                <div class="armor-name">{{armor.name}}</div>
-                                <div class="armor-ap">
-                                    <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
-                                    <span>/</span>
-                                    <span class="armor-max-ap">{{armor.system.ap}}</span>
-                                </div>
-                            </div>
-                            <div class="armor-controls">
-                                <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
-                                <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
-                                <button type="button" class="reduce-total-ap" data-location="shield" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
-                                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                            </div>
-                        </div>
-                        {{/each}}
-                    </div>
+                    {{/each}}
                 </div>
             </div>
 
-            <!-- Unequipped Armor -->
-            <div class="unequipped-armor">
-                <h3>Unequipped Armor</h3>
-                <header class="gear-header flexrow">
-                    <div class="armor-name">Name</div>
-                    <div class="armor-location">Location</div>
-                    <div class="armor-ap">AP</div>
-                    <div class="armor-controls">
-                        <a class="item-create" title="Add Armor" data-type="armor"><i class="fas fa-plus"></i></a>
-                        <a class="armor-browse" title="Browse Armor"><i class="fas fa-search"></i></a>
+            <!-- Body Slot -->
+            <div class="armor-slot-container" data-slot="body">
+                <div class="slot-header">
+                    <h3>Body</h3>
+                    <div class="total-ap">
+                        Total AP: <span class="current-total-ap">{{actor.armorTotals.body.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.body.max}}</span>
                     </div>
-                </header>
-                <div class="items-list armor-items-list">
-                    {{#each actor.unequippedArmor as |item id|}}
-                    <div class="item flexrow armor-item" data-item-id="{{item._id}}">
-                        <div class="armor-name">{{item.name}}</div>
-                        <div class="armor-location">{{item.system.location}}</div>
-                        <div class="armor-ap">{{item.system.currentAP}}/{{item.system.ap}}</div>
+                </div>
+
+                <div class="natural-deflection-row">
+                    <div class="nd-input">
+                        <label>Natural Deflection:</label>
+                        <input type="number" name="system.naturalDeflection.body.current" value="{{actor.system.naturalDeflection.body.current}}" data-dtype="Number" min="0" class="nd-current" />
+                        <span>/</span>
+                        <input type="number" name="system.naturalDeflection.body.max" value="{{actor.system.naturalDeflection.body.max}}" data-dtype="Number" min="0" class="nd-max" />
+                    </div>
+                    <div class="nd-controls">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="system.naturalDeflection.body.stacks" {{#if actor.system.naturalDeflection.body.stacks}} checked{{/if}} />
+                            Stacks with armor
+                        </label>
+                        <div class="nd-action-buttons">
+                            <button type="button" class="reduce-nd" data-location="body" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
+                            <button type="button" class="reset-nd" data-location="body" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="equipped-armor-list">
+                    {{#each actor.equippedArmor.body as |armor|}}
+                    <div class="equipped-armor-item" data-item-id="{{armor._id}}">
+                        <img src="{{armor.img}}" class="armor-icon" />
+                        <div class="armor-info">
+                            <div class="armor-name">{{armor.name}}</div>
+                            <div class="armor-ap">
+                                <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
+                                <span>/</span>
+                                <span class="armor-max-ap">{{armor.system.ap}}</span>
+                            </div>
+                        </div>
                         <div class="armor-controls">
-                            <a class="item-equip" title="Equip Armor"><i class="fas fa-shield-alt"></i></a>
-                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                            <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
+                            <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="button" class="reduce-total-ap" data-location="body" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
+                            <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <!-- Arms Section -->
+            <div class="arms-section">
+                <h3>Arms</h3>
+
+                <!-- Left Arm -->
+                <div class="armor-slot-container" data-slot="leftarm">
+                    <div class="slot-header">
+                        <h4>Left Arm</h4>
+                        <div class="total-ap">
+                            Total AP: <span class="current-total-ap">{{actor.armorTotals.leftarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftarm.max}}</span>
+                        </div>
+                    </div>
+
+                    <div class="natural-deflection-row">
+                        <div class="nd-input">
+                            <label>Natural Deflection:</label>
+                            <input type="number" name="system.naturalDeflection.leftarm.current" value="{{actor.system.naturalDeflection.leftarm.current}}" data-dtype="Number" min="0" class="nd-current" />
+                            <span>/</span>
+                            <input type="number" name="system.naturalDeflection.leftarm.max" value="{{actor.system.naturalDeflection.leftarm.max}}" data-dtype="Number" min="0" class="nd-max" />
+                        </div>
+                        <div class="nd-controls">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="system.naturalDeflection.leftarm.stacks" {{#if actor.system.naturalDeflection.leftarm.stacks}} checked{{/if}} />
+                                Stacks
+                            </label>
+                            <div class="nd-action-buttons">
+                                <button type="button" class="reduce-nd" data-location="leftarm" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
+                                <button type="button" class="reset-nd" data-location="leftarm" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Derived from Arms armor -->
+                    <div class="derived-ap">
+                        <label>Derived from Arms armor:</label>
+                        <span class="derived-current">{{actor.derivedArmor.leftarm.current}}</span> / <span class="derived-max">{{actor.derivedArmor.leftarm.max}}</span>
+                        <button type="button" class="reduce-derived-ap" data-location="leftarm" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Right Arm -->
+                <div class="armor-slot-container" data-slot="rightarm">
+                    <div class="slot-header">
+                        <h4>Right Arm</h4>
+                        <div class="total-ap">
+                            Total AP: <span class="current-total-ap">{{actor.armorTotals.rightarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightarm.max}}</span>
+                        </div>
+                    </div>
+
+                    <div class="natural-deflection-row">
+                        <div class="nd-input">
+                            <label>Natural Deflection:</label>
+                            <input type="number" name="system.naturalDeflection.rightarm.current" value="{{actor.system.naturalDeflection.rightarm.current}}" data-dtype="Number" min="0" class="nd-current" />
+                            <span>/</span>
+                            <input type="number" name="system.naturalDeflection.rightarm.max" value="{{actor.system.naturalDeflection.rightarm.max}}" data-dtype="Number" min="0" class="nd-max" />
+                        </div>
+                        <div class="nd-controls">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="system.naturalDeflection.rightarm.stacks" {{#if actor.system.naturalDeflection.rightarm.stacks}} checked{{/if}} />
+                                Stacks
+                            </label>
+                            <div class="nd-action-buttons">
+                                <button type="button" class="reduce-nd" data-location="rightarm" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
+                                <button type="button" class="reset-nd" data-location="rightarm" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="derived-ap">
+                        <label>Derived from Arms armor:</label>
+                        <span class="derived-current">{{actor.derivedArmor.rightarm.current}}</span> / <span class="derived-max">{{actor.derivedArmor.rightarm.max}}</span>
+                        <button type="button" class="reduce-derived-ap" data-location="rightarm" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Arms Armor (affects both arms) -->
+                <div class="equipped-armor-list">
+                    <h5>Arms Armor</h5>
+                    {{#each actor.equippedArmor.arms as |armor|}}
+                    <div class="equipped-armor-item" data-item-id="{{armor._id}}">
+                        <img src="{{armor.img}}" class="armor-icon" />
+                        <div class="armor-info">
+                            <div class="armor-name">{{armor.name}}</div>
+                            <div class="armor-ap">
+                                <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
+                                <span>/</span>
+                                <span class="armor-max-ap">{{armor.system.ap}}</span>
+                            </div>
+                        </div>
+                        <div class="armor-controls">
+                            <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
+                            <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="button" class="reduce-total-ap" data-location="arms" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
+                            <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <!-- Legs Section (similar to Arms) -->
+            <div class="legs-section">
+                <h3>Legs</h3>
+
+                <!-- Left Leg -->
+                <div class="armor-slot-container" data-slot="leftleg">
+                    <div class="slot-header">
+                        <h4>Left Leg</h4>
+                        <div class="total-ap">
+                            Total AP: <span class="current-total-ap">{{actor.armorTotals.leftleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftleg.max}}</span>
+                        </div>
+                    </div>
+
+                    <div class="natural-deflection-row">
+                        <div class="nd-input">
+                            <label>Natural Deflection:</label>
+                            <input type="number" name="system.naturalDeflection.leftleg.current" value="{{actor.system.naturalDeflection.leftleg.current}}" data-dtype="Number" min="0" class="nd-current" />
+                            <span>/</span>
+                            <input type="number" name="system.naturalDeflection.leftleg.max" value="{{actor.system.naturalDeflection.leftleg.max}}" data-dtype="Number" min="0" class="nd-max" />
+                        </div>
+                        <div class="nd-controls">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="system.naturalDeflection.leftleg.stacks" {{#if actor.system.naturalDeflection.leftleg.stacks}} checked{{/if}} />
+                                Stacks
+                            </label>
+                            <div class="nd-action-buttons">
+                                <button type="button" class="reduce-nd" data-location="leftleg" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
+                                <button type="button" class="reset-nd" data-location="leftleg" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="derived-ap">
+                        <label>Derived from Legs armor:</label>
+                        <span class="derived-current">{{actor.derivedArmor.leftleg.current}}</span> / <span class="derived-max">{{actor.derivedArmor.leftleg.max}}</span>
+                        <button type="button" class="reduce-derived-ap" data-location="leftleg" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Right Leg -->
+                <div class="armor-slot-container" data-slot="rightleg">
+                    <div class="slot-header">
+                        <h4>Right Leg</h4>
+                        <div class="total-ap">
+                            Total AP: <span class="current-total-ap">{{actor.armorTotals.rightleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightleg.max}}</span>
+                        </div>
+                    </div>
+
+                    <div class="natural-deflection-row">
+                        <div class="nd-input">
+                            <label>Natural Deflection:</label>
+                            <input type="number" name="system.naturalDeflection.rightleg.current" value="{{actor.system.naturalDeflection.rightleg.current}}" data-dtype="Number" min="0" class="nd-current" />
+                            <span>/</span>
+                            <input type="number" name="system.naturalDeflection.rightleg.max" value="{{actor.system.naturalDeflection.rightleg.max}}" data-dtype="Number" min="0" class="nd-max" />
+                        </div>
+                        <div class="nd-controls">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="system.naturalDeflection.rightleg.stacks" {{#if actor.system.naturalDeflection.rightleg.stacks}} checked{{/if}} />
+                                Stacks
+                            </label>
+                            <div class="nd-action-buttons">
+                                <button type="button" class="reduce-nd" data-location="rightleg" title="Reduce ND"><i class="fas fa-minus"></i> Reduce</button>
+                                <button type="button" class="reset-nd" data-location="rightleg" title="Reset ND to Max"><i class="fas fa-redo"></i> Reset</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="derived-ap">
+                        <label>Derived from Legs armor:</label>
+                        <span class="derived-current">{{actor.derivedArmor.rightleg.current}}</span> / <span class="derived-max">{{actor.derivedArmor.rightleg.max}}</span>
+                        <button type="button" class="reduce-derived-ap" data-location="rightleg" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+
+                <!-- Legs Armor -->
+                <div class="equipped-armor-list">
+                    <h5>Legs Armor</h5>
+                    {{#each actor.equippedArmor.legs as |armor|}}
+                    <div class="equipped-armor-item" data-item-id="{{armor._id}}">
+                        <img src="{{armor.img}}" class="armor-icon" />
+                        <div class="armor-info">
+                            <div class="armor-name">{{armor.name}}</div>
+                            <div class="armor-ap">
+                                <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
+                                <span>/</span>
+                                <span class="armor-max-ap">{{armor.system.ap}}</span>
+                            </div>
+                        </div>
+                        <div class="armor-controls">
+                            <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
+                            <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="button" class="reduce-total-ap" data-location="legs" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
+                            <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <!-- Shield Slot -->
+            <div class="armor-slot-container" data-slot="shield">
+                <div class="slot-header">
+                    <h3>Shield</h3>
+                    <div class="total-ap">
+                        Total AP: <span class="current-total-ap">{{actor.armorTotals.shield.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.shield.max}}</span>
+                    </div>
+                </div>
+
+                <div class="equipped-armor-list">
+                    {{#each actor.equippedArmor.shield as |armor|}}
+                    <div class="equipped-armor-item" data-item-id="{{armor._id}}">
+                        <img src="{{armor.img}}" class="armor-icon" />
+                        <div class="armor-info">
+                            <div class="armor-name">{{armor.name}}</div>
+                            <div class="armor-ap">
+                                <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
+                                <span>/</span>
+                                <span class="armor-max-ap">{{armor.system.ap}}</span>
+                            </div>
+                        </div>
+                        <div class="armor-controls">
+                            <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
+                            <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
+                            <button type="button" class="reduce-total-ap" data-location="shield" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
+                            <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                            <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
                         </div>
                     </div>
                     {{/each}}
                 </div>
             </div>
         </div>
+
+        <!-- Unequipped Armor -->
+        <div class="unequipped-armor">
+            <h3>Unequipped Armor</h3>
+            <header class="gear-header flexrow">
+                <div class="armor-name">Name</div>
+                <div class="armor-location">Location</div>
+                <div class="armor-ap">AP</div>
+                <div class="armor-controls">
+                    <a class="item-create" title="Add Armor" data-type="armor"><i class="fas fa-plus"></i></a>
+                    <a class="armor-browse" title="Browse Armor"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="items-list armor-items-list">
+                {{#each actor.unequippedArmor as |item id|}}
+                <div class="item flexrow armor-item" data-item-id="{{item._id}}">
+                    <div class="armor-name">{{item.name}}</div>
+                    <div class="armor-location">{{item.system.location}}</div>
+                    <div class="armor-ap">{{item.system.currentAP}}/{{item.system.ap}}</div>
+                    <div class="armor-controls">
+                        <a class="item-equip" title="Equip Armor"><i class="fas fa-shield-alt"></i></a>
+                        <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
 
         <!-- Items of Power -->
         <div class="magical-items">
