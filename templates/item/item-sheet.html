@@ -311,11 +311,12 @@
             </div>
             {{/if}}
 
-            {{#if (eq system.itemCategory "magicitem")}}
+{{#if (eq system.itemCategory "magicitem")}}
             <hr>
             <h3>Item of Power Properties</h3>
+            
             <div class="form-group">
-                <label>Slot</label>
+                <label>Equipment Slot</label>
                 <select name="system.slot">
                     {{#select system.slot}}
                     <option value="head">Head</option>
@@ -333,19 +334,17 @@
                 <label>Effect</label>
                 <textarea name="system.effect">{{system.effect}}</textarea>
             </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "potion")}}
-            <hr>
-            <h3>Potion Properties</h3>
-            <div class="form-group">
-                <label>Effect</label>
-                <textarea name="system.effect">{{system.effect}}</textarea>
-            </div>
-
-            <div class="form-group">
-                <label>Duration</label>
-                <input type="text" name="system.duration" value="{{system.duration}}" />
+            
+            <div class="form-group flexrow">             
+                <div class="form-field">
+                    <label>Currently Attuned</label>
+                    <input type="checkbox" name="system.attunement" {{#if system.attunement}}checked{{/if}} />
+                </div>
+                
+                <div class="form-field">
+                    <label>Equipped</label>
+                    <input type="checkbox" name="system.equipped" {{#if system.equipped}}checked{{/if}} />
+                </div>
             </div>
             {{/if}}
 

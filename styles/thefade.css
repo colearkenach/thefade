@@ -1793,3 +1793,204 @@ select[name="system.aura.color"] option[value="white"] {
     .thefade .roll-addiction:hover {
         background: #8b0000;
     }
+
+/* ===== DATA PATH TOOLTIPS ===== */
+.data-tooltip {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    font-family: monospace;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.data-tooltip.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Magic Items Section */
+.magical-items h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+.attunement-limit {
+    font-size: 0.8em;
+    font-weight: normal;
+}
+
+.current-attunements {
+    font-weight: bold;
+    color: #333;
+}
+
+/* Equipment Slots Grid */
+.equipment-slots {
+    margin-bottom: 15px;
+}
+
+.slot-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.slot-container {
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    min-height: 60px;
+    background: #f9f9f9;
+}
+
+.slot-label {
+    font-weight: bold;
+    font-size: 0.9em;
+    margin-bottom: 4px;
+    text-align: center;
+    color: #666;
+}
+
+.slot-content {
+    min-height: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.empty-slot {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.equipped-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.equipped-item .item-name {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.attunement-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    background: #ddd;
+    margin-left: 4px;
+}
+
+.attunement-indicator.attuned {
+    background: #4CAF50;
+}
+
+.equipped-item .item-controls {
+    display: flex;
+    gap: 4px;
+    margin-top: 2px;
+}
+
+.equipped-item .item-controls a {
+    font-size: 0.8em;
+    padding: 2px 4px;
+}
+
+/* Ring slots special styling */
+.ring-slots .slot-container {
+    max-width: 200px;
+}
+
+/* Unequipped Magic Items */
+.unequipped-magic-items h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 8px;
+}
+
+.magic-item-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.magic-items-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.magic-item {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.magic-item:last-child {
+    border-bottom: none;
+}
+
+.magic-item .item-name {
+    flex: 2;
+    font-weight: bold;
+}
+
+.magic-item .item-slot {
+    flex: 1;
+    text-align: center;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.magic-item .item-attunement {
+    flex: 1;
+    text-align: center;
+}
+
+.magic-item .item-controls {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+}
+
+.attunement-checkbox {
+    transform: scale(1.2);
+}
+
+.no-attunement {
+    color: #999;
+}
+
+/* Conflict warnings */
+.slot-conflict {
+    border-color: #ff9800 !important;
+    background: #fff3e0 !important;
+}
+
+.slot-conflict::after {
+    content: "⚠ Conflicts with armor";
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 0.7em;
+    color: #ff9800;
+}

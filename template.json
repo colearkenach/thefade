@@ -22,7 +22,19 @@
           "soul": {
             "value": 1
           }
-        }
+        },
+        "magicItems": {
+          "head": null,
+          "neck": null, 
+          "body": null,
+          "hands": null,
+          "ring1": null,
+          "ring2": null,
+          "belt": null,
+          "boots": null
+        },
+      "currentAttunements": 0,
+      "maxAttunements": 0
       }
     },
     "character": {
@@ -235,6 +247,13 @@
       "flexibleBonus": {
         "value": 0,
         "selectedAttribute": ""
+      },
+      "magicitem": {
+      "templates": [ "base", "physical" ],
+      "slot": "head",
+      "effect": "",
+      "attunement": false,
+      "equipped": false
       },
       "movement": {
         "land": 4,

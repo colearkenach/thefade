@@ -97,6 +97,199 @@
         </ol>
     </div>
 
+    <!-- Magical Items / Items of Power -->
+    <div class="magical-items">
+        <h2>
+            Items of Power
+            <span class="attunement-limit">
+                Attuned: <span class="current-attunements">{{actor.currentAttunements}}</span> / 
+                <span class="max-attunements">{{actor.maxAttunements}}</span>
+            </span>
+        </h2>
+        
+        <!-- Equipment Slots -->
+        <div class="equipment-slots">
+            <div class="slot-row flexrow">
+                <div class="slot-container" data-slot="head">
+                    <div class="slot-label">Head</div>
+                    <div class="slot-content" data-slot="head">
+                        {{#if actor.magicItems.head}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.head._id}}">
+                            <span class="item-name">{{actor.magicItems.head.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.head.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+                
+                <div class="slot-container" data-slot="neck">
+                    <div class="slot-label">Neck</div>
+                    <div class="slot-content" data-slot="neck">
+                        {{#if actor.magicItems.neck}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.neck._id}}">
+                            <span class="item-name">{{actor.magicItems.neck.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.neck.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+                
+                <div class="slot-container" data-slot="body">
+                    <div class="slot-label">Body</div>
+                    <div class="slot-content" data-slot="body">
+                        {{#if actor.magicItems.body}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.body._id}}">
+                            <span class="item-name">{{actor.magicItems.body.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.body.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="slot-row flexrow">
+                <div class="slot-container" data-slot="hands">
+                    <div class="slot-label">Hands</div>
+                    <div class="slot-content" data-slot="hands">
+                        {{#if actor.magicItems.hands}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.hands._id}}">
+                            <span class="item-name">{{actor.magicItems.hands.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.hands.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+                
+                <div class="slot-container" data-slot="belt">
+                    <div class="slot-label">Belt</div>
+                    <div class="slot-content" data-slot="belt">
+                        {{#if actor.magicItems.belt}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.belt._id}}">
+                            <span class="item-name">{{actor.magicItems.belt.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.belt.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+                
+                <div class="slot-container" data-slot="boots">
+                    <div class="slot-label">Boots</div>
+                    <div class="slot-content" data-slot="boots">
+                        {{#if actor.magicItems.boots}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.boots._id}}">
+                            <span class="item-name">{{actor.magicItems.boots.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.boots.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ring slots (separate row, 2 slots) -->
+            <div class="slot-row flexrow ring-slots">
+                <div class="slot-container" data-slot="ring1">
+                    <div class="slot-label">Ring 1</div>
+                    <div class="slot-content" data-slot="ring1">
+                        {{#if actor.magicItems.ring1}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.ring1._id}}">
+                            <span class="item-name">{{actor.magicItems.ring1.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.ring1.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+                
+                <div class="slot-container" data-slot="ring2">
+                    <div class="slot-label">Ring 2</div>
+                    <div class="slot-content" data-slot="ring2">
+                        {{#if actor.magicItems.ring2}}
+                        <div class="equipped-item" data-item-id="{{actor.magicItems.ring2._id}}">
+                            <span class="item-name">{{actor.magicItems.ring2.name}}</span>
+                            <span class="attunement-indicator {{#if actor.magicItems.ring2.system.attunement}}attuned{{/if}}"></span>
+                            <div class="item-controls">
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="empty-slot">Empty</div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Unequipped Magic Items -->
+        <div class="unequipped-magic-items">
+            <h3>
+                Unequipped Magic Items
+                <div class="magic-item-controls">
+                    <a class="item-create" title="Add Magic Item" data-type="magicitem"><i class="fas fa-plus"></i></a>
+                    <a class="magicitem-browse" title="Browse Magic Items"><i class="fas fa-search"></i></a>
+                </div>
+            </h3>
+            
+            <div class="items-list magic-items-list">
+                {{#each actor.unequippedMagicItems as |item id|}}
+                <div class="item flexrow magic-item" data-item-id="{{item._id}}">
+                    <div class="item-name">{{item.name}}</div>
+                    <div class="item-slot">{{item.system.slot}}</div>
+                    <div class="item-attunement">
+                        <input type="checkbox" data-item-id="{{item._id}}" class="attunement-checkbox" title="Attune" />
+                    </div>
+                    <div class="item-controls">
+                        <a class="item-equip" title="Equip Item" data-slot="{{item.system.slot}}"><i class="fas fa-hand-paper"></i></a>
+                        <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+
     <!-- General Gear -->
     <div class="gear">
         <h2>Gear</h2>

@@ -178,7 +178,7 @@ class TheFadeCharacterSheet extends ActorSheet {
      */
     _prepareCharacterData(sheetData) {
         const data = sheetData.actor.system;
-        console.log("Preparing character data with facing:", data.defenses.facing);
+        // console.log("Preparing character data with facing:", data.defenses.facing);
 
         // First calculate base defenses and stats without facing modifiers
         this._calculateBaseDefenses(data, sheetData.actor);
@@ -303,7 +303,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Apply facing modifications to defensive values
         const facing = data.defenses.facing || 'front';
 
-        console.log(`Applying facing modifiers for: ${facing}`);
+        // console.log(`Applying facing modifiers for: ${facing}`);
 
         // Apply modifications based on facing
         if (facing === 'flank') {
@@ -335,10 +335,12 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Ensure total avoid doesn't go below 0
         data.totalAvoid = Math.max(0, data.totalAvoid);
 
+        /*
         console.log(`After facing modifiers: 
       Passive Dodge: ${data.defenses.passiveDodge}
       Passive Parry: ${data.defenses.passiveParry}
       Total Avoid: ${data.totalAvoid} (includes penalty of ${data.defenses.avoidPenalty})`);
+      */
     }
 
     /**
@@ -386,7 +388,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         const sheet = this;
         const newFacing = event.target.value;
 
-        console.log(`Facing changed to: ${newFacing}`);
+        // console.log(`Facing changed to: ${newFacing}`);
 
         try {
             // Store facing in flags
@@ -475,7 +477,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         facingDropdown.on('change', async function (event) {
             event.preventDefault();
             const newFacing = this.value;
-            console.log(`Facing direct change to: ${newFacing}`);
+            // console.log(`Facing direct change to: ${newFacing}`);
 
             try {
                 // First update the actor with the new facing
@@ -490,7 +492,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                 // Force a complete re-render
                 sheet.render(true);
 
-                console.log(`Facing successfully updated to: ${newFacing}`);
+                // console.log(`Facing successfully updated to: ${newFacing}`);
                 ui.notifications.info(`Facing changed to: ${newFacing}`);
             } catch (error) {
                 console.error("Facing update failed:", error);
@@ -510,7 +512,7 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Get the current facing
         const facing = data.defenses.facing || "front";
-        console.log(`Recalculating defenses with facing: ${facing}`);
+        // console.log(`Recalculating defenses with facing: ${facing}`);
 
         // Store original values for debugging
         const originalDodge = data.defenses.passiveDodge;
@@ -541,10 +543,12 @@ class TheFadeCharacterSheet extends ActorSheet {
         }
 
         // Log the changes for debugging
+        /*
         console.log(`Defense adjustments:
-      Original Dodge: ${originalDodge} → New Dodge: ${newDodge}
-      Original Parry: ${originalParry} → New Parry: ${newParry}
-      Avoid Penalty: ${avoidPenalty}`);
+        Original Dodge: ${originalDodge} → New Dodge: ${newDodge}
+        Original Parry: ${originalParry} → New Parry: ${newParry}
+        Avoid Penalty: ${avoidPenalty}`);
+        */
 
         // Update the actor with the new calculated values
         await actor.update({
@@ -571,7 +575,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             await actor.setFlag("thefade", "facing", currentFacing);
         }
 
-        console.log("Initializing facing from flags:", currentFacing);
+        // console.log("Initializing facing from flags:", currentFacing);
 
         // Set dropdown to match flag
         facingDropdown.val(currentFacing);
@@ -583,7 +587,8 @@ class TheFadeCharacterSheet extends ActorSheet {
             event.preventDefault();
 
             const newFacing = this.value;
-            console.log(`Facing changed to: ${newFacing}`);
+            
+            // console.log(`Facing changed to: ${newFacing}`);
 
             try {
                 // Store facing in flags
@@ -620,9 +625,11 @@ class TheFadeCharacterSheet extends ActorSheet {
         let newParry = basePassiveParry;
         let avoidPenalty = 0;
 
+        /*
         console.log(`Updating defenses for facing ${facing} with base values:
         Base Dodge: ${basePassiveDodge}
         Base Parry: ${basePassiveParry}`);
+        */
 
         // Calculate new values based on facing
         if (facing === "flank") {
@@ -642,10 +649,12 @@ class TheFadeCharacterSheet extends ActorSheet {
             avoidPenalty = -2;
         }
 
+        /*
         console.log(`New defense values after facing ${facing}:
         New Dodge: ${newDodge}
         New Parry: ${newParry}
         Avoid Penalty: ${avoidPenalty}`);
+        */
 
         // Store the final values
         await actor.update({
@@ -706,9 +715,11 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         const basePassiveParry = highestParry;
 
+        /*
         console.log(`Calculated base defenses:
         Base Passive Dodge: ${basePassiveDodge}
         Base Passive Parry: ${basePassiveParry}`);
+        */
 
         // Store base values in flags
         await actor.setFlag("thefade", "basePassiveDodge", basePassiveDodge);
@@ -762,6 +773,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Calculate total avoid with penalty
         const totalAvoid = Math.max(0, baseAvoid + avoidBonus + avoidPenalty);
 
+        /*
         console.log(`Updating defense displays:
         Base Avoid: ${baseAvoid}
         Avoid Bonus: ${avoidBonus}
@@ -769,6 +781,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         Total Avoid: ${totalAvoid}
         Current Dodge: ${currentDodge}
         Current Parry: ${currentParry}`);
+        */
 
         // Update values directly on the actor using a single update for efficiency
         const updateData = {
@@ -864,6 +877,11 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Handle dark magic addiction
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
 
+        // Magic Item equipment handlers
+        html.find('.item-equip').click(this._onEquipMagicItem.bind(this));
+        html.find('.item-unequip').click(this._onUnequipMagicItem.bind(this));
+        html.find('.attunement-checkbox').change(this._onToggleAttunement.bind(this));
+
         // Add explicit input change handler
         html.find('input[name], select[name]').change(ev => {
             const input = ev.currentTarget;
@@ -910,14 +928,14 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('select[name="system.defenses.facing"]').on('change', async function (event) {
             event.preventDefault();
             const facing = this.value;
-            console.log("Facing changed to:", facing);
+            // console.log("Facing changed to:", facing);
 
             // Use direct document API to update
             try {
                 await actor.update({
                     "system.defenses.facing": facing
                 });
-                console.log("Facing update successful");
+                // console.log("Facing update successful");
             } catch (error) {
                 console.error("Error updating facing:", error);
             }
@@ -1147,37 +1165,199 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        this._initializeFacingDropdown(html);
-        this._updateFacingDirectly(html);
-        this._setupArmorResetListeners(html);
-    }
+        // Handle equipping magic items
+        html.find('.item-equip').click(ev => {
+            ev.preventDefault();
+            const element = ev.currentTarget;
+            const itemId = element.closest('.magic-item').dataset.itemId;
+            const targetSlot = element.dataset.slot;
+            
+            const item = this.actor.items.get(itemId);
+            if (!item) return;
+            
+            // Check if slot is compatible
+            const actualSlot = targetSlot === 'ring' ? this._getAvailableRingSlot() : targetSlot;
+            if (!actualSlot) {
+                ui.notifications.warn(`No available ${targetSlot} slot.`);
+                return;
+            }
+                
+            // Equip the item
+            this._equipMagicItem(item, actualSlot);
+            });
 
-    /**
-     * Handle creating a new Owned Item for the actor using initial data defined in the HTML dataset
-     * @param {Event} event   The originating click event
-     * @private
-     */
-    _onItemCreate(event) {
-        event.preventDefault();
-        const header = event.currentTarget;
-        // Get the type of item to create.
-        const type = header.dataset.type;
-        // Grab any data associated with this control.
-        const data = duplicate(header.dataset);
-        // Initialize a default name.
-        const name = `New ${type.capitalize()}`;
-        // Prepare the item object.
-        const itemData = {
-            name: name,
-            type: type,
-            system: data
-        };
-        // Remove the type from the dataset since it's in the itemData.type prop.
-        delete itemData.system["type"];
+            // Handle unequipping magic items
+            html.find('.item-unequip').click(ev => {
+                ev.preventDefault();
+                const element = ev.currentTarget;
+                const itemId = element.closest('.equipped-item').dataset.itemId;
+                
+                const item = this.actor.items.get(itemId);
+                if (item) {
+                    this._unequipMagicItem(item);
+                }
+            });
 
-        // Finally, create the item!
-        return this.actor.createEmbeddedDocuments("Item", [itemData]);
-    }
+            // Handle attunement checkbox changes
+            html.find('.attunement-checkbox').change(ev => {
+                ev.preventDefault();
+                const element = ev.currentTarget;
+                const itemId = element.dataset.itemId;
+                const isAttuned = element.checked;
+                
+                const item = this.actor.items.get(itemId);
+                if (!item) return;
+                
+                if (isAttuned) {
+                    const currentAttunements = this._getCurrentAttunements();
+                    const maxAttunements = this._getMaxAttunements();
+                    
+                    if (currentAttunements >= maxAttunements) {
+                        ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                        element.checked = false;
+                        return;
+                    }
+                }
+                
+                item.update({ "system.attunement": isAttuned });
+                ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
+            });
+                
+                this._initializeFacingDropdown(html);
+                this._updateFacingDirectly(html);
+                this._setupArmorResetListeners(html);
+                // Initialize tooltips
+                this._initializeDataTooltips(html);
+            }
+
+        _onEquipMagicItem(event) {
+            event.preventDefault();
+            const element = event.currentTarget;
+            const itemId = element.closest('.magic-item').dataset.itemId;
+            const targetSlot = element.dataset.slot;
+            
+            const item = this.actor.items.get(itemId);
+            if (!item) return;
+            
+            // Check if slot is compatible
+            let actualSlot = targetSlot;
+            if (targetSlot === 'ring') {
+                actualSlot = this._getAvailableRingSlot();
+                if (!actualSlot) {
+                    ui.notifications.warn("No available ring slots.");
+                    return;
+                }
+            }
+            
+            // Check if slot is already occupied
+            const currentEquipped = this.actor.system.magicItems?.[actualSlot];
+            if (currentEquipped) {
+                ui.notifications.warn(`${actualSlot} slot is already occupied by ${currentEquipped.name}.`);
+                return;
+            }
+            
+            // Check attunement limits if item requires attunement
+            if (item.system.requiresAttunement && !item.system.attunement) {
+                const currentAttunements = this.actor.system.currentAttunements || 0;
+                const maxAttunements = this.actor.system.maxAttunements || 0;
+                
+                if (currentAttunements >= maxAttunements) {
+                    ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                    return;
+                }
+            }
+            
+            // Equip the item
+            this._equipMagicItem(item, actualSlot);
+        }
+
+        _onUnequipMagicItem(event) {
+            event.preventDefault();
+            const element = event.currentTarget;
+            const itemId = element.closest('.equipped-item').dataset.itemId;
+            
+            const item = this.actor.items.get(itemId);
+            if (item) {
+                this._unequipMagicItem(item);
+            }
+        }
+
+        _onToggleAttunement(event) {
+            event.preventDefault();
+            const element = event.currentTarget;
+            const itemId = element.dataset.itemId;
+            const isAttuned = element.checked;
+            
+            const item = this.actor.items.get(itemId);
+            if (!item) return;
+            
+            if (isAttuned) {
+                const currentAttunements = this.actor.system.currentAttunements || 0;
+                const maxAttunements = this.actor.system.maxAttunements || 0;
+                
+                if (currentAttunements >= maxAttunements) {
+                    ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                    element.checked = false;
+                    return;
+                }
+            }
+            
+            item.update({ "system.attunement": isAttuned });
+            ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
+        }
+
+        _equipMagicItem(item, slot) {
+            const updates = {
+                "system.equipped": true,
+                "system.slot": slot === 'ring1' || slot === 'ring2' ? 'ring' : slot
+            };
+            
+            // Auto-attune if required and possible
+            if (item.system.requiresAttunement && !item.system.attunement) {
+                const currentAttunements = this.actor.system.currentAttunements || 0;
+                const maxAttunements = this.actor.system.maxAttunements || 0;
+                
+                if (currentAttunements < maxAttunements) {
+                    updates["system.attunement"] = true;
+                }
+            }
+            
+            item.update(updates);
+            ui.notifications.info(`${item.name} equipped to ${slot} slot.`);
+        }
+
+        _unequipMagicItem(item) {
+            const updates = {
+                "system.equipped": false,
+                "system.attunement": false
+            };
+            
+            item.update(updates);
+            ui.notifications.info(`${item.name} unequipped.`);
+        }
+
+        _getAvailableRingSlot() {
+            const ring1 = this.actor.system.magicItems?.ring1;
+            const ring2 = this.actor.system.magicItems?.ring2;
+            
+            if (!ring1) return 'ring1';
+            if (!ring2) return 'ring2';
+            return null;
+        }
+
+        _getCurrentAttunements() {
+            return this.actor.items.filter(item => 
+                item.type === 'magicitem' && 
+                item.system.attunement === true
+            ).length;
+        }
+
+        _getMaxAttunements() {
+            const totalLevel = this.actor.system.level || 1;
+            const soulAttribute = this.actor.system.attributes.soul.value || 1;
+            return Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+        }
+
 
     /**
      * Handle rolling a Skill check
@@ -2209,16 +2389,16 @@ class TheFadeCharacterSheet extends ActorSheet {
  * Add this as a new method in the TheFadeCharacterSheet class
  */
     _setupArmorResetListeners(html) {
-        console.log("Setting up armor reset listeners");
+        // console.log("Setting up armor reset listeners");
 
         // Individual armor reset
         const resetButtons = html.find('.reset-armor-button');
-        console.log(`Found ${resetButtons.length} individual reset buttons`);
+        // console.log(`Found ${resetButtons.length} individual reset buttons`);
 
         resetButtons.on('click', async (event) => {
             event.preventDefault();
             event.stopPropagation();
-            console.log("Reset armor button clicked");
+            // console.log("Reset armor button clicked");
 
             const button = event.currentTarget;
             const li = button.closest('.item');
@@ -2229,7 +2409,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
 
             const itemId = li.dataset.itemId || $(li).data("itemId");
-            console.log("Item ID:", itemId);
+            // console.log("Item ID:", itemId);
 
             if (!itemId) {
                 console.error("No item ID found");
@@ -2247,8 +2427,8 @@ class TheFadeCharacterSheet extends ActorSheet {
                 return;
             }
 
-            console.log(`Resetting armor ${item.name} (${itemId})`);
-            console.log(`Current AP: ${item.system.currentAP}, Max AP: ${item.system.ap}`);
+            // console.log(`Resetting armor ${item.name} (${itemId})`);
+            // console.log(`Current AP: ${item.system.currentAP}, Max AP: ${item.system.ap}`);
 
             try {
                 // Convert to numbers to ensure type consistency
@@ -2258,7 +2438,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                     "system.currentAP": maxAP
                 });
 
-                console.log(`Reset successful, new AP: ${maxAP}`);
+                // console.log(`Reset successful, new AP: ${maxAP}`);
                 ui.notifications.info(`${item.name}'s armor protection has been restored to full.`);
             } catch (error) {
                 console.error("Error updating armor:", error);
@@ -2268,15 +2448,15 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Reset all armor
         const resetAllButton = html.find('.reset-all-armor');
-        console.log(`Found ${resetAllButton.length} reset all armor buttons`);
+        // console.log(`Found ${resetAllButton.length} reset all armor buttons`);
 
         resetAllButton.on('click', async (event) => {
             event.preventDefault();
             event.stopPropagation();
-            console.log("Reset all armor button clicked");
+            // console.log("Reset all armor button clicked");
 
             const armorItems = this.actor.items.filter(i => i.type === "armor");
-            console.log(`Found ${armorItems.length} armor items`);
+            // console.log(`Found ${armorItems.length} armor items`);
 
             if (armorItems.length === 0) {
                 ui.notifications.warn("No armor items found.");
@@ -2286,7 +2466,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             try {
                 for (const armor of armorItems) {
                     const maxAP = Number(armor.system.ap);
-                    console.log(`Resetting ${armor.name} from ${armor.system.currentAP} to ${maxAP}`);
+                    // console.log(`Resetting ${armor.name} from ${armor.system.currentAP} to ${maxAP}`);
 
                     await armor.update({
                         "system.currentAP": maxAP
@@ -2300,6 +2480,102 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
     }
+
+/**
+ * Initialize data path tooltips for development
+ * @param {HTMLElement} html - The rendered HTML
+ * @private
+ */
+_initializeDataTooltips(html) {
+    let tooltip = null;
+
+    // Handle mouseenter on form elements and display elements
+    html.on('mouseenter', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function(event) {
+        const element = event.currentTarget;
+        let dataPath = element.name;
+        
+        // For elements without name attributes, try to infer from class or context
+        if (!dataPath) {
+            const classList = element.className;
+            
+            if (classList.includes('total-value')) {
+                // Try to determine what total this represents
+                const parent = $(element).closest('.defense');
+                if (parent.find('label').text().includes('Resilience')) {
+                    dataPath = 'system.totalResilience';
+                } else if (parent.find('label').text().includes('Avoid')) {
+                    dataPath = 'system.totalAvoid';
+                } else if (parent.find('label').text().includes('Grit')) {
+                    dataPath = 'system.totalGrit';
+                }
+            } else if (classList.includes('avoid-value')) {
+                dataPath = 'system.totalAvoid';
+            } else if (classList.includes('passive-dodge-value')) {
+                dataPath = 'system.defenses.passiveDodge';
+            } else if (classList.includes('passive-parry-value')) {
+                dataPath = 'system.defenses.passiveParry';
+            } else if (classList.includes('base-value')) {
+                const parent = $(element).closest('.defense');
+                if (parent.find('label').text().includes('Resilience')) {
+                    dataPath = 'system.defenses.resilience';
+                } else if (parent.find('label').text().includes('Avoid')) {
+                    dataPath = 'system.defenses.avoid';
+                } else if (parent.find('label').text().includes('Grit')) {
+                    dataPath = 'system.defenses.grit';
+                }
+            }
+        }
+        
+        if (!dataPath) return;
+
+        // Remove existing tooltip
+        if (tooltip) {
+            tooltip.remove();
+            tooltip = null;
+        }
+
+        // Create new tooltip
+        tooltip = $(`<div class="data-tooltip">${dataPath}</div>`);
+        $('body').append(tooltip);
+
+        // Position tooltip
+        const rect = element.getBoundingClientRect();
+        const tooltipWidth = tooltip.outerWidth();
+        
+        let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+        let top = rect.top - tooltip.outerHeight() - 8;
+
+        // Keep tooltip on screen
+        if (left < 10) left = 10;
+        if (left + tooltipWidth > window.innerWidth - 10) {
+            left = window.innerWidth - tooltipWidth - 10;
+        }
+        if (top < 10) {
+            top = rect.bottom + 8;
+        }
+
+        tooltip.css({
+            left: left + 'px',
+            top: top + 'px'
+        });
+
+        // Show tooltip
+        setTimeout(() => tooltip.addClass('show'), 10);
+    });
+
+    // Handle mouseleave
+    html.on('mouseleave', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function() {
+        if (tooltip) {
+            tooltip.removeClass('show');
+            setTimeout(() => {
+                if (tooltip) {
+                    tooltip.remove();
+                    tooltip = null;
+                }
+            }, 150);
+        }
+    });
+}
 }
 
 // Register the sheet application
@@ -2366,7 +2642,7 @@ function applySpellFilters(html, filters) {
 
 // System Initialization Hook
 Hooks.once('init', async function () {
-    console.log("Initializing The Fade (Abyss) System");
+    // console.log("Initializing The Fade (Abyss) System");
 
     // Define all the item types that will be available
     CONFIG.Item = CONFIG.Item || {};
@@ -2439,8 +2715,8 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/chat/attack-roll.html",
         "systems/thefade/templates/chat/skill-roll.html",
         "systems/thefade/templates/chat/spell-cast.html",
-        "systems/thefade/templates/dialog/ability-edit.html",
-        "systems/thefade/templates/dialog/character-select.html"
+        "systems/thefade/templates/dialogs/ability-edit.html",
+        "systems/thefade/templates/dialogs/character-select.html"
     ]);
 
     // ADD THE INITIATIVE CODE HERE
@@ -2628,7 +2904,7 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
 
 // System Initialization Hook
 Hooks.once('init', async function () {
-    console.log("Initializing The Fade (Abyss) System");
+    // console.log("Initializing The Fade (Abyss) System");
 
     // Define custom Entity classes
     CONFIG.Actor.documentClass = TheFadeActor;
@@ -2651,8 +2927,8 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/chat/attack-roll.html",
         "systems/thefade/templates/chat/skill-roll.html",
         "systems/thefade/templates/chat/spell-cast.html",
-        "systems/thefade/templates/dialog/ability-edit.html",
-        "systems/thefade/templates/dialog/character-select.html"
+        "systems/thefade/templates/dialogs/ability-edit.html",
+        "systems/thefade/templates/dialogs/character-select.html"
     ]);
 
     // Handle things being dropped onto the sheet! Spells, Paths, Species, and so forth!
@@ -2856,6 +3132,68 @@ class TheFadeActor extends Actor {
                 }
             });
         }
+
+        this.prepareMagicItems();
+    }
+
+    prepareMagicItems() {
+        const magicItems = this.items.filter(item => item.type === 'magicitem');
+        
+        // Initialize magic item slots
+        const equippedSlots = {
+            head: null,
+            neck: null,
+            body: null,
+            hands: null,
+            ring1: null,
+            ring2: null,
+            belt: null,
+            boots: null
+        };
+    
+        const unequippedItems = [];
+    
+        // Organize magic items by equipped status and slot
+        for (let item of magicItems) {
+            if (item.system.equipped && item.system.slot) {
+                let targetSlot = item.system.slot;
+                
+                // Handle ring slots specially
+                if (targetSlot === 'ring') {
+                    if (!equippedSlots.ring1) {
+                        targetSlot = 'ring1';
+                    } else if (!equippedSlots.ring2) {
+                        targetSlot = 'ring2';
+                    } else {
+                        // Both ring slots occupied, treat as unequipped
+                        unequippedItems.push(item);
+                        continue;
+                    }
+                }
+                
+                // Check if slot is already occupied
+                if (equippedSlots[targetSlot]) {
+                    // Slot conflict, treat as unequipped
+                    unequippedItems.push(item);
+                } else {
+                    equippedSlots[targetSlot] = item;
+                }
+            } else {
+                unequippedItems.push(item);
+            }
+        }
+        
+        // Calculate attunements
+        const currentAttunements = magicItems.filter(item => item.system.attunement === true).length;
+        const totalLevel = this.system.level || 1;
+        const soulAttribute = this.system.attributes.soul.value || 1;
+        const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+        
+        // Update system data
+        this.system.magicItems = equippedSlots;
+        this.system.unequippedMagicItems = unequippedItems;
+        this.system.currentAttunements = currentAttunements;
+        this.system.maxAttunements = maxAttunements;
     }
 
     _prepareCharacterData(actorData) {
@@ -4339,7 +4677,7 @@ class TheFadeItemSheet extends ItemSheet {
      * Handle dropping data on the sheet
     */
     async _onDrop(event) {
-        console.log("Drop event triggered on path sheet");
+        // console.log("Drop event triggered on path sheet");
         event.preventDefault();
 
         // Get dropped data
@@ -4360,7 +4698,7 @@ class TheFadeItemSheet extends ItemSheet {
             }
 
             dragData = JSON.parse(data);
-            console.log("Dropped data:", dragData);
+            // console.log("Dropped data:", dragData);
         } catch (err) {
             console.error("Error parsing drop data:", err);
             return false;
@@ -4368,25 +4706,25 @@ class TheFadeItemSheet extends ItemSheet {
 
         // Only process if this is a path sheet
         if (this.item.type !== 'path') {
-            console.log("Not a path sheet");
+            // console.log("Not a path sheet");
             return super._onDrop(event);
         }
 
         // Handle dropping a skill
         if (dragData.type === "Item") {
-            console.log("Item drop detected");
+            // console.log("Item drop detected");
             let skillDoc;
 
             // Try to load the item from various sources
             try {
                 // From UUID
                 if (dragData.uuid) {
-                    console.log("Loading from UUID:", dragData.uuid);
+                    // console.log("Loading from UUID:", dragData.uuid);
                     skillDoc = await fromUuid(dragData.uuid);
                 }
                 // From compendium
                 else if (dragData.pack && dragData.id) {
-                    console.log("Loading from compendium:", dragData.pack, dragData.id);
+                    // console.log("Loading from compendium:", dragData.pack, dragData.id);
                     const pack = game.packs.get(dragData.pack);
                     if (pack) {
                         skillDoc = await pack.getDocument(dragData.id);
@@ -4394,7 +4732,7 @@ class TheFadeItemSheet extends ItemSheet {
                 }
                 // Directly from data
                 else if (dragData.data) {
-                    console.log("Using raw data");
+                    // console.log("Using raw data");
                     skillDoc = dragData.data;
                 }
             } catch (err) {
@@ -4404,7 +4742,7 @@ class TheFadeItemSheet extends ItemSheet {
 
             // Check if we got a skill
             if (!skillDoc) {
-                console.log("No skill document found");
+                // console.log("No skill document found");
                 return false;
             }
 
@@ -4426,7 +4764,7 @@ class TheFadeItemSheet extends ItemSheet {
                 skillData = duplicate(skillDoc);
             }
 
-            console.log("Skill data:", skillData);
+            // console.log("Skill data:", skillData);
 
             // Initialize path skills array if needed
             let pathSkills = duplicate(this.item.system.pathSkills || []);
