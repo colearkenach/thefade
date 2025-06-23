@@ -42,6 +42,12 @@ class TheFadeCharacterSheet extends ActorSheet {
             this._prepareCharacterData(data);
         }
 
+        // Ensure magic items data is available to template
+        data.actor.magicItems = data.actor.system.magicItems || {};
+        data.actor.unequippedMagicItems = data.actor.system.unequippedMagicItems || [];
+        data.actor.currentAttunements = data.actor.system.currentAttunements || 0;
+        data.actor.maxAttunements = data.actor.system.maxAttunements || 0;
+
         return data;
     }
 
@@ -1015,7 +1021,24 @@ class TheFadeCharacterSheet extends ActorSheet {
         });
 
         // Existing listeners remain the same
-        html.find('.item-create').click(this._onItemCreate.bind(this));
+        html.find('.item-create').click(ev => {
+            ev.preventDefault();
+            const header = ev.currentTarget;
+            const type = header.dataset.type;
+
+            const data = duplicate(header.dataset);
+            const name = `New ${type.capitalize()}`;
+
+            const itemData = {
+                name: name,
+                type: type,
+                system: data
+            };
+
+            delete itemData.system["type"];
+
+            return this.actor.createEmbeddedDocuments("Item", [itemData]);
+        });
 
         html.find('.item-edit').click(ev => {
             const li = $(ev.currentTarget).closest("[data-item-id]");
@@ -1224,7 +1247,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         this._initializeDataTooltips(html);
     }
 
-    /*     _onEquipMagicItem(event) {
+         _onEquipMagicItem(event) {
             event.preventDefault();
             const element = event.currentTarget;
             const itemId = element.closest('.magic-item').dataset.itemId;
@@ -1299,7 +1322,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             item.update({ "system.attunement": isAttuned });
             ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
         }
-     */
+     
 
     _equipMagicItem(item, slot) {
         const updates = {
@@ -3131,7 +3154,7 @@ class TheFadeActor extends Actor {
 
     prepareMagicItems() {
         const magicItems = this.items.filter(item => item.type === 'magicitem');
-        
+
         // Initialize magic item slots
         const equippedSlots = {
             head: null,
@@ -3143,14 +3166,14 @@ class TheFadeActor extends Actor {
             belt: null,
             boots: null
         };
-    
+
         const unequippedItems = [];
-    
+
         // Organize magic items by equipped status and slot
         for (let item of magicItems) {
             if (item.system.equipped && item.system.slot) {
                 let targetSlot = item.system.slot;
-                
+
                 // Handle ring slots specially
                 if (targetSlot === 'ring') {
                     if (!equippedSlots.ring1) {
@@ -3163,7 +3186,7 @@ class TheFadeActor extends Actor {
                         continue;
                     }
                 }
-                
+
                 // Check if slot is already occupied
                 if (equippedSlots[targetSlot]) {
                     // Slot conflict, treat as unequipped
@@ -3175,13 +3198,13 @@ class TheFadeActor extends Actor {
                 unequippedItems.push(item);
             }
         }
-        
+
         // Calculate attunements
         const currentAttunements = magicItems.filter(item => item.system.attunement === true).length;
         const totalLevel = this.system.level || 1;
         const soulAttribute = this.system.attributes.soul.value || 1;
         const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
-        
+
         // Update system data
         this.system.magicItems = equippedSlots;
         this.system.unequippedMagicItems = unequippedItems;
@@ -3886,7 +3909,7 @@ class TheFadeItem extends Item {
 // ITEM SHEET FUNCTIONS
 class TheFadeItemSheet extends ItemSheet {
     static get defaultOptions() {
-        return mergeObject(super.defaultOptions, {
+        return foundry.utils.mergeObject(super.defaultOptions, {
             classes: ["thefade", "sheet", "item", "species"],
             width: 520,
             height: 480,
