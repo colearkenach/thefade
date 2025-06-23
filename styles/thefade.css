@@ -2834,3 +2834,14 @@ select[name="system.aura.color"] option[value="white"] {
     margin-top: 3px;
     font-style: italic;
 }
+
+
+.disabled-button {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.disabled-button:hover {
+    color: #999 !important;
+}

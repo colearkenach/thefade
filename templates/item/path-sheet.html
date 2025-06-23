@@ -119,9 +119,22 @@
                     <span class="entry-type-badge {{skill.entryTypeClass}}">{{skill.entryTypeDisplay}}</span>
                 </div>
                 <div class="item-category">{{skill.system.category}}</div>
-                <div class="item-controls">
-                    <a class="item-control path-skill-edit" title="Edit Entry"><i class="fas fa-edit"></i></a>
-                    <a class="item-control path-skill-delete" title="Delete Entry"><i class="fas fa-trash"></i></a>
+                <div class="skill-controls">
+                    {{#if isChoiceEntry}}
+                    <!-- Locked edit for choice entries -->
+                    <span class="skill-edit-locked" title="Choice Entry - Cannot Edit Directly">
+                        <i class="fas fa-edit-disabled"></i>
+                    </span>
+                    {{else}}
+                    <!-- Normal edit for specific skills -->
+                    <a class="path-skill-edit" title="Edit Skill">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    {{/if}}
+
+                    <a class="path-skill-delete" title="Remove from Path">
+                        <i class="fas fa-trash"></i>
+                    </a>
                 </div>
             </li>
             {{/each}}
