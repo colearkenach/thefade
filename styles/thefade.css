@@ -145,21 +145,26 @@
     }
 
     .thefade .profile-img {
-        flex: 0 0 100px;
-        height: 100px;
-        margin-right: 10px;
-        border: 2px solid var(--border-color);
-        border-radius: 5px;
-        transition: all var(--transition-speed) ease;
+        width: 100px !important;
+        height: 100px !important;
+        object-fit: fill;
+        border-radius: 8px;
+        border: 3px solid var(--primary-color);
+        flex-shrink: 0;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
         .thefade .profile-img:hover {
             border-color: var(--accent-color);
-            box-shadow: var(--box-shadow-hover);
+            transform: scale(1.02);
         }
 
     .thefade .header-fields {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
 
     .thefade .charname {
@@ -441,6 +446,19 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.weapon-icon {
+    flex: 0 0 40px;
+    text-align: center;
+}
+
+.item-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 3px;
+    border: 1px solid var(--border-color);
 }
 
 .thefade .weapon-header,
@@ -1877,12 +1895,6 @@ select[name="system.aura.color"] option[value="white"] {
     font-size: 0.9em;
 }
 
-.equipped-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
 .equipped-item .item-name {
     font-weight: bold;
     font-size: 0.9em;
@@ -2053,11 +2065,25 @@ select[name="system.aura.color"] option[value="white"] {
 
 .equipped-item {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    text-align: center;
-    width: 100%;
+    gap: 8px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
 }
+
+    .equipped-item .item-icon {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+    }
+
+    .equipped-item .item-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
 
     .equipped-item .item-name {
         font-weight: bold;
@@ -2072,7 +2098,8 @@ select[name="system.aura.color"] option[value="white"] {
 
     .equipped-item .item-controls {
         display: flex;
-        gap: 5px;
+        flex-direction: column;
+        gap: 3px;
     }
 
 .empty-slot {
@@ -2294,4 +2321,143 @@ select[name="system.aura.color"] option[value="white"] {
     .legs-section h3 {
         margin-top: 0;
         color: var(--secondary-color);
+    }
+
+.unattune-btn,
+.item-unequip-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+    .unattune-btn:hover,
+    .item-unequip-btn:hover {
+        background: var(--accent-color);
+    }
+
+.unattune-btn,
+.item-unequip-btn {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+    .unattune-btn:hover,
+    .item-unequip-btn:hover {
+        background: var(--accent-color);
+    }
+
+.item-unequip-btn {
+    background: #dc3545;
+}
+
+    .item-unequip-btn:hover {
+        background: #c82333;
+    }
+
+/* Reduction controls styling */
+.reduction-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.reduction-amount {
+    width: 50px;
+    text-align: center;
+    padding: 2px 4px;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+}
+
+.reduce-nd,
+.reduce-armor-ap,
+.reduce-total-ap {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 4px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+    .reduce-nd:hover,
+    .reduce-armor-ap:hover,
+    .reduce-total-ap:hover {
+        background: var(--accent-color);
+    }
+
+.reduce-total-ap {
+    background: #dc3545;
+}
+
+    .reduce-total-ap:hover {
+        background: #c82333;
+    }
+
+/* Natural Deflection and Armor Controls */
+.nd-action-buttons {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.armor-controls {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.reduce-nd,
+.reset-nd,
+.reduce-armor-ap,
+.reset-armor-ap,
+.reduce-total-ap {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.75em;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+}
+
+    .reduce-nd:hover,
+    .reduce-armor-ap:hover,
+    .reduce-total-ap:hover {
+        background: #dc3545;
+    }
+
+    .reset-nd:hover,
+    .reset-armor-ap:hover {
+        background: #28a745;
+    }
+
+.reset-nd,
+.reset-armor-ap {
+    background: #17a2b8;
+}
+
+.reduce-total-ap {
+    background: #dc3545;
+    font-weight: bold;
+}
+
+    .reduce-total-ap:hover {
+        background: #c82333;
     }

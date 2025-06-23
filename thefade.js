@@ -52,6 +52,145 @@ class TheFadeCharacterSheet extends ActorSheet {
     }
 
     /**
+ * Show a dialog to get the amount to reduce
+ * @param {string} title - Dialog title
+ * @param {string} content - Dialog content/description
+ * @param {number} maxAmount - Maximum allowed reduction
+ * @returns {Promise<number|null>} Amount to reduce or null if cancelled
+ */
+    async _getReductionAmount(title, content, maxAmount) {
+        return new Promise((resolve) => {
+            const dialog = new Dialog({
+                title: title,
+                content: `
+                <div style="margin-bottom: 10px;">${content}</div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label for="reduction-amount">Reduce by:</label>
+                    <input type="number" id="reduction-amount" name="amount" 
+                           value="1" min="1" max="${maxAmount}" 
+                           style="width: 80px; text-align: center;" />
+                    <span>points</span>
+                </div>
+            `,
+                buttons: {
+                    reduce: {
+                        icon: '<i class="fas fa-minus"></i>',
+                        label: "Reduce",
+                        callback: (html) => {
+                            const amount = parseInt(html.find('#reduction-amount').val()) || 1;
+                            const validAmount = Math.min(Math.max(1, amount), maxAmount);
+                            resolve(validAmount);
+                        }
+                    },
+                    cancel: {
+                        icon: '<i class="fas fa-times"></i>',
+                        label: "Cancel",
+                        callback: () => resolve(null)
+                    }
+                },
+                default: "reduce",
+                close: () => resolve(null),
+                render: (html) => {
+                    // Focus and select the input field
+                    const input = html.find('#reduction-amount');
+                    input.focus().select();
+
+                    // Allow Enter key to submit
+                    input.keypress((e) => {
+                        if (e.which === 13) { // Enter key
+                            html.find('.dialog-button.reduce').click();
+                        }
+                    });
+                }
+            });
+            dialog.render(true);
+        });
+    }
+
+    /**
+     * Distribute AP reduction across Natural Deflection and armor pieces
+     * @param {string} location - Body location
+     * @param {number} totalReduction - Total amount to reduce
+     */
+    async _distributeAPReduction(location, totalReduction) {
+        let remaining = totalReduction;
+        const updates = {};
+        const itemUpdates = [];
+
+        // First reduce Natural Deflection if it stacks
+        const ndData = this.actor.system.naturalDeflection?.[location];
+        if (ndData && ndData.stacks && ndData.current > 0 && remaining > 0) {
+            const ndReduction = Math.min(ndData.current, remaining);
+            updates[`system.naturalDeflection.${location}.current`] = ndData.current - ndReduction;
+            remaining -= ndReduction;
+        }
+
+        // Then reduce armor pieces for this location
+        if (remaining > 0) {
+            const equippedArmor = this.actor.equippedArmor?.[location] || [];
+
+            for (const armor of equippedArmor) {
+                if (remaining <= 0) break;
+
+                const currentAP = armor.system.currentAP || 0;
+                if (currentAP > 0) {
+                    const armorReduction = Math.min(currentAP, remaining);
+                    itemUpdates.push({
+                        _id: armor._id,
+                        'system.currentAP': currentAP - armorReduction
+                    });
+                    remaining -= armorReduction;
+                }
+            }
+
+            // Handle derived armor for limbs
+            if (remaining > 0 && (location === 'leftarm' || location === 'rightarm')) {
+                const armsArmor = this.actor.equippedArmor?.arms || [];
+                for (const armor of armsArmor) {
+                    if (remaining <= 0) break;
+                    const currentAP = armor.system.currentAP || 0;
+                    if (currentAP > 0) {
+                        const armorReduction = Math.min(currentAP, remaining);
+                        itemUpdates.push({
+                            _id: armor._id,
+                            'system.currentAP': currentAP - armorReduction
+                        });
+                        remaining -= armorReduction;
+                    }
+                }
+            }
+
+            if (remaining > 0 && (location === 'leftleg' || location === 'rightleg')) {
+                const legsArmor = this.actor.equippedArmor?.legs || [];
+                for (const armor of legsArmor) {
+                    if (remaining <= 0) break;
+                    const currentAP = armor.system.currentAP || 0;
+                    if (currentAP > 0) {
+                        const armorReduction = Math.min(currentAP, remaining);
+                        itemUpdates.push({
+                            _id: armor._id,
+                            'system.currentAP': currentAP - armorReduction
+                        });
+                        remaining -= armorReduction;
+                    }
+                }
+            }
+        }
+
+        // Apply updates
+        if (Object.keys(updates).length > 0) {
+            await this.actor.update(updates);
+        }
+
+        if (itemUpdates.length > 0) {
+            await this.actor.updateEmbeddedDocuments("Item", itemUpdates);
+        }
+
+        this.render(false);
+    }
+
+
+    /**
      * Organize and classify Items for Character sheets.
      *
      * @param {Object} actorData The actor to prepare.
@@ -317,11 +456,11 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        // Calculate attunements
-        const currentAttunements = itemsOfPower.filter(item => item.system.attunement === true).length;
-        const totalLevel = actorData.system.level || 1;
-        const soulAttribute = actorData.system.attributes?.soul?.value || 1;
-        const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+        // Calculate attunements (use unique variable names to avoid conflicts)
+        const magicItemAttunements = itemsOfPower.filter(item => item.system.attunement === true).length;
+        const characterLevel = actorData.system.level || 1;
+        const soulAttributeValue = actorData.system.attributes?.soul?.value || 1;
+        const maximumAttunements = Math.max(0, Math.floor(characterLevel / 4) + soulAttributeValue);
 
         // Assign data
         actorData.gear = gear;
@@ -340,12 +479,12 @@ class TheFadeCharacterSheet extends ActorSheet {
         actorData.armorTotals = armorTotals;
         actorData.potions = potions;
         actorData.drugs = drugs;
-        actorData.currentAttunements = currentAttunements;
-        actorData.maxAttunements = maxAttunements;
+        actorData.currentAttunements = magicItemAttunements;
+        actorData.maxAttunements = maximumAttunements;
 
         // Set system references for template access
-        actorData.system.currentAttunements = currentAttunements;
-        actorData.system.maxAttunements = maxAttunements;
+        actorData.system.currentAttunements = magicItemAttunements;
+        actorData.system.maxAttunements = maximumAttunements;
     }
 
     _activateInventoryListeners(html) {
@@ -374,12 +513,12 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        // Initialize collapsed state - expand by default
+        // Initialize collapsed state
         html.find('.collapsible-content').each(function () {
             $(this).css('max-height', this.scrollHeight + 'px');
         });
 
-        // Equip Items - safer approach with better error handling
+        // Equip Items - handle both armor and magic items
         html.find('.item-equip').click(async (event) => {
             event.preventDefault();
             console.log("Equip button clicked");
@@ -413,52 +552,44 @@ class TheFadeCharacterSheet extends ActorSheet {
 
             // Handle different item types
             if (item.type === 'armor') {
-                // Check for armor slot conflicts
+                // Check for armor conflicts based on location
                 const location = item.system.location;
-                const conflictingArmor = this.actor.items.find(i =>
+                const existingArmor = this.actor.items.filter(i =>
                     i.type === 'armor' &&
                     i.system.equipped === true &&
                     i.system.location === location &&
                     i.id !== item.id
                 );
 
-                if (conflictingArmor) {
-                    ui.notifications.warn(`${location} slot is already occupied by ${conflictingArmor.name}.`);
+                // Allow stacking if item has "+" or different name
+                const canStack = location.includes('+') ||
+                    !existingArmor.some(existing => existing.name === item.name);
+
+                if (!canStack && existingArmor.length > 0) {
+                    ui.notifications.warn(`${location} slot conflict with existing armor.`);
                     return;
                 }
+
             } else if (item.type === 'item' && item.system.itemCategory === 'magicitem') {
-                // Check for magic item slot conflicts
-                let slot = item.system.slot;
-                let actualSlot = slot;
+                // Handle magic item conflicts
+                const slot = item.system.slot;
 
-                // Handle ring slots - find available ring slot
                 if (slot === 'ring') {
-                    const ring1Item = this.actor.items.find(i =>
+                    // Check both ring slots
+                    const ringItems = this.actor.items.filter(i =>
                         i.type === 'item' &&
                         i.system.itemCategory === 'magicitem' &&
                         i.system.equipped === true &&
                         i.system.slot === 'ring' &&
-                        equippedItemsOfPower.ring1 && equippedItemsOfPower.ring1.id === i.id
+                        i.id !== item.id
                     );
 
-                    const ring2Item = this.actor.items.find(i =>
-                        i.type === 'item' &&
-                        i.system.itemCategory === 'magicitem' &&
-                        i.system.equipped === true &&
-                        i.system.slot === 'ring' &&
-                        equippedItemsOfPower.ring2 && equippedItemsOfPower.ring2.id === i.id
-                    );
-
-                    if (!ring1Item) {
-                        actualSlot = 'ring1';
-                    } else if (!ring2Item) {
-                        actualSlot = 'ring2';
-                    } else {
+                    if (ringItems.length >= 2) {
                         ui.notifications.warn("Both ring slots are occupied.");
                         return;
                     }
                 } else {
-                    // For non-ring slots, check normal conflicts
+                    // Check single slot conflicts
                     const conflictingItem = this.actor.items.find(i =>
                         i.type === 'item' &&
                         i.system.itemCategory === 'magicitem' &&
@@ -484,16 +615,25 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        // Unequip Items
+        // Unequip Items - handle both old and new HTML structures
         html.find('.item-unequip').click(async (event) => {
             event.preventDefault();
             console.log("Unequip button clicked");
 
             const button = $(event.currentTarget);
-            const equippedItem = button.closest('.equipped-item');
+
+            // Try multiple selectors for different HTML structures
+            let equippedItem = button.closest('.equipped-item');
+            if (!equippedItem.length) {
+                equippedItem = button.closest('.equipped-armor-item');
+            }
+            if (!equippedItem.length) {
+                equippedItem = button.closest('[data-item-id]');
+            }
 
             if (!equippedItem.length) {
                 console.error("Could not find equipped item element");
+                ui.notifications.error("Could not find item to unequip");
                 return;
             }
 
@@ -502,12 +642,14 @@ class TheFadeCharacterSheet extends ActorSheet {
 
             if (!itemId) {
                 console.error("No item ID found for unequip");
+                ui.notifications.error("Could not identify item to unequip");
                 return;
             }
 
             const item = this.actor.items.get(itemId);
             if (!item) {
                 console.error("Item not found for unequip:", itemId);
+                ui.notifications.error("Item not found");
                 return;
             }
 
@@ -528,8 +670,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             const itemId = checkbox.data('item-id') || checkbox.attr('data-item-id');
             const isAttuned = event.currentTarget.checked;
 
-            console.log(`Attunement change: ${itemId}, attuned: ${isAttuned}`);
-
             if (!itemId) {
                 console.error("No item ID found for attunement");
                 return;
@@ -543,20 +683,18 @@ class TheFadeCharacterSheet extends ActorSheet {
 
             // Check attunement limits
             if (isAttuned) {
-                const currentAttunements = this.actor.items.filter(i =>
+                const currentlyAttuned = this.actor.items.filter(i =>
                     i.type === 'item' &&
                     i.system.itemCategory === 'magicitem' &&
                     i.system.attunement === true
                 ).length;
 
-                const totalLevel = this.actor.system.level || 1;
-                const soulAttribute = this.actor.system.attributes?.soul?.value || 1;
-                const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+                const actorLevel = this.actor.system.level || 1;
+                const soulValue = this.actor.system.attributes?.soul?.value || 1;
+                const maxAllowed = Math.max(0, Math.floor(actorLevel / 4) + soulValue);
 
-                console.log(`Attunement check: ${currentAttunements}/${maxAttunements}`);
-
-                if (currentAttunements >= maxAttunements) {
-                    ui.notifications.warn(`Cannot attune to more items. Current: ${currentAttunements}, Max: ${maxAttunements}`);
+                if (currentlyAttuned >= maxAllowed) {
+                    ui.notifications.warn(`Cannot attune to more items. Current: ${currentlyAttuned}, Max: ${maxAllowed}`);
                     event.currentTarget.checked = false;
                     return;
                 }
@@ -568,6 +706,190 @@ class TheFadeCharacterSheet extends ActorSheet {
             } catch (error) {
                 console.error("Error updating attunement:", error);
                 ui.notifications.error("Failed to update attunement");
+            }
+        });
+
+        // Armor AP Reduction with popup
+        html.find('.reduce-armor-ap').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const itemId = button.data('item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) {
+                ui.notifications.error("Armor item not found");
+                return;
+            }
+
+            const currentAP = item.system.currentAP || 0;
+            if (currentAP <= 0) {
+                ui.notifications.warn(`${item.name} already has 0 AP`);
+                return;
+            }
+
+            // Create reduction dialog
+            const amount = await this._getReductionAmount(
+                `Reduce ${item.name} AP`,
+                `Current AP: ${currentAP}/${item.system.ap}`,
+                currentAP
+            );
+
+            if (amount === null) return; // User cancelled
+
+            const newAP = Math.max(0, currentAP - amount);
+            await item.update({ 'system.currentAP': newAP });
+            ui.notifications.info(`${item.name} AP reduced by ${amount} to ${newAP}`);
+            this.render(false);
+        });
+
+        // Armor AP Reset
+        html.find('.reset-armor-ap').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const itemId = button.data('item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) {
+                ui.notifications.error("Armor item not found");
+                return;
+            }
+
+            const maxAP = item.system.ap || 0;
+            await item.update({ 'system.currentAP': maxAP });
+            ui.notifications.info(`${item.name} AP reset to ${maxAP}`);
+            this.render(false);
+        });
+
+        // Natural Deflection Reduction with popup
+        html.find('.reduce-nd').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const location = button.data('location');
+
+            if (!location) {
+                ui.notifications.error("Location not specified");
+                return;
+            }
+
+            const ndData = this.actor.system.naturalDeflection?.[location];
+            if (!ndData) {
+                ui.notifications.error("Natural deflection data not found");
+                return;
+            }
+
+            const currentND = ndData.current || 0;
+            if (currentND <= 0) {
+                ui.notifications.warn(`${location} Natural Deflection already at 0`);
+                return;
+            }
+
+            const amount = await this._getReductionAmount(
+                `Reduce ${location} Natural Deflection`,
+                `Current ND: ${currentND}/${ndData.max}`,
+                currentND
+            );
+
+            if (amount === null) return; // User cancelled
+
+            const newND = Math.max(0, currentND - amount);
+            await this.actor.update({
+                [`system.naturalDeflection.${location}.current`]: newND
+            });
+            ui.notifications.info(`${location} Natural Deflection reduced by ${amount} to ${newND}`);
+        });
+
+        // Natural Deflection Reset
+        html.find('.reset-nd').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const location = button.data('location');
+
+            if (!location) {
+                ui.notifications.error("Location not specified");
+                return;
+            }
+
+            const ndData = this.actor.system.naturalDeflection?.[location];
+            if (!ndData) {
+                ui.notifications.error("Natural deflection data not found");
+                return;
+            }
+
+            const maxND = ndData.max || 0;
+            await this.actor.update({
+                [`system.naturalDeflection.${location}.current`]: maxND
+            });
+            ui.notifications.info(`${location} Natural Deflection reset to ${maxND}`);
+        });
+
+        // Total AP Reduction with popup
+        html.find('.reduce-total-ap').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const location = button.data('location');
+
+            if (!location) {
+                ui.notifications.error("Location not specified");
+                return;
+            }
+
+            // Calculate current total AP
+            const armorTotal = this.actor.armorTotals?.[location];
+            if (!armorTotal) {
+                ui.notifications.error("Armor total data not found");
+                return;
+            }
+
+            const currentTotal = armorTotal.current || 0;
+            if (currentTotal <= 0) {
+                ui.notifications.warn(`${location} Total AP already at 0`);
+                return;
+            }
+
+            const amount = await this._getReductionAmount(
+                `Reduce ${location} Total AP`,
+                `Current Total: ${currentTotal}/${armorTotal.max}`,
+                currentTotal
+            );
+
+            if (amount === null) return; // User cancelled
+
+            // Distribute reduction across ND and armor pieces
+            await this._distributeAPReduction(location, amount);
+            ui.notifications.info(`${location} Total AP reduced by ${amount}`);
+        });
+
+
+
+
+
+
+
+        // Unattune button
+        html.find('.unattune-btn').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const itemId = button.data('item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (item) {
+                await item.update({ 'system.attunement': false });
+                ui.notifications.info(`${item.name} unattuned.`);
+                this.render(false);
+            }
+        });
+
+        // Better unequip button
+        html.find('.item-unequip-btn').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const itemId = button.data('item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (item) {
+                await item.update({ 'system.equipped': false });
+                ui.notifications.info(`${item.name} unequipped.`);
+                this.render(false);
             }
         });
     }
@@ -1639,7 +1961,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         this._updateFacingDirectly(html);
         this._setupArmorResetListeners(html);
         // Initialize tooltips
-        this._initializeDataTooltips(html);
+        // this._initializeDataTooltips(html);
     }
 
          _onEquipMagicItem(event) {
@@ -2897,96 +3219,96 @@ class TheFadeCharacterSheet extends ActorSheet {
      * @param {HTMLElement} html - The rendered HTML
      * @private
      */
-    _initializeDataTooltips(html) {
-        let tooltip = null;
+//    _initializeDataTooltips(html) {
+//        let tooltip = null;
 
-        // Handle mouseenter on form elements and display elements
-        html.on('mouseenter', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function (event) {
-            const element = event.currentTarget;
-            let dataPath = element.name;
+//        // Handle mouseenter on form elements and display elements
+//        html.on('mouseenter', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function (event) {
+//            const element = event.currentTarget;
+//            let dataPath = element.name;
 
-            // For elements without name attributes, try to infer from class or context
-            if (!dataPath) {
-                const classList = element.className;
+//            // For elements without name attributes, try to infer from class or context
+//            if (!dataPath) {
+//                const classList = element.className;
 
-                if (classList.includes('total-value')) {
-                    // Try to determine what total this represents
-                    const parent = $(element).closest('.defense');
-                    if (parent.find('label').text().includes('Resilience')) {
-                        dataPath = 'system.totalResilience';
-                    } else if (parent.find('label').text().includes('Avoid')) {
-                        dataPath = 'system.totalAvoid';
-                    } else if (parent.find('label').text().includes('Grit')) {
-                        dataPath = 'system.totalGrit';
-                    }
-                } else if (classList.includes('avoid-value')) {
-                    dataPath = 'system.totalAvoid';
-                } else if (classList.includes('passive-dodge-value')) {
-                    dataPath = 'system.defenses.passiveDodge';
-                } else if (classList.includes('passive-parry-value')) {
-                    dataPath = 'system.defenses.passiveParry';
-                } else if (classList.includes('base-value')) {
-                    const parent = $(element).closest('.defense');
-                    if (parent.find('label').text().includes('Resilience')) {
-                        dataPath = 'system.defenses.resilience';
-                    } else if (parent.find('label').text().includes('Avoid')) {
-                        dataPath = 'system.defenses.avoid';
-                    } else if (parent.find('label').text().includes('Grit')) {
-                        dataPath = 'system.defenses.grit';
-                    }
-                }
-            }
+//                if (classList.includes('total-value')) {
+//                    // Try to determine what total this represents
+//                    const parent = $(element).closest('.defense');
+//                    if (parent.find('label').text().includes('Resilience')) {
+//                        dataPath = 'system.totalResilience';
+//                    } else if (parent.find('label').text().includes('Avoid')) {
+//                        dataPath = 'system.totalAvoid';
+//                    } else if (parent.find('label').text().includes('Grit')) {
+//                        dataPath = 'system.totalGrit';
+//                    }
+//                } else if (classList.includes('avoid-value')) {
+//                    dataPath = 'system.totalAvoid';
+//                } else if (classList.includes('passive-dodge-value')) {
+//                    dataPath = 'system.defenses.passiveDodge';
+//                } else if (classList.includes('passive-parry-value')) {
+//                    dataPath = 'system.defenses.passiveParry';
+//                } else if (classList.includes('base-value')) {
+//                    const parent = $(element).closest('.defense');
+//                    if (parent.find('label').text().includes('Resilience')) {
+//                        dataPath = 'system.defenses.resilience';
+//                    } else if (parent.find('label').text().includes('Avoid')) {
+//                        dataPath = 'system.defenses.avoid';
+//                    } else if (parent.find('label').text().includes('Grit')) {
+//                        dataPath = 'system.defenses.grit';
+//                    }
+//                }
+//            }
 
-            if (!dataPath) return;
+//            if (!dataPath) return;
 
-            // Remove existing tooltip
-            if (tooltip) {
-                tooltip.remove();
-                tooltip = null;
-            }
+//            // Remove existing tooltip
+//            if (tooltip) {
+//                tooltip.remove();
+//                tooltip = null;
+//            }
 
-            // Create new tooltip
-            tooltip = $(`<div class="data-tooltip">${dataPath}</div>`);
-            $('body').append(tooltip);
+//            // Create new tooltip
+//            tooltip = $(`<div class="data-tooltip">${dataPath}</div>`);
+//            $('body').append(tooltip);
 
-            // Position tooltip
-            const rect = element.getBoundingClientRect();
-            const tooltipWidth = tooltip.outerWidth();
+//            // Position tooltip
+//            const rect = element.getBoundingClientRect();
+//            const tooltipWidth = tooltip.outerWidth();
 
-            let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-            let top = rect.top - tooltip.outerHeight() - 8;
+//            let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+//            let top = rect.top - tooltip.outerHeight() - 8;
 
-            // Keep tooltip on screen
-            if (left < 10) left = 10;
-            if (left + tooltipWidth > window.innerWidth - 10) {
-                left = window.innerWidth - tooltipWidth - 10;
-            }
-            if (top < 10) {
-                top = rect.bottom + 8;
-            }
+//            // Keep tooltip on screen
+//            if (left < 10) left = 10;
+//            if (left + tooltipWidth > window.innerWidth - 10) {
+//                left = window.innerWidth - tooltipWidth - 10;
+//            }
+//            if (top < 10) {
+//                top = rect.bottom + 8;
+//            }
 
-            tooltip.css({
-                left: left + 'px',
-                top: top + 'px'
-            });
+//            tooltip.css({
+//                left: left + 'px',
+//                top: top + 'px'
+//            });
 
-            // Show tooltip
-            setTimeout(() => tooltip.addClass('show'), 10);
-        });
+//            // Show tooltip
+//            setTimeout(() => tooltip.addClass('show'), 10);
+//        });
 
-        // Handle mouseleave
-        html.on('mouseleave', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function () {
-            if (tooltip) {
-                tooltip.removeClass('show');
-                setTimeout(() => {
-                    if (tooltip) {
-                        tooltip.remove();
-                        tooltip = null;
-                    }
-                }, 150);
-            }
-        });
-    }
+//        // Handle mouseleave
+//        html.on('mouseleave', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function () {
+//            if (tooltip) {
+//                tooltip.removeClass('show');
+//                setTimeout(() => {
+//                    if (tooltip) {
+//                        tooltip.remove();
+//                        tooltip = null;
+//                    }
+//                }, 150);
+//            }
+//        });
+//    }
 }
 
 // Register the sheet application
