@@ -1,4 +1,25 @@
 <section class="spells-section">
+    <!-- Spells Learned Counter -->
+    <div class="spells-learned-counter">
+        <h3>Spells Learned</h3>
+        <div class="spell-numbers">
+            <div class="form-group">
+                <label>Base</label>
+                <input type="number" name="system.spellsLearnedBase" value="{{system.spellsLearnedBase}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>From Level</label>
+                <input type="number" name="system.spellsLearnedFromLevel" value="{{system.spellsLearnedFromLevel}}" data-dtype="Number" readonly />
+            </div>
+            <div class="form-group">
+                <label>Total</label>
+                <input type="number" name="system.spellsLearnedTotal" value="{{system.spellsLearnedTotal}}" data-dtype="Number" readonly />
+            </div>
+        </div>
+    </div>
+
+    <hr />
+
     <h2>Sin and Dark Magic</h2>
 
     <div class="sin-dark-magic-section">

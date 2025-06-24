@@ -9,7 +9,33 @@
             <label>Experience</label>
             <input type="number" name="system.experience" value="{{system.experience}}" data-dtype="Number" />
         </div>
+        <div class="level-buttons">
+            <button type="button" class="level-up-btn">Level Up</button>
+            <button type="button" class="experience-check-btn">Check Experience</button>
+        </div>
     </div>
+
+    <!-- Paths Info -->
+    <div class="paths-info">
+        <h3>Path & Tier Progression</h3>
+        <div class="paths-progression">
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="system.isMonster" {{#if system.isMonster}} checked{{/if}} />
+                    Is a Monster
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Number of Paths</label>
+                <input type="number" name="system.pathsAllowed" value="{{system.pathsAllowed}}" data-dtype="Number" readonly />
+            </div>
+            <div class="form-group">
+                <label>Maximum Tier</label>
+                <input type="number" name="system.maxTier" value="{{system.maxTier}}" data-dtype="Number" readonly />
+            </div>
+        </div>
+    </div>
+
 
     <!-- Paths -->
     <div class="paths">
@@ -51,6 +77,26 @@
         {{/each}}
     </div>
 
+    <!-- Talents Counter -->
+    <div class="talents-counter">
+        <h3>Talents</h3>
+        <div class="talent-numbers">
+            <div class="form-group">
+                <label>From Level</label>
+                <input type="number" name="system.talentsFromLevel" value="{{system.talentsFromLevel}}" data-dtype="Number" readonly />
+            </div>
+            <div class="form-group">
+                <label>Bonus</label>
+                <input type="number" name="system.talentsBonus" value="{{system.talentsBonus}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Total</label>
+                <input type="number" name="system.talentsTotal" value="{{system.talentsTotal}}" data-dtype="Number" readonly />
+            </div>
+        </div>
+    </div>
+
+
     <!-- Talents -->
     <div class="talents">
         <h2>
@@ -85,5 +131,32 @@
             </div>
             {{/each}}
         </div>
+    </div>
+
+    <!-- Traits Section -->
+    <div class="traits-section">
+        <div class="section-header">
+            <h3>Traits</h3>
+            <div class="controls">
+                <a class="trait-browse" title="Browse Traits"><i class="fas fa-search"></i></a>
+            </div>
+        </div>
+
+        <ol class="items-list traits-list">
+            {{#each actor.traits as |trait id|}}
+            <li class="item trait-item" data-item-id="{{trait._id}}">
+                <div class="item-name">{{trait.name}}</div>
+                <div class="item-type">{{trait.system.talentType}}</div>
+                <div class="item-controls">
+                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                </div>
+            </li>
+            {{else}}
+            <li class="item trait-item">
+                <div class="item-name">No traits</div>
+            </li>
+            {{/each}}
+        </ol>
     </div>
 </section>

@@ -99,6 +99,56 @@ const PATH_SKILL_TYPES = {
     CHOOSE_CRAFT: "choose-craft"         // e.g., "Choose 3 Custom Craft Skills"
 };
 
+/**
+ * Default token image for items
+ */
+const DEFAULT_TOKEN = "icons/svg/item-bag.svg";
+
+/**
+ * Additional constants for error handling
+ */
+const FALLBACK_ACTOR_DATA = {
+    attributes: {
+        physique: { value: 1, speciesBonus: 0 },
+        finesse: { value: 1, speciesBonus: 0 },
+        mind: { value: 1, speciesBonus: 0 },
+        presence: { value: 1, speciesBonus: 0 },
+        soul: { value: 1, speciesBonus: 0 }
+    },
+    defenses: {
+        resilience: 1,
+        avoid: 1,
+        grit: 1,
+        resilienceBonus: 0,
+        avoidBonus: 0,
+        gritBonus: 0,
+        passiveDodge: 0,
+        passiveParry: 0,
+        facing: "front",
+        avoidPenalty: 0
+    },
+    hp: { value: 1, max: 1 },
+    sanity: { value: 10, max: 10 },
+    species: {
+        name: "",
+        baseHP: 0,
+        size: "medium",
+        abilities: "",
+        flexibleBonus: {
+            value: 0,
+            selectedAttribute: ""
+        }
+    },
+    naturalDeflection: {
+        head: { current: 0, max: 0, stacks: false },
+        body: { current: 0, max: 0, stacks: false },
+        leftarm: { current: 0, max: 0, stacks: false },
+        rightarm: { current: 0, max: 0, stacks: false },
+        leftleg: { current: 0, max: 0, stacks: false },
+        rightleg: { current: 0, max: 0, stacks: false }
+    }
+};
+
 // ====================================================================
 // 1. CORE ACTOR CLASSES
 // ====================================================================
@@ -115,26 +165,66 @@ class TheFadeActor extends Actor {
     prepareData() {
         super.prepareData();
 
+        // Ensure this actor exists and has an id (is properly initialized)
+        if (!this || !this.id) {
+            console.warn("Actor not properly initialized, skipping prepareData");
+            return;
+        }
+
         const actorData = this;
+
+        // Initialize system data if it doesn't exist
+        if (!actorData.system || typeof actorData.system !== 'object') {
+            console.warn("Actor system data missing, initializing with fallback data");
+            actorData.system = foundry.utils.deepClone(FALLBACK_ACTOR_DATA);
+        }
+
         const data = actorData.system;
-        const flags = actorData.flags;
+        const flags = actorData.flags || {};
+
+        // Ensure all required system properties exist before processing
+        this._ensureSystemDataIntegrity(data);
 
         // Make separate methods for each Actor type (character, npc, etc.)
         if (actorData.type === 'character') {
             this._prepareCharacterData(actorData);
         }
+    }
 
-        // Ensure attributes always have a value
-        if (data.attributes) {
-            Object.keys(data.attributes).forEach(attr => {
-                if (data.attributes[attr].value === undefined) {
-                    data.attributes[attr].value = 1;
-                }
-            });
+    /**
+     * Ensure system data has all required properties
+     * @param {Object} data - Actor system data
+     */
+    _ensureSystemDataIntegrity(data) {
+        // Initialize attributes if undefined
+        if (!data.attributes || typeof data.attributes !== 'object') {
+            data.attributes = {
+                physique: { value: 1, speciesBonus: 0 },
+                finesse: { value: 1, speciesBonus: 0 },
+                mind: { value: 1, speciesBonus: 0 },
+                presence: { value: 1, speciesBonus: 0 },
+                soul: { value: 1, speciesBonus: 0 }
+            };
         }
 
-        // Ensure defenses has required properties
-        if (!data.defenses) {
+        // Ensure each attribute has required properties
+        const expectedAttributes = ['physique', 'finesse', 'mind', 'presence', 'soul'];
+        expectedAttributes.forEach(attr => {
+            if (!data.attributes[attr] || typeof data.attributes[attr] !== 'object') {
+                data.attributes[attr] = { value: 1, speciesBonus: 0 };
+            }
+
+            if (typeof data.attributes[attr].value !== 'number') {
+                data.attributes[attr].value = 1;
+            }
+
+            if (typeof data.attributes[attr].speciesBonus !== 'number') {
+                data.attributes[attr].speciesBonus = 0;
+            }
+        });
+
+        // Ensure defenses exist
+        if (!data.defenses || typeof data.defenses !== 'object') {
             data.defenses = {
                 resilience: 0,
                 avoid: 0,
@@ -144,7 +234,8 @@ class TheFadeActor extends Actor {
                 gritBonus: 0,
                 passiveDodge: 0,
                 passiveParry: 0,
-                facing: "front"
+                facing: "front",
+                avoidPenalty: 0
             };
         }
 
@@ -153,21 +244,15 @@ class TheFadeActor extends Actor {
             data.defenses.facing = "front";
         }
 
-        // Make separate methods for each Actor type (character, npc, etc.)
-        if (actorData.type === 'character') {
-            this._prepareCharacterData(actorData);
+        // Ensure HP exists
+        if (!data.hp || typeof data.hp !== 'object') {
+            data.hp = { value: 1, max: 1 };
         }
 
-        // Ensure attributes always have a value
-        if (data.attributes) {
-            Object.keys(data.attributes).forEach(attr => {
-                if (data.attributes[attr].value === undefined) {
-                    data.attributes[attr].value = 1;
-                }
-            });
+        // Ensure Sanity exists
+        if (!data.sanity || typeof data.sanity !== 'object') {
+            data.sanity = { value: 10, max: 10 };
         }
-
-        // this.prepareMagicItems();
 
         // Ensure naturalDeflection exists as an object with all body parts
         if (!data.naturalDeflection || typeof data.naturalDeflection !== 'object') {
@@ -185,19 +270,51 @@ class TheFadeActor extends Actor {
             }
 
             // Ensure all properties exist
-            if (data.naturalDeflection[part].current === undefined) data.naturalDeflection[part].current = 0;
-            if (data.naturalDeflection[part].max === undefined) data.naturalDeflection[part].max = 0;
-            if (data.naturalDeflection[part].stacks === undefined) data.naturalDeflection[part].stacks = false;
+            if (typeof data.naturalDeflection[part].current !== 'number') {
+                data.naturalDeflection[part].current = 0;
+            }
+            if (typeof data.naturalDeflection[part].max !== 'number') {
+                data.naturalDeflection[part].max = 0;
+            }
+            if (typeof data.naturalDeflection[part].stacks !== 'boolean') {
+                data.naturalDeflection[part].stacks = false;
+            }
         });
 
         // Initialize arrays to prevent iteration errors
-        if (!data.itemsOfPower) data.itemsOfPower = [];
-        if (!data.equippedItemsOfPower) data.equippedItemsOfPower = {};
-        if (!data.unequippedItemsOfPower) data.unequippedItemsOfPower = [];
-        if (!data.equippedArmor) data.equippedArmor = {};
-        if (!data.unequippedArmor) data.unequippedArmor = [];
-        if (!data.potions) data.potions = [];
-        if (!data.drugs) data.drugs = [];
+        if (!Array.isArray(data.itemsOfPower)) data.itemsOfPower = [];
+        if (!data.equippedItemsOfPower || typeof data.equippedItemsOfPower !== 'object') {
+            data.equippedItemsOfPower = {};
+        }
+        if (!Array.isArray(data.unequippedItemsOfPower)) data.unequippedItemsOfPower = [];
+        if (!data.equippedArmor || typeof data.equippedArmor !== 'object') {
+            data.equippedArmor = {};
+        }
+        if (!Array.isArray(data.unequippedArmor)) data.unequippedArmor = [];
+        if (!Array.isArray(data.potions)) data.potions = [];
+        if (!Array.isArray(data.drugs)) data.drugs = [];
+
+        // Ensure species exists
+        if (!data.species || typeof data.species !== 'object') {
+            data.species = {
+                name: "",
+                baseHP: 0,
+                size: "medium",
+                abilities: "",
+                flexibleBonus: {
+                    value: 0,
+                    selectedAttribute: ""
+                }
+            };
+        }
+
+        // Ensure species flexibleBonus exists
+        if (!data.species.flexibleBonus || typeof data.species.flexibleBonus !== 'object') {
+            data.species.flexibleBonus = {
+                value: 0,
+                selectedAttribute: ""
+            };
+        }
     }
 
     /**
@@ -205,91 +322,98 @@ class TheFadeActor extends Actor {
     * @param {Object} actorData - The actor's data object
     */
     _prepareCharacterData(actorData) {
+        // Enhanced safety checks
+        if (!actorData) {
+            console.error("actorData is null/undefined in _prepareCharacterData");
+            return;
+        }
+
+        if (!actorData.system) {
+            console.error("Actor system data missing in _prepareCharacterData");
+            actorData.system = foundry.utils.deepClone(FALLBACK_ACTOR_DATA);
+        }
+
         const data = actorData.system;
 
-        // Initialize attributes if undefined
-        if (!data.attributes) {
-            data.attributes = {
-                physique: { value: 1 },
-                finesse: { value: 1 },
-                mind: { value: 1 },
-                presence: { value: 1 },
-                soul: { value: 1 }
-            };
+        try {
+            // Ensure data integrity before calculations
+            this._ensureSystemDataIntegrity(data);
+
+            // Calculate defenses based on attributes and include bonuses
+            this._calculateBaseDefenses(data, actorData);
+
+            // Apply facing modifiers
+            this._applyFacingModifiers(data);
+
+            // Calculate carrying capacity
+            this._calculateCarryingCapacity(data);
+
+            // Calculate max HP and Sanity
+            this._calculateMaxValues(data, actorData);
+
+            // Calculate Sin Threshold for dark magic
+            this._calculateSinThreshold(data);
+
+        } catch (error) {
+            console.error("Error in _prepareCharacterData calculations:", error);
+            console.error("Error stack:", error.stack);
+
+            // Initialize minimal defense data to prevent template errors
+            this._initializeMinimalDefenseData(data);
         }
+    }
 
-        // Ensure each attribute has a value
-        Object.keys(data.attributes).forEach(attr => {
-            if (data.attributes[attr].value === undefined) {
-                data.attributes[attr].value = 1;
-            }
-
-            // Ensure the value is a number
-            data.attributes[attr].value = Number(data.attributes[attr].value) || 1;
-
-            // Make sure the species bonus is accounted for in calculations
-            // The actual value already includes the bonus, this is just for display
-            data.attributes[attr].speciesBonus = data.attributes[attr].speciesBonus || 0;
-        });
-
-        // Calculate defenses based on attributes and include bonuses
-        // Initialize bonus values if they don't exist
-        if (!data.defenses.resilienceBonus) data.defenses.resilienceBonus = 0;
-        if (!data.defenses.avoidBonus) data.defenses.avoidBonus = 0;
-        if (!data.defenses.gritBonus) data.defenses.gritBonus = 0;
-
-        // Calculate base defenses based on attributes
-        data.defenses.resilience = Math.floor(data.attributes.physique.value / 2);
-        data.defenses.avoid = Math.floor(data.attributes.finesse.value / 2);
-        data.defenses.grit = Math.floor(data.attributes.mind.value / 2);
-
-        // Ensure minimum value of 1 for base defenses
-        data.defenses.resilience = Math.max(1, data.defenses.resilience);
-        data.defenses.avoid = Math.max(1, data.defenses.avoid);
-        data.defenses.grit = Math.max(1, data.defenses.grit);
-
-        // Calculate total defenses including bonuses
-        data.totalResilience = data.defenses.resilience + Number(data.defenses.resilienceBonus || 0);
-        data.totalAvoid = data.defenses.avoid + Number(data.defenses.avoidBonus || 0);
-        data.totalGrit = data.defenses.grit + Number(data.defenses.gritBonus || 0);
-
-        // Ensure minimum value of 1 for defenses
-        Object.keys(data.defenses).forEach(key => {
-            // Skip the bonus fields when enforcing minimums
-            if (!key.includes('Bonus')) {
-                data.defenses[key] = Math.max(1, data.defenses[key]);
-            }
-        });
-
+    /**
+     * Calculate max HP and Sanity values
+     * @param {Object} data - Character system data
+     * @param {Object} actorData - Full actor data
+     */
+    _calculateMaxValues(data, actorData) {
         // Calculate Max HP based on Species, Path, Physique, and misc bonus
-        let baseHP = data.species.baseHP || 0;
+        let baseHP = (data.species?.baseHP) || 0;
         let pathHP = 0;
 
-        // Add HP from Paths
-        if (actorData.items) { // Check if items exist
-            actorData.items.forEach(item => {
-                if (item.type === "path") {
-                    pathHP += item.system.baseHP || 0;
-                }
-            });
+        // Add HP from Paths - safer item processing
+        if (actorData.items && typeof actorData.items.forEach === 'function') {
+            try {
+                actorData.items.forEach(item => {
+                    if (item && item.type === "path" && item.system && typeof item.system.baseHP === 'number') {
+                        pathHP += item.system.baseHP;
+                    }
+                });
+            } catch (error) {
+                console.error("Error processing path HP:", error);
+            }
         }
 
-        // Calculate max HP and update both the token attribute and display property
-        const calculatedMaxHP = baseHP + pathHP + data.attributes.physique.value + (data.hpMiscBonus || 0);
+        // Calculate max HP and update both properties
+        const physiqueValue = data.attributes?.physique?.value || 1;
+        const hpMiscBonus = data.hpMiscBonus || 0;
+        const calculatedMaxHP = baseHP + pathHP + physiqueValue + hpMiscBonus;
+
         data.hp.max = calculatedMaxHP;
         data.maxHP = calculatedMaxHP; // For backward compatibility with UI
 
         // Calculate max Sanity and update both properties
-        const calculatedMaxSanity = 10 + data.attributes.mind.value + (data.sanity?.miscBonus || 0);
+        const mindValue = data.attributes?.mind?.value || 1;
+        const sanityMiscBonus = data.sanity?.miscBonus || 0;
+        const calculatedMaxSanity = 10 + mindValue + sanityMiscBonus;
+
         data.sanity.max = calculatedMaxSanity;
         data.maxSanity = calculatedMaxSanity; // For backward compatibility with UI
 
         // Ensure HP and Sanity values don't exceed max
         if (data.hp.value > data.hp.max) data.hp.value = data.hp.max;
         if (data.sanity.value > data.sanity.max) data.sanity.value = data.sanity.max;
+    }
 
-        // Calculate Sin Threshold
-        if (!data.darkMagic) {
+    /**
+     * Calculate sin threshold for dark magic
+     * @param {Object} data - Character system data
+     */
+    _calculateSinThreshold(data) {
+        // Initialize dark magic data if needed
+        if (!data.darkMagic || typeof data.darkMagic !== 'object') {
             data.darkMagic = {
                 spellsLearned: {},
                 currentSin: 0,
@@ -298,15 +422,58 @@ class TheFadeActor extends Actor {
             };
         }
 
-        // Count dark magic spells learned
+        // Count dark magic spells learned - safer processing
         let darkMagicCount = 0;
-        for (let key in data.darkMagic.spellsLearned) {
-            if (data.darkMagic.spellsLearned[key]) darkMagicCount++;
+        if (data.darkMagic.spellsLearned && typeof data.darkMagic.spellsLearned === 'object') {
+            try {
+                darkMagicCount = Object.values(data.darkMagic.spellsLearned).filter(Boolean).length;
+            } catch (error) {
+                console.error("Error counting dark magic spells:", error);
+                darkMagicCount = 0;
+            }
         }
 
         // Calculate sin threshold: Soul - 1 per dark magic spell + bonus
-        data.darkMagic.sinThreshold = data.attributes.soul.value - darkMagicCount + (data.darkMagic.sinThresholdBonus || 0);
+        const soulValue = data.attributes?.soul?.value || 1;
+        const sinThresholdBonus = data.darkMagic.sinThresholdBonus || 0;
+        data.darkMagic.sinThreshold = soulValue - darkMagicCount + sinThresholdBonus;
+    }
 
+    /**
+     * Initialize minimal defense data to prevent errors
+     * @param {Object} data - Character system data
+     */
+    _initializeMinimalDefenseData(data) {
+        if (!data.defenses) {
+            data.defenses = {
+                resilience: 1,
+                avoid: 1,
+                grit: 1,
+                resilienceBonus: 0,
+                avoidBonus: 0,
+                gritBonus: 0,
+                passiveDodge: 0,
+                passiveParry: 0,
+                facing: "front",
+                avoidPenalty: 0
+            };
+        }
+
+        if (!data.carryingCapacity) {
+            data.carryingCapacity = {
+                light: 50,
+                medium: 100,
+                heavy: 150,
+                overHead: 225,
+                offGround: 450,
+                pushOrDrag: 750
+            };
+        }
+
+        // Set safe total values
+        data.totalResilience = data.defenses.resilience + (data.defenses.resilienceBonus || 0);
+        data.totalAvoid = data.defenses.avoid + (data.defenses.avoidBonus || 0);
+        data.totalGrit = data.defenses.grit + (data.defenses.gritBonus || 0);
     }
 
     /**
@@ -327,6 +494,189 @@ class TheFadeActor extends Actor {
 
         return roll;
     }
+
+    /**
+    * Calculate base defenses without facing modifiers
+    * @param {Object} data - Character data
+    * @param {Actor} actor - The actor instance
+    */
+    _calculateBaseDefenses(data, actor) {
+        // Ensure attributes exist before processing
+        if (!data.attributes) {
+            data.attributes = {
+                physique: { value: 1 },
+                finesse: { value: 1 },
+                mind: { value: 1 },
+                presence: { value: 1 },
+                soul: { value: 1 }
+            };
+        }
+
+        // Ensure defenses exist before processing
+        if (!data.defenses) {
+            data.defenses = {
+                resilience: 0,
+                avoid: 0,
+                grit: 0,
+                resilienceBonus: 0,
+                avoidBonus: 0,
+                gritBonus: 0,
+                passiveDodge: 0,
+                passiveParry: 0,
+                facing: "front",
+                avoidPenalty: 0
+            };
+        }
+
+        // Initialize bonus values if they don't exist
+        if (!data.defenses.resilienceBonus) data.defenses.resilienceBonus = 0;
+        if (!data.defenses.avoidBonus) data.defenses.avoidBonus = 0;
+        if (!data.defenses.gritBonus) data.defenses.gritBonus = 0;
+        if (!data.defenses.avoidPenalty) data.defenses.avoidPenalty = 0;
+
+        // Calculate base defenses based on attributes
+        data.defenses.resilience = Math.floor(data.attributes.physique.value / 2);
+        data.defenses.avoid = Math.floor(data.attributes.finesse.value / 2);
+        data.defenses.grit = Math.floor(data.attributes.mind.value / 2);
+
+        // Ensure minimum value of 1 for base defenses
+        data.defenses.resilience = Math.max(1, data.defenses.resilience);
+        data.defenses.avoid = Math.max(1, data.defenses.avoid);
+        data.defenses.grit = Math.max(1, data.defenses.grit);
+
+        // Calculate total defenses including bonuses but without facing penalties
+        data.totalResilience = data.defenses.resilience + Number(data.defenses.resilienceBonus || 0);
+        data.totalAvoid = data.defenses.avoid + Number(data.defenses.avoidBonus || 0);
+        data.totalGrit = data.defenses.grit + Number(data.defenses.gritBonus || 0);
+
+        // Calculate Passive Dodge based on Acrobatics skill and Finesse
+        let acrobonaticsDodge = 0;
+        let finesseDodge = Math.floor(data.attributes.finesse.value / 4);
+
+        // Find Acrobatics skill
+        const acrobaticsSkill = actor.items.find(i =>
+            i.type === 'skill' && i.name.toLowerCase() === 'acrobatics');
+
+        if (acrobaticsSkill) {
+            const rank = acrobaticsSkill.system.rank;
+            if (rank === 'adept') acrobonaticsDodge = 1;
+            else if (rank === 'experienced') acrobonaticsDodge = 1;
+            else if (rank === 'expert') acrobonaticsDodge = 2;
+            else if (rank === 'mastered') acrobonaticsDodge = 3;
+        }
+
+        data.defenses.basePassiveDodge = Math.max(acrobonaticsDodge, finesseDodge);
+        data.defenses.passiveDodge = data.defenses.basePassiveDodge;
+
+        // Calculate Passive Parry based on highest weapon skill
+        let highestParry = 0;
+        const weaponSkills = actor.items.filter(i =>
+            i.type === 'skill' && ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Unarmed'].includes(i.name));
+
+        weaponSkills.forEach(skill => {
+            let parryValue = 0;
+            const rank = skill.system.rank;
+
+            if (rank === 'practiced') parryValue = 1;
+            else if (rank === 'adept') parryValue = 2;
+            else if (rank === 'experienced') parryValue = 3;
+            else if (rank === 'expert') parryValue = 4;
+            else if (rank === 'mastered') parryValue = 6;
+
+            if (parryValue > highestParry) highestParry = parryValue;
+        });
+
+        data.defenses.basePassiveParry = highestParry;
+        data.defenses.passiveParry = data.defenses.basePassiveParry;
+    }
+
+    /**
+    * Apply facing modifiers to defenses
+    * @param {Object} data - Character data
+    */
+    _applyFacingModifiers(data) {
+        // Ensure defenses exist
+        if (!data.defenses || typeof data.defenses !== 'object') {
+            console.error("Defenses data missing in _applyFacingModifiers");
+            return;
+        }
+
+        // Apply facing modifications to defensive values
+        const facing = data.defenses.facing || 'front';
+
+        // Ensure base values exist
+        if (data.defenses.basePassiveDodge === undefined) data.defenses.basePassiveDodge = 0;
+        if (data.defenses.basePassiveParry === undefined) data.defenses.basePassiveParry = 0;
+
+        // Apply modifications based on facing
+        if (facing === 'flank') {
+            // Full passive defenses, but -1 to Avoid
+            data.defenses.avoidPenalty = -1;
+            data.defenses.passiveDodge = data.defenses.basePassiveDodge;
+            data.defenses.passiveParry = data.defenses.basePassiveParry;
+        }
+        else if (facing === 'backflank') {
+            // Half passive dodge, no parry, -2 Avoid
+            data.defenses.passiveDodge = Math.floor(data.defenses.basePassiveDodge / 2);
+            data.defenses.passiveParry = 0;
+            data.defenses.avoidPenalty = -2;
+        }
+        else if (facing === 'back') {
+            // Quarter passive dodge, no parry, -2 Avoid
+            data.defenses.passiveDodge = Math.floor(data.defenses.basePassiveDodge / 4);
+            data.defenses.passiveParry = 0;
+            data.defenses.avoidPenalty = -2;
+        }
+        else {
+            // Front facing - full benefits, no penalties
+            data.defenses.passiveDodge = data.defenses.basePassiveDodge;
+            data.defenses.passiveParry = data.defenses.basePassiveParry;
+            data.defenses.avoidPenalty = 0;
+        }
+
+        // Ensure totalAvoid exists before modifying
+        if (data.totalAvoid === undefined) {
+            data.totalAvoid = (data.defenses.avoid || 0) + (data.defenses.avoidBonus || 0);
+        }
+
+        // Apply avoid penalty to total avoid
+        data.totalAvoid += data.defenses.avoidPenalty;
+
+        // Ensure total avoid doesn't go below 0
+        data.totalAvoid = Math.max(0, data.totalAvoid);
+    }
+
+    /**
+    * Calculate carrying capacity
+    * @param {Object} data - Character data
+    */
+    _calculateCarryingCapacity(data) {
+        // Ensure attributes exist
+        if (!data.attributes || !data.attributes.physique) {
+            console.error("Attributes missing in _calculateCarryingCapacity");
+            // Set default carrying capacity
+            data.carryingCapacity = {
+                light: 50,
+                medium: 100,
+                heavy: 150,
+                overHead: 225,
+                offGround: 450,
+                pushOrDrag: 750
+            };
+            return;
+        }
+
+        const physique = data.attributes.physique.value || 1;
+        data.carryingCapacity = {
+            light: (5 + physique) * 10,
+            medium: (5 + physique) * 20,
+            heavy: (5 + physique) * 30,
+            overHead: (5 + physique) * 30 * 1.5,
+            offGround: (5 + physique) * 30 * 3,
+            pushOrDrag: (5 + physique) * 30 * 5
+        };
+    }
+
 }
 
 // ====================================================================
@@ -356,9 +706,78 @@ class TheFadeCharacterSheet extends ActorSheet {
     * @returns {Object} Sheet data object
     */
     getData() {
-        const data = super.getData();
+        let data;
 
-        data.system = data.actor.system;
+        // Ensure actor exists before proceeding
+        if (!this.actor) {
+            console.error("Actor is null or undefined in getData()");
+            return {
+                actor: null,
+                system: FALLBACK_ACTOR_DATA,
+                items: [],
+                dtypes: ["String", "Number", "Boolean"],
+                sizeOptions: {
+                    "miniscule": "Miniscule",
+                    "diminutive": "Diminutive",
+                    "tiny": "Tiny",
+                    "small": "Small",
+                    "medium": "Medium",
+                    "large": "Large",
+                    "massive": "Massive",
+                    "immense": "Immense",
+                    "enormous": "Enormous",
+                    "titanic": "Titanic"
+                }
+            };
+        }
+
+        try {
+            data = super.getData();
+        } catch (error) {
+            console.error("Error in super.getData():", error);
+            // Create minimal data structure with safe fallbacks
+            data = {
+                actor: this.actor,
+                system: this.actor?.system || FALLBACK_ACTOR_DATA,
+                items: this.actor?.items?.contents || [],
+                dtypes: ["String", "Number", "Boolean"],
+                sizeOptions: {
+                    "miniscule": "Miniscule",
+                    "diminutive": "Diminutive",
+                    "tiny": "Tiny",
+                    "small": "Small",
+                    "medium": "Medium",
+                    "large": "Large",
+                    "massive": "Massive",
+                    "immense": "Immense",
+                    "enormous": "Enormous",
+                    "titanic": "Titanic"
+                }
+            };
+        }
+
+        // Additional safety checks
+        if (!data.actor) {
+            console.error("Actor missing from getData result");
+            data.actor = this.actor;
+        }
+
+        if (!data.actor?.system) {
+            console.error("Actor system data missing in sheet getData");
+            data.system = FALLBACK_ACTOR_DATA;
+
+            // Initialize actor system data if completely missing
+            if (data.actor && !data.actor.system) {
+                data.actor.system = FALLBACK_ACTOR_DATA;
+            }
+        } else {
+            data.system = data.actor.system;
+        }
+
+        // Ensure items array exists
+        if (!Array.isArray(data.items)) {
+            data.items = data.actor?.items?.contents || [];
+        }
 
         data.dtypes = ["String", "Number", "Boolean"];
 
@@ -376,19 +795,115 @@ class TheFadeCharacterSheet extends ActorSheet {
             "titanic": "Titanic"
         };
 
-        // Prepare items
-        if (data.actor.type == 'character') {
-            this._prepareCharacterItems(data);
-            this._prepareCharacterData(data);
+        // Only prepare character data if we have a valid actor and system data
+        if (data.actor?.type === 'character' && data.system) {
+            try {
+                console.log("Preparing character items...");
+                this._prepareCharacterItems(data);
+                console.log("Character items prepared successfully");
+
+                console.log("Preparing character data...");
+                this._prepareCharacterData(data);
+                console.log("Character data prepared successfully");
+            } catch (error) {
+                console.error("Error preparing character data:", error);
+                console.error("Error stack:", error.stack);
+
+                // Initialize minimal data to prevent template errors
+                this._initializeMinimalCharacterData(data);
+            }
         }
 
-        // Ensure magic items data is available to template
-        data.actor.magicItems = data.actor.system.magicItems || {};
-        data.actor.unequippedMagicItems = data.actor.system.unequippedMagicItems || [];
-        data.actor.currentAttunements = data.actor.system.currentAttunements || 0;
-        data.actor.maxAttunements = data.actor.system.maxAttunements || 0;
+        // Ensure magic items data is available to template (with fallbacks)
+        try {
+            data.actor.magicItems = data.actor.system?.magicItems || {};
+            data.actor.unequippedMagicItems = data.actor.system?.unequippedMagicItems || [];
+            data.actor.currentAttunements = data.actor.system?.currentAttunements || 0;
+            data.actor.maxAttunements = data.actor.system?.maxAttunements || 0;
+        } catch (error) {
+            console.error("Error setting up magic items data:", error);
+            data.actor.magicItems = {};
+            data.actor.unequippedMagicItems = [];
+            data.actor.currentAttunements = 0;
+            data.actor.maxAttunements = 0;
+        }
 
+        console.log("getData completed successfully");
         return data;
+    }
+
+    /**
+     * Initialize minimal character data to prevent template errors
+     * @param {Object} data - Sheet data object
+     */
+    _initializeMinimalCharacterData(data) {
+        // Ensure actor exists
+        if (!data.actor) {
+            console.error("Cannot initialize minimal data - no actor");
+            return;
+        }
+
+        // Initialize all required arrays and objects
+        data.actor.gear = [];
+        data.actor.weapons = [];
+        data.actor.armor = [];
+        data.actor.paths = [];
+        data.actor.spells = [];
+        data.actor.skills = [];
+        data.actor.talents = [];
+        data.actor.itemsOfPower = [];
+        data.actor.equippedItemsOfPower = {};
+        data.actor.unequippedItemsOfPower = [];
+        data.actor.equippedArmor = {};
+        data.actor.unequippedArmor = [];
+        data.actor.armorTotals = {};
+        data.actor.potions = [];
+        data.actor.drugs = [];
+        data.actor.currentAttunements = 0;
+        data.actor.maxAttunements = 0;
+
+        // Initialize minimal system data if missing
+        if (!data.actor.system) {
+            data.actor.system = foundry.utils.deepClone(FALLBACK_ACTOR_DATA);
+        } else {
+            // Ensure critical system properties exist
+            if (!data.actor.system.defenses) {
+                data.actor.system.defenses = {
+                    resilience: 1,
+                    avoid: 1,
+                    grit: 1,
+                    passiveDodge: 0,
+                    passiveParry: 0,
+                    facing: "front",
+                    resilienceBonus: 0,
+                    avoidBonus: 0,
+                    gritBonus: 0,
+                    avoidPenalty: 0
+                };
+            }
+
+            if (!data.actor.system.carryingCapacity) {
+                data.actor.system.carryingCapacity = {
+                    light: 50,
+                    medium: 100,
+                    heavy: 150
+                };
+            }
+
+            if (!data.actor.system.attributes) {
+                data.actor.system.attributes = {
+                    physique: { value: 1, speciesBonus: 0 },
+                    finesse: { value: 1, speciesBonus: 0 },
+                    mind: { value: 1, speciesBonus: 0 },
+                    presence: { value: 1, speciesBonus: 0 },
+                    soul: { value: 1, speciesBonus: 0 }
+                };
+            }
+        }
+
+        // Set system references for template access
+        data.actor.system.currentAttunements = 0;
+        data.actor.system.maxAttunements = 0;
     }
 
     // --------------------------------------------------------------------
@@ -400,7 +915,36 @@ class TheFadeCharacterSheet extends ActorSheet {
     * @param {Object} sheetData - The sheet data to prepare
     */
     _prepareCharacterItems(sheetData) {
+        // Enhanced safety checks
+        if (!sheetData) {
+            console.error("sheetData is null/undefined in _prepareCharacterItems");
+            return;
+        }
+
         const actorData = sheetData.actor;
+
+        if (!actorData) {
+            console.error("Actor data missing in _prepareCharacterItems");
+            return;
+        }
+
+        if (!actorData.system) {
+            console.error("Actor system data missing in _prepareCharacterItems");
+            actorData.system = foundry.utils.deepClone(FALLBACK_ACTOR_DATA);
+        }
+
+        // Ensure items array exists and is iterable
+        let items = [];
+        if (sheetData.items && Array.isArray(sheetData.items)) {
+            items = sheetData.items;
+        } else if (actorData.items && Array.isArray(actorData.items)) {
+            items = actorData.items;
+        } else if (actorData.items && actorData.items.contents && Array.isArray(actorData.items.contents)) {
+            items = actorData.items.contents;
+        } else {
+            console.warn("No valid items array found, initializing empty arrays");
+            items = [];
+        }
 
         // Initialize containers
         const gear = [];
@@ -410,58 +954,521 @@ class TheFadeCharacterSheet extends ActorSheet {
         const spells = [];
         const skills = [];
         const talents = [];
+        const traits = [];
         const itemsOfPower = [];
         const potions = [];
         const drugs = [];
 
-        // Iterate through items, allocating to containers
-        for (let i of sheetData.items) {
-            i.img = i.img || DEFAULT_TOKEN;
+        // Safely iterate through items
+        for (let i of items) {
+            // Ensure item has basic properties
+            if (!i || typeof i !== 'object') continue;
 
-            if (i.type === 'item') {
-                if (i.system.itemCategory === 'magicitem') {
-                    itemsOfPower.push(i);
-                } else if (i.system.itemCategory === 'potion') {
-                    potions.push(i);
-                } else if (i.system.itemCategory === 'drug') {
-                    drugs.push(i);
-                } else {
-                    gear.push(i);
+            // Set default image
+            i.img = i.img || "icons/svg/item-bag.svg";
+
+            // Ensure item has system data
+            if (!i.system) {
+                i.system = {};
+            }
+
+            // Categorize items safely
+            try {
+                if (i.type === 'item') {
+                    const itemCategory = i.system.itemCategory;
+                    if (itemCategory === 'magicitem') {
+                        itemsOfPower.push(i);
+                    } else if (itemCategory === 'potion') {
+                        potions.push(i);
+                    } else if (itemCategory === 'drug') {
+                        drugs.push(i);
+                    } else {
+                        gear.push(i);
+                    }
                 }
-            }
-            else if (i.type === 'weapon') {
-                weapons.push(i);
-            }
-            else if (i.type === 'armor') {
-                armor.push(i);
-            }
-            else if (i.type === 'path') {
-                paths.push(i);
-            }
-            else if (i.type === 'spell') {
-                spells.push(i);
-            }
-            else if (i.type === 'skill') {
-                skills.push(i);
-            }
-            else if (i.type === 'talent') {
-                talents.push(i);
+                else if (i.type === 'weapon') {
+                    weapons.push(i);
+                }
+                else if (i.type === 'armor') {
+                    armor.push(i);
+                }
+                else if (i.type === 'path') {
+                    paths.push(i);
+                }
+                else if (i.type === 'spell') {
+                    spells.push(i);
+                }
+                else if (i.type === 'skill') {
+                    skills.push(i);
+                }
+                else if (i.type === 'talent') {
+                    talents.push(i);
+                }
+                else if (i.type === 'talent') {
+                    if (i.system.talentType === 'trait') {
+                        traits.push(i);
+                    } else {
+                        talents.push(i);
+                    }
+                }
+            } catch (error) {
+                console.warn(`Error categorizing item ${i.name || 'unknown'}:`, error);
             }
         }
 
-        // Sort skills by category and name
-        skills.sort((a, b) => {
-            if (a.system.category !== b.system.category) {
-                return a.system.category.localeCompare(b.system.category);
-            }
-            return a.name.localeCompare(b.name);
-        });
+        // Sort skills safely
+        try {
+            skills.sort((a, b) => {
+                const aCat = a.system?.category || '';
+                const bCat = b.system?.category || '';
+                const aName = a.name || '';
+                const bName = b.name || '';
+
+                if (aCat !== bCat) {
+                    return aCat.localeCompare(bCat);
+                }
+                return aName.localeCompare(bName);
+            });
+        } catch (error) {
+            console.error("Error sorting skills:", error);
+        }
 
         // Process Items of Power with ring slot logic
+        const { equippedItemsOfPower, unequippedItemsOfPower } = this._processItemsOfPower(itemsOfPower);
+
+        // Process Armor with stacking support
+        const { equippedArmor, unequippedArmor, armorTotals } = this._processArmor(armor, actorData);
+
+        // Calculate attunements safely
+        const currentAttunements = this._calculateCurrentAttunements(itemsOfPower);
+        const maxAttunements = this._calculateMaxAttunements(actorData);
+
+        // Calculate dice pools for skills safely
+        this._calculateSkillDicePools(skills, actorData);
+
+        // Calculate dice pools for weapons safely
+        this._calculateWeaponDicePools(weapons, skills, actorData);
+
+        // Mark custom skills
+        this._markCustomSkills(skills);
+
+        // Assign data to actor with safe defaults
+        actorData.gear = gear;
+        actorData.weapons = weapons;
+        actorData.armor = armor;
+        actorData.paths = paths;
+        actorData.spells = spells;
+        actorData.skills = skills;
+        actorData.talents = talents;
+        actorData.traits = traits;
+        actorData.itemsOfPower = itemsOfPower;
+        actorData.equippedItemsOfPower = equippedItemsOfPower;
+        actorData.unequippedItemsOfPower = unequippedItemsOfPower;
+        actorData.equippedArmor = equippedArmor;
+        actorData.unequippedArmor = unequippedArmor;
+        actorData.armorTotals = armorTotals;
+        actorData.potions = potions;
+        actorData.drugs = drugs;
+        actorData.currentAttunements = currentAttunements;
+        actorData.maxAttunements = maxAttunements;
+
+        // Set system references for template access
+        actorData.system.currentAttunements = currentAttunements;
+        actorData.system.maxAttunements = maxAttunements;
+    }
+
+    /**
+     * Safely calculate current attunements
+     * @param {Array} itemsOfPower - Array of magic items
+     * @returns {number} Current attunement count
+     */
+    _calculateCurrentAttunements(itemsOfPower) {
+        if (!Array.isArray(itemsOfPower)) return 0;
+
+        try {
+            return itemsOfPower.filter(item =>
+                item && item.system && item.system.attunement === true
+            ).length;
+        } catch (error) {
+            console.error("Error calculating current attunements:", error);
+            return 0;
+        }
+    }
+
+    /**
+     * Safely calculate maximum attunements
+     * @param {Object} actorData - Actor data
+     * @returns {number} Maximum attunement count
+     */
+    _calculateMaxAttunements(actorData) {
+        try {
+            const totalLevel = actorData.system?.level || 1;
+            const soulAttribute = actorData.system?.attributes?.soul?.value || 1;
+            return Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+        } catch (error) {
+            console.error("Error calculating max attunements:", error);
+            return 1;
+        }
+    }
+
+    /**
+     * Safely calculate dice pools for skills
+     * @param {Array} skills - Array of skills
+     * @param {Object} actorData - Actor data
+     */
+    _calculateSkillDicePools(skills, actorData) {
+        if (!Array.isArray(skills) || !actorData?.system?.attributes) return;
+
+        skills.forEach(skill => {
+            if (!skill || !skill.system) return;
+
+            try {
+                const attributeName = skill.system.attribute;
+                let attrValue = 0;
+
+                if (attributeName && attributeName.includes('_')) {
+                    const attributes = attributeName.split('_');
+                    const attr1 = actorData.system.attributes[attributes[0]]?.value || 0;
+                    const attr2 = actorData.system.attributes[attributes[1]]?.value || 0;
+                    attrValue = Math.floor((attr1 + attr2) / 2);
+                } else if (attributeName) {
+                    attrValue = actorData.system.attributes[attributeName]?.value || 0;
+                }
+
+                let dicePool = attrValue;
+
+                switch (skill.system.rank) {
+                    case "practiced": dicePool += 1; break;
+                    case "adept": dicePool += 2; break;
+                    case "experienced": dicePool += 3; break;
+                    case "expert": dicePool += 4; break;
+                    case "mastered": dicePool += 6; break;
+                    case "untrained": dicePool = Math.floor(dicePool / 2); break;
+                }
+
+                dicePool += (skill.system.miscBonus || 0);
+                skill.calculatedDice = Math.max(1, dicePool);
+            } catch (error) {
+                console.warn(`Error calculating dice pool for skill ${skill.name}:`, error);
+                skill.calculatedDice = 1;
+            }
+        });
+    }
+
+    /**
+     * Safely calculate dice pools for weapons
+     * @param {Array} weapons - Array of weapons
+     * @param {Array} skills - Array of skills
+     * @param {Object} actorData - Actor data
+     */
+    _calculateWeaponDicePools(weapons, skills, actorData) {
+        if (!Array.isArray(weapons)) return;
+
+        weapons.forEach(weapon => {
+            if (!weapon || !weapon.system) return;
+
+            try {
+                const skillName = weapon.system.skill;
+                const skill = Array.isArray(skills) ? skills.find(s => s && s.name === skillName) : null;
+
+                // Add attribute abbreviation
+                const attrAbbreviations = {
+                    "none": "N/A",
+                    "physique": "PHY",
+                    "finesse": "FIN",
+                    "mind": "MND",
+                    "presence": "PRS",
+                    "soul": "SOL"
+                };
+                weapon.attributeAbbr = attrAbbreviations[weapon.system.attribute] || "N/A";
+
+                if (skill && skill.calculatedDice !== undefined) {
+                    weapon.calculatedDice = skill.calculatedDice + (weapon.system.miscBonus || 0);
+                } else {
+                    // Untrained calculation
+                    const attributeName = weapon.system.attribute || "physique";
+                    if (attributeName !== "none" && actorData?.system?.attributes) {
+                        let attrValue = actorData.system.attributes[attributeName]?.value || 0;
+                        let dicePool = Math.floor(attrValue / 2);
+                        dicePool += (weapon.system.miscBonus || 0);
+                        weapon.calculatedDice = Math.max(1, dicePool);
+                    } else {
+                        weapon.calculatedDice = Math.max(1, weapon.system.miscBonus || 0);
+                    }
+                }
+            } catch (error) {
+                console.warn(`Error calculating dice pool for weapon ${weapon.name}:`, error);
+                weapon.calculatedDice = 1;
+            }
+        });
+    }
+
+    /**
+    * Calculate derived stats for the character
+    * @param {Object} sheetData - The sheet data to prepare
+    */
+    _prepareCharacterData(sheetData) {
+        // CRITICAL FIX: Ensure actor and system data exist
+        if (!sheetData || !sheetData.actor || !sheetData.actor.system) {
+            console.error("Missing actor or system data in _prepareCharacterData");
+            return;
+        }
+
+        const data = sheetData.actor.system;
+
+        // Initialize level-up related properties if they don't exist
+        if (data.level === undefined) data.level = 1;
+        if (data.experience === undefined) data.experience = 0;
+        if (data.isMonster === undefined) data.isMonster = false;
+        if (data.talentsBonus === undefined) data.talentsBonus = 0;
+        if (data.spellsLearnedBase === undefined) data.spellsLearnedBase = 0;
+
+        const level = data.level || 1;
+
+        // Calculate paths allowed
+        if (data.isMonster) {
+            data.pathsAllowed = 0;
+        } else {
+            data.pathsAllowed = 1 + Math.floor((level - 1) / 5);
+        }
+
+        // Calculate max tier
+        if (level >= 10) {
+            data.maxTier = 3;
+        } else if (level >= 5) {
+            data.maxTier = 2;
+        } else {
+            data.maxTier = 1;
+        }
+
+        // Calculate talents from level
+        data.talentsFromLevel = this._calculateTalentsFromLevel(level);
+        data.talentsTotal = data.talentsFromLevel + data.talentsBonus;
+
+        // Calculate current talents (excluding traits)
+        const actualTalents = sheetData.actor.talents ? sheetData.actor.talents.length : 0;
+        data.currentTalents = actualTalents;
+
+        // Calculate current traits separately
+        const currentTraits = sheetData.actor.traits ? sheetData.actor.traits.length : 0;
+        data.currentTraits = currentTraits;
+
+        // Calculate spells learned from level
+        data.spellsLearnedFromLevel = this._calculateSpellsLearnedFromLevel(level);
+        data.spellsLearnedTotal = data.spellsLearnedFromLevel + data.spellsLearnedBase;
+
+        // Ensure actor exists for the methods that need it
+        if (!sheetData.actor) {
+            console.error("Actor missing from sheetData in _prepareCharacterData");
+            return;
+        }
+
+        // Initialize minimal defense data to prevent template errors
+        if (!data.defenses) {
+            data.defenses = {
+                resilience: 1,
+                avoid: 1,
+                grit: 1,
+                resilienceBonus: 0,
+                avoidBonus: 0,
+                gritBonus: 0,
+                passiveDodge: 0,
+                passiveParry: 0,
+                facing: "front",
+                avoidPenalty: 0
+            };
+        }
+
+        if (!data.carryingCapacity) {
+            data.carryingCapacity = {
+                light: 50,
+                medium: 100,
+                heavy: 150,
+                overHead: 225,
+                offGround: 450,
+                pushOrDrag: 750
+            };
+        }
+    }
+
+    // Calculate talents gained from level (odd levels starting at 1)
+    _calculateTalentsFromLevel(level) {
+        let talents = 0;
+        for (let i = 1; i <= level; i++) {
+            if (i % 2 === 1) { // Odd levels
+                talents++;
+            }
+        }
+        return talents;
+    }
+
+    // Calculate spells learned from level (even levels if has spellcasting)
+    _calculateSpellsLearnedFromLevel(level) {
+        // Check if character has spellcasting skill at Learned or higher
+        const spellcastingSkill = this.actor.items.find(i =>
+            i.type === 'skill' &&
+            i.name.toLowerCase().includes('spellcasting') &&
+            ['learned', 'practiced', 'adept', 'experienced', 'expert', 'mastered'].includes(i.system.rank)
+        );
+
+        if (!spellcastingSkill) return 0;
+
+        let spells = 0;
+        for (let i = 2; i <= level; i += 2) { // Even levels starting at 2
+            spells++;
+        }
+        return spells;
+    }
+
+    // Experience check - auto level up if experience >= 10
+    async _onExperienceCheck(event) {
+        event.preventDefault();
+        const currentExp = this.actor.system.experience || 0;
+
+        if (currentExp >= 10) {
+            ui.notifications.info("Ready to level up! Click Level Up button.");
+        } else {
+            ui.notifications.info(`Need ${10 - currentExp} more experience to level up.`);
+        }
+    }
+
+    // Monster checkbox change handler
+    async _onMonsterChange(event) {
+        event.preventDefault();
+        const isMonster = event.target.checked;
+
+        await this.actor.update({
+            'system.isMonster': isMonster,
+            'system.pathsAllowed': isMonster ? 0 : (1 + Math.floor((this.actor.system.level - 1) / 5))
+        });
+    }
+
+    // Main level up function
+    async _onLevelUp(event) {
+        event.preventDefault();
+
+        const currentLevel = this.actor.system.level || 1;
+        const currentExp = this.actor.system.experience || 0;
+
+        if (currentExp < 10) {
+            ui.notifications.warn(`Need ${10 - currentExp} more experience to level up.`);
+            return;
+        }
+
+        const newLevel = currentLevel + 1;
+
+        // Update level and reset experience
+        await this.actor.update({
+            'system.level': newLevel,
+            'system.experience': 0
+        });
+
+        ui.notifications.info(`Leveled up to ${newLevel}!`);
+
+        // Apply level-based improvements
+        await this._applyLevelUpBenefits(newLevel);
+    }
+
+    // Apply all level-up benefits based on the advancement table
+    async _applyLevelUpBenefits(level) {
+        // Stat increases
+        if ([3, 6, 9].includes(level)) {
+            await this._showStatIncreaseDialog("Choose a stat to increase by 1:", false);
+        }
+
+        if ([4, 10].includes(level) || (level > 10 && level % 6 === 4)) {
+            await this._increaseLowestStat();
+        }
+
+        // Talents (handled automatically in _prepareCharacterData)
+        if (level % 2 === 1) {
+            ui.notifications.info("You gained a talent! Check your talent count.");
+        }
+
+        // Spells learned (handled automatically in _prepareCharacterData)
+        if (level % 2 === 0) {
+            const hasSpellcasting = this.actor.items.find(i =>
+                i.type === 'skill' &&
+                i.name.toLowerCase().includes('spellcasting') &&
+                ['learned', 'practiced', 'adept', 'experienced', 'expert', 'mastered'].includes(i.system.rank)
+            );
+
+            if (hasSpellcasting) {
+                ui.notifications.info("You can learn a new spell! Check your spells learned count.");
+            }
+        }
+
+        // Skill increases
+        if ([2, 5, 8].includes(level) || (level > 10 && (level - 2) % 3 === 0)) {
+            await this._showSkillIncreaseDialog(2);
+        }
+
+        if ([3, 6, 9].includes(level) || (level > 10 && (level - 3) % 3 === 0)) {
+            await this._showSkillIncreaseDialog(1);
+        }
+
+        // Tier advancement notifications
+        if (level === 5) {
+            ui.notifications.info("You can now access Tier 2 paths!");
+        } else if (level === 10) {
+            ui.notifications.info("You can now access Tier 3 paths!");
+        }
+
+        // Path advancement
+        if (level % 5 === 0) {
+            ui.notifications.info("You can select a new path!");
+        }
+    }
+
+    // Show stat increase dialog
+    // UPDATE the _increaseLowestStat method with null checks:
+    async _increaseLowestStat() {
+        const attributes = this.actor.system.attributes;
+
+        // Add null check
+        if (!attributes) {
+            ui.notifications.error("Character attributes not found.");
+            return;
+        }
+
+        const statValues = Object.entries(attributes).map(([key, attr]) => ({
+            key,
+            value: attr.value || 1  // Default to 1 if undefined
+        }));
+
+        const minValue = Math.min(...statValues.map(s => s.value));
+        const lowestStats = statValues.filter(s => s.value === minValue);
+
+        if (lowestStats.length === 1) {
+            // Only one lowest stat, increase it automatically
+            const stat = lowestStats[0];
+            await this.actor.update({
+                [`system.attributes.${stat.key}.value`]: stat.value + 1
+            });
+            ui.notifications.info(`${stat.key.charAt(0).toUpperCase() + stat.key.slice(1)} (lowest stat) increased to ${stat.value + 1}!`);
+        } else {
+            // Multiple tied for lowest, let player choose
+            await this._showStatIncreaseDialog("Multiple stats tied for lowest. Choose one to increase:", true);
+        }
+    }
+
+    // Show skill increase dialog
+    async _showSkillIncreaseDialog(points) {
+        ui.notifications.info(`You have ${points} skill increase${points > 1 ? 's' : ''} to spend. Use the Skills tab to improve skills.`);
+    }
+
+    /**
+    * Process Items of Power with ring slot logic
+    * @param {Array} itemsOfPower - Array of magic items
+    * @returns {Object} Equipped and unequipped items
+    */
+    _processItemsOfPower(itemsOfPower) {
         const equippedItemsOfPower = {};
         const unequippedItemsOfPower = [];
 
         for (let item of itemsOfPower) {
+            if (!item || !item.system) continue;
+
             if (item.system.equipped && item.system.slot) {
                 let slot = item.system.slot;
 
@@ -477,9 +1484,6 @@ class TheFadeCharacterSheet extends ActorSheet {
                     }
                 }
 
-                // Handle boots/feet mapping
-                if (slot === 'feet') slot = 'boots';
-
                 if (equippedItemsOfPower[slot]) {
                     unequippedItemsOfPower.push(item);
                 } else {
@@ -490,7 +1494,16 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         }
 
-        // Process Armor with stacking support
+        return { equippedItemsOfPower, unequippedItemsOfPower };
+    }
+
+    /**
+    * Process Armor with stacking support  
+    * @param {Array} armor - Array of armor items
+    * @param {Object} actorData - Actor data
+    * @returns {Object} Equipped armor, unequipped armor, and totals
+    */
+    _processArmor(armor, actorData) {
         const equippedArmor = {
             head: [],
             body: [],
@@ -501,6 +1514,8 @@ class TheFadeCharacterSheet extends ActorSheet {
         const unequippedArmor = [];
 
         for (let item of armor) {
+            if (!item || !item.system) continue;
+
             if (item.system.equipped && item.system.location) {
                 let location = item.system.location.toLowerCase();
 
@@ -511,404 +1526,41 @@ class TheFadeCharacterSheet extends ActorSheet {
                 else if (location.includes('leg')) location = 'legs';
                 else if (location.includes('shield')) location = 'shield';
 
-                // Handle stacking - allow multiple if different names or has "+"
-                const canStack = item.system.location.includes('+') ||
-                    !equippedArmor[location].some(existing => existing.name === item.name);
-
-                if (canStack && equippedArmor[location]) {
+                if (Array.isArray(equippedArmor[location])) {
                     equippedArmor[location].push(item);
-                } else if (!equippedArmor[location]) {
-                    equippedArmor[location] = [item];
-                } else {
-                    unequippedArmor.push(item);
                 }
             } else {
                 unequippedArmor.push(item);
             }
         }
 
-        // Calculate derived armor for limbs
-        const derivedArmor = {
-            leftarm: { current: 0, max: 0 },
-            rightarm: { current: 0, max: 0 },
-            leftleg: { current: 0, max: 0 },
-            rightleg: { current: 0, max: 0 }
-        };
-
-        // Arms armor affects both arms
-        equippedArmor.arms.forEach(armor => {
-            derivedArmor.leftarm.current += armor.system.currentAP || 0;
-            derivedArmor.leftarm.max += armor.system.ap || 0;
-            derivedArmor.rightarm.current += armor.system.currentAP || 0;
-            derivedArmor.rightarm.max += armor.system.ap || 0;
-        });
-
-        // Legs armor affects both legs  
-        equippedArmor.legs.forEach(armor => {
-            derivedArmor.leftleg.current += armor.system.currentAP || 0;
-            derivedArmor.leftleg.max += armor.system.ap || 0;
-            derivedArmor.rightleg.current += armor.system.currentAP || 0;
-            derivedArmor.rightleg.max += armor.system.ap || 0;
-        });
-
-        // Calculate total AP for each location
+        // Calculate armor totals (simplified)
         const armorTotals = {};
         const locations = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg', 'shield'];
 
         locations.forEach(location => {
-            let armorCurrent = 0;
-            let armorMax = 0;
-
-            // Sum armor AP for direct slots
-            if (equippedArmor[location]) {
-                equippedArmor[location].forEach(armor => {
-                    armorCurrent += armor.system.currentAP || 0;
-                    armorMax += armor.system.ap || 0;
-                });
-            }
-
-            // Add derived armor for limbs
-            if (derivedArmor[location]) {
-                armorCurrent += derivedArmor[location].current;
-                armorMax += derivedArmor[location].max;
-            }
-
-            // Handle natural deflection
-            const nd = actorData.system.naturalDeflection?.[location] || { current: 0, max: 0, stacks: false };
-
-            let totalCurrent, totalMax;
-            if (nd.stacks) {
-                totalCurrent = armorCurrent + (nd.current || 0);
-                totalMax = armorMax + (nd.max || 0);
-            } else {
-                totalCurrent = Math.max(armorCurrent, nd.current || 0);
-                totalMax = Math.max(armorMax, nd.max || 0);
-            }
-
-            armorTotals[location] = {
-                current: totalCurrent,
-                max: totalMax
-            };
+            armorTotals[location] = { current: 0, max: 0 };
         });
 
-        // Calculate attunements
-        const currentAttunements = itemsOfPower.filter(item => item.system.attunement === true).length;
-        const totalLevel = actorData.system.level || 1;
-        const soulAttribute = actorData.system.attributes?.soul?.value || 1;
-        const maxAttunements = Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
+        return { equippedArmor, unequippedArmor, armorTotals };
+    }
 
-        // Calculate dice pools for skills
+    /**
+    * Mark custom skills with display flags
+    * @param {Array} skills - Array of skills
+    */
+    _markCustomSkills(skills) {
         skills.forEach(skill => {
-            const attributeName = skill.system.attribute;
-            let attrValue = 0;
+            if (skill && skill.system) {
+                skill.isCustomSkill = !skill.system.isCore;
+                skill.canDelete = !skill.system.isCore;
 
-            if (attributeName.includes('_')) {
-                const attributes = attributeName.split('_');
-                const attr1 = this.actor.system.attributes[attributes[0]]?.value || 0;
-                const attr2 = this.actor.system.attributes[attributes[1]]?.value || 0;
-                attrValue = Math.floor((attr1 + attr2) / 2);
-            } else {
-                attrValue = this.actor.system.attributes[attributeName]?.value || 0;
-            }
-
-            let dicePool = attrValue;
-
-            switch (skill.system.rank) {
-                case "practiced": dicePool += 1; break;
-                case "adept": dicePool += 2; break;
-                case "experienced": dicePool += 3; break;
-                case "expert": dicePool += 4; break;
-                case "mastered": dicePool += 6; break;
-                case "untrained": dicePool = Math.floor(dicePool / 2); break;
-            }
-
-            dicePool += (skill.system.miscBonus || 0);
-            skill.calculatedDice = Math.max(1, dicePool);
-        });
-
-        // Calculate dice pools for weapons
-        weapons.forEach(weapon => {
-            const skillName = weapon.system.skill;
-            const skill = skills.find(s => s.name === skillName);
-
-            // Add attribute abbreviation
-            const attrAbbreviations = {
-                "none": "N/A",
-                "physique": "PHY",
-                "finesse": "FIN",
-                "mind": "MND",
-                "presence": "PRS",
-                "soul": "SOL"
-            };
-            weapon.attributeAbbr = attrAbbreviations[weapon.system.attribute] || "N/A";
-
-            if (skill) {
-                weapon.calculatedDice = skill.calculatedDice + (weapon.system.miscBonus || 0);
-            } else {
-                // Untrained
-                const attributeName = weapon.system.attribute || "physique";
-                if (attributeName !== "none") {
-                    let attrValue = this.actor.system.attributes[attributeName]?.value || 0;
-                    let dicePool = Math.floor(attrValue / 2);
-                    dicePool += (weapon.system.miscBonus || 0);
-                    weapon.calculatedDice = Math.max(1, dicePool);
-                } else {
-                    weapon.calculatedDice = Math.max(1, weapon.system.miscBonus || 0);
+                // Add skill type display for custom skills
+                if (skill.system.skillType) {
+                    skill.skillTypeDisplay = skill.system.skillType.charAt(0).toUpperCase() + skill.system.skillType.slice(1);
                 }
             }
         });
-
-        // Calculate attunements (use unique variable names to avoid conflicts)
-        const magicItemAttunements = itemsOfPower.filter(item => item.system.attunement === true).length;
-        const characterLevel = actorData.system.level || 1;
-        const soulAttributeValue = actorData.system.attributes?.soul?.value || 1;
-        const maximumAttunements = Math.max(0, Math.floor(characterLevel / 4) + soulAttributeValue);
-
-        // Ensure all characters have default skills
-        if (skills.length < DEFAULT_SKILLS.length) {
-            // Character is missing some default skills - this should trigger initialization
-            console.log(`${actorData.name} is missing default skills. Consider running skill initialization.`);
-        }
-
-        // Sort skills by category, then by name, with custom skills marked
-        skills.sort((a, b) => {
-            // First sort by category
-            if (a.system.category !== b.system.category) {
-                return a.system.category.localeCompare(b.system.category);
-            }
-
-            // Within category, sort core skills first, then custom skills
-            if (a.system.isCore !== b.system.isCore) {
-                return a.system.isCore ? -1 : 1;
-            }
-
-            // Finally sort by name
-            return a.name.localeCompare(b.name);
-        });
-
-        // Add display flags for skills
-        skills.forEach(skill => {
-            skill.isCustomSkill = !skill.system.isCore;
-            skill.canDelete = !skill.system.isCore;
-
-            // Add skill type display for custom skills
-            if (skill.system.skillType) {
-                skill.skillTypeDisplay = skill.system.skillType.charAt(0).toUpperCase() + skill.system.skillType.slice(1);
-            }
-        });
-
-        // Assign data
-        actorData.gear = gear;
-        actorData.weapons = weapons;
-        actorData.armor = armor;
-        actorData.paths = paths;
-        actorData.spells = spells;
-        actorData.skills = skills;
-        actorData.talents = talents;
-        actorData.itemsOfPower = itemsOfPower;
-        actorData.equippedItemsOfPower = equippedItemsOfPower;
-        actorData.unequippedItemsOfPower = unequippedItemsOfPower;
-        actorData.equippedArmor = equippedArmor;
-        actorData.unequippedArmor = unequippedArmor;
-        actorData.derivedArmor = derivedArmor;
-        actorData.armorTotals = armorTotals;
-        actorData.potions = potions;
-        actorData.drugs = drugs;
-        actorData.currentAttunements = magicItemAttunements;
-        actorData.maxAttunements = maximumAttunements;
-
-        // Set system references for template access
-        actorData.system.currentAttunements = magicItemAttunements;
-        actorData.system.maxAttunements = maximumAttunements;
-    }
-
-    /**
-    * Calculate derived stats for the character
-    * @param {Object} sheetData - The sheet data to prepare
-    */
-    _prepareCharacterData(sheetData) {
-        const data = sheetData.actor.system;
-        // console.log("Preparing character data with facing:", data.defenses.facing);
-
-        // First calculate base defenses and stats without facing modifiers
-        this._calculateBaseDefenses(data, sheetData.actor);
-
-        // Then apply facing modifiers
-        this._applyFacingModifiers(data);
-
-        // Calculate carrying capacity
-        this._calculateCarryingCapacity(data);
-    }
-
-    /**
-    * Calculate base defenses without facing modifiers
-    * @param {Object} data - Character data
-    * @param {Actor} actor - The actor instance
-    */
-    _calculateBaseDefenses(data, actor) {
-        // Handle attributes
-        Object.keys(data.attributes).forEach(attr => {
-            if (data.attributes[attr].flexibleBonus) {
-                // Store the flexible bonus for display
-                data.attributes[attr].flexibleBonusDisplay = `+${data.attributes[attr].flexibleBonus}`;
-            }
-        });
-
-        if (data.species?.flexibleBonus?.value > 0) {
-            const selectedAttr = data.species.flexibleBonus.selectedAttribute;
-            if (selectedAttr && data.attributes[selectedAttr]) {
-                data.attributes[selectedAttr].flexibleBonus = data.species.flexibleBonus.value;
-            }
-        }
-
-        // Initialize bonus values if they don't exist
-        if (!data.defenses.resilienceBonus) data.defenses.resilienceBonus = 0;
-        if (!data.defenses.avoidBonus) data.defenses.avoidBonus = 0;
-        if (!data.defenses.gritBonus) data.defenses.gritBonus = 0;
-        if (!data.defenses.avoidPenalty) data.defenses.avoidPenalty = 0;
-
-        // Calculate base defenses based on attributes
-        data.defenses.resilience = Math.floor(data.attributes.physique.value / 2);
-        data.defenses.avoid = Math.floor(data.attributes.finesse.value / 2);
-        data.defenses.grit = Math.floor(data.attributes.mind.value / 2);
-
-        // Ensure minimum value of 1 for base defenses
-        data.defenses.resilience = Math.max(1, data.defenses.resilience);
-        data.defenses.avoid = Math.max(1, data.defenses.avoid);
-        data.defenses.grit = Math.max(1, data.defenses.grit);
-
-        // Calculate total defenses including bonuses but without facing penalties
-        data.totalResilience = data.defenses.resilience + Number(data.defenses.resilienceBonus || 0);
-        data.totalAvoid = data.defenses.avoid + Number(data.defenses.avoidBonus || 0);
-        data.totalGrit = data.defenses.grit + Number(data.defenses.gritBonus || 0);
-
-        // Calculate Passive Dodge based on Acrobatics skill and Finesse
-        let acrobonaticsDodge = 0;
-        let finesseDodge = Math.floor(data.attributes.finesse.value / 4); // 1/4 of finesse
-
-        // Find Acrobatics skill
-        const acrobaticsSkill = actor.items.find(i =>
-            i.type === 'skill' && i.name.toLowerCase() === 'acrobatics');
-
-        if (acrobaticsSkill) {
-            // Calculate dodge bonus based on skill rank
-            const rank = acrobaticsSkill.system.rank;
-            if (rank === 'adept') acrobonaticsDodge = 1;
-            else if (rank === 'experienced') acrobonaticsDodge = 1;
-            else if (rank === 'expert') acrobonaticsDodge = 2;
-            else if (rank === 'mastered') acrobonaticsDodge = 3;
-        }
-
-        // Use the higher of Acrobatics or Finesse dodge
-        data.defenses.basePassiveDodge = Math.max(acrobonaticsDodge, finesseDodge);
-        data.defenses.passiveDodge = data.defenses.basePassiveDodge;
-
-        // Calculate Passive Parry based on highest weapon skill
-        let highestParry = 0;
-        const weaponSkills = actor.items.filter(i =>
-            i.type === 'skill' && ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Unarmed'].includes(i.name));
-
-        weaponSkills.forEach(skill => {
-            let parryValue = 0;
-            const rank = skill.system.rank;
-
-            if (rank === 'practiced') parryValue = 1;
-            else if (rank === 'adept') parryValue = 2;
-            else if (rank === 'experienced') parryValue = 3;
-            else if (rank === 'expert') parryValue = 4;
-            else if (rank === 'mastered') parryValue = 6;
-
-            if (parryValue > highestParry) highestParry = parryValue;
-        });
-
-        data.defenses.basePassiveParry = highestParry;
-        data.defenses.passiveParry = data.defenses.basePassiveParry;
-
-        // Calculate max HP based on Species, Path, Physique, and misc bonus
-        let baseHP = data.species.baseHP || 0;
-        let pathHP = 0;
-
-        // Add HP from Paths
-        if (actor.items) {
-            actor.items.forEach(item => {
-                if (item.type === "path") {
-                    pathHP += item.system.baseHP || 0;
-                }
-            });
-        }
-
-        // Calculate max HP and update both properties
-        const calculatedMaxHP = baseHP + pathHP + data.attributes.physique.value + (data.hpMiscBonus || 0);
-        data.hp.max = calculatedMaxHP;
-        data.maxHP = calculatedMaxHP;
-
-        // Calculate max Sanity and update both properties
-        const calculatedMaxSanity = 10 + data.attributes.mind.value + (data.sanity?.miscBonus || 0);
-        data.sanity.max = calculatedMaxSanity;
-        data.maxSanity = calculatedMaxSanity;
-    }
-
-    /**
-    * Apply facing modifiers to defenses
-    * @param {Object} data - Character data
-    */
-    _applyFacingModifiers(data) {
-        // Apply facing modifications to defensive values
-        const facing = data.defenses.facing || 'front';
-
-        // console.log(`Applying facing modifiers for: ${facing}`);
-
-        // Apply modifications based on facing
-        if (facing === 'flank') {
-            // Full passive defenses, but -1 to Avoid
-            data.defenses.avoidPenalty = -1;
-        }
-        else if (facing === 'backflank') {
-            // Half passive dodge, no parry, -2 Avoid
-            data.defenses.passiveDodge = Math.floor(data.defenses.basePassiveDodge / 2);
-            data.defenses.passiveParry = 0;
-            data.defenses.avoidPenalty = -2;
-        }
-        else if (facing === 'back') {
-            // Quarter passive dodge, no parry, -2 Avoid
-            data.defenses.passiveDodge = Math.floor(data.defenses.basePassiveDodge / 4);
-            data.defenses.passiveParry = 0;
-            data.defenses.avoidPenalty = -2;
-        }
-        else {
-            // Front facing - full benefits, no penalties
-            data.defenses.passiveDodge = data.defenses.basePassiveDodge;
-            data.defenses.passiveParry = data.defenses.basePassiveParry;
-            data.defenses.avoidPenalty = 0;
-        }
-
-        // Apply avoid penalty to total avoid
-        data.totalAvoid += data.defenses.avoidPenalty;
-
-        // Ensure total avoid doesn't go below 0
-        data.totalAvoid = Math.max(0, data.totalAvoid);
-
-        /*
-        console.log(`After facing modifiers: 
-      Passive Dodge: ${data.defenses.passiveDodge}
-      Passive Parry: ${data.defenses.passiveParry}
-      Total Avoid: ${data.totalAvoid} (includes penalty of ${data.defenses.avoidPenalty})`);
-      */
-    }
-
-    /**
-    * Calculate carrying capacity
-    */
-    _calculateCarryingCapacity(data) {
-        const physique = data.attributes.physique.value;
-        data.carryingCapacity = {
-            light: (5 + physique) * 10,
-            medium: (5 + physique) * 20,
-            heavy: (5 + physique) * 30,
-            overHead: (5 + physique) * 30 * 1.5,
-            offGround: (5 + physique) * 30 * 3,
-            pushOrDrag: (5 + physique) * 30 * 5
-        };
     }
 
     // --------------------------------------------------------------------
@@ -3154,6 +3806,10 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('.roll-dice').click(this._onRollDice.bind(this));
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
 
+        html.find('.level-up-btn').click(this._onLevelUp.bind(this));
+        html.find('.experience-check-btn').click(this._onExperienceCheck.bind(this));
+        html.find('input[name="system.isMonster"]').change(this._onMonsterChange.bind(this));
+
         html.find('.skill-browse').click(ev => {
             ev.preventDefault();
             ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
@@ -3187,6 +3843,11 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('.talent-browse').click(ev => {
             ev.preventDefault();
             openCompendiumBrowser("talent", this.actor);
+        });
+
+        html.find('.trait-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("talent", this.actor); // Use same browser as talents, will filter by type
         });
 
         html.find('.item-browse').click(ev => {
@@ -3873,6 +4534,7 @@ class TheFadeItem extends Item {
         else if (itemData.type === 'gate') this._prepareGateData(itemData);
         else if (itemData.type === 'magicitem') this._prepareMagicItemData(itemData);
         else if (itemData.type === 'fleshcraft') this._prepareFleshcraftData(itemData);
+        else if (itemData.type === 'talent') this._prepareTalentData(itemData);
     }
 
     // --------------------------------------------------------------------
@@ -4130,6 +4792,20 @@ class TheFadeItem extends Item {
         if (!data.naturalWeapons) data.naturalWeapons = "";
         if (!data.specialAbilities) data.specialAbilities = "";
     }
+
+    /**
+    * Prepare talent-specific data
+    * @param {Object} itemData - Item data object
+    */
+    _prepareTalentData(itemData) {
+        const data = itemData.system;
+
+        // Initialize talent properties if undefined
+        if (!data.talentType) data.talentType = "general";
+        if (!data.description) data.description = "";
+        if (!data.effect) data.effect = "";
+        if (!data.prerequisites) data.prerequisites = "";
+    }
 }
 
 /**
@@ -4183,6 +4859,18 @@ class TheFadeItemSheet extends ItemSheet {
         // Prepare path skills for the path sheet
         if (this.item.type === 'path') {
             this._preparePathSkills(data);
+        }
+
+        // Add talent type options for talent items
+        if (this.item.type === 'talent') {
+            data.talentTypes = {
+                "general": "General Talents",
+                "combat": "Combat Talents",
+                "magic": "Magic Talents",
+                "species": "Species Talents",
+                "monster": "Monster Talents",
+                "trait": "Traits"
+            };
         }
 
         return data;
