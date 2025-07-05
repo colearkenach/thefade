@@ -41,17 +41,7 @@
             <div class="form-group">
                 <label>Location</label>
                 <select name="system.location">
-                    {{#select system.location}}
-                    <option value="Head">Head</option>
-                    <option value="Head+">Head+ (Coif, Gorget)</option>
-                    <option value="Body">Body</option>
-                    <option value="Body+">Body+ (Leather Coat, Chain Shirt)</option>
-                    <option value="Arms">Arms</option>
-                    <option value="Arms+">Arms+ (Ailette, Couter)</option>
-                    <option value="Legs">Legs</option>
-                    <option value="Legs+">Legs+ (Poleyn, Tasset)</option>
-                    <option value="Shield">Shield</option>
-                    {{/select}}
+                    {{selectOptions armorLocationOptions selected=system.location}}
                 </select>
             </div>
 
@@ -72,25 +62,7 @@
             <div class="form-group">
                 <label>Material</label>
                 <select name="system.material">
-                    {{#select system.material}}
-                    <option value="iron">Iron (Standard)</option>
-                    <option value="bone">Bone</option>
-                    <option value="wood">Wood</option>
-                    <option value="leather">Leather</option>
-                    <option value="copper">Copper</option>
-                    <option value="bronze">Bronze</option>
-                    <option value="coldIron">Cold Iron</option>
-                    <option value="steel">Steel</option>
-                    <option value="coldSteel">Cold Steel</option>
-                    <option value="gold">Gold</option>
-                    <option value="orichalcum">Orichalcum</option>
-                    <option value="silver">Silver</option>
-                    <option value="mithral">Mithral</option>
-                    <option value="platinum">Platinum</option>
-                    <option value="adamantine">Adamantine</option>
-                    <option value="ritewood">Ritewood</option>
-                    <option value="blacksteel">Blacksteel</option>
-                    {{/select}}
+                    {{selectOptions materialOptions selected=system.material}}
                 </select>
             </div>
         </div>

@@ -87,14 +87,7 @@
 <div class="flexible-bonus-selector">
     <label>Apply Species Flexible Bonus (+{{system.species.flexibleBonus.value}})</label>
     <select name="system.species.flexibleBonus.selectedAttribute">
-        {{#select system.species.flexibleBonus.selectedAttribute}}
-        <option value="">-- Select Ability --</option>
-        <option value="physique">Physique</option>
-        <option value="finesse">Finesse</option>
-        <option value="mind">Mind</option>
-        <option value="presence">Presence</option>
-        <option value="soul">Soul</option>
-        {{/select}}
+        {{selectOptions flexibleBonusAttributeOptions selected=system.species.flexibleBonus.selectedAttribute}}
     </select>
 </div>
 {{/if}}

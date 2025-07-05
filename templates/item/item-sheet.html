@@ -24,26 +24,7 @@
             <div class="form-group">
                 <label>Item Category</label>
                 <select name="system.itemCategory">
-                    {{#select system.itemCategory}}
-                    <option value="general">General Item</option>
-                    <option value="drug">Drug</option>
-                    <option value="poison">Poison</option>
-                    <option value="biological">Biological</option>
-                    <option value="medical">Medical</option>
-                    <option value="travel">Travel & Survival</option>
-                    <option value="mount">Mount</option>
-                    <option value="vehicle">Vehicle</option>
-                    <option value="musical">Musical Instrument</option>
-                    <option value="potion">Potion</option>
-                    <option value="staff">Staff</option>
-                    <option value="wand">Wand</option>
-                    <option value="gate">Dimensional Gate</option>
-                    <option value="communication">Communication Device</option>
-                    <option value="containment">Containment Item</option>
-                    <option value="dream">Dream Harvesting</option>
-                    <option value="fleshcraft">Flesh Craft</option>
-                    <option value="magicitem">Item of Power</option>
-                    {{/select}}
+                    {{selectOptions itemCategoryOptions selected=system.itemCategory}}
                 </select>
             </div>
 
@@ -246,19 +227,7 @@
             <div class="form-group">
                 <label>School</label>
                 <select name="system.school">
-                    {{#select system.school}}
-                    <option value="General">General</option>
-                    <option value="Alchemy">Alchemy</option>
-                    <option value="Divine">Divine</option>
-                    <option value="Elementalism">Elementalism</option>
-                    <option value="Malevolent">Malevolent</option>
-                    <option value="Martial">Martial</option>
-                    <option value="Naturalism">Naturalism</option>
-                    <option value="Preternaturalism">Preternaturalism</option>
-                    <option value="Rituals">Rituals</option>
-                    <option value="Runes">Runes</option>
-                    <option value="Spiritualism">Spiritualism</option>
-                    {{/select}}
+                    {{selectOptions spellSchoolOptions selected=system.school}}
                 </select>
             </div>
 
@@ -298,10 +267,7 @@
             <div class="form-group">
                 <label>Complexity</label>
                 <select name="system.complexity">
-                    {{#select system.complexity}}
-                    <option value="audio">Audio Only</option>
-                    <option value="audiovisual">Audio & Visual</option>
-                    {{/select}}
+                    {{selectOptions communicationComplexityOptions selected=system.complexity}}
                 </select>
             </div>
 
@@ -318,15 +284,7 @@
             <div class="form-group">
                 <label>Equipment Slot</label>
                 <select name="system.slot">
-                    {{#select system.slot}}
-                    <option value="head">Head</option>
-                    <option value="neck">Neck</option>
-                    <option value="body">Body</option>
-                    <option value="hands">Hands</option>
-                    <option value="ring">Ring</option>
-                    <option value="belt">Belt</option>
-                    <option value="boots">Boots</option>
-                    {{/select}}
+                    {{selectOptions magicItemSlotOptions selected=system.slot}}
                 </select>
             </div>
 
@@ -376,8 +334,6 @@
                 <textarea name="system.specialAbilities">{{system.specialAbilities}}</textarea>
             </div>
             {{/if}}
-
-            <!-- Add similar sections for other equipment types as needed -->
         </div>
     </section>
 </form>

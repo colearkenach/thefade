@@ -9,47 +9,21 @@
     <div class="form-group">
       <label>Rank</label>
       <select name="system.rank">
-        {{#select system.rank}}
-        <option value="untrained">Untrained</option>
-        <option value="learned">Learned</option>
-        <option value="practiced">Practiced</option>
-        <option value="adept">Adept</option>
-        <option value="experienced">Experienced</option>
-        <option value="expert">Expert</option>
-        <option value="mastered">Mastered</option>
-        {{/select}}
+          {{selectOptions skillRankOptions selected=system.rank}}
       </select>
     </div>
     
     <div class="form-group">
       <label>Category</label>
       <select name="system.category">
-        {{#select system.category}}
-        <option value="Combat">Combat</option>
-        <option value="Craft">Craft</option>
-        <option value="Knowledge">Knowledge</option>
-        <option value="Magical">Magical</option>
-        <option value="Physical">Physical</option>
-        <option value="Sense">Sense</option>
-        <option value="Social">Social</option>
-        {{/select}}
+          {{selectOptions skillCategoryOptions selected=system.category}}
       </select>
     </div>
     
     <div class="form-group">
       <label>Associated Attribute</label>
       <select name="system.attribute">
-        {{#select system.attribute}}
-        <option value="physique">Physique</option>
-        <option value="finesse">Finesse</option>
-        <option value="mind">Mind</option>
-        <option value="presence">Presence</option>
-        <option value="soul">Soul</option>
-        <option value="physique_finesse">Physique & Finesse (Average)</option>
-        <option value="mind_soul">Mind & Soul (Average)</option>
-        <option value="finesse_presence">Finesse & Presence (Average)</option>
-        <option value="physique_mind">Physique & Mind (Average)</option>
-        {{/select}}
+          {{selectOptions attributeOptions selected=system.attribute}}
       </select>
     </div>
 

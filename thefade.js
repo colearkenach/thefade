@@ -756,6 +756,85 @@ class TheFadeCharacterSheet extends ActorSheet {
             };
         }
 
+        data.sizeOptions = {
+            "miniscule": "Miniscule",
+            "diminutive": "Diminutive",
+            "tiny": "Tiny",
+            "small": "Small",
+            "medium": "Medium",
+            "large": "Large",
+            "massive": "Massive",
+            "immense": "Immense",
+            "enormous": "Enormous",
+            "titanic": "Titanic"
+        };
+
+        data.flexibleBonusAttributeOptions = {
+            "": "-- Select Ability --",
+            "physique": "Physique",
+            "finesse": "Finesse",
+            "mind": "Mind",
+            "presence": "Presence",
+            "soul": "Soul"
+        };
+
+        data.auraColorOptions = {
+            "": "None",
+            "red": "Red",
+            "blue": "Blue",
+            "green": "Green",
+            "yellow": "Yellow",
+            "purple": "Purple",
+            "orange": "Orange",
+            "pink": "Pink",
+            "gold": "Gold",
+            "silver": "Silver",
+            "turquoise": "Turquoise",
+            "indigo": "Indigo",
+            "brown": "Brown",
+            "violet": "Violet",
+            "gray": "Gray",
+            "black": "Black",
+            "white": "White"
+        };
+
+        data.auraShapeOptions = {
+            "": "None",
+            "circular": "Circular",
+            "jagged": "Jagged",
+            "flowing": "Flowing",
+            "spiky": "Spiky",
+            "radiant": "Radiant",
+            "dense": "Dense",
+            "wispy": "Wispy",
+            "geometric": "Geometric"
+        };
+
+        data.auraIntensityOptions = {
+            "": "None",
+            "faint": "Faint",
+            "moderate": "Moderate",
+            "intense": "Intense"
+        };
+
+        data.addictionLevelOptions = {
+            "none": "None",
+            "early": "Early Stages (+2D)",
+            "middle": "Middle Stage (+4D)",
+            "late": "Late Stage (+6D)",
+            "terminal": "Terminal (N/A)"
+        }
+
+        data.skillRankOptions = {
+            "untrained": "Untrained",
+            "learned": "Learned",
+            "practiced": "Practiced",
+            "adept": "Adept",
+            "experienced": "Experienced",
+            "expert": "Expert",
+            "mastered": "Mastered"
+        };
+
         // Additional safety checks
         if (!data.actor) {
             console.error("Actor missing from getData result");
@@ -4010,6 +4089,13 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('.collapsible-header').click(event => {
             event.preventDefault();
             const header = $(event.currentTarget);
+
+            // Safety check
+            if (!header || !header.length) {
+                console.warn("Header element not found");
+                return;
+            }
+
             const targetId = header.data('target');
             const content = html.find(`#${targetId}`);
             const icon = header.find('i');
@@ -4866,6 +4952,206 @@ class TheFadeItemSheet extends ItemSheet {
         if (this.item.type === 'path') {
             this._preparePathSkills(data);
         }
+
+        // Add options for all select dropdowns
+        data.itemCategoryOptions = {
+            "general": "General Item",
+            "drug": "Drug",
+            "poison": "Poison",
+            "biological": "Biological",
+            "medical": "Medical",
+            "travel": "Travel & Survival",
+            "mount": "Mount",
+            "vehicle": "Vehicle",
+            "musical": "Musical Instrument",
+            "potion": "Potion",
+            "staff": "Staff",
+            "wand": "Wand",
+            "gate": "Dimensional Gate",
+            "communication": "Communication Device",
+            "containment": "Containment Item",
+            "dream": "Dream Harvesting",
+            "fleshcraft": "Flesh Craft"
+        };
+
+        data.spellSchoolOptions = {
+            "General": "General",
+            "Alchemy": "Alchemy",
+            "Divine": "Divine",
+            "Elementalism": "Elementalism",
+            "Malevolent": "Malevolent",
+            "Martial": "Martial",
+            "Naturalism": "Naturalism",
+            "Preternaturalism": "Preternaturalism",
+            "Rituals": "Rituals",
+            "Runes": "Runes",
+            "Spiritualism": "Spiritualism"
+        };
+
+        data.magicItemSlotOptions = {
+            "head": "Head",
+            "neck": "Neck",
+            "body": "Body",
+            "hands": "Hands",
+            "ring": "Ring",
+            "belt": "Belt",
+            "boots": "Boots"
+        };
+
+        data.communicationComplexityOptions = {
+            "audio": "Audio Only",
+            "audiovisual": "Audio & Visual"
+        };
+
+        data.materialOptions = {
+            "iron": "Iron (Standard)",
+            "bone": "Bone",
+            "wood": "Wood",
+            "leather": "Leather",
+            "copper": "Copper",
+            "bronze": "Bronze",
+            "coldIron": "Cold Iron",
+            "steel": "Steel",
+            "coldSteel": "Cold Steel",
+            "gold": "Gold",
+            "orichalcum": "Orichalcum",
+            "silver": "Silver",
+            "mithral": "Mithral",
+            "platinum": "Platinum",
+            "adamantine": "Adamantine",
+            "ritewood": "Ritewood",
+            "blacksteel": "Blacksteel"
+        };
+
+        data.armorLocationOptions = {
+            "Head": "Head",
+            "Head+": "Head+ (Coif, Gorget)",
+            "Body": "Body",
+            "Body+": "Body+ (Leather Coat, Chain Shirt)",
+            "Arms": "Arms",
+            "Arms+": "Arms+ (Ailette, Couter)",
+            "Legs": "Legs",
+            "Legs+": "Legs+ (Poleyn, Tasset)",
+            "Shield": "Shield"
+        };
+
+        data.weaponDamageTypeOptions = {
+            "B": "Bludgeoning (B)",
+            "S": "Slashing (S)",
+            "P": "Piercing (P)",
+            "BoP": "Bludgeoning or Piercing (B or P)",
+            "BP": "Bludgeoning & Piercing (B&P)",
+            "SP": "Slashing & Piercing (S&P)",
+            "SoP": "Slashing or Piercing (S or P)",
+            "SoB": "Slashing or Bludgeoning (S or B)",
+            "F": "Fire (F)",
+            "C": "Cold (C)",
+            "A": "Acid (A)",
+            "E": "Electricity (E)",
+            "So": "Sonic (So)",
+            "Sm": "Smiting (Sm)",
+            "Ex": "Expel (Ex)",
+            "Psi": "Psychokinetic (Psi)",
+            "Co": "Corruption (Co)",
+            "Ut": "Untyped (Ut)"
+        };
+
+        data.weaponHandednessOptions = {
+            "Light": "Light",
+            "One-Handed": "One-Handed",
+            "Two-Handed": "Two-Handed"
+        };
+
+        data.weaponSkillOptions = {
+            "Axe": "Axe",
+            "Bow": "Bow",
+            "Cudgel": "Cudgel",
+            "Firearm": "Firearm",
+            "Heavy Weaponry": "Heavy Weaponry",
+            "Polearm": "Polearm",
+            "Sword": "Sword",
+            "Thrown": "Thrown",
+            "Unarmed": "Unarmed",
+            "Spellcasting": "Spellcasting"
+        };
+
+        data.weaponAttributeOptions = {
+            "physique": "Physique",
+            "finesse": "Finesse",
+            "soul": "Soul"
+        };
+
+        data.skillRankOptions = {
+            "untrained": "Untrained",
+            "learned": "Learned",
+            "practiced": "Practiced",
+            "adept": "Adept",
+            "experienced": "Experienced",
+            "expert": "Expert",
+            "mastered": "Mastered"
+        };
+
+        data.skillCategoryOptions = {
+            "Combat": "Combat",
+            "Craft": "Craft",
+            "Knowledge": "Knowledge",
+            "Magical": "Magical",
+            "Physical": "Physical",
+            "Sense": "Sense",
+            "Social": "Social"
+        };
+
+        data.skillAttributeOptions = {
+            "physique": "Physique",
+            "finesse": "Finesse",
+            "mind": "Mind",
+            "presence": "Presence",
+            "soul": "Soul",
+            "physique_finesse": "Physique & Finesse (Average)",
+            "mind_soul": "Mind & Soul (Average)",
+            "finesse_presence": "Finesse & Presence (Average)",
+            "physique_mind": "Physique & Mind (Average)"
+        };
+
+        data.creatureTypeOptions = {
+            "artificial": "Artificial",
+            "beast": "Beast",
+            "dragon": "Dragon",
+            "extraplanar": "Extraplanar",
+            "fey": "Fey",
+            "plant": "Plant",
+            "sapient": "Sapient",
+            "undead": "Undead"
+        };
+
+        data.spellAttackOptions = {
+            "": "None",
+            "Avoid": "vs. Avoid",
+            "Resilience": "vs. Resilience",
+            "Grit": "vs. Grit"
+        };
+
+        data.spellDamageTypeOptions = {
+            "": "None",
+            "B": "Bludgeoning (B)",
+            "S": "Slashing (S)",
+            "P": "Piercing (P)",
+            "F": "Fire (F)",
+            "C": "Cold (C)",
+            "A": "Acid (A)",
+            "E": "Electricity (E)",
+            "So": "Sonic (So)",
+            "Sm": "Smiting (Sm)",
+            "Ex": "Expel (Ex)",
+            "Psi": "Psychokinetic (Psi)",
+            "Co": "Corruption (Co)",
+            "Ut": "Untyped (Ut)"
+        };
+
+        data.mishapModifierOptions = {
+            "none": "None",
+            "corruption": "Corruption Damage (Failure = One Stage Worse)"
+        };
 
         // Add talent type options for talent items
         if (this.item.type === 'talent') {

@@ -57,13 +57,7 @@
             <div class="form-group">
                 <label>Addiction Level</label>
                 <select name="system.darkMagic.addictionLevel">
-                    {{#select system.darkMagic.addictionLevel}}
-                    <option value="none">None</option>
-                    <option value="early">Early Stages (+2D)</option>
-                    <option value="middle">Middle Stage (+4D)</option>
-                    <option value="late">Late Stage (+6D)</option>
-                    <option value="terminal">Terminal (N/A)</option>
-                    {{/select}}
+                    {{selectOptions addictionLevelOptions selected=system.darkMagic.addictionLevel}}
                 </select>
             </div>
 

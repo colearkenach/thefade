@@ -20,112 +20,79 @@
       </div>
   
       {{!-- Attributes Tab --}}
-      <div class="tab" data-group="primary" data-tab="attributes">
+    <div class="tab" data-group="primary" data-tab="attributes">
         <div class="form-group">
-          <label>Damage</label>
-          <input type="text" name="system.damage" value="{{system.damage}}" data-dtype="Number"/>
-        </div>
-        
-        <div class="form-group">
-          <label>Damage Type</label>
-          <select name="system.damageType">
-            {{#select system.damageType}}
-            <option value="B">Bludgeoning (B)</option>
-            <option value="S">Slashing (S)</option>
-            <option value="P">Piercing (P)</option>
-            <option value="BoP">Bludgeoning or Piercing (B or P)</option>
-            <option value="BP">Bludgeoning & Piercing (B&P)</option>
-            <option value="SP">Slashing & Piercing (S&P)</option>
-            <option value="SoP">Slashing or Piercing (S or P)</option>
-            <option value="SoB">Slashing or Bludgeoning (S or B)</option>
-            <option value="F">Fire (F)</option>
-            <option value="C">Cold (C)</option>
-            <option value="A">Acid (A)</option>
-            <option value="E">Electricity (E)</option>
-            <option value="So">Sonic (So)</option>
-            <option value="Sm">Smiting (Sm)</option>
-            <option value="Ex">Expel (Ex)</option>
-            <option value="Psi">Psychokinetic (Psi)</option>
-            <option value="Co">Corruption (Co)</option>
-            <option value="Ut">Untyped (Ut)</option>
-            {{/select}}
-          </select>
+            <label>Damage</label>
+            <input type="text" name="system.damage" value="{{system.damage}}" data-dtype="Number" />
         </div>
 
         <div class="form-group">
-          <label>Misc Bonus (Bonus Dice)</label>
-          <input type="number" name="system.miscBonus" value="{{system.miscBonus}}" data-dtype="Number"/>
-          <p class="hint">Bonus dice added to attack rolls</p>
+            <label>Damage Type</label>
+            <select name="system.damageType">
+                {{selectOptions damageTypeOptions selected=system.damageType}}
+            </select>
         </div>
-        
+
         <div class="form-group">
-          <label>Critical</label>
-          <input type="text" name="system.critical" value="{{system.critical}}" data-dtype="Number"/>
+            <label>Misc Bonus (Bonus Dice)</label>
+            <input type="number" name="system.miscBonus" value="{{system.miscBonus}}" data-dtype="Number" />
+            <p class="hint">Bonus dice added to attack rolls</p>
         </div>
-        
+
         <div class="form-group">
-          <label>Handedness</label>
-          <select name="system.handedness">
-            {{#select system.handedness}}
-            <option value="Light">Light</option>
-            <option value="One-Handed">One-Handed</option>
-            <option value="Two-Handed">Two-Handed</option>
-            {{/select}}
-          </select>
+            <label>Critical</label>
+            <input type="text" name="system.critical" value="{{system.critical}}" data-dtype="Number" />
         </div>
-        
+
         <div class="form-group">
-          <label>Range</label>
-          <input type="text" name="system.range" value="{{system.range}}"/>
+            <label>Handedness</label>
+            <select name="system.handedness">
+                {{selectOptions weaponHandednessOptions selected=system.handedness}}
+            </select>
         </div>
-        
+
         <div class="form-group">
-          <label>Integrity</label>
-          <input type="text" name="system.integrity" value="{{system.integrity}}" data-dtype="Number"/>
+            <label>Range</label>
+            <input type="text" name="system.range" value="{{system.range}}" />
         </div>
-        
+
         <div class="form-group">
-          <label>Weight</label>
-          <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number"/>
-          <span>lbs.</span>
+            <label>Integrity</label>
+            <input type="text" name="system.integrity" value="{{system.integrity}}" data-dtype="Number" />
         </div>
-        
+
         <div class="form-group">
-          <label>Qualities</label>
-          <input type="text" name="system.qualities" value="{{system.qualities}}"/>
+            <label>Weight</label>
+            <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
+            <span>lbs.</span>
         </div>
-        
+
         <div class="form-group">
-          <label>Skill</label>
-          <select name="system.skill">
-              {{#select system.skill}}
-              <option value="Axe">Axe</option>
-              <option value="Bow">Bow</option>
-              <option value="Cudgel">Cudgel</option>
-              <option value="Firearm">Firearm</option>
-              <option value="Heavy Weaponry">Heavy Weaponry</option>
-              <option value="Polearm">Polearm</option>
-              <option value="Sword">Sword</option>
-              <option value="Thrown">Thrown</option>
-              <option value="Unarmed">Unarmed</option>
-              <option value="Spellcasting">Spellcasting</option>
-              {{/select}}
-          </select>
+            <label>Qualities</label>
+            <input type="text" name="system.qualities" value="{{system.qualities}}" />
         </div>
-        
+
+        <div class="form-group">
+            <label>Skill</label>
+            <select name="system.skill">
+                {{selectOptions weaponSkillOptions selected=system.skill}}
+            </select>
+        </div>
+
         <div class="form-group">
             <label>Damage Attribute</label>
             <select name="system.attribute">
-                {{#select system.attribute}}
-                <option value="none">N/A</option>
-                <option value="physique">Physique</option>
-                <option value="finesse">Finesse</option>
-                <option value="mind">Mind</option>
-                <option value="presence">Presence</option>
-                <option value="soul">Soul</option>
-                {{/select}}
+                {{selectOptions weaponAttributeOptions selected=system.attribute}}
             </select>
         </div>
-      </div>
+
+        <div class="form-group">
+            <label>Material</label>
+            <select name="system.material">
+                {{selectOptions materialOptions selected=system.material}}
+            </select>
+        </div>
+
+    </div>
     </section>
-  </form>
+</form>

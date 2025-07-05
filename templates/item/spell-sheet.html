@@ -24,19 +24,7 @@
         <div class="form-group">
           <label>School</label>
           <select name="system.school">
-            {{#select system.school}}
-            <option value="General">General</option>
-            <option value="Alchemy">Alchemy</option>
-            <option value="Divine">Divine</option>
-            <option value="Elementalism">Elementalism</option>
-            <option value="Malevolent">Malevolent</option>
-            <option value="Martial">Martial</option>
-            <option value="Naturalism">Naturalism</option>
-            <option value="Preternaturalism">Preternaturalism</option>
-            <option value="Rituals">Rituals</option>
-            <option value="Runes">Runes</option>
-            <option value="Spiritualism">Spiritualism</option>
-            {{/select}}
+              {{selectOptions spellSchoolOptions selected=system.school}}
           </select>
         </div>
         
@@ -53,22 +41,7 @@
         <div class="form-group">
           <label>Damage Type</label>
           <select name="system.damageType">
-            {{#select system.damageType}}
-            <option value="">None</option>
-            <option value="B">Bludgeoning (B)</option>
-            <option value="S">Slashing (S)</option>
-            <option value="P">Piercing (P)</option>
-            <option value="F">Fire (F)</option>
-            <option value="C">Cold (C)</option>
-            <option value="A">Acid (A)</option>
-            <option value="E">Electricity (E)</option>
-            <option value="So">Sonic (So)</option>
-            <option value="Sm">Smiting (Sm)</option>
-            <option value="Ex">Expel (Ex)</option>
-            <option value="Psi">Psychokinetic (Psi)</option>
-            <option value="Co">Corruption (Co)</option>
-            <option value="Ut">Untyped (Ut)</option>
-            {{/select}}
+              {{selectOptions spellDamageTypeOptions selected=system.damageType}}
           </select>
         </div>
         
@@ -85,12 +58,7 @@
         <div class="form-group">
           <label>Attack</label>
           <select name="system.attack">
-            {{#select system.attack}}
-            <option value="">None</option>
-            <option value="Avoid">vs. Avoid</option>
-            <option value="Resilience">vs. Resilience</option>
-            <option value="Grit">vs. Grit</option>
-            {{/select}}
+              {{selectOptions attackOptions selected=system.attack}}
           </select>
         </div>
         
@@ -107,10 +75,7 @@
         <div class="form-group">
           <label>Mishap Modifier</label>
           <select name="system.mishapModifier">
-            {{#select system.mishapModifier}}
-            <option value="none">None</option>
-            <option value="corruption">Corruption Damage (Failure = One Stage Worse)</option>
-            {{/select}}
+              {{selectOptions mishapModifierOptions selected=system.mishapModifier}}
           </select>
         </div>
       </div>
