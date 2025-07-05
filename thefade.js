@@ -5173,6 +5173,25 @@ class TheFadeItemSheet extends ItemSheet {
                 "corruption": "Corruption Damage (Failure = One Stage Worse)"
             };
 
+            data.pathTierOptions = {
+                "1": "Tier 1",
+                "2": "Tier 2",
+                "3": "Tier 3"
+            };
+
+            data.sizeOptions = {
+                "miniscule": "Miniscule",
+                "diminutive": "Diminutive",
+                "tiny": "Tiny",
+                "small": "Small",
+                "medium": "Medium",
+                "large": "Large",
+                "massive": "Massive",
+                "immense": "Immense",
+                "enormous": "Enormous",
+                "titanic": "Titanic"
+            };
+
             console.log("All options set successfully");
         } catch (error) {
             console.error("Error setting options:", error);
@@ -5913,7 +5932,8 @@ class TheFadeItemSheet extends ItemSheet {
                     _id: skillData._id || randomID(16),
                     name: skillData.name,
                     system: skillData.system || {},
-                    img: skillData.img || "icons/svg/item-bag.svg"
+                    img: skillData.img || "icons/svg/item-bag.svg",
+                    rank: skillData.system?.rank || skillData.rank || 'learned'  // ADD THIS LINE
                 };
 
                 // Determine entry type and set display properties

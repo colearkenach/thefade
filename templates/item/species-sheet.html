@@ -42,18 +42,7 @@
         <div class="form-group">
             <label>Size</label>
             <select name="system.size">
-                {{#select system.size}}
-                <option value="miniscule">Miniscule</option>
-                <option value="diminutive">Diminutive</option>
-                <option value="tiny">Tiny</option>
-                <option value="small">Small</option>
-                <option value="medium">Medium</option>
-                <option value="large">Large</option>
-                <option value="massive">Massive</option>
-                <option value="immense">Immense</option>
-                <option value="enormous">Enormous</option>
-                <option value="titanic">Titanic</option>
-                {{/select}}
+                {{selectOptions sizeOptions selected=system.size}}
             </select>
         </div>
 

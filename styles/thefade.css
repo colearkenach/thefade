@@ -2950,3 +2950,14 @@ select[name="system.aura.color"] option[value="white"] {
         grid-template-columns: 1fr;
     }
 }
+
+.thefade .armor-slot-container .collapsible-header h4 {
+    font-size: 1.1em;
+    margin-left: 15px;
+}
+
+.thefade .armor-slot-container .collapsible-content {
+    margin-left: 15px;
+    border-left: 2px solid var(--border-color);
+    padding-left: 10px;
+}

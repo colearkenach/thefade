@@ -26,11 +26,7 @@
         <div class="form-group">
             <label>Tier</label>
             <select name="system.tier">
-                {{#select system.tier}}
-                <option value="1">Tier 1</option>
-                <option value="2">Tier 2</option>
-                <option value="3">Tier 3</option>
-                {{/select}}
+                {{selectOptions pathTierOptions selected=system.tier}}
             </select>
         </div>
 
@@ -105,7 +101,7 @@
                 </div>
                 <div class="item-rank">
                     <select class="path-skill-rank" data-skill-id="{{skill._id}}">
-                        {{selectOptions skillRankOptions selected=system.rank}}
+                        {{selectOptions ../skillRankOptions selected=skill.rank}}
                     </select>
                 </div>
                 <div class="item-type">

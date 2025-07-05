@@ -17,36 +17,41 @@
 
     <!-- Paths Info -->
     <div class="paths-info">
-        <h3>Path & Tier Progression</h3>
-        <div class="paths-progression">
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" name="system.isMonster" {{#if system.isMonster}} checked{{/if}} />
-                    Is a Monster
-                </label>
+        <h3 class="collapsible-header" data-target="path-info-content">
+            Path & Tier Progression <i class="fas fa-chevron-down"></i>
+        </h3>
+
+        <div class="collapsible-content" id="path-info-content">
+            <div class="paths-progression">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="system.isMonster" {{#if system.isMonster}} checked{{/if}} />
+                        Is a Monster
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>Number of Paths</label>
+                    <input type="number" name="system.pathsAllowed" value="{{system.pathsAllowed}}" data-dtype="Number" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Maximum Tier</label>
+                    <input type="number" name="system.maxTier" value="{{system.maxTier}}" data-dtype="Number" readonly />
+                </div>
             </div>
-            <div class="form-group">
-                <label>Number of Paths</label>
-                <input type="number" name="system.pathsAllowed" value="{{system.pathsAllowed}}" data-dtype="Number" readonly />
-            </div>
-            <div class="form-group">
-                <label>Maximum Tier</label>
-                <input type="number" name="system.maxTier" value="{{system.maxTier}}" data-dtype="Number" readonly />
-            </div>
-        </div>
-        <h3>Total Level for Path Abilities</h3>
-        <div class="total-level-for-path">
-            <div class="form-group">
-                <label>Tier 1 - Effective TL</label>
-                <input type="number" name="system.tier1tl" value="{{system.tier1tl}}" data-dtype="Number" min="0" readonly />
-            </div>
-            <div class="form-group">
-                <label>Tier 2 - Effective TL</label>
-                <input type="number" name="system.tier2tl" value="{{system.tier2tl}}" data-dtype="Number" readonly />
-            </div>
-            <div class="form-group">
-                <label>Tier 3 - Effective TL</label>
-                <input type="number" name="system.tier3tl" value="{{system.tier3tl}}" data-dtype="Number" readonly />
+            <h3>Total Level for Path Abilities</h3>
+            <div class="total-level-for-path">
+                <div class="form-group">
+                    <label>Tier 1 - Effective TL</label>
+                    <input type="number" name="system.tier1tl" value="{{system.tier1tl}}" data-dtype="Number" min="0" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Tier 2 - Effective TL</label>
+                    <input type="number" name="system.tier2tl" value="{{system.tier2tl}}" data-dtype="Number" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Tier 3 - Effective TL</label>
+                    <input type="number" name="system.tier3tl" value="{{system.tier3tl}}" data-dtype="Number" readonly />
+                </div>
             </div>
         </div>
     </div>
@@ -92,24 +97,6 @@
         {{/each}}
     </div>
 
-    <!-- Talents Counter -->
-    <div class="talents-counter">
-        <h3>Talents</h3>
-        <div class="talent-numbers">
-            <div class="form-group">
-                <label>From Level</label>
-                <input type="number" name="system.talentsFromLevel" value="{{system.talentsFromLevel}}" data-dtype="Number" readonly />
-            </div>
-            <div class="form-group">
-                <label>Bonus</label>
-                <input type="number" name="system.talentsBonus" value="{{system.talentsBonus}}" data-dtype="Number" />
-            </div>
-            <div class="form-group">
-                <label>Total</label>
-                <input type="number" name="system.talentsTotal" value="{{system.talentsTotal}}" data-dtype="Number" readonly />
-            </div>
-        </div>
-    </div>
 
 
     <!-- Talents -->
@@ -148,13 +135,34 @@
         </div>
     </div>
 
+    <!-- Talents Counter -->
+    <div class="talents-counter">
+        <h3>Talent Count</h3>
+        <div class="talent-numbers">
+            <div class="form-group">
+                <label>From Level</label>
+                <input type="number" name="system.talentsFromLevel" value="{{system.talentsFromLevel}}" data-dtype="Number" readonly />
+            </div>
+            <div class="form-group">
+                <label>Bonus</label>
+                <input type="number" name="system.talentsBonus" value="{{system.talentsBonus}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Total</label>
+                <input type="number" name="system.talentsTotal" value="{{system.talentsTotal}}" data-dtype="Number" readonly />
+            </div>
+        </div>
+    </div>
+
+
     <!-- Traits Section -->
     <div class="traits-section">
         <div class="section-header">
-            <h3>Traits</h3>
-            <div class="controls">
+            <h2>
+                Traits
                 <a class="trait-browse" title="Browse Traits"><i class="fas fa-search"></i></a>
-            </div>
+            </h2>
+
         </div>
 
         <ol class="items-list traits-list">
