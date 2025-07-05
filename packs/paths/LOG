@@ -1,3 +1,5 @@
-2025/06/23-20:25:45.977 9420 Recovering log #179
-2025/06/23-20:25:45.979 9420 Delete type=0 #179
-2025/06/23-20:25:45.979 9420 Delete type=3 #176
+2025/07/04-23:26:41.106 adcc Recovering log #183
+2025/07/04-23:26:41.107 adcc Level-0 table #185: started
+2025/07/04-23:26:41.109 adcc Level-0 table #185: 76262 bytes OK
+2025/07/04-23:26:41.111 adcc Delete type=0 #183
+2025/07/04-23:26:41.111 adcc Delete type=3 #182

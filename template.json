@@ -41,6 +41,9 @@
       },
       "hpMiscBonus": 0,
       "level": 1,
+      "tier1tl": 1,
+      "tier2tl": 0,
+      "tier3tl": 0,
       "initiative": 0,
       "experience": 0,
       "species": {

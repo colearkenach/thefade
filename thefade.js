@@ -1225,6 +1225,12 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         const level = data.level || 1;
 
+        // Calculate tier levels
+        this.actor.system.tier1tl = level;
+        this.actor.system.tier2tl = Math.max(0, level - 4);
+        this.actor.system.tier3tl = Math.max(0, level - 9);
+
+
         // Calculate paths allowed
         if (data.isMonster) {
             data.pathsAllowed = 0;
