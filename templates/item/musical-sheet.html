@@ -1,0 +1,38 @@
+<form class="{{classes}} flexcol" autocomplete="off">
+    <header class="sheet-header flexrow">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64" />
+        <div class="header-fields flexcol">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge {{item.type}}">{{item.type}}</div>
+        </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="details">Details</a>
+    </nav>
+
+    <section class="sheet-body">
+        <div class="tab" data-group="primary" data-tab="description">
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea name="system.description" rows="10">{{system.description}}</textarea>
+            </div>
+        </div>
+
+        <div class="tab" data-group="primary" data-tab="details">
+            <div class="form-group">
+                <label>Instrument Type:</label>
+                <input type="text" name="system.instrumentType" value="{{system.instrumentType}}" />
+            </div>
+            <div class="form-group">
+                <label>Magical Properties:</label>
+                <textarea name="system.magicalProperties" rows="3">{{system.magicalProperties}}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Performance Bonus:</label>
+                <input type="text" name="system.performanceBonus" value="{{system.performanceBonus}}" />
+            </div>
+        </div>
+    </section>
+</form>

@@ -1672,65 +1672,52 @@ class TheFadeCharacterSheet extends ActorSheet {
         }
 
         // Calculate armor totals properly
+        // Calculate armor totals properly
         const armorTotals = {};
         const locations = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg', 'shield'];
 
         locations.forEach(location => {
-            let totalCurrentAP = 0;
-            let totalMaxAP = 0;
+            armorTotals[location] = { current: 0, max: 0 };
 
-            // Get Natural Deflection for this location
-            const naturalDeflection = actorData.system?.naturalDeflection?.[location];
-            const ndCurrent = naturalDeflection?.current || 0;
-            const ndMax = naturalDeflection?.max || 0;
-            const ndStacks = naturalDeflection?.stacks || false;
+            // Add individual armor pieces for this location
+            const locationArmor = equippedArmor[location] || [];
+            locationArmor.forEach(armor => {
+                armorTotals[location].current += armor.system.currentAP || 0;
+                armorTotals[location].max += armor.system.ap || 0;
+            });
 
-            // Calculate total armor AP from equipped items
-            let armorCurrentAP = 0;
-            let armorMaxAP = 0;
-
-            // Map individual arm/leg locations to their equipment arrays
-            let armorLocationKey = location;
+            // Add derived AP from arms/legs armor
             if (location === 'leftarm' || location === 'rightarm') {
-                armorLocationKey = 'arms';
-            } else if (location === 'leftleg' || location === 'rightleg') {
-                armorLocationKey = 'legs';
+                const armsArmor = equippedArmor.arms || [];
+                armsArmor.forEach(armor => {
+                    const derivedProp = location === 'leftarm' ? 'derivedLeftAP' : 'derivedRightAP';
+                    armorTotals[location].current += armor.system[derivedProp] || armor.system.ap || 0;
+                    armorTotals[location].max += armor.system.ap || 0;
+                });
             }
 
-            // Sum up all armor pieces for this location
-            if (equippedArmor[armorLocationKey]) {
-                for (let armorItem of equippedArmor[armorLocationKey]) {
-                    if (armorItem && armorItem.system) {
-                        armorCurrentAP += armorItem.system.currentAP || 0;
-                        armorMaxAP += armorItem.system.ap || 0;
-                    }
-                }
+            if (location === 'leftleg' || location === 'rightleg') {
+                const legsArmor = equippedArmor.legs || [];
+                legsArmor.forEach(armor => {
+                    const derivedProp = location === 'leftleg' ? 'derivedLeftAP' : 'derivedRightAP';
+                    armorTotals[location].current += armor.system[derivedProp] || armor.system.ap || 0;
+                    armorTotals[location].max += armor.system.ap || 0;
+                });
             }
 
-            // Add derived armor for arms and legs
-            if (location.includes('arm') || location.includes('leg')) {
-                const derivedArmor = actorData.derivedArmor?.[location];
-                if (derivedArmor) {
-                    armorCurrentAP += derivedArmor.current || 0;
-                    armorMaxAP += derivedArmor.max || 0;
-                }
+            // Add Natural Deflection ONLY if it stacks
+            const nd = actorData.system.naturalDeflection?.[location];
+            if (nd && nd.stacks) {
+                armorTotals[location].current += nd.current || 0;
+                armorTotals[location].max += nd.max || 0;
             }
-
-            // Apply stacking logic
-            if (ndStacks) {
-                // Natural Deflection stacks with armor - add them together
-                totalCurrentAP = ndCurrent + armorCurrentAP;
-                totalMaxAP = ndMax + armorMaxAP;
-            } else {
-                // Natural Deflection doesn't stack - use the higher value
-                totalCurrentAP = Math.max(ndCurrent, armorCurrentAP);
-                totalMaxAP = Math.max(ndMax, armorMaxAP);
+            // If Natural Deflection doesn't stack, use the higher of ND or armor
+            else if (nd && !nd.stacks) {
+                const ndCurrent = nd.current || 0;
+                const ndMax = nd.max || 0;
+                armorTotals[location].current = Math.max(armorTotals[location].current, ndCurrent);
+                armorTotals[location].max = Math.max(armorTotals[location].max, ndMax);
             }
-
-            armorTotals[location] = {
-                current: totalCurrentAP,
-                max: totalMaxAP
-            };
         });
 
         return { equippedArmor, unequippedArmor, armorTotals };
@@ -3911,7 +3898,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
         });
 
-        html.find('.item-edit').click(ev => {
+        html.find('.item-edit-btn').click(ev => {
             const li = $(ev.currentTarget).closest("[data-item-id]");
             const itemId = li.data("itemId");
             if (!itemId) return;
@@ -3920,6 +3907,37 @@ class TheFadeCharacterSheet extends ActorSheet {
             if (!item) return;
 
             item.sheet.render(true);
+        });
+
+        // Inventory Tab Navigation
+        html.find('.tab-button').click((event) => {
+            const clickedTab = $(event.currentTarget);
+            const tabName = clickedTab.data('tab');
+
+            // Remove active class from all tabs and content
+            html.find('.tab-button').removeClass('active');
+            html.find('.tab-content').removeClass('active');
+
+            // Add active class to clicked tab and corresponding content
+            clickedTab.addClass('active');
+            html.find(`#${tabName}-tab`).addClass('active');
+        });
+
+        // Inventory Subtab Navigation
+        html.find('.subtab-button').click((event) => {
+            const clickedSubtab = $(event.currentTarget);
+            const subtabName = clickedSubtab.data('subtab');
+
+            // Find the parent tab to scope the subtab changes
+            const parentTab = clickedSubtab.closest('.tab-content');
+
+            // Remove active class from all subtabs and content within this tab
+            parentTab.find('.subtab-button').removeClass('active');
+            parentTab.find('.subtab-content').removeClass('active');
+
+            // Add active class to clicked subtab and corresponding content
+            clickedSubtab.addClass('active');
+            parentTab.find(`#${subtabName}-subtab`).addClass('active');
         });
 
         html.find('.item-delete').off('click').click(ev => {
@@ -4548,6 +4566,34 @@ class TheFadeCharacterSheet extends ActorSheet {
             this.render(false);
         });
 
+        // Reset Derived AP 
+        html.find('.reset-derived-ap').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const itemId = button.data('item-id');
+            const location = button.data('location');
+
+            if (!itemId || !location) {
+                ui.notifications.error("Item ID or location not specified");
+                return;
+            }
+
+            const item = this.actor.items.get(itemId);
+            if (!item) {
+                ui.notifications.error("Armor item not found");
+                return;
+            }
+
+            // Determine which derived AP to reset based on location
+            const derivedAPProperty = location.includes('left') ? 'derivedLeftAP' : 'derivedRightAP';
+            const maxAP = item.system.ap || 0;
+
+            await item.update({
+                [`system.${derivedAPProperty}`]: maxAP
+            });
+            ui.notifications.info(`${item.name} derived AP reset to ${maxAP}`);
+        });
+
         // Natural Deflection Reduction with popup
         html.find('.reduce-nd').click(async (event) => {
             event.preventDefault();
@@ -4608,6 +4654,57 @@ class TheFadeCharacterSheet extends ActorSheet {
                 [`system.naturalDeflection.${location}.current`]: maxND
             });
             ui.notifications.info(`${location} Natural Deflection reset to ${maxND}`);
+        });
+
+        // Derived AP Reduction with popup
+        html.find('.reduce-derived-ap').click(async (event) => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const itemId = button.data('item-id');
+            const location = button.data('location');
+
+            if (!itemId || !location) {
+                ui.notifications.error("Item ID or location not specified");
+                return;
+            }
+
+            const item = this.actor.items.get(itemId);
+            if (!item) {
+                ui.notifications.error("Armor item not found");
+                return;
+            }
+
+            // Determine which derived AP to use based on location
+            const derivedAPProperty = location.includes('left') ? 'derivedLeftAP' : 'derivedRightAP';
+
+            // Initialize derived AP if it doesn't exist
+            let currentDerived = item.system[derivedAPProperty];
+            if (currentDerived === undefined || currentDerived === null) {
+                currentDerived = item.system.ap || 0;
+                // Initialize the property
+                await item.update({
+                    [`system.${derivedAPProperty}`]: currentDerived
+                });
+            }
+
+            if (currentDerived <= 0) {
+                ui.notifications.warn(`${item.name} ${location} derived AP already at 0`);
+                return;
+            }
+
+            const amount = await this._getReductionAmount(
+                `Reduce ${item.name} Derived AP (${location})`,
+                `Current Derived AP: ${currentDerived}/${item.system.ap}`,
+                currentDerived
+            );
+
+            if (amount === null) return; // User cancelled
+
+            const newDerived = Math.max(0, currentDerived - amount);
+            await item.update({
+                [`system.${derivedAPProperty}`]: newDerived
+            });
+            ui.notifications.info(`${item.name} derived AP reduced by ${amount} to ${newDerived}`);
         });
 
         // Natural Deflection inputs
@@ -5610,6 +5707,18 @@ class TheFadeItemSheet extends ItemSheet {
                 });
             }
         }
+
+        // Dynamic name length calculation for font sizing
+        html.find('.item-name-dynamic input').on('input', function () {
+            const nameLength = this.value.length;
+            this.style.setProperty('--name-length', nameLength);
+        });
+
+        // Initialize name length on sheet open
+        html.find('.item-name-dynamic input').each(function () {
+            const nameLength = this.value.length;
+            this.style.setProperty('--name-length', nameLength);
+        });
 
         // Handle item type change
         html.find('select[name="type"]').change(ev => {

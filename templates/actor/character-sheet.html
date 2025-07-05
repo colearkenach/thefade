@@ -507,28 +507,29 @@
                             </label>
                         </div>
                     </div>
-
+                    
                     <div class="detail-row">
                         <label>Siblings</label>
-                        <div class="dynamic-family-list" data-family-type="siblings">
-                            {{#each system.family.siblings}}
-                            <div class="family-member" data-index="{{@index}}">
-                                <input type="text" name="system.family.siblings.{{@index}}.name" value="{{this.name}}" placeholder="Name" />
-                                <select name="system.family.siblings.{{@index}}.sex">
-                                    <option value="" {{#unless this.sex}} selected{{/unless}}>--</option>
-                                    <option value="male" {{#if (eq this.sex "male")}} selected{{/if}}>M</option>
-                                    <option value="female" {{#if (eq this.sex "female")}} selected{{/if}}>F</option>
-                                </select>
-                                <label class="alive-checkbox">
-                                    <input type="checkbox" name="system.family.siblings.{{@index}}.alive" {{#if this.alive}} checked{{/if}} />
-                                    Alive
-                                </label>
-                                <button type="button" class="remove-family-member" data-family-type="siblings" data-index="{{@index}}">×</button>
-                            </div>
-                            {{/each}}
-                        </div>
-                        <button type="button" class="add-family-member" data-family-type="siblings">Add Sibling</button>
+                        <!--<div class="dynamic-family-list" data-family-type="siblings">
+        {{#each system.family.siblings}}
+        <div class="family-member" data-index="{{@index}}">
+            <input type="text" name="system.family.siblings.{{@index}}.name" value="{{this.name}}" placeholder="Name" />
+            <select name="system.family.siblings.{{@index}}.sex">
+                <option value="" {{#unless this.sex}} selected{{/unless}}>--</option>
+                <option value="male" {{#if (eq this.sex "male")}} selected{{/if}}>M</option>
+                <option value="female" {{#if (eq this.sex "female")}} selected{{/if}}>F</option>
+            </select>
+            <label class="alive-checkbox">
+                <input type="checkbox" name="system.family.siblings.{{@index}}.alive" {{#if this.alive}} checked{{/if}} />
+                Alive
+            </label>
+            <button type="button" class="remove-family-member" data-family-type="siblings" data-index="{{@index}}">×</button>
+        </div>
+        {{/each}}
+    </div>
+    <button type="button" class="add-family-member" data-family-type="siblings">Add Sibling</button>-->
                     </div>
+                        
 
                     <div class="detail-row">
                         <label>Marital Status</label>
@@ -552,26 +553,27 @@
                         </div>
                     </div>
 
+                    
                     <div class="detail-row">
                         <label>Children</label>
-                        <div class="dynamic-family-list" data-family-type="children">
-                            {{#each system.family.children}}
-                            <div class="family-member" data-index="{{@index}}">
-                                <input type="text" name="system.family.children.{{@index}}.name" value="{{this.name}}" placeholder="Name" />
-                                <select name="system.family.children.{{@index}}.sex">
-                                    <option value="" {{#unless this.sex}} selected{{/unless}}>--</option>
-                                    <option value="male" {{#if (eq this.sex "male")}} selected{{/if}}>M</option>
-                                    <option value="female" {{#if (eq this.sex "female")}} selected{{/if}}>F</option>
-                                </select>
-                                <label class="alive-checkbox">
-                                    <input type="checkbox" name="system.family.children.{{@index}}.alive" {{#if this.alive}} checked{{/if}} />
-                                    Alive
-                                </label>
-                                <button type="button" class="remove-family-member" data-family-type="children" data-index="{{@index}}">×</button>
-                            </div>
-                            {{/each}}
-                        </div>
-                        <button type="button" class="add-family-member" data-family-type="children">Add Child</button>
+                        <!--<div class="dynamic-family-list" data-family-type="children">
+        {{#each system.family.children}}
+        <div class="family-member" data-index="{{@index}}">
+            <input type="text" name="system.family.children.{{@index}}.name" value="{{this.name}}" placeholder="Name" />
+            <select name="system.family.children.{{@index}}.sex">
+                <option value="" {{#unless this.sex}} selected{{/unless}}>--</option>
+                <option value="male" {{#if (eq this.sex "male")}} selected{{/if}}>M</option>
+                <option value="female" {{#if (eq this.sex "female")}} selected{{/if}}>F</option>
+            </select>
+            <label class="alive-checkbox">
+                <input type="checkbox" name="system.family.children.{{@index}}.alive" {{#if this.alive}} checked{{/if}} />
+                Alive
+            </label>
+            <button type="button" class="remove-family-member" data-family-type="children" data-index="{{@index}}">×</button>
+        </div>
+        {{/each}}
+    </div>
+    <button type="button" class="add-family-member" data-family-type="children">Add Child</button>-->
                     </div>
                 </div>
 

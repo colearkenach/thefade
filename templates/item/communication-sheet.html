@@ -1,0 +1,56 @@
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge {{item.type}}">{{item.type}}</div>
+        </div>
+    </header>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="attributes">Attributes</a>
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        {{!-- Description Tab --}}
+        <div class="tab" data-group="primary" data-tab="description">
+            <textarea name="system.description">{{system.description}}</textarea>
+        </div>
+
+        {{!-- Attributes Tab --}}
+        <div class="tab" data-group="primary" data-tab="attributes">
+            <div class="form-group">
+                <label>Complexity</label>
+                <select name="system.type">
+                    <option value="telepathic" {{#ifEquals system.type "telepathic"}} selected{{/ifEquals}}>Audio Only</option>
+                    <option value="magical" {{#ifEquals system.type "magical"}} selected{{/ifEquals}}>Video Only</option>
+                    <option value="crystal" {{#ifEquals system.type "crystal"}} selected{{/ifEquals}}>Audio & Visual</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Distance</label>
+                <input type="text" name="system.range" value="{{system.range}}" placeholder="e.g., 1 mile, Same plane, Unlimited" />
+            </div>
+
+            <div class="form-group">
+                <label>Uses per Day</label>
+                <input type="number" name="system.usesPerDay" value="{{system.usesPerDay}}" data-dtype="Number" min="0" />
+                <p class="hint">0 for unlimited uses</p>
+            </div>
+
+            <div class="form-group">
+                <label>Price (sp)</label>
+                <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Weight (lbs)</label>
+                <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" step="0.1" />
+            </div>
+        </div>
+    </section>
+</form>

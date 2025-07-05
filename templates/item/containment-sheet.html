@@ -1,0 +1,59 @@
+<form class="{{classes}} flexcol" autocomplete="off">
+    <header class="sheet-header flexrow">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64" />
+        <div class="header-fields flexcol">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge {{item.type}}">{{item.type}}</div>
+        </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="details">Details</a>
+        <a class="item" data-tab="attributes">Attributes</a>
+    </nav>
+
+    <section class="sheet-body">
+        <div class="tab" data-group="primary" data-tab="description">
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea name="system.description" rows="10">{{system.description}}</textarea>
+            </div>
+        </div>
+
+        <div class="tab" data-group="primary" data-tab="details">
+            <div class="form-group">
+                <label>Capacity:</label>
+                <input type="text" name="system.capacity" value="{{system.capacity}}" />
+            </div>
+            <div class="form-group">
+                <label>Containment Type:</label>
+                <input type="text" name="system.containmentType" value="{{system.containmentType}}" />
+            </div>
+            <div class="form-group">
+                <label>Security Level:</label>
+                <input type="text" name="system.securityLevel" value="{{system.securityLevel}}" />
+            </div>
+            <div class="form-group">
+                <label>Special Properties:</label>
+                <textarea name="system.specialProperties" rows="3">{{system.specialProperties}}</textarea>
+            </div>
+        </div>
+
+        <div class="tab" data-group="primary" data-tab="attributes">
+            <div class="form-group">
+                <label>Price (sp)</label>
+                <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Weight</label>
+                <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
+                <span>lbs.</span>
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="text" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
+            </div>
+        </div>
+    </section>
+</form>

@@ -1,0 +1,46 @@
+<form class="{{classes}} flexcol" autocomplete="off">
+    <header class="sheet-header flexrow">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64" />
+        <div class="header-fields flexcol">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge {{item.type}}">{{item.type}}</div>
+        </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="details">Details</a>
+    </nav>
+
+    <section class="sheet-body">
+        <div class="tab" data-group="primary" data-tab="description">
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea name="system.description" rows="10">{{system.description}}</textarea>
+            </div>
+        </div>
+
+        <div class="tab" data-group="primary" data-tab="details">
+            <div class="form-group">
+                <label>Enhancement Level:</label>
+                <input type="number" name="system.el" value="{{system.el}}" />
+            </div>
+            <div class="form-group">
+                <label>Creature Type:</label>
+                <input type="text" name="system.creatureType" value="{{system.creatureType}}" />
+            </div>
+            <div class="form-group">
+                <label>Hit Points:</label>
+                <input type="number" name="system.hp" value="{{system.hp}}" />
+            </div>
+            <div class="form-group">
+                <label>Natural Weapons:</label>
+                <textarea name="system.naturalWeapons" rows="3">{{system.naturalWeapons}}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Special Abilities:</label>
+                <textarea name="system.specialAbilities" rows="3">{{system.specialAbilities}}</textarea>
+            </div>
+        </div>
+    </section>
+</form>

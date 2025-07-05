@@ -1,0 +1,42 @@
+<form class="{{classes}} flexcol" autocomplete="off">
+    <header class="sheet-header flexrow">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64" />
+        <div class="header-fields flexcol">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge {{item.type}}">{{item.type}}</div>
+        </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="details">Details</a>
+    </nav>
+
+    <section class="sheet-body">
+        <div class="tab" data-group="primary" data-tab="description">
+            <div class="form-group">
+                <label>Description:</label>
+                <textarea name="system.description" rows="10">{{system.description}}</textarea>
+            </div>
+        </div>
+
+        <div class="tab" data-group="primary" data-tab="details">
+            <div class="form-group">
+                <label>Medical Type:</label>
+                <input type="text" name="system.medicalType" value="{{system.medicalType}}" />
+            </div>
+            <div class="form-group">
+                <label>Healing Amount:</label>
+                <input type="text" name="system.healingAmount" value="{{system.healingAmount}}" />
+            </div>
+            <div class="form-group">
+                <label>Application Time:</label>
+                <input type="text" name="system.applicationTime" value="{{system.applicationTime}}" />
+            </div>
+            <div class="form-group">
+                <label>Uses:</label>
+                <input type="number" name="system.uses" value="{{system.uses}}" />
+            </div>
+        </div>
+    </section>
+</form>
