@@ -545,9 +545,9 @@ class TheFadeActor extends Actor {
         data.defenses.grit = Math.max(1, data.defenses.grit);
 
         // Calculate total defenses including bonuses but without facing penalties
-        data.totalResilience = data.defenses.resilience + Number(data.defenses.resilienceBonus || 0);
-        data.totalAvoid = data.defenses.avoid + Number(data.defenses.avoidBonus || 0);
-        data.totalGrit = data.defenses.grit + Number(data.defenses.gritBonus || 0);
+        data.totalResilience = Math.max(1, data.defenses.resilience + Number(data.defenses.resilienceBonus || 0));
+        data.totalAvoid = Math.max(1, data.defenses.avoid + Number(data.defenses.avoidBonus || 0));
+        data.totalGrit = Math.max(1, data.defenses.grit + Number(data.defenses.gritBonus || 0));
 
         // Calculate Passive Dodge based on Acrobatics skill and Finesse
         let acrobonaticsDodge = 0;
@@ -707,6 +707,10 @@ class TheFadeCharacterSheet extends ActorSheet {
     */
     getData() {
         let data;
+
+        console.log("!!! getData() called - this causes re-render !!!");
+        console.trace(); // This will show the call stack
+
 
         // Ensure actor exists before proceeding
         if (!this.actor) {
@@ -1287,7 +1291,6 @@ class TheFadeCharacterSheet extends ActorSheet {
     * @param {Object} sheetData - The sheet data to prepare
     */
     _prepareCharacterData(sheetData) {
-        // CRITICAL FIX: Ensure actor and system data exist
         if (!sheetData || !sheetData.actor || !sheetData.actor.system) {
             console.error("Missing actor or system data in _prepareCharacterData");
             return;
@@ -2274,7 +2277,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Remove any existing event handlers to prevent duplicates
         html.find('.defense-checkbox').off('change');
 
-        // Add new handlers
+        // Add simple handlers
         html.find('.defense-checkbox').on('change', function () {
             const checkbox = $(this);
             const details = checkbox.closest('.defense').find('.defense-details');
@@ -2303,54 +2306,96 @@ class TheFadeCharacterSheet extends ActorSheet {
         const currentParry = actor.getFlag("thefade", "currentPassiveParry") || 0;
         const avoidPenalty = actor.getFlag("thefade", "avoidPenalty") || 0;
 
-        // Calculate base avoid
-        const baseAvoid = Math.floor(actor.system.attributes.finesse.value / 2);
+        // Get current defense values
+        const baseResilience = actor.system.defenses.resilience;
+        const baseAvoid = actor.system.defenses.avoid;
+        const baseGrit = actor.system.defenses.grit;
+
+        // Get bonuses
+        const resilienceBonus = actor.system.defenses.resilienceBonus || 0;
         const avoidBonus = actor.system.defenses.avoidBonus || 0;
+        const gritBonus = actor.system.defenses.gritBonus || 0;
 
-        // Calculate total avoid with penalty
-        const totalAvoid = Math.max(0, baseAvoid + avoidBonus + avoidPenalty);
+        // Get other penalties 
+        const resiliencePenalty = actor.getFlag("thefade", "resiliencePenalty") || 0;
+        const gritPenalty = actor.getFlag("thefade", "gritPenalty") || 0;
 
-        /*
-        console.log(`Updating defense displays:
-        Base Avoid: ${baseAvoid}
-        Avoid Bonus: ${avoidBonus}
-        Avoid Penalty: ${avoidPenalty}
-        Total Avoid: ${totalAvoid}
-        Current Dodge: ${currentDodge}
-        Current Parry: ${currentParry}`);
-        */
+        // Calculate raw totals including all bonuses and penalties
+        const rawResilience = baseResilience + resilienceBonus + resiliencePenalty;
+        const rawAvoid = baseAvoid + avoidBonus + avoidPenalty;
+        const rawGrit = baseGrit + gritBonus + gritPenalty;
 
-        // Update values directly on the actor using a single update for efficiency
-        const updateData = {
-            "system.defenses.passiveDodge": currentDodge,
-            "system.defenses.passiveParry": currentParry,
-            "system.defenses.avoidPenalty": avoidPenalty,
-            "system.totalAvoid": totalAvoid
-        };
+        // Apply minimum defense rule (minimum 1) and calculate excess penalties
+        const totalResilience = Math.max(1, rawResilience);
+        const totalAvoid = Math.max(1, rawAvoid);
+        const totalGrit = Math.max(1, rawGrit);
 
-        // If the actor isn't loaded yet or is being initialized, skip the update
-        if (!actor.id) return;
+        // Calculate excess penalties for attack bonuses
+        const excessResiliencePenalty = rawResilience < 1 ? Math.abs(rawResilience - 1) : 0;
+        const excessAvoidPenalty = rawAvoid < 1 ? Math.abs(rawAvoid - 1) : 0;
+        const excessGritPenalty = rawGrit < 1 ? Math.abs(rawGrit - 1) : 0;
 
-        // Apply the update
-        await actor.update(updateData);
+        // Store excess penalties in flags for easy access
+        this.actor.setFlag("thefade", "excessResiliencePenalty", excessResiliencePenalty);
+        this.actor.setFlag("thefade", "excessAvoidPenalty", excessAvoidPenalty);
+        this.actor.setFlag("thefade", "excessGritPenalty", excessGritPenalty);
 
-        // Update the UI elements directly
+        // Update the UI elements directly without actor update
         try {
-            // Use jQuery to update values on the sheet
             const sheet = this.element;
-
             if (sheet) {
-                // Update avoid display
+                // Update total defense displays
+                sheet.find('.defense').each(function () {
+                    const defense = $(this);
+                    const totalInput = defense.find('input.total-value');
+
+                    if (defense.find('label').text().includes('Resilience')) {
+                        totalInput.val(totalResilience);
+                    } else if (defense.find('label').text().includes('Avoid')) {
+                        totalInput.val(totalAvoid);
+                    } else if (defense.find('label').text().includes('Grit')) {
+                        totalInput.val(totalGrit);
+                    }
+                });
+
                 sheet.find('input.avoid-value').val(totalAvoid);
-
-                // Update passive dodge display
                 sheet.find('input.passive-dodge-value').val(currentDodge);
-
-                // Update passive parry display
                 sheet.find('input.passive-parry-value').val(currentParry);
+
+                // Update excess penalty displays
+                this._updateExcessPenaltyDisplays(sheet);
             }
         } catch (error) {
             console.error("Error updating UI elements:", error);
+        }
+    }
+
+    _updateExcessPenaltyDisplays(sheet) {
+        // Update Resilience excess penalty
+        const resilienceExcess = this.actor.getFlag("thefade", "excessResiliencePenalty") || 0;
+        const resilienceDisplay = sheet.find('.resilience-excess-penalty');
+        if (resilienceExcess > 0) {
+            resilienceDisplay.text(`+${resilienceExcess}D`).show();
+        } else {
+            resilienceDisplay.hide();
+        }
+
+        // Update Avoid excess penalty
+        const avoidExcess = this.actor.getFlag("thefade", "excessAvoidPenalty") || 0;
+        const avoidDisplay = sheet.find('.avoid-excess-penalty');
+        if (avoidExcess > 0) {
+            avoidDisplay.text(`+${avoidExcess}D`).show();
+        } else {
+            avoidDisplay.hide();
+        }
+
+        // Update Grit excess penalty
+        const gritExcess = this.actor.getFlag("thefade", "excessGritPenalty") || 0;
+        const gritDisplay = sheet.find('.grit-excess-penalty');
+        if (gritExcess > 0) {
+            gritDisplay.text(`+${gritExcess}D`).show();
+        } else {
+            gritDisplay.hide();
         }
     }
 
@@ -2359,6 +2404,9 @@ class TheFadeCharacterSheet extends ActorSheet {
     * @param {HTMLElement} html - Sheet HTML element
     */
     async _initializeDefenseSystem(html) {
+        // Preserve expanded state before any operations
+        this._preserveExpandedState(html);
+
         // First handle expansion behavior
         this._initializeDefenseExpansion(html);
 
@@ -2370,6 +2418,9 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Make sure displays are updated
         await this._updateDefenseDisplays();
+
+        // Restore expanded state after operations
+        this._restoreExpandedState(html);
     }
 
 
@@ -2382,44 +2433,44 @@ class TheFadeCharacterSheet extends ActorSheet {
     * @param {Event} event - Click event
     */
     _onEquipMagicItem(event) {
-    event.preventDefault();
-    const element = event.currentTarget;
-    const itemId = element.closest('.magic-item').dataset.itemId;
-    const targetSlot = element.dataset.slot;
-        
-    const item = this.actor.items.get(itemId);
-    if (!item) return;
-        
-    // Check if slot is compatible
-    let actualSlot = targetSlot;
-    if (targetSlot === 'ring') {
-        actualSlot = this._getAvailableRingSlot();
-        if (!actualSlot) {
-            ui.notifications.warn("No available ring slots.");
+        event.preventDefault();
+        const element = event.currentTarget;
+        const itemId = element.closest('.magic-item').dataset.itemId;
+        const targetSlot = element.dataset.slot;
+
+        const item = this.actor.items.get(itemId);
+        if (!item) return;
+
+        // Check if slot is compatible
+        let actualSlot = targetSlot;
+        if (targetSlot === 'ring') {
+            actualSlot = this._getAvailableRingSlot();
+            if (!actualSlot) {
+                ui.notifications.warn("No available ring slots.");
+                return;
+            }
+        }
+
+        // Check if slot is already occupied
+        const currentEquipped = this.actor.system.magicItems?.[actualSlot];
+        if (currentEquipped) {
+            ui.notifications.warn(`${actualSlot} slot is already occupied by ${currentEquipped.name}.`);
             return;
         }
-    }
-        
-    // Check if slot is already occupied
-    const currentEquipped = this.actor.system.magicItems?.[actualSlot];
-    if (currentEquipped) {
-        ui.notifications.warn(`${actualSlot} slot is already occupied by ${currentEquipped.name}.`);
-        return;
-    }
-        
-    // Check attunement limits if item requires attunement
-    if (!item.system.attunement) {
-        const currentAttunements = this.actor.system.currentAttunements || 0;
-        const maxAttunements = this.actor.system.maxAttunements || 0;
-            
-        if (currentAttunements >= maxAttunements) {
-            ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
-            return;
+
+        // Check attunement limits if item requires attunement
+        if (!item.system.attunement) {
+            const currentAttunements = this.actor.system.currentAttunements || 0;
+            const maxAttunements = this.actor.system.maxAttunements || 0;
+
+            if (currentAttunements >= maxAttunements) {
+                ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
+                return;
+            }
         }
-    }
-        
-    // Equip the item
-    this._equipMagicItem(item, actualSlot);
+
+        // Equip the item
+        this._equipMagicItem(item, actualSlot);
     }
 
     /**
@@ -2430,7 +2481,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         event.preventDefault();
         const element = event.currentTarget;
         const itemId = element.closest('.equipped-item').dataset.itemId;
-        
+
         const item = this.actor.items.get(itemId);
         if (item) {
             this._unequipMagicItem(item);
@@ -2446,21 +2497,21 @@ class TheFadeCharacterSheet extends ActorSheet {
         const element = event.currentTarget;
         const itemId = element.dataset.itemId;
         const isAttuned = element.checked;
-        
+
         const item = this.actor.items.get(itemId);
         if (!item) return;
-        
+
         if (isAttuned) {
             const currentAttunements = this.actor.system.currentAttunements || 0;
             const maxAttunements = this.actor.system.maxAttunements || 0;
-            
+
             if (currentAttunements >= maxAttunements) {
                 ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
                 element.checked = false;
                 return;
             }
         }
-        
+
         item.update({ "system.attunement": isAttuned });
         ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
     }
@@ -3578,42 +3629,41 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Initialize defense system with flags
         this._initializeDefenseSystem(html);
+        this._initializeExcessPenaltyTooltips(html);
 
         this._activateInventoryListeners(html);
 
-        // Add regular input change handler for other fields
-        html.find('input[name], select[name]:not([name="system.defenses.facing"])').change(ev => {
+        // Handle defense bonus changes
+        html.find('input[name="system.defenses.resilienceBonus"], input[name="system.defenses.avoidBonus"], input[name="system.defenses.gritBonus"]').change(async (ev) => {
+            console.log("=== DEFENSE BONUS CHANGE START ===");
+
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+
             const input = ev.currentTarget;
             const fieldName = input.name;
 
-            let value = input.value;
+            let value = Number(input.value) || 0;
+            console.log("Updating field:", fieldName, "to value:", value);
 
-            // Convert to number for numeric inputs
-            if (input.dataset.dtype === 'Number') {
-                value = Number(value);
-                if (isNaN(value)) value = 1; // Default to 1 if conversion fails
-            }
+            // Update actor data directly without triggering render
+            console.log("About to call actor.update with render: false");
+            await this.actor.update({
+                [fieldName]: value
+            }, { render: false });
+            console.log("actor.update completed");
 
-            // For system data updates, use the proper structure
-            if (fieldName.startsWith('system.')) {
-                // Using the proper data structure expected in your version of Foundry
-                const path = fieldName.replace('system.', '');
-                this.actor.update({
-                    "system": {
-                        [path]: value
-                    }
-                });
-            } else {
-                // For other updates
-                this.actor.update({
-                    [fieldName]: value
-                });
-            }
+            // Manually update the defense displays
+            console.log("About to call _updateDefenseDisplays");
+            await this._updateDefenseDisplays();
+            console.log("_updateDefenseDisplays completed");
+            console.log("=== DEFENSE BONUS CHANGE END ===");
+
+            ev.stopPropagation();
         });
 
         // Add explicit input change handler
-        html.find('input[name], select[name]').change(ev => {
-            const input = ev.currentTarget;
+        html.find('input[name], select[name]').not('[name="system.defenses.resilienceBonus"], [name="system.defenses.avoidBonus"], [name="system.defenses.gritBonus"]').change(ev => {            const input = ev.currentTarget;
             const fieldName = input.name;
 
             let value = input.value;
@@ -3750,26 +3800,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        // Existing listeners remain the same
-        //html.find('.item-create').click(ev => {
-        //    ev.preventDefault();
-        //    const header = ev.currentTarget;
-        //    const type = header.dataset.type;
-
-        //    const data = duplicate(header.dataset);
-        //    const name = `New ${type.capitalize()}`;
-
-        //    const itemData = {
-        //        name: name,
-        //        type: type,
-        //        system: data
-        //    };
-
-        //    delete itemData.system["type"];
-
-        //    return this.actor.createEmbeddedDocuments("Item", [itemData]);
-        //});
-
         html.find('.item-create[data-type="skill"]').click(ev => {
             ev.preventDefault();
             ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
@@ -3785,16 +3815,6 @@ class TheFadeCharacterSheet extends ActorSheet {
 
             item.sheet.render(true);
         });
-
-        //html.find('.item-delete').click(ev => {
-        //    const li = $(ev.currentTarget).closest("[data-item-id]");
-        //    const itemId = li.data("itemId");
-
-        //    if (!itemId) return;
-
-        //    this.actor.deleteEmbeddedDocuments("Item", [itemId]);
-        //    li.slideUp(200, () => this.render(false));
-        //});
 
         html.find('.item-delete').off('click').click(ev => {
             const li = $(ev.currentTarget).closest("[data-item-id]");
@@ -4026,7 +4046,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         this._updateFacingDirectly(html);
         this._setupArmorResetListeners(html);
         // Initialize tooltips
-         this._initializeDataTooltips(html);
+        this._initializeDataTooltips(html);
 
         if (this.actor.isOwner) {
             html.find('.initialize-skills').click(async ev => {
@@ -4492,16 +4512,55 @@ class TheFadeCharacterSheet extends ActorSheet {
         });
     }
 
+
+    _preserveExpandedState(html) {
+        // Store which defense details are currently expanded
+        const expandedStates = {};
+        html.find('.defense-checkbox').each(function () {
+            const checkbox = $(this);
+            expandedStates[checkbox.attr('id')] = checkbox.is(':checked');
+        });
+
+        // Store in a property for later restoration
+        this._expandedDefenseStates = expandedStates;
+    }
+
+    _restoreExpandedState(html) {
+        // Restore previously expanded defense details
+        if (this._expandedDefenseStates) {
+            Object.entries(this._expandedDefenseStates).forEach(([id, isExpanded]) => {
+                const checkbox = html.find(`#${id}`);
+                const details = checkbox.closest('.defense').find('.defense-details');
+
+                checkbox.prop('checked', isExpanded);
+                if (isExpanded) {
+                    details.css('max-height', '200px');
+                    details.css('padding-top', '10px');
+                } else {
+                    details.css('max-height', '0');
+                    details.css('padding-top', '0');
+                }
+            });
+        }
+    }
+
     /*
     * Initialize data path tooltips for development
     * @param {HTMLElement} html - The rendered HTML
     * @private
     */
     _initializeDataTooltips(html) {
-        let tooltip = null;
+        // Clean up any existing tooltips first
+        $('.data-tooltip').remove();
+
+        // Store tooltip reference on the sheet instance
+        if (this.activeTooltip) {
+            this.activeTooltip.remove();
+            this.activeTooltip = null;
+        }
 
         // Handle mouseenter on form elements and display elements
-        html.on('mouseenter', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function (event) {
+        html.on('mouseenter', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', (event) => {
             const element = event.currentTarget;
             let dataPath = element.name;
 
@@ -4539,22 +4598,19 @@ class TheFadeCharacterSheet extends ActorSheet {
 
             if (!dataPath) return;
 
-            // Remove existing tooltip
-            if (tooltip) {
-                tooltip.remove();
-                tooltip = null;
-            }
+            // Remove any existing tooltip
+            this._removeTooltip();
 
             // Create new tooltip
-            tooltip = $(`<div class="data-tooltip">${dataPath}</div>`);
-            $('body').append(tooltip);
+            this.activeTooltip = $(`<div class="data-tooltip">${dataPath}</div>`);
+            $('body').append(this.activeTooltip);
 
             // Position tooltip
             const rect = element.getBoundingClientRect();
-            const tooltipWidth = tooltip.outerWidth();
+            const tooltipWidth = this.activeTooltip.outerWidth();
 
             let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
-            let top = rect.top - tooltip.outerHeight() - 8;
+            let top = rect.top - this.activeTooltip.outerHeight() - 8;
 
             // Keep tooltip on screen
             if (left < 10) left = 10;
@@ -4565,30 +4621,108 @@ class TheFadeCharacterSheet extends ActorSheet {
                 top = rect.bottom + 8;
             }
 
-            tooltip.css({
+            this.activeTooltip.css({
                 left: left + 'px',
                 top: top + 'px'
             });
 
             // Show tooltip
-            setTimeout(() => tooltip.addClass('show'), 10);
+            setTimeout(() => {
+                if (this.activeTooltip) {
+                    this.activeTooltip.addClass('show');
+                }
+            }, 10);
         });
 
         // Handle mouseleave
-        html.on('mouseleave', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', function () {
-            if (tooltip) {
-                tooltip.removeClass('show');
+        html.on('mouseleave', 'input, select, textarea, .defense-value input, .total-value, .base-value, .avoid-value, .passive-dodge-value, .passive-parry-value', () => {
+            this._removeTooltip();
+        });
+    }
+
+    _initializeExcessPenaltyTooltips(html) {
+        let excessTooltip = null;
+
+        // Handle mouseenter on excess penalty displays
+        html.on('mouseenter', '.excess-penalty', (event) => {
+            const element = event.currentTarget;
+
+            // Remove existing tooltip
+            if (excessTooltip) {
+                excessTooltip.remove();
+                excessTooltip = null;
+            }
+
+            // Only show tooltip if the element is visible and has content
+            if (!$(element).is(':visible') || !$(element).text().trim()) return;
+
+            // Create new tooltip
+            excessTooltip = $('<div class="excess-penalty-tooltip">Bonus dice added to attack rolls against this defense</div>');
+            $('body').append(excessTooltip);
+
+            // Position tooltip
+            const rect = element.getBoundingClientRect();
+            const tooltipWidth = excessTooltip.outerWidth();
+
+            let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+            let top = rect.top - excessTooltip.outerHeight() - 8;
+
+            // Keep tooltip on screen
+            if (left < 10) left = 10;
+            if (left + tooltipWidth > window.innerWidth - 10) {
+                left = window.innerWidth - tooltipWidth - 10;
+            }
+            if (top < 10) {
+                top = rect.bottom + 8;
+            }
+
+            excessTooltip.css({
+                left: left + 'px',
+                top: top + 'px'
+            });
+
+            // Show tooltip
+            setTimeout(() => {
+                if (excessTooltip) {
+                    excessTooltip.addClass('show');
+                }
+            }, 10);
+        });
+
+        // Handle mouseleave
+        html.on('mouseleave', '.excess-penalty', () => {
+            if (excessTooltip) {
+                excessTooltip.removeClass('show');
                 setTimeout(() => {
-                    if (tooltip) {
-                        tooltip.remove();
-                        tooltip = null;
+                    if (excessTooltip) {
+                        excessTooltip.remove();
+                        excessTooltip = null;
                     }
                 }, 150);
             }
         });
     }
 
-    
+
+    _removeTooltip() {
+        if (this.activeTooltip) {
+            this.activeTooltip.removeClass('show');
+            setTimeout(() => {
+                if (this.activeTooltip) {
+                    this.activeTooltip.remove();
+                    this.activeTooltip = null;
+                }
+            }, 150);
+        }
+    }
+
+    async close(options = {}) {
+        // Clean up tooltips when sheet closes
+        this._removeTooltip();
+        $('.data-tooltip').remove();
+
+        return super.close(options);
+    }
 }
 
 // ====================================================================

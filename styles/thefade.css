@@ -2961,3 +2961,58 @@ select[name="system.aura.color"] option[value="white"] {
     border-left: 2px solid var(--border-color);
     padding-left: 10px;
 }
+
+.data-tooltip:not(.show) {
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+/* Defense excess penalty display - Fixed layout */
+.defense-value {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+    .defense-value input.total-value {
+        text-align: center;
+        flex: 0 0 auto; /* Don't grow/shrink */
+    }
+
+.excess-penalty {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 0.9em;
+    cursor: help;
+    display: none;
+    flex: 0 0 auto; /* Don't grow/shrink */
+    margin-left: 4px;
+}
+
+    .excess-penalty:hover {
+        text-decoration: underline;
+    }
+
+/* Excess penalty tooltip */
+.excess-penalty-tooltip {
+    position: absolute;
+    background: rgba(220, 53, 69, 0.9);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    z-index: 10001;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    max-width: 250px;
+}
+
+    .excess-penalty-tooltip.show {
+        opacity: 1;
+        transform: translateY(0);
+    }

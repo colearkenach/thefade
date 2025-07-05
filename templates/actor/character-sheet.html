@@ -233,12 +233,15 @@
             <!-- Defenses -->
             <h2>Defenses</h2>
             <div class="grid grid-3col">
+
+
                 <!-- Resilience -->
                 <div class="defense">
                     <input type="checkbox" id="toggle-resilience" class="defense-checkbox">
                     <label for="toggle-resilience" class="defense-label">Resilience <span class="toggle-icon">▼</span></label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalResilience}}" disabled class="total-value" />
+                        <span class="excess-penalty resilience-excess-penalty">+0D</span>
                     </div>
                     <div class="defense-details">
                         <div class="detail-row">
@@ -259,6 +262,7 @@
                     <label for="toggle-avoid" class="defense-label">Avoid <span class="toggle-icon">▼</span></label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" />
+                        <span class="excess-penalty avoid-excess-penalty">+0D</span>
                     </div>
                     <div class="defense-details">
                         <div class="detail-row">
@@ -283,6 +287,7 @@
                     <label for="toggle-grit" class="defense-label">Grit <span class="toggle-icon">▼</span></label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalGrit}}" disabled class="total-value" />
+                        <span class="excess-penalty grit-excess-penalty">+0D</span>
                     </div>
                     <div class="defense-details">
                         <div class="detail-row">
@@ -296,6 +301,7 @@
                     </div>
                     <div class="defense-desc">vs mental and sanity-driven attacks.</div>
                 </div>
+
             </div>
 
             <!-- Passive Defenses -->
@@ -363,10 +369,10 @@
                             <span><strong>Flank:</strong> Full passive defenses, -1 Avoid</span>
                         </div>
                         <div class="detail-row">
-                            <span><strong>Back Flank:</strong> ½ passive dodge, no parry, -2 Avoid</span>
+                            <span><strong>Back Flank:</strong> 1/2 passive dodge, no parry, -2 Avoid</span>
                         </div>
                         <div class="detail-row">
-                            <span><strong>Back:</strong> ¼ passive dodge, no parry, -2 Avoid</span>
+                            <span><strong>Back:</strong> 1/4 passive dodge, no parry, -2 Avoid</span>
                         </div>
                     </div>
                     <div class="defense-desc">Current facing determines defensive effectiveness.</div>
