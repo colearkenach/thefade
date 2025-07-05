@@ -45,6 +45,7 @@
       "tier2tl": 0,
       "tier3tl": 0,
       "initiative": 0,
+      "initiativeBonus": 0,
       "experience": 0,
       "species": {
         "name": "",
@@ -61,6 +62,13 @@
         "swim": 0,
         "climb": 0,
         "burrow": 0
+      },
+      "overland-movement": {
+        "landOverland": 24,
+        "flyOverland": 0,
+        "swimOverland": 0,
+        "climbOverland": 0,
+        "burrowOverland": 0
       },
       "defenses": {
         "resilience": 0,
@@ -96,6 +104,47 @@
         "color": "",
         "shape": "",
         "intensity": ""
+      },
+      "personalDetails": {
+        "age": null,
+        "sex": "",
+        "sexuality": "",
+        "heightFeet": null,
+        "heightInches": null,
+        "weight": null,
+        "hairColor": "#000000",
+        "eyeColor": "#000000",
+        "skinColor": "#000000",
+        "xenochild": false,
+        "handedness": "",
+        "birthplace": "",
+        "culture": ""
+      },
+      "family": {
+        "father": {
+          "name": "",
+          "alive": false
+        },
+        "mother": {
+          "name": "",
+          "alive": false
+        },
+        "siblings": [],
+        "maritalStatus": "",
+        "spouse": {
+          "name": "",
+          "alive": false
+        },
+        "children": [],
+        "build": "",
+        "distinguishingMarks": "",
+        "voice": "",
+        "socialClass": "",
+        "education": "",
+        "occupation": "",
+        "greatestVice": "",
+        "reputation": "",
+        "fightingStyle": ""
       }
     }
   },
@@ -125,7 +174,9 @@
       "containment",
       "dream",
       "fleshcraft",
-      "magicitem"
+      "magicitem",
+      "trait",
+      "precept"
     ],
     "templates": {
       "base": {
@@ -266,6 +317,114 @@
       "effect": "",
       "attunement": false,
       "equipped": false
+    },
+    "trait": {
+      "templates": [ "base" ],
+      "prerequisites": "",
+      "description": ""
+    },
+    "precept": {
+      "templates": [ "base" ],
+      "effect": "",
+      "usesPerDay": 0
+    },
+
+    "drug": {
+      "templates": [ "base", "physical" ],
+      "addiction": "",
+      "overdose": "",
+      "effect": "",
+      "duration": ""
+    },
+    "poison": {
+      "templates": [ "base", "physical" ],
+      "toxicity": "",
+      "poisonType": "injury",
+      "effect": ""
+    },
+    "biological": {
+      "templates": [ "base", "physical" ],
+      "creatureType": "",
+      "specialAbilities": "",
+      "effect": ""
+    },
+    "medical": {
+      "templates": [ "base", "physical" ],
+      "effect": "",
+      "duration": ""
+    },
+    "travel": {
+      "templates": [ "base", "physical" ],
+      "effect": ""
+    },
+    "mount": {
+      "templates": [ "base", "physical" ],
+      "hp": 0,
+      "size": "medium",
+      "movement": 0,
+      "carryCapacity": 0
+    },
+    "vehicle": {
+      "templates": [ "base", "physical" ],
+      "hp": 0,
+      "size": "medium",
+      "movement": 0,
+      "drivers": 1,
+      "passengers": 0,
+      "overland": 0,
+      "cargo": "",
+      "vehicleType": "land"
+    },
+    "musical": {
+      "templates": [ "base", "physical" ],
+      "effect": ""
+    },
+    "potion": {
+      "templates": [ "base", "physical" ],
+      "effect": "",
+      "duration": ""
+    },
+    "staff": {
+      "templates": [ "base", "physical" ],
+      "charges": 20,
+      "usesPerDay": 3,
+      "spellName": "",
+      "spellDescription": "",
+      "school": "General"
+    },
+    "wand": {
+      "templates": [ "base", "physical" ],
+      "charges": 20,
+      "usesPerDay": 3,
+      "spellName": "",
+      "spellDescription": "",
+      "school": "General"
+    },
+    "gate": {
+      "templates": [ "base", "physical" ],
+      "range": "",
+      "distance": ""
+    },
+    "communication": {
+      "templates": [ "base", "physical" ],
+      "range": "",
+      "complexity": "audio",
+      "relayCode": ""
+    },
+    "containment": {
+      "templates": [ "base", "physical" ],
+      "effect": ""
+    },
+    "dream": {
+      "templates": [ "base", "physical" ],
+      "el": 1,
+      "effect": ""
+    },
+    "fleshcraft": {
+      "templates": [ "base", "physical" ],
+      "creatureType": "",
+      "naturalWeapons": "",
+      "specialAbilities": ""
     }
   }
 }

@@ -3016,3 +3016,306 @@ select[name="system.aura.color"] option[value="white"] {
         opacity: 1;
         transform: translateY(0);
     }
+
+/* Character Portrait */
+.character-portrait {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.character-image {
+    max-width: 300px;
+    max-height: 400px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Vital Stats */
+.vital-stats {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+/* Initiative Bonus */
+.initiative-bonus {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+/* Collapsible Header Tools */
+.header-tool {
+    margin-bottom: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.tool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+    .tool-header h2 {
+        margin: 0;
+        font-size: 1em;
+    }
+
+.collapse-icon {
+    transition: transform 0.3s ease;
+}
+
+.header-tool[data-collapsed="true"] .collapse-icon {
+    transform: rotate(180deg);
+}
+
+.header-tool[data-collapsed="true"] .tool-content {
+    display: none;
+}
+
+.tool-content {
+    padding: 10px;
+}
+
+/* Background Tab Layout */
+.background-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.background-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.character-portrait-sidebar {
+    flex-shrink: 0;
+    width: 250px;
+}
+
+    .character-portrait-sidebar .character-image {
+        width: 100%;
+        max-width: 250px;
+        height: auto;
+        border: 2px solid var(--border-color);
+        border-radius: 8px;
+        cursor: pointer;
+    }
+
+/* Background Form Sections */
+.background-section,
+.appearance-section,
+.notes-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+    .background-section label,
+    .appearance-section label,
+    .notes-section label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: var(--text-dark);
+        font-size: 1.1em;
+    }
+
+    .background-section textarea,
+    .appearance-section textarea,
+    .notes-section textarea {
+        width: 100%;
+        min-height: 120px;
+        resize: vertical;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 8px;
+        font-family: inherit;
+        background: rgba(255, 255, 255, 0.8);
+    }
+
+/* Responsive layout for smaller screens */
+@media (max-width: 768px) {
+    .background-layout {
+        flex-direction: column;
+    }
+
+    .character-portrait-sidebar {
+        width: 100%;
+        text-align: center;
+    }
+
+        .character-portrait-sidebar .character-image {
+            max-width: 200px;
+        }
+}
+
+/* Character Details Sections */
+.character-details-section {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+    .character-details-section h3 {
+        margin: 0 0 15px 0;
+        font-size: 1.1em;
+        font-weight: bold;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 5px;
+    }
+
+/* Detail Rows */
+.detail-row {
+    margin-bottom: 12px;
+}
+
+    .detail-row label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 4px;
+        font-size: 0.9em;
+    }
+
+    .detail-row input[type="text"],
+    .detail-row input[type="number"],
+    .detail-row select,
+    .detail-row textarea {
+        width: 100%;
+        padding: 4px 6px;
+        border: 1px solid var(--border-color);
+        border-radius: 3px;
+        font-size: 0.9em;
+    }
+
+/* Height inputs */
+.height-inputs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+    .height-inputs input {
+        width: 60px;
+        text-align: center;
+    }
+
+    .height-inputs span {
+        font-weight: bold;
+    }
+
+/* Color inputs */
+.color-row input[type="color"] {
+    width: 50px;
+    height: 30px;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* Checkbox rows */
+.checkbox-row label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: auto;
+}
+
+/* Family inputs */
+.family-input {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.alive-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+    .alive-checkbox input[type="checkbox"] {
+        width: auto;
+    }
+
+.family-input textarea {
+    resize: vertical;
+    min-height: 40px;
+}
+
+/* Dynamic Family Lists */
+.dynamic-family-list {
+    margin-bottom: 8px;
+}
+
+.family-member {
+    display: grid;
+    grid-template-columns: 1fr 40px auto 30px;
+    gap: 6px;
+    margin-bottom: 6px;
+    align-items: center;
+}
+
+    .family-member input[type="text"] {
+        margin: 0;
+    }
+
+    .family-member select {
+        margin: 0;
+        font-size: 0.8em;
+    }
+
+.remove-family-member {
+    background: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .remove-family-member:hover {
+        background: #cc0000;
+    }
+
+.add-family-member {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: 100%;
+}
+
+    .add-family-member:hover {
+        background: #45a049;
+    }

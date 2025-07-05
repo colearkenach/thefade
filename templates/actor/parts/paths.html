@@ -154,6 +154,39 @@
         </div>
     </div>
 
+    <!-- Precepts -->
+    <div class="precepts">
+        <h2>
+            Precepts
+            <a class="item-create" title="Add Precept" data-type="precept"><i class="fas fa-plus"></i></a>
+            <a class="precept-browse" title="Browse Precepts"><i class="fas fa-search"></i></a>
+        </h2>
+
+        <div class="precepts-list">
+            {{#each actor.precepts as |precept id|}}
+            <div class="precept-item" data-item-id="{{precept._id}}">
+                <div class="precept-header">
+                    <div class="precept-name">{{precept.name}}</div>
+                    <div class="precept-controls">
+                        <a class="item-edit" title="Edit Precept"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Precept"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                <div class="precept-description">
+                    <p>{{precept.system.description}}</p>
+                    {{#if precept.system.deity}}
+                    <p><strong>Deity:</strong> {{precept.system.deity}}</p>
+                    {{/if}}
+                </div>
+            </div>
+            {{else}}
+            <div class="precept-item">
+                <div class="precept-name">No precepts</div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
 
     <!-- Traits Section -->
     <div class="traits-section">

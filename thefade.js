@@ -354,6 +354,8 @@ class TheFadeActor extends Actor {
             // Calculate Sin Threshold for dark magic
             this._calculateSinThreshold(data);
 
+            this._calculateOverlandMovement(data);
+
         } catch (error) {
             console.error("Error in _prepareCharacterData calculations:", error);
             console.error("Error stack:", error.stack);
@@ -677,6 +679,32 @@ class TheFadeActor extends Actor {
         };
     }
 
+
+    /**
+    * Calculate overland movement values based on species movement
+    * @param {Object} data - Character system data
+    */
+    _calculateOverlandMovement(data) {
+        // Initialize overland movement object if it doesn't exist
+        if (!data['overland-movement']) {
+            data['overland-movement'] = {};
+        }
+
+        // Get movement values, defaulting to 0 if not defined
+        const land = data.movement?.land || 0;
+        const fly = data.movement?.fly || 0;
+        const swim = data.movement?.swim || 0;
+        const climb = data.movement?.climb || 0;
+        const burrow = data.movement?.burrow || 0;
+
+        // Calculate overland movement (movement * 6)
+        data['overland-movement'].landOverland = land * 6;
+        data['overland-movement'].flyOverland = fly * 6;
+        data['overland-movement'].swimOverland = swim * 6;
+        data['overland-movement'].climbOverland = climb * 6;
+        data['overland-movement'].burrowOverland = burrow * 6;
+    }
+
 }
 
 // ====================================================================
@@ -707,10 +735,6 @@ class TheFadeCharacterSheet extends ActorSheet {
     */
     getData() {
         let data;
-
-        console.log("!!! getData() called - this causes re-render !!!");
-        console.trace(); // This will show the call stack
-
 
         // Ensure actor exists before proceeding
         if (!this.actor) {
@@ -881,13 +905,13 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Only prepare character data if we have a valid actor and system data
         if (data.actor?.type === 'character' && data.system) {
             try {
-                console.log("Preparing character items...");
+                // console.log("Preparing character items...");
                 this._prepareCharacterItems(data);
-                console.log("Character items prepared successfully");
+                // console.log("Character items prepared successfully");
 
-                console.log("Preparing character data...");
+                // console.log("Preparing character data...");
                 this._prepareCharacterData(data);
-                console.log("Character data prepared successfully");
+                // console.log("Character data prepared successfully");
             } catch (error) {
                 console.error("Error preparing character data:", error);
                 console.error("Error stack:", error.stack);
@@ -911,7 +935,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             data.actor.maxAttunements = 0;
         }
 
-        console.log("getData completed successfully");
+        // console.log("getData completed successfully");
         return data;
     }
 
@@ -1351,6 +1375,14 @@ class TheFadeCharacterSheet extends ActorSheet {
             return;
         }
 
+        // Apply flexible bonus to selected attribute
+        if (data.species?.flexibleBonus?.value > 0) {
+            const selectedAttr = data.species.flexibleBonus.selectedAttribute;
+            if (selectedAttr && data.attributes[selectedAttr]) {
+                data.attributes[selectedAttr].flexibleBonus = data.species.flexibleBonus.value;
+            }
+        }
+
         // Initialize minimal defense data to prevent template errors
         if (!data.defenses) {
             data.defenses = {
@@ -1592,6 +1624,23 @@ class TheFadeCharacterSheet extends ActorSheet {
     * @returns {Object} Equipped armor, unequipped armor, and totals
     */
     _processArmor(armor, actorData) {
+        if (!Array.isArray(armor)) {
+            console.warn("Armor data not found or not an array");
+            return {
+                equippedArmor: { head: [], body: [], arms: [], legs: [], shield: [] },
+                unequippedArmor: [],
+                armorTotals: {
+                    head: { current: 0, max: 0 },
+                    body: { current: 0, max: 0 },
+                    leftarm: { current: 0, max: 0 },
+                    rightarm: { current: 0, max: 0 },
+                    leftleg: { current: 0, max: 0 },
+                    rightleg: { current: 0, max: 0 },
+                    shield: { current: 0, max: 0 }
+                }
+            };
+        }
+
         const equippedArmor = {
             head: [],
             body: [],
@@ -1622,12 +1671,66 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         }
 
-        // Calculate armor totals (simplified)
+        // Calculate armor totals properly
         const armorTotals = {};
         const locations = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg', 'shield'];
 
         locations.forEach(location => {
-            armorTotals[location] = { current: 0, max: 0 };
+            let totalCurrentAP = 0;
+            let totalMaxAP = 0;
+
+            // Get Natural Deflection for this location
+            const naturalDeflection = actorData.system?.naturalDeflection?.[location];
+            const ndCurrent = naturalDeflection?.current || 0;
+            const ndMax = naturalDeflection?.max || 0;
+            const ndStacks = naturalDeflection?.stacks || false;
+
+            // Calculate total armor AP from equipped items
+            let armorCurrentAP = 0;
+            let armorMaxAP = 0;
+
+            // Map individual arm/leg locations to their equipment arrays
+            let armorLocationKey = location;
+            if (location === 'leftarm' || location === 'rightarm') {
+                armorLocationKey = 'arms';
+            } else if (location === 'leftleg' || location === 'rightleg') {
+                armorLocationKey = 'legs';
+            }
+
+            // Sum up all armor pieces for this location
+            if (equippedArmor[armorLocationKey]) {
+                for (let armorItem of equippedArmor[armorLocationKey]) {
+                    if (armorItem && armorItem.system) {
+                        armorCurrentAP += armorItem.system.currentAP || 0;
+                        armorMaxAP += armorItem.system.ap || 0;
+                    }
+                }
+            }
+
+            // Add derived armor for arms and legs
+            if (location.includes('arm') || location.includes('leg')) {
+                const derivedArmor = actorData.derivedArmor?.[location];
+                if (derivedArmor) {
+                    armorCurrentAP += derivedArmor.current || 0;
+                    armorMaxAP += derivedArmor.max || 0;
+                }
+            }
+
+            // Apply stacking logic
+            if (ndStacks) {
+                // Natural Deflection stacks with armor - add them together
+                totalCurrentAP = ndCurrent + armorCurrentAP;
+                totalMaxAP = ndMax + armorMaxAP;
+            } else {
+                // Natural Deflection doesn't stack - use the higher value
+                totalCurrentAP = Math.max(ndCurrent, armorCurrentAP);
+                totalMaxAP = Math.max(ndMax, armorMaxAP);
+            }
+
+            armorTotals[location] = {
+                current: totalCurrentAP,
+                max: totalMaxAP
+            };
         });
 
         return { equippedArmor, unequippedArmor, armorTotals };
@@ -3635,7 +3738,7 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Handle defense bonus changes
         html.find('input[name="system.defenses.resilienceBonus"], input[name="system.defenses.avoidBonus"], input[name="system.defenses.gritBonus"]').change(async (ev) => {
-            console.log("=== DEFENSE BONUS CHANGE START ===");
+            // console.log("=== DEFENSE BONUS CHANGE START ===");
 
             ev.preventDefault();
             ev.stopImmediatePropagation();
@@ -3644,26 +3747,27 @@ class TheFadeCharacterSheet extends ActorSheet {
             const fieldName = input.name;
 
             let value = Number(input.value) || 0;
-            console.log("Updating field:", fieldName, "to value:", value);
+            // console.log("Updating field:", fieldName, "to value:", value);
 
             // Update actor data directly without triggering render
-            console.log("About to call actor.update with render: false");
+            // console.log("About to call actor.update with render: false");
             await this.actor.update({
                 [fieldName]: value
             }, { render: false });
-            console.log("actor.update completed");
+            // console.log("actor.update completed");
 
             // Manually update the defense displays
-            console.log("About to call _updateDefenseDisplays");
+            // console.log("About to call _updateDefenseDisplays");
             await this._updateDefenseDisplays();
-            console.log("_updateDefenseDisplays completed");
-            console.log("=== DEFENSE BONUS CHANGE END ===");
+            // console.log("_updateDefenseDisplays completed");
+            // console.log("=== DEFENSE BONUS CHANGE END ===");
 
             ev.stopPropagation();
         });
 
         // Add explicit input change handler
-        html.find('input[name], select[name]').not('[name="system.defenses.resilienceBonus"], [name="system.defenses.avoidBonus"], [name="system.defenses.gritBonus"]').change(ev => {            const input = ev.currentTarget;
+        html.find('input[name], select[name]').not('[name="system.defenses.resilienceBonus"], [name="system.defenses.avoidBonus"], [name="system.defenses.gritBonus"], [name^="system.movement."]').change(ev => {
+            const input = ev.currentTarget;
             const fieldName = input.name;
 
             let value = input.value;
@@ -3799,6 +3903,8 @@ class TheFadeCharacterSheet extends ActorSheet {
                 details.css('padding-top', '0');
             }
         });
+
+        html.find('.tool-header').click(this._onToggleTool.bind(this));
 
         html.find('.item-create[data-type="skill"]').click(ev => {
             ev.preventDefault();
@@ -4042,9 +4148,13 @@ class TheFadeCharacterSheet extends ActorSheet {
             ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
         });
 
+        html.find('.add-family-member').click(this._onAddFamilyMember.bind(this));
+        html.find('.remove-family-member').click(this._onRemoveFamilyMember.bind(this));
+
         this._initializeFacingDropdown(html);
         this._updateFacingDirectly(html);
         this._setupArmorResetListeners(html);
+
         // Initialize tooltips
         this._initializeDataTooltips(html);
 
@@ -4092,6 +4202,66 @@ class TheFadeCharacterSheet extends ActorSheet {
                 dialog.render(true);
             });
         }
+
+        // Auto-update overland movement when base movement changes
+        html.find('input[name^="system.movement."]').change(async (ev) => {
+            const input = ev.currentTarget;
+            const fieldName = input.name;
+            const value = parseInt(input.value) || 0;
+
+            console.log(`Movement field changed: ${fieldName} = ${value}`);
+
+            // Determine which overland field to update - FIXED TO MATCH HTML
+            let overlandField = '';
+            if (fieldName === 'system.movement.land') {
+                overlandField = 'system.overland-movement.landOverland';
+            } else if (fieldName === 'system.movement.fly') {
+                overlandField = 'system.overland-movement.flyOverland';
+            } else if (fieldName === 'system.movement.swim') {
+                overlandField = 'system.overland-movement.swimOverland';
+            } else if (fieldName === 'system.movement.climb') {
+                overlandField = 'system.overland-movement.climbOverland';
+            } else if (fieldName === 'system.movement.burrow') {
+                overlandField = 'system.overland-movement.burrowOverland';
+            }
+
+            if (overlandField) {
+                const overlandValue = value * 6;
+                console.log(`Updating ${overlandField} to ${overlandValue}`);
+
+                // Update both the movement field and corresponding overland field
+                const updateData = {};
+                updateData[fieldName] = value;
+                updateData[overlandField] = overlandValue;
+
+                await this.actor.update(updateData);
+                console.log(`Updated successfully`);
+            }
+        });
+    }
+
+    _onAddFamilyMember(event) {
+        event.preventDefault();
+        const familyType = event.currentTarget.dataset.familyType;
+        const current = this.actor.system.family[familyType] || [];
+        const updated = [...current, { name: "", sex: "", alive: false }];
+        this.actor.update({ [`system.family.${familyType}`]: updated });
+    }
+
+    _onRemoveFamilyMember(event) {
+        event.preventDefault();
+        const familyType = event.currentTarget.dataset.familyType;
+        const index = parseInt(event.currentTarget.dataset.index);
+        const current = this.actor.system.family[familyType] || [];
+        const updated = current.filter((_, i) => i !== index);
+        this.actor.update({ [`system.family.${familyType}`]: updated });
+    }
+
+    _onToggleTool(event) {
+        event.preventDefault();
+        const toolSection = $(event.currentTarget).closest('.header-tool');
+        const isCollapsed = toolSection.attr('data-collapsed') === 'true';
+        toolSection.attr('data-collapsed', !isCollapsed);
     }
 
     /**
@@ -4139,7 +4309,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Equip Items - handle both armor and magic items
         html.find('.item-equip').click(async (event) => {
             event.preventDefault();
-            console.log("Equip button clicked");
+            // console.log("Equip button clicked");
 
             const button = $(event.currentTarget);
             const itemElement = button.closest('.item, .magic-item, .armor-item');
@@ -4151,7 +4321,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
 
             const itemId = itemElement.data('item-id') || itemElement.attr('data-item-id');
-            console.log("Item ID:", itemId);
+            // console.log("Item ID:", itemId);
 
             if (!itemId) {
                 console.error("No item ID found");
@@ -4166,7 +4336,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                 return;
             }
 
-            console.log(`Equipping ${item.name} (${item.type})`);
+            // console.log(`Equipping ${item.name} (${item.type})`);
 
             // Handle different item types
             if (item.type === 'armor') {
@@ -4236,7 +4406,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Unequip Items - handle both old and new HTML structures
         html.find('.item-unequip').click(async (event) => {
             event.preventDefault();
-            console.log("Unequip button clicked");
+            // console.log("Unequip button clicked");
 
             const button = $(event.currentTarget);
 
@@ -4256,7 +4426,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
 
             const itemId = equippedItem.data('item-id') || equippedItem.attr('data-item-id');
-            console.log("Unequipping item ID:", itemId);
+            // console.log("Unequipping item ID:", itemId);
 
             if (!itemId) {
                 console.error("No item ID found for unequip");
@@ -4440,6 +4610,26 @@ class TheFadeCharacterSheet extends ActorSheet {
             ui.notifications.info(`${location} Natural Deflection reset to ${maxND}`);
         });
 
+        // Natural Deflection inputs
+        html.find('input[name^="system.naturalDeflection"]').change(async (event) => {
+            event.stopImmediatePropagation(); // Prevent Foundry's auto-handler
+
+            const input = event.currentTarget;
+            const fieldName = input.name;
+            let value = input.value;
+
+            if (input.type === 'checkbox') {
+                value = input.checked;
+            } else if (input.dataset.dtype === 'Number') {
+                value = Number(value) || 0;
+            }
+
+            await this.actor.update({ [fieldName]: value }, { render: false });
+
+            // Force recalculation of armor totals by updating the sheet data
+            this._recalculateArmorTotals();
+        });
+
         // Total AP Reduction with popup
         html.find('.reduce-total-ap').click(async (event) => {
             event.preventDefault();
@@ -4477,12 +4667,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             ui.notifications.info(`${location} Total AP reduced by ${amount}`);
         });
 
-
-
-
-
-
-
         // Unattune button
         html.find('.unattune-btn').click(async (event) => {
             event.preventDefault();
@@ -4511,7 +4695,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
         });
     }
-
 
     _preserveExpandedState(html) {
         // Store which defense details are currently expanded
@@ -4703,6 +4886,26 @@ class TheFadeCharacterSheet extends ActorSheet {
         });
     }
 
+    _recalculateArmorTotals() {
+        try {
+            const sheetData = this.getData();
+
+            // Recalculate armor data
+            const armorData = this._processArmor(sheetData.actor.armor || [], sheetData.actor);
+
+            // Update the displayed totals in the DOM
+            const html = this.element;
+            Object.entries(armorData.armorTotals).forEach(([location, totals]) => {
+                const currentSpan = html.find(`.armor-slot-container[data-slot="${location}"] .current-total-ap`);
+                const maxSpan = html.find(`.armor-slot-container[data-slot="${location}"] .max-total-ap`);
+
+                if (currentSpan.length) currentSpan.text(totals.current);
+                if (maxSpan.length) maxSpan.text(totals.max);
+            });
+        } catch (error) {
+            console.error("Error recalculating armor totals:", error);
+        }
+    }
 
     _removeTooltip() {
         if (this.activeTooltip) {
@@ -5070,7 +5273,7 @@ class TheFadeItemSheet extends ItemSheet {
     * @returns {string} Template path
     */
     getData() {
-        console.log("TheFadeItemSheet.getData() starting for item:", this.item?.type);
+        // console.log("TheFadeItemSheet.getData() starting for item:", this.item?.type);
 
         let data = {};
 
@@ -5088,7 +5291,7 @@ class TheFadeItemSheet extends ItemSheet {
             if (superData && typeof superData === 'object') {
                 data = foundry.utils.mergeObject(data, superData);
             }
-            console.log("super.getData() succeeded");
+            // console.log("super.getData() succeeded");
         } catch (error) {
             console.error("Error in super.getData():", error);
         }
@@ -5326,7 +5529,7 @@ class TheFadeItemSheet extends ItemSheet {
                 "titanic": "Titanic"
             };
 
-            console.log("All options set successfully");
+            // console.log("All options set successfully");
         } catch (error) {
             console.error("Error setting options:", error);
         }
@@ -5353,7 +5556,7 @@ class TheFadeItemSheet extends ItemSheet {
             console.error("Error in special item type handling:", error);
         }
 
-        console.log("TheFadeItemSheet.getData() completing, data:", data);
+        // console.log("TheFadeItemSheet.getData() completing, data:", data);
         return data;
     }
 
@@ -7366,6 +7569,8 @@ Hooks.on("createItem", async (item, options, userId) => {
             deletions[`system.attributes.${attr}.speciesBonus`] = null;
             deletions[`system.attributes.${attr}.flexibleBonus`] = null;
         }
+
+
         deletions["system.species.flexibleBonus"] = {
             value: 0,
             selectedAttribute: ""
@@ -7396,6 +7601,13 @@ Hooks.on("createItem", async (item, options, userId) => {
                 swim: species.system.movement?.swim || 0,
                 climb: species.system.movement?.climb || 0,
                 burrow: species.system.movement?.burrow || 0
+            },
+            "system.overland-movement": {
+                landOverland: species.system.movement?.land * 6 || 0,
+                flyOverland: species.system.movement?.fly * 6 || 0,
+                swimOverland: species.system.movement?.swim * 6 || 0,
+                climbOverland: species.system.movement?.climb * 6 || 0,
+                burrowOverland: species.system.movement?.burrow * 6 || 0
             }
         });
 

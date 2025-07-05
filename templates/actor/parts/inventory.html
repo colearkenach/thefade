@@ -174,18 +174,20 @@
 
             <!-- Arms Section -->
             <div class="arms-section">
-                <h3>Arms</h3>
+                <div class="slot-header collapsible-header" data-target="arms-content">
+                    <h3>Arms <i class="fas fa-chevron-down"></i></h3>
+                </div>
 
-                <!-- Left Arm -->
-                <div class="armor-slot-container" data-slot="leftarm">
-                    <div class="slot-header collapsible-header" data-target="leftarm-content">
-                        <h4>Left Arm <i class="fas fa-chevron-down"></i></h4>
-                        <div class="total-ap">
-                            Total AP: <span class="current-total-ap">{{actor.armorTotals.leftarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftarm.max}}</span>
+                <div class="collapsible-content" id="arms-content">
+                    <!-- Left Arm -->
+                    <div class="armor-slot-container" data-slot="leftarm">
+                        <div class="slot-header">
+                            <h4>Left Arm</h4>
+                            <div class="total-ap">
+                                Total AP: <span class="current-total-ap">{{actor.armorTotals.leftarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftarm.max}}</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="collapsible-content" id="leftarm-content">
                         <div class="natural-deflection-row">
                             <div class="nd-input">
                                 <label>Natural Deflection:</label>
@@ -212,19 +214,16 @@
                             <button type="button" class="reduce-derived-ap" data-location="leftarm" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right Arm -->
-                <div class="armor-slot-container" data-slot="rightarm">
-                    <div class="slot-header collapsible-header" data-target="rightarm-content">
-                        <h4>Right Arm <i class="fas fa-chevron-down"></i></h4>
-                        <div class="total-ap">
-                            Total AP: <span class="current-total-ap">{{actor.armorTotals.rightarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightarm.max}}</span>
+                    <!-- Right Arm -->
+                    <div class="armor-slot-container" data-slot="rightarm">
+                        <div class="slot-header">
+                            <h4>Right Arm</h4>
+                            <div class="total-ap">
+                                Total AP: <span class="current-total-ap">{{actor.armorTotals.rightarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightarm.max}}</span>
+                            </div>
                         </div>
-                    </div>
 
-
-                    <div class="collapsible-content" id="rightarm-content">
                         <div class="natural-deflection-row">
                             <div class="nd-input">
                                 <label>Natural Deflection:</label>
@@ -250,48 +249,50 @@
                             <button type="button" class="reduce-derived-ap" data-location="rightarm" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Arms Armor (affects both arms) -->
-                <div class="equipped-armor-list">
-                    <h5>Arms Armor</h5>
-                    {{#each actor.equippedArmor.arms as |armor|}}
-                    <div class="equipped-armor-item" data-item-id="{{armor._id}}">
-                        <img src="{{armor.img}}" class="armor-icon" />
-                        <div class="armor-info">
-                            <div class="armor-name">{{armor.name}}</div>
-                            <div class="armor-ap">
-                                <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
-                                <span>/</span>
-                                <span class="armor-max-ap">{{armor.system.ap}}</span>
+                    <!-- Arms Armor (affects both arms) -->
+                    <div class="equipped-armor-list">
+                        <h5>Arms Armor</h5>
+                        {{#each actor.equippedArmor.arms as |armor|}}
+                        <div class="equipped-armor-item" data-item-id="{{armor._id}}">
+                            <img src="{{armor.img}}" class="armor-icon" />
+                            <div class="armor-info">
+                                <div class="armor-name">{{armor.name}}</div>
+                                <div class="armor-ap">
+                                    <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
+                                    <span>/</span>
+                                    <span class="armor-max-ap">{{armor.system.ap}}</span>
+                                </div>
+                            </div>
+                            <div class="armor-controls">
+                                <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
+                                <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
+                                <button type="button" class="reduce-total-ap" data-location="arms" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
+                                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
                             </div>
                         </div>
-                        <div class="armor-controls">
-                            <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
-                            <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
-                            <button type="button" class="reduce-total-ap" data-location="arms" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
-                            <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                        </div>
+                        {{/each}}
                     </div>
-                    {{/each}}
                 </div>
             </div>
 
-            <!-- Legs Section (similar to Arms) -->
+            <!-- Legs Section -->
             <div class="legs-section">
-                <h3>Legs</h3>
+                <div class="slot-header collapsible-header" data-target="legs-content">
+                    <h3>Legs <i class="fas fa-chevron-down"></i></h3>
+                </div>
 
-                <!-- Left Leg -->
-                <div class="armor-slot-container" data-slot="leftleg">
-                    <div class="slot-header collapsible-header" data-target="leftleg-content">
-                        <h4>Left Leg <i class="fas fa-chevron-down"></i></h4>
-                        <div class="total-ap">
-                            Total AP: <span class="current-total-ap">{{actor.armorTotals.leftleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftleg.max}}</span>
+                <div class="collapsible-content" id="legs-content">
+                    <!-- Left Leg -->
+                    <div class="armor-slot-container" data-slot="leftleg">
+                        <div class="slot-header">
+                            <h4>Left Leg</h4>
+                            <div class="total-ap">
+                                Total AP: <span class="current-total-ap">{{actor.armorTotals.leftleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftleg.max}}</span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="collapsible-content" id="leftleg-content">
                         <div class="natural-deflection-row">
                             <div class="nd-input">
                                 <label>Natural Deflection:</label>
@@ -317,19 +318,16 @@
                             <button type="button" class="reduce-derived-ap" data-location="leftleg" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right Leg -->
-                <div class="armor-slot-container" data-slot="rightleg">
-                    <div class="slot-header collapsible-header" data-target="rightleg-content">
-                        <h4>Right Leg <i class="fas fa-chevron-down"></i></h4>
-                        <div class="total-ap">
-                            Total AP: <span class="current-total-ap">{{actor.armorTotals.rightleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightleg.max}}</span>
+                    <!-- Right Leg -->
+                    <div class="armor-slot-container" data-slot="rightleg">
+                        <div class="slot-header">
+                            <h4>Right Leg</h4>
+                            <div class="total-ap">
+                                Total AP: <span class="current-total-ap">{{actor.armorTotals.rightleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightleg.max}}</span>
+                            </div>
                         </div>
-                    </div>
 
-
-                    <div class="collapsible-content" id="rightleg-content">
                         <div class="natural-deflection-row">
                             <div class="nd-input">
                                 <label>Natural Deflection:</label>
@@ -355,31 +353,31 @@
                             <button type="button" class="reduce-derived-ap" data-location="rightleg" title="Reduce Derived AP"><i class="fas fa-minus"></i></button>
                         </div>
                     </div>
-                </div>
 
-                <!-- Legs Armor -->
-                <div class="equipped-armor-list">
-                    <h5>Legs Armor</h5>
-                    {{#each actor.equippedArmor.legs as |armor|}}
-                    <div class="equipped-armor-item" data-item-id="{{armor._id}}">
-                        <img src="{{armor.img}}" class="armor-icon" />
-                        <div class="armor-info">
-                            <div class="armor-name">{{armor.name}}</div>
-                            <div class="armor-ap">
-                                <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
-                                <span>/</span>
-                                <span class="armor-max-ap">{{armor.system.ap}}</span>
+                    <!-- Legs Armor -->
+                    <div class="equipped-armor-list">
+                        <h5>Legs Armor</h5>
+                        {{#each actor.equippedArmor.legs as |armor|}}
+                        <div class="equipped-armor-item" data-item-id="{{armor._id}}">
+                            <img src="{{armor.img}}" class="armor-icon" />
+                            <div class="armor-info">
+                                <div class="armor-name">{{armor.name}}</div>
+                                <div class="armor-ap">
+                                    <input type="number" value="{{armor.system.currentAP}}" data-dtype="Number" min="0" max="{{armor.system.ap}}" class="armor-current-ap" />
+                                    <span>/</span>
+                                    <span class="armor-max-ap">{{armor.system.ap}}</span>
+                                </div>
+                            </div>
+                            <div class="armor-controls">
+                                <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
+                                <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
+                                <button type="button" class="reduce-total-ap" data-location="legs" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
+                                <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
+                                <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
                             </div>
                         </div>
-                        <div class="armor-controls">
-                            <button type="button" class="reduce-armor-ap" data-item-id="{{armor._id}}" title="Reduce Armor AP"><i class="fas fa-minus"></i> Reduce</button>
-                            <button type="button" class="reset-armor-ap" data-item-id="{{armor._id}}" title="Reset to Max AP"><i class="fas fa-redo"></i> Reset</button>
-                            <button type="button" class="reduce-total-ap" data-location="legs" title="Reduce Total AP"><i class="fas fa-minus-circle"></i> Total</button>
-                            <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>
-                            <a class="item-unequip" title="Unequip"><i class="fas fa-times"></i></a>
-                        </div>
+                        {{/each}}
                     </div>
-                    {{/each}}
                 </div>
             </div>
 
@@ -787,6 +785,532 @@
             <div class="collapsible-content" id="drugs-content">
                 <ol class="items-list">
                     {{#each actor.drugs as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Poisons -->
+        <div class="poisons-section">
+            <h2 class="collapsible-header" data-target="poisons-content">
+                Poisons <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Poison" data-type="item" data-category="poison"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="poisons-content">
+                <ol class="items-list">
+                    {{#each actor.poisons as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Medical Items -->
+        <div class="medical-section">
+            <h2 class="collapsible-header" data-target="medical-content">
+                Medical <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Medical Item" data-type="item" data-category="medical"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="medical-content">
+                <ol class="items-list">
+                    {{#each actor.medical as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Biological Items -->
+        <div class="biological-section">
+            <h2 class="collapsible-header" data-target="biological-content">
+                Biological <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Biological Item" data-type="item" data-category="biological"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="biological-content">
+                <ol class="items-list">
+                    {{#each actor.biological as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Travel Items -->
+        <div class="travel-section">
+            <h2 class="collapsible-header" data-target="travel-content">
+                Travel <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Travel Item" data-type="item" data-category="travel"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="travel-content">
+                <ol class="items-list">
+                    {{#each actor.travel as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Mounts -->
+        <div class="mounts-section">
+            <h2 class="collapsible-header" data-target="mounts-content">
+                Mounts <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Mount" data-type="item" data-category="mount"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="mounts-content">
+                <ol class="items-list">
+                    {{#each actor.mounts as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Vehicles -->
+        <div class="vehicles-section">
+            <h2 class="collapsible-header" data-target="vehicles-content">
+                Vehicles <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Vehicle" data-type="item" data-category="vehicle"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="vehicles-content">
+                <ol class="items-list">
+                    {{#each actor.vehicles as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Musical Items -->
+        <div class="musical-section">
+            <h2 class="collapsible-header" data-target="musical-content">
+                Musical <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Musical Item" data-type="item" data-category="musical"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="musical-content">
+                <ol class="items-list">
+                    {{#each actor.musical as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Staffs -->
+        <div class="staffs-section">
+            <h2 class="collapsible-header" data-target="staffs-content">
+                Staffs <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Staff" data-type="item" data-category="staff"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="staffs-content">
+                <ol class="items-list">
+                    {{#each actor.staffs as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Wands -->
+        <div class="wands-section">
+            <h2 class="collapsible-header" data-target="wands-content">
+                Wands <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Wand" data-type="item" data-category="wand"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="wands-content">
+                <ol class="items-list">
+                    {{#each actor.wands as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Communication Items -->
+        <div class="communication-section">
+            <h2 class="collapsible-header" data-target="communication-content">
+                Communication <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Communication Item" data-type="item" data-category="communication"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="communication-content">
+                <ol class="items-list">
+                    {{#each actor.communication as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Containment Items -->
+        <div class="containment-section">
+            <h2 class="collapsible-header" data-target="containment-content">
+                Containment <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Containment Item" data-type="item" data-category="containment"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="containment-content">
+                <ol class="items-list">
+                    {{#each actor.containment as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Magic Items -->
+        <div class="magicitems-section">
+            <h2 class="collapsible-header" data-target="magicitems-content">
+                Magic Items <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Magic Item" data-type="item" data-category="magicitem"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="magicitems-content">
+                <ol class="items-list">
+                    {{#each actor.magicitems as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+
+        <!-- Gates -->
+        <div class="gates-section">
+            <h2 class="collapsible-header" data-target="gates-content">
+                Dimensional Gates <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Gate" data-type="item" data-category="gate"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="gates-content">
+                <ol class="items-list">
+                    {{#each actor.gates as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Dream Items -->
+        <div class="dreams-section">
+            <h2 class="collapsible-header" data-target="dreams-content">
+                Dream Harvesting <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Dream Item" data-type="item" data-category="dream"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="dreams-content">
+                <ol class="items-list">
+                    {{#each actor.dreams as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="gear-name">{{item.name}}</div>
+                        <div class="gear-quantity">
+                            <input type="text" value="{{item.system.quantity}}" data-dtype="Number" />
+                        </div>
+                        <div class="gear-weight">{{item.system.weight}}</div>
+                        <div class="gear-description">{{item.system.description}}</div>
+                        <div class="gear-controls">
+                            <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </div>
+        </div>
+
+        <!-- Fleshcraft Items -->
+        <div class="fleshcraft-section">
+            <h2 class="collapsible-header" data-target="fleshcraft-content">
+                Flesh Craft <i class="fas fa-chevron-down"></i>
+            </h2>
+            <header class="gear-header flexrow">
+                <div class="gear-name">Name</div>
+                <div class="gear-quantity">Qty</div>
+                <div class="gear-weight">Weight</div>
+                <div class="gear-description">Description</div>
+                <div class="gear-controls">
+                    <a class="item-create" title="Add Fleshcraft Item" data-type="item" data-category="fleshcraft"><i class="fas fa-plus"></i></a>
+                    <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                </div>
+            </header>
+            <div class="collapsible-content" id="fleshcraft-content">
+                <ol class="items-list">
+                    {{#each actor.fleshcraft as |item id|}}
                     <li class="item flexrow" data-item-id="{{item._id}}">
                         <div class="gear-name">{{item.name}}</div>
                         <div class="gear-quantity">
