@@ -11,6 +11,7 @@
         <a class="item" data-tab="description">Description</a>
         <a class="item" data-tab="details">Details</a>
         <a class="item" data-tab="attributes">Attributes</a>
+        <a class="item" data-tab="combat">Combat</a>
     </nav>
 
     <section class="sheet-body">
@@ -23,42 +24,118 @@
 
         <div class="tab" data-group="primary" data-tab="details">
             <div class="form-group">
-                <label>Enhancement Level:</label>
-                <input type="number" name="system.el" value="{{system.el}}" />
+                <label>Cost (sp):</label>
+                <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
             </div>
+
+            <div class="form-group">
+                <label>Effective Level:</label>
+                <input type="number" name="system.el" value="{{system.el}}" data-dtype="Number" />
+            </div>
+
             <div class="form-group">
                 <label>Creature Type:</label>
-                <input type="text" name="system.creatureType" value="{{system.creatureType}}" />
+                <input type="text" name="system.creatureType" value="{{system.creatureType}}" placeholder="e.g., Artificial (Organic), Undead" />
             </div>
+
+            <div class="form-group">
+                <label>Size:</label>
+                <select name="system.size">
+                    <option value="tiny" {{#ifEquals system.size "tiny"}} selected{{/ifEquals}}>Tiny</option>
+                    <option value="small" {{#ifEquals system.size "small"}} selected{{/ifEquals}}>Small</option>
+                    <option value="medium" {{#ifEquals system.size "medium"}} selected{{/ifEquals}}>Medium</option>
+                    <option value="large" {{#ifEquals system.size "large"}} selected{{/ifEquals}}>Large</option>
+                    <option value="huge" {{#ifEquals system.size "huge"}} selected{{/ifEquals}}>Huge</option>
+                </select>
+            </div>
+
             <div class="form-group">
                 <label>Hit Points:</label>
-                <input type="number" name="system.hp" value="{{system.hp}}" />
+                <input type="number" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
             </div>
+
             <div class="form-group">
-                <label>Natural Weapons:</label>
-                <textarea name="system.naturalWeapons" rows="3">{{system.naturalWeapons}}</textarea>
+                <label>Movement:</label>
+                <input type="text" name="system.movement" value="{{system.movement}}" placeholder="e.g., 4 hexes, Climb 6 hexes" />
             </div>
+
             <div class="form-group">
-                <label>Special Abilities:</label>
-                <textarea name="system.specialAbilities" rows="3">{{system.specialAbilities}}</textarea>
+                <label>Currently Active:</label>
+                <input type="checkbox" name="system.active" {{#if system.active}} checked{{/if}} />
             </div>
         </div>
 
         <div class="tab" data-group="primary" data-tab="attributes">
+            <h3>Attributes</h3>
             <div class="form-group">
-                <label>Price (sp)</label>
-                <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+                <label>Physique:</label>
+                <input type="number" name="system.attributes.physique" value="{{system.attributes.physique}}" data-dtype="Number" />
             </div>
             <div class="form-group">
-                <label>Weight</label>
-                <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
-                <span>lbs.</span>
+                <label>Finesse:</label>
+                <input type="number" name="system.attributes.finesse" value="{{system.attributes.finesse}}" data-dtype="Number" />
             </div>
             <div class="form-group">
-                <label>Quantity</label>
-                <input type="text" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
+                <label>Mind:</label>
+                <input type="number" name="system.attributes.mind" value="{{system.attributes.mind}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Presence:</label>
+                <input type="number" name="system.attributes.presence" value="{{system.attributes.presence}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Soul:</label>
+                <input type="number" name="system.attributes.soul" value="{{system.attributes.soul}}" data-dtype="Number" />
+            </div>
+
+            <h3>Defenses</h3>
+            <div class="form-group">
+                <label>Avoid:</label>
+                <input type="number" name="system.defenses.avoid" value="{{system.defenses.avoid}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Resilience:</label>
+                <input type="number" name="system.defenses.resilience" value="{{system.defenses.resilience}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Grit:</label>
+                <input type="number" name="system.defenses.grit" value="{{system.defenses.grit}}" data-dtype="Number" />
+            </div>
+
+            <h3>Natural Damage</h3>
+            <div class="form-group">
+                <label>Head ND:</label>
+                <input type="number" name="system.nd.head" value="{{system.nd.head}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Body ND:</label>
+                <input type="number" name="system.nd.body" value="{{system.nd.body}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Arms ND:</label>
+                <input type="number" name="system.nd.arms" value="{{system.nd.arms}}" data-dtype="Number" />
+            </div>
+            <div class="form-group">
+                <label>Legs ND:</label>
+                <input type="number" name="system.nd.legs" value="{{system.nd.legs}}" data-dtype="Number" />
             </div>
         </div>
 
+        <div class="tab" data-group="primary" data-tab="combat">
+            <div class="form-group">
+                <label>Natural Weapons:</label>
+                <textarea name="system.naturalWeapons" rows="3" placeholder="e.g., Claws 4D (2 S, Crit 4, Agile)">{{system.naturalWeapons}}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Skills:</label>
+                <textarea name="system.skills" rows="3" placeholder="e.g., Athletics 4D, Sneaking 4D, Unarmed 4D">{{system.skills}}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Special Abilities:</label>
+                <textarea name="system.specialAbilities" rows="5" placeholder="e.g., Can squeeze through gaps 1 inch wide. Regenerates 1 HP per round while in contact with blood.">{{system.specialAbilities}}</textarea>
+            </div>
+        </div>
     </section>
 </form>

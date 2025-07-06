@@ -1,3 +1,14 @@
 2025/07/04-23:26:41.161 adcc Recovering log #131
 2025/07/04-23:26:41.164 adcc Delete type=0 #131
 2025/07/04-23:26:41.164 adcc Delete type=3 #130
+2025/07/05-23:17:48.901 7a9c Level-0 table #135: started
+2025/07/05-23:17:48.903 7a9c Level-0 table #135: 21524 bytes OK
+2025/07/05-23:17:48.904 7a9c Delete type=0 #133
+2025/07/05-23:17:48.906 7a9c Manual compaction at level-0 from '!folders!0e3LfiJsLi3AGhUo' @ 72057594037927935 : 1 .. '!items!zUwna9VJqwzQtvXZ' @ 0 : 0; will stop at '!items!yYTX2krzjSllmlpI' @ 1685 : 1
+2025/07/05-23:17:48.906 7a9c Compacting 1@0 + 1@1 files
+2025/07/05-23:17:48.910 7a9c Generated table #136@0: 110 keys, 51379 bytes
+2025/07/05-23:17:48.910 7a9c Compacted 1@0 + 1@1 files => 51379 bytes
+2025/07/05-23:17:48.911 7a9c compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/07/05-23:17:48.911 7a9c Delete type=2 #37
+2025/07/05-23:17:48.911 7a9c Delete type=2 #135
+2025/07/05-23:17:48.912 7a9c Manual compaction at level-0 from '!items!yYTX2krzjSllmlpI' @ 1685 : 1 .. '!items!zUwna9VJqwzQtvXZ' @ 0 : 0; will stop at (end)

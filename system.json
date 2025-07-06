@@ -57,10 +57,17 @@
       "type": "Item"
     },
     {
-      "name": "equipment",
-      "label": "Equipment",
+      "name": "mundane-item",
+      "label": "Mundane Item",
       "system": "thefade",
-      "path": "./packs/equipment.db",
+      "path": "./packs/mundane-item.db",
+      "type": "Item"
+    },
+    {
+      "name": "magic-item",
+      "label": "Magic Item",
+      "system": "thefade",
+      "path": "./packs/magic-item.db",
       "type": "Item"
     },
     {
@@ -102,7 +109,8 @@
     "path",
     "spell",
     "talent",
-    "item",
+    "trait",
+    "precept",
     "species",
     "drug",
     "poison",
@@ -120,6 +128,7 @@
     "containment",
     "dream",
     "fleshcraft",
-    "magicitem"
+    "magicitem",
+    "clothing"
   ]
 }

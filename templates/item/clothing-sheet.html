@@ -1,0 +1,165 @@
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge clothing">Clothing</div>
+        </div>
+    </header>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="properties">Properties</a>
+        <a class="item" data-tab="details">Details</a>
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        {{!-- Description Tab --}}
+        <div class="tab" data-group="primary" data-tab="description">
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="system.description" rows="10">{{system.description}}</textarea>
+            </div>
+        </div>
+
+        {{!-- Properties Tab --}}
+        <div class="tab" data-group="primary" data-tab="properties">
+            <div class="form-group">
+                <label>Clothing Type</label>
+                <select name="system.clothingType">
+                    <option value="normal" {{#ifEquals system.clothingType "normal"}} selected{{/ifEquals}}>Normal Clothing</option>
+                    <option value="arctic" {{#ifEquals system.clothingType "arctic"}} selected{{/ifEquals}}>Arctic Clothing</option>
+                    <option value="desert" {{#ifEquals system.clothingType "desert"}} selected{{/ifEquals}}>Desert Clothing</option>
+                    <option value="noble" {{#ifEquals system.clothingType "noble"}} selected{{/ifEquals}}>Noble Clothing</option>
+                    <option value="hat" {{#ifEquals system.clothingType "hat"}} selected{{/ifEquals}}>Hat</option>
+                    <option value="shoes" {{#ifEquals system.clothingType "shoes"}} selected{{/ifEquals}}>Shoes</option>
+                    <option value="mask" {{#ifEquals system.clothingType "mask"}} selected{{/ifEquals}}>Mask</option>
+                    <option value="glasses" {{#ifEquals system.clothingType "glasses"}} selected{{/ifEquals}}>Glasses</option>
+                    <option value="jewelry" {{#ifEquals system.clothingType "jewelry"}} selected{{/ifEquals}}>Jewelry</option>
+                    <option value="snowshoes" {{#ifEquals system.clothingType "snowshoes"}} selected{{/ifEquals}}>Snowshoes</option>
+                    <option value="gasmask" {{#ifEquals system.clothingType "gasmask"}} selected{{/ifEquals}}>Gas Mask</option>
+                    <option value="other" {{#ifEquals system.clothingType "other"}} selected{{/ifEquals}}>Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Weather Effects</label>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Cold Weather Bonus</label>
+                        <input type="number" name="system.coldBonus" value="{{system.coldBonus}}" data-dtype="Number" />
+                    </div>
+                    <div class="form-field">
+                        <label>Hot Weather Bonus</label>
+                        <input type="number" name="system.hotBonus" value="{{system.hotBonus}}" data-dtype="Number" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Cold Weather Penalty</label>
+                        <input type="number" name="system.coldPenalty" value="{{system.coldPenalty}}" data-dtype="Number" />
+                    </div>
+                    <div class="form-field">
+                        <label>Hot Weather Penalty</label>
+                        <input type="number" name="system.hotPenalty" value="{{system.hotPenalty}}" data-dtype="Number" />
+                    </div>
+                </div>
+                <p class="hint">Bonuses/penalties to Resilience against weather conditions</p>
+            </div>
+
+            <div class="form-group">
+                <label>Skill Bonuses</label>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Skill</label>
+                        <input type="text" name="system.skillBonus" value="{{system.skillBonus}}" placeholder="e.g., Persuasion, Disguise" />
+                    </div>
+                    <div class="form-field">
+                        <label>Bonus Dice</label>
+                        <input type="text" name="system.skillBonusDice" value="{{system.skillBonusDice}}" placeholder="e.g., +1D, +2D" />
+                    </div>
+                </div>
+                <div class="form-field">
+                    <label>Conditions</label>
+                    <input type="text" name="system.skillConditions" value="{{system.skillConditions}}" placeholder="e.g., when dealing with nobility" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Special Effects</label>
+                <textarea name="system.specialEffect" rows="4" placeholder="Any special effects this clothing provides...">{{system.specialEffect}}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Environmental Protection</label>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label>Protects Against</label>
+                        <input type="text" name="system.protectionType" value="{{system.protectionType}}" placeholder="e.g., Cold, Heat, Gas, Poison" />
+                    </div>
+                    <div class="form-field">
+                        <label>Protection Level</label>
+                        <select name="system.protectionLevel">
+                            <option value="none" {{#ifEquals system.protectionLevel "none"}} selected{{/ifEquals}}>None</option>
+                            <option value="minor" {{#ifEquals system.protectionLevel "minor"}} selected{{/ifEquals}}>Minor</option>
+                            <option value="moderate" {{#ifEquals system.protectionLevel "moderate"}} selected{{/ifEquals}}>Moderate</option>
+                            <option value="major" {{#ifEquals system.protectionLevel "major"}} selected{{/ifEquals}}>Major</option>
+                            <option value="immunity" {{#ifEquals system.protectionLevel "immunity"}} selected{{/ifEquals}}>Immunity</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{!-- Details Tab --}}
+        <div class="tab" data-group="primary" data-tab="details">
+            <div class="form-group">
+                <label>Price (sp)</label>
+                <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Weight (lbs)</label>
+                <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" step="0.1" />
+            </div>
+
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Material</label>
+                <input type="text" name="system.material" value="{{system.material}}" placeholder="e.g., Wool, Linen, Leather, Silk" />
+            </div>
+
+            <div class="form-group">
+                <label>Quality</label>
+                <select name="system.quality">
+                    <option value="poor" {{#ifEquals system.quality "poor"}} selected{{/ifEquals}}>Poor</option>
+                    <option value="common" {{#ifEquals system.quality "common"}} selected{{/ifEquals}}>Common</option>
+                    <option value="fine" {{#ifEquals system.quality "fine"}} selected{{/ifEquals}}>Fine</option>
+                    <option value="masterwork" {{#ifEquals system.quality "masterwork"}} selected{{/ifEquals}}>Masterwork</option>
+                    <option value="noble" {{#ifEquals system.quality "noble"}} selected{{/ifEquals}}>Noble</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Worn Location</label>
+                <select name="system.wornLocation">
+                    <option value="body" {{#ifEquals system.wornLocation "body"}} selected{{/ifEquals}}>Body</option>
+                    <option value="head" {{#ifEquals system.wornLocation "head"}} selected{{/ifEquals}}>Head</option>
+                    <option value="feet" {{#ifEquals system.wornLocation "feet"}} selected{{/ifEquals}}>Feet</option>
+                    <option value="hands" {{#ifEquals system.wornLocation "hands"}} selected{{/ifEquals}}>Hands</option>
+                    <option value="face" {{#ifEquals system.wornLocation "face"}} selected{{/ifEquals}}>Face</option>
+                    <option value="neck" {{#ifEquals system.wornLocation "neck"}} selected{{/ifEquals}}>Neck</option>
+                    <option value="wrist" {{#ifEquals system.wornLocation "wrist"}} selected{{/ifEquals}}>Wrist</option>
+                    <option value="finger" {{#ifEquals system.wornLocation "finger"}} selected{{/ifEquals}}>Finger</option>
+                    <option value="other" {{#ifEquals system.wornLocation "other"}} selected{{/ifEquals}}>Other</option>
+                </select>
+            </div>
+        </div>
+    </section>
+</form>

@@ -253,6 +253,8 @@
   "TYPES.Item.containment": "Containment Item",
   "TYPES.Item.dream": "Dream Harvesting",
   "TYPES.Item.fleshcraft": "Flesh Craft",
-  "TYPES.Item.magicitem": "Item of Power"
-
+  "TYPES.Item.magicitem": "Item of Power",
+  "TYPES.Item.clothing": "Clothing",
+  "TYPES.Item.trait": "Trait",
+  "TYPES.Item.precept": "Precept"
 }

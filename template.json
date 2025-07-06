@@ -156,7 +156,7 @@
       "path",
       "spell",
       "talent",
-      "item",
+      "clothing",
       "species",
       "drug",
       "poison",
@@ -247,43 +247,6 @@
       "usesPerDay": 0,
       "associatedPath": ""
     },
-    "item": {
-      "templates": [ "base", "physical" ],
-      "isMagical": false,
-      "itemCategory": "general",
-      "duration": "",
-      "addiction": "",
-      "overdose": "",
-      "effect": "",
-      "toxicity": "",
-      "poisonType": "injury",
-      "hp": 0,
-      "energy": 0,
-      "avoid": 0,
-      "size": "medium",
-      "movement": 0,
-      "carryCapacity": 0,
-      "drivers": 1,
-      "passengers": 0,
-      "overland": 0,
-      "cargo": "",
-      "vehicleType": "land",
-      "strength": 0,
-      "charges": 20,
-      "usesPerDay": 3,
-      "spellName": "",
-      "spellDescription": "",
-      "school": "General",
-      "range": "",
-      "distance": "",
-      "complexity": "audio",
-      "relayCode": "",
-      "slot": "",
-      "el": 1,
-      "creatureType": "",
-      "specialAbilities": "",
-      "naturalWeapons": ""
-    },
     "species": {
       "templates": [ "base" ],
       "baseHP": 0,
@@ -321,14 +284,21 @@
         "normal",
         "enhanced",
         "darkvision"
-      ]
+      ],
+      "biologicallyImmortal": false
     },
     "magicitem": {
       "templates": [ "base", "physical" ],
       "slot": "head",
       "effect": "",
+      "catalyst": "",
       "attunement": false,
-      "equipped": false
+      "equipped": false,
+      "hasAura": true,
+      "auraColor": "dull gray",
+      "conflictsArmor": false,
+      "radiationEffect": "",
+      "creationRequirements": ""
     },
     "trait": {
       "templates": [ "base" ],
@@ -446,6 +416,23 @@
       "type": "",
       "sanityCost": 0,
       "active": false
+    },
+    "clothing": {
+      "templates": [ "base", "physical" ],
+      "clothingType": "normal",
+      "coldBonus": 0,
+      "hotBonus": 0,
+      "coldPenalty": 0,
+      "hotPenalty": 0,
+      "skillBonus": "",
+      "skillBonusDice": "",
+      "skillConditions": "",
+      "specialEffect": "",
+      "protectionType": "",
+      "protectionLevel": "none",
+      "material": "",
+      "quality": "common",
+      "wornLocation": "body"
     }
   }
 }

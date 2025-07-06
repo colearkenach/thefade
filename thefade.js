@@ -5292,18 +5292,24 @@ class TheFadeItem extends Item {
     }
 
     /**
-    * Prepare magic item data
-    * @param {Object} itemData - Item data object
-    */
+     * Prepare magic item specific data
+     * @param {Object} itemData - Item data object
+     */
     _prepareMagicItemData(itemData) {
         const data = itemData.system;
 
-        // Initialize item of power properties if undefined
-        if (!data.slot) data.slot = "body";
+        // Initialize Items of Power properties if undefined
+        if (!data.slot) data.slot = "head";
         if (!data.effect) data.effect = "";
-        if (!data.attunement) data.attunement = true;
+        if (!data.catalyst) data.catalyst = "";
+        if (typeof data.attunement === "undefined") data.attunement = false;
+        if (typeof data.equipped === "undefined") data.equipped = false;
+        if (typeof data.hasAura === "undefined") data.hasAura = true;
+        if (!data.auraColor) data.auraColor = "dull gray";
+        if (typeof data.conflictsArmor === "undefined") data.conflictsArmor = false;
+        if (!data.radiationEffect) data.radiationEffect = "";
+        if (!data.creationRequirements) data.creationRequirements = "";
     }
-
     /**
     * Prepare fleshcraft-specific data
     * @param {Object} itemData - Item data object
@@ -5409,7 +5415,7 @@ class TheFadeItemSheet extends ItemSheet {
         // Set all options objects - use basic objects to avoid any complex operations
         try {
             data.itemCategoryOptions = {
-                "general": "General Item",
+                "magicitem": "Item of Power",
                 "drug": "Drug",
                 "poison": "Poison",
                 "biological": "Biological",
@@ -5425,7 +5431,8 @@ class TheFadeItemSheet extends ItemSheet {
                 "communication": "Communication Device",
                 "containment": "Containment Item",
                 "dream": "Dream Harvesting",
-                "fleshcraft": "Flesh Craft"
+                "fleshcraft": "Flesh Craft",
+                "clothing": "Clothing"
             };
 
             data.spellSchoolOptions = {
@@ -5982,6 +5989,24 @@ class TheFadeItemSheet extends ItemSheet {
             });
         }
 
+        // Handle input changes for species sheets
+        if (this.item.type === 'species') {
+            html.find('input, select, textarea').change(async (ev) => {
+                ev.preventDefault();
+                ev.stopImmediatePropagation();
+
+                const element = ev.currentTarget;
+                const field = element.name;
+                let value = element.value;
+
+                if (element.dataset.dtype === 'Number') {
+                    value = Number(value);
+                }
+
+                await this.item.update({ [field]: value });
+            });
+        }
+
         // This handles both path and species abilities
         html.find('.ability-add').click(event => {
             event.preventDefault();
@@ -6361,6 +6386,26 @@ class TheFadeItemSheet extends ItemSheet {
                 ui.notifications.info(`Added "${skillEntry.name}" to path skills`);
             }
         });
+
+        if (this.item.type === 'species') {
+            html.find('input[name="system.biologicallyImmortal"]').change((ev) => {
+                const isChecked = ev.currentTarget.checked;
+                const ageInputs = html.find('input[name="system.youngAge"], input[name="system.adultAge"], input[name="system.oldAge"], input[name="system.maximumAge"]');
+
+                if (isChecked) {
+                    ageInputs.prop('disabled', true).addClass('disabled');
+                } else {
+                    ageInputs.prop('disabled', false).removeClass('disabled');
+                }
+            });
+
+            // Set initial state on render
+            const immortalCheckbox = html.find('input[name="system.biologicallyImmortal"]');
+            if (immortalCheckbox.is(':checked')) {
+                const ageInputs = html.find('input[name="system.youngAge"], input[name="system.adultAge"], input[name="system.oldAge"], input[name="system.maximumAge"]');
+                ageInputs.prop('disabled', true).addClass('disabled');
+            }
+        }
     }
 
     /**
@@ -7129,10 +7174,10 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
 function registerItemSheets() {
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
-            "weapon", "armor", "skill", "path", "spell", "talent", "item",
+            "weapon", "armor", "skill", "path", "spell", "talent", "trait", "precept",
             "species", "drug", "poison", "biological", "medical", "travel",
             "mount", "vehicle", "musical", "potion", "staff", "wand", "gate",
-            "communication", "containment", "dream", "fleshcraft", "magicitem"
+            "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing"
         ],
         makeDefault: true
     });
@@ -7476,10 +7521,10 @@ Hooks.once('init', async function () {
 
     // Define all available item types (must match template.json)
     CONFIG.Item.types = [
-        "weapon", "armor", "skill", "path", "spell", "talent", "item", "species",
+        "weapon", "armor", "skill", "path", "spell", "talent", "species",
         "drug", "poison", "biological", "medical", "travel", "mount", "vehicle",
         "musical", "potion", "staff", "wand", "gate", "communication",
-        "containment", "dream", "fleshcraft", "magicitem"
+        "containment", "dream", "fleshcraft", "magicitem", "clothing", "trait", "precept"
     ];
 
     // Define item type labels for display
@@ -7490,7 +7535,8 @@ Hooks.once('init', async function () {
         path: "TYPES.Item.path",
         spell: "TYPES.Item.spell",
         talent: "TYPES.Item.talent",
-        item: "TYPES.Item.item",
+        talent: "TYPES.Item.trait",
+        talent: "TYPES.Item.precept",
         species: "TYPES.Item.species",
         drug: "TYPES.Item.drug",
         poison: "TYPES.Item.poison",
@@ -7508,7 +7554,8 @@ Hooks.once('init', async function () {
         containment: "TYPES.Item.containment",
         dream: "TYPES.Item.dream",
         fleshcraft: "TYPES.Item.fleshcraft",
-        magicitem: "TYPES.Item.magicitem"
+        magicitem: "TYPES.Item.magicitem",
+        clothing: "TYPES.Item.clothing"
     };
 
     // --------------------------------------------------------------------
@@ -7528,10 +7575,10 @@ Hooks.once('init', async function () {
     // Register The Fade item sheet
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
-            "weapon", "armor", "skill", "path", "spell", "talent", "item",
+            "weapon", "armor", "skill", "path", "spell", "talent", "trait", "precept",
             "species", "drug", "poison", "biological", "medical", "travel",
             "mount", "vehicle", "musical", "potion", "staff", "wand", "gate",
-            "communication", "containment", "dream", "fleshcraft", "magicitem"
+            "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing"
         ],
         makeDefault: true
     });
@@ -7567,7 +7614,11 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/item/staff-sheet.html",
         "systems/thefade/templates/item/travel-sheet.html",
         "systems/thefade/templates/item/vehicle-sheet.html",
-        "systems/thefade/templates/item/wand-sheet.html"
+        "systems/thefade/templates/item/wand-sheet.html",
+        "systems/thefade/templates/item/clothing-sheet.html",
+        "systems/thefade/templates/item/trait-sheet.html",
+        "systems/thefade/templates/item/precept-sheet.html"
+
     ]);
 
     // --------------------------------------------------------------------
@@ -7643,6 +7694,10 @@ Hooks.once('init', async function () {
 
     Handlebars.registerHelper('eq', function (a, b) {
         return a === b;
+    });
+
+    Handlebars.registerHelper('ifEquals', function (a, b, options) {
+        return (a === b) ? options.fn(this) : options.inverse(this);
     });
 
     Handlebars.registerHelper('lowercase', function (str) {

@@ -2,338 +2,110 @@
     <header class="sheet-header">
         <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
         <div class="header-fields">
-            <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge magicitem">Item of Power</div>
         </div>
     </header>
 
     {{!-- Sheet Tab Navigation --}}
     <nav class="sheet-tabs tabs" data-group="primary">
         <a class="item" data-tab="description">Description</a>
-        <a class="item" data-tab="attributes">Attributes</a>
+        <a class="item" data-tab="properties">Properties</a>
+        <a class="item" data-tab="details">Details</a>
     </nav>
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">
         {{!-- Description Tab --}}
         <div class="tab" data-group="primary" data-tab="description">
-            <textarea name="system.description">{{system.description}}</textarea>
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="system.description" rows="10">{{system.description}}</textarea>
+            </div>
         </div>
 
-        {{!-- Attributes Tab --}}
-        <div class="tab" data-group="primary" data-tab="attributes">
-            <div class="form-group">
-                <label>Item Category</label>
-                <select name="system.itemCategory">
-                    {{selectOptions itemCategoryOptions selected=system.itemCategory}}
-                </select>
-            </div>
-
-            <!-- Common fields for all items -->
-            <div class="form-group">
-                <label>Price (sp.)</label>
-                <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Weight</label>
-                <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
-                <span>lbs.</span>
-            </div>
-
-            <div class="form-group">
-                <label>Quantity</label>
-                <input type="text" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
-            </div>
-
-            <!-- Category-specific fields -->
-            {{#if (eq system.itemCategory "drug")}}
-            <hr>
-            <h3>Drug Properties</h3>
-            <div class="form-group">
-                <label>Duration</label>
-                <input type="text" name="system.duration" value="{{system.duration}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Addiction</label>
-                <input type="text" name="system.addiction" value="{{system.addiction}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Overdose</label>
-                <input type="text" name="system.overdose" value="{{system.overdose}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Effect</label>
-                <textarea name="system.effect">{{system.effect}}</textarea>
-            </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "poison")}}
-            <hr>
-            <h3>Poison Properties</h3>
-            <div class="form-group">
-                <label>Toxicity</label>
-                <input type="text" name="system.toxicity" value="{{system.toxicity}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Type</label>
-                <select name="system.poisonType">
-                    {{#select system.poisonType}}
-                    <option value="injury">Injury</option>
-                    <option value="ingested">Ingested</option>
-                    <option value="inhaled">Inhaled</option>
-                    <option value="contact">Contact</option>
-                    {{/select}}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Effect</label>
-                <textarea name="system.effect">{{system.effect}}</textarea>
-            </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "biological")}}
-            <hr>
-            <h3>Biological Properties</h3>
-            <div class="form-group">
-                <label>HP</label>
-                <input type="text" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Energy</label>
-                <input type="text" name="system.energy" value="{{system.energy}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Effect</label>
-                <textarea name="system.effect">{{system.effect}}</textarea>
-            </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "mount")}}
-            <hr>
-            <h3>Mount Properties</h3>
-            <div class="form-group">
-                <label>HP</label>
-                <input type="text" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Avoid</label>
-                <input type="text" name="system.avoid" value="{{system.avoid}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Size</label>
-                <select name="system.size">
-                    {{#select system.size}}
-                    <option value="small">Small</option>
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                    <option value="massive">Massive</option>
-                    {{/select}}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Movement</label>
-                <input type="text" name="system.movement" value="{{system.movement}}" data-dtype="Number" />
-                <span>hexes</span>
-            </div>
-
-            <div class="form-group">
-                <label>Carry Capacity</label>
-                <input type="text" name="system.carryCapacity" value="{{system.carryCapacity}}" data-dtype="Number" />
-                <span>lbs.</span>
-            </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "vehicle")}}
-            <hr>
-            <h3>Vehicle Properties</h3>
-            <div class="form-group">
-                <label>Drivers Required</label>
-                <input type="text" name="system.drivers" value="{{system.drivers}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Passengers</label>
-                <input type="text" name="system.passengers" value="{{system.passengers}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Movement</label>
-                <input type="text" name="system.movement" value="{{system.movement}}" data-dtype="Number" />
-                <span>hexes</span>
-            </div>
-
-            <div class="form-group">
-                <label>Overland Speed</label>
-                <input type="text" name="system.overland" value="{{system.overland}}" data-dtype="Number" />
-                <span>miles</span>
-            </div>
-
-            <div class="form-group">
-                <label>Cargo Capacity</label>
-                <input type="text" name="system.cargo" value="{{system.cargo}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Vehicle Type</label>
-                <select name="system.vehicleType">
-                    {{#select system.vehicleType}}
-                    <option value="land">Land</option>
-                    <option value="sea">Sea</option>
-                    <option value="air">Air</option>
-                    {{/select}}
-                </select>
-            </div>
-            {{/if}}
-
-            {{#if (or (eq system.itemCategory "staff") (eq system.itemCategory "wand"))}}
-            <hr>
-            <h3>Magic Tool Properties</h3>
-            <div class="form-group">
-                <label>Strength</label>
-                <input type="text" name="system.strength" value="{{system.strength}}" data-dtype="Number" />
-            </div>
-
-            {{#if (eq system.itemCategory "wand")}}
-            <div class="form-group">
-                <label>Charges</label>
-                <input type="text" name="system.charges" value="{{system.charges}}" data-dtype="Number" />
-                <span>/ 20</span>
-            </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "staff")}}
-            <div class="form-group">
-                <label>Uses Per Day</label>
-                <input type="text" name="system.usesPerDay" value="{{system.usesPerDay}}" data-dtype="Number" />
-                <span>/ 3</span>
-            </div>
-            {{/if}}
-
-            <div class="form-group">
-                <label>Contained Spell</label>
-                <input type="text" name="system.spellName" value="{{system.spellName}}" />
-            </div>
-
-            <div class="form-group">
-                <label>School</label>
-                <select name="system.school">
-                    {{selectOptions spellSchoolOptions selected=system.school}}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Spell Description</label>
-                <textarea name="system.spellDescription">{{system.spellDescription}}</textarea>
-            </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "gate")}}
-            <hr>
-            <h3>Dimensional Gate Properties</h3>
-            <div class="form-group">
-                <label>Range</label>
-                <input type="text" name="system.range" value="{{system.range}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Duration</label>
-                <input type="text" name="system.duration" value="{{system.duration}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Uses Per Day</label>
-                <input type="text" name="system.usesPerDay" value="{{system.usesPerDay}}" />
-            </div>
-            {{/if}}
-
-            {{#if (eq system.itemCategory "communication")}}
-            <hr>
-            <h3>Communication Device Properties</h3>
-            <div class="form-group">
-                <label>Distance</label>
-                <input type="text" name="system.distance" value="{{system.distance}}" />
-            </div>
-
-            <div class="form-group">
-                <label>Complexity</label>
-                <select name="system.complexity">
-                    {{selectOptions communicationComplexityOptions selected=system.complexity}}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>Relay Code</label>
-                <input type="text" name="system.relayCode" value="{{system.relayCode}}" />
-            </div>
-            {{/if}}
-
-{{#if (eq system.itemCategory "magicitem")}}
-            <hr>
-            <h3>Item of Power Properties</h3>
-            
+        {{!-- Properties Tab --}}
+        <div class="tab" data-group="primary" data-tab="properties">
             <div class="form-group">
                 <label>Equipment Slot</label>
                 <select name="system.slot">
-                    {{selectOptions magicItemSlotOptions selected=system.slot}}
+                    <option value="head" {{#ifEquals system.slot "head"}} selected{{/ifEquals}}>Head</option>
+                    <option value="neck" {{#ifEquals system.slot "neck"}} selected{{/ifEquals}}>Neck</option>
+                    <option value="body" {{#ifEquals system.slot "body"}} selected{{/ifEquals}}>Body</option>
+                    <option value="hands" {{#ifEquals system.slot "hands"}} selected{{/ifEquals}}>Hands</option>
+                    <option value="ring" {{#ifEquals system.slot "ring"}} selected{{/ifEquals}}>Ring</option>
+                    <option value="belt" {{#ifEquals system.slot "belt"}} selected{{/ifEquals}}>Belt</option>
+                    <option value="boots" {{#ifEquals system.slot "boots"}} selected{{/ifEquals}}>Boots</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Effect</label>
-                <textarea name="system.effect">{{system.effect}}</textarea>
+                <label>Magical Effect</label>
+                <textarea name="system.effect" rows="6" placeholder="Describe the magical effect this item provides...">{{system.effect}}</textarea>
             </div>
-            
-            <div class="form-group flexrow">             
+
+            <div class="form-group">
+                <label>Catalyst Used</label>
+                <select name="system.catalyst">
+                    <option value="" {{#ifEquals system.catalyst ""}} selected{{/ifEquals}}>Unknown/Unspecified</option>
+                    <option value="planar-essence" {{#ifEquals system.catalyst "planar-essence"}} selected{{/ifEquals}}>Planar Essence</option>
+                    <option value="divine-gift" {{#ifEquals system.catalyst "divine-gift"}} selected{{/ifEquals}}>Divine Gift</option>
+                    <option value="bones-of-glory" {{#ifEquals system.catalyst "bones-of-glory"}} selected{{/ifEquals}}>Bones of Glory</option>
+                </select>
+            </div>
+
+            <div class="form-group flexrow">
                 <div class="form-field">
                     <label>Currently Attuned</label>
-                    <input type="checkbox" name="system.attunement" {{#if system.attunement}}checked{{/if}} />
+                    <input type="checkbox" name="system.attunement" {{#if system.attunement}} checked{{/if}} />
                 </div>
-                
+
                 <div class="form-field">
                     <label>Equipped</label>
-                    <input type="checkbox" name="system.equipped" {{#if system.equipped}}checked{{/if}} />
+                    <input type="checkbox" name="system.equipped" {{#if system.equipped}} checked{{/if}} />
+                </div>
+
+                <div class="form-field">
+                    <label>Has Aura</label>
+                    <input type="checkbox" name="system.hasAura" {{#if system.hasAura}} checked{{/if}} />
                 </div>
             </div>
-            {{/if}}
 
-            {{#if (eq system.itemCategory "fleshcraft")}}
-            <hr>
-            <h3>Flesh Craft Properties</h3>
             <div class="form-group">
-                <label>Effective Level</label>
-                <input type="text" name="system.el" value="{{system.el}}" data-dtype="Number" />
+                <label>Aura Color</label>
+                <input type="text" name="system.auraColor" value="{{system.auraColor}}" placeholder="Dull gray (default), changes to wielder's color" />
+                <p class="hint">Items with auras shine like torches out to 3 hexes</p>
+            </div>
+        </div>
+
+        {{!-- Details Tab --}}
+        <div class="tab" data-group="primary" data-tab="details">
+            <div class="form-group">
+                <label>Price (sp)</label>
+                <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
+                <p class="hint">Price in Serpents</p>
             </div>
 
             <div class="form-group">
-                <label>Creature Type</label>
-                <input type="text" name="system.creatureType" value="{{system.creatureType}}" />
+                <label>Weight (lbs)</label>
+                <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" step="0.1" />
             </div>
 
             <div class="form-group">
-                <label>HP</label>
-                <input type="text" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
+                <label>Conflicts with Armor</label>
+                <input type="checkbox" name="system.conflictsArmor" {{#if system.conflictsArmor}} checked{{/if}} />
+                <p class="hint">Head, Body, and Hands slots typically conflict with armor</p>
             </div>
 
             <div class="form-group">
-                <label>Natural Weapons</label>
-                <input type="text" name="system.naturalWeapons" value="{{system.naturalWeapons}}" />
+                <label>Magical Radiation Effect</label>
+                <textarea name="system.radiationEffect" rows="3" placeholder="How this item affects technology (50% failure for complex tech)...">{{system.radiationEffect}}</textarea>
             </div>
 
             <div class="form-group">
-                <label>Special Abilities</label>
-                <textarea name="system.specialAbilities">{{system.specialAbilities}}</textarea>
+                <label>Creation Requirements</label>
+                <textarea name="system.creationRequirements" rows="3" placeholder="What's needed to create this item...">{{system.creationRequirements}}</textarea>
             </div>
-            {{/if}}
         </div>
     </section>
 </form>
