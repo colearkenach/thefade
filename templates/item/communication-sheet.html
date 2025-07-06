@@ -24,10 +24,10 @@
         <div class="tab" data-group="primary" data-tab="attributes">
             <div class="form-group">
                 <label>Complexity</label>
-                <select name="system.type">
-                    <option value="telepathic" {{#ifEquals system.type "telepathic"}} selected{{/ifEquals}}>Audio Only</option>
-                    <option value="magical" {{#ifEquals system.type "magical"}} selected{{/ifEquals}}>Video Only</option>
-                    <option value="crystal" {{#ifEquals system.type "crystal"}} selected{{/ifEquals}}>Audio & Visual</option>
+                <select name="system.complexity">
+                    <option value="audio" {{#ifEquals system.complexity "audio"}} selected{{/ifEquals}}>Audio Only</option>
+                    <option value="video" {{#ifEquals system.complexity "video"}} selected{{/ifEquals}}>Video Only</option>
+                    <option value="both" {{#ifEquals system.complexity "both"}} selected{{/ifEquals}}>Audio & Visual</option>
                 </select>
             </div>
 

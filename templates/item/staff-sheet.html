@@ -10,6 +10,7 @@
     <nav class="sheet-tabs tabs" data-group="primary">
         <a class="item" data-tab="description">Description</a>
         <a class="item" data-tab="details">Details</a>
+        <a class="item" data-tab="attributes">Attributes</a>
     </nav>
 
     <section class="sheet-body">
@@ -38,5 +39,23 @@
                 <input type="text" name="system.activation" value="{{system.activation}}" />
             </div>
         </div>
+
+        <div class="tab" data-group="primary" data-tab="attributes">
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" min="0" />
+            </div>
+
+            <div class="form-group">
+                <label>Price (sp)</label>
+                <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Weight (lbs)</label>
+                <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" step="0.1" />
+            </div>
+        </div>
+
     </section>
 </form>

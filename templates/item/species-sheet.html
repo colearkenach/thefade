@@ -1,130 +1,174 @@
 <form class="{{cssClass}}" autocomplete="off">
     <header class="sheet-header">
-      <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
-      <div class="header-fields">
-        <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
-      </div>
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+        </div>
     </header>
-  
-    {{!-- Sheet Tab Navigation --}}
+
     <nav class="sheet-tabs tabs" data-group="primary">
-      <a class="item" data-tab="description">Description</a>
-      <a class="item" data-tab="attributes">Attributes</a>
-      <a class="item" data-tab="abilities">Abilities</a>
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="attributes">Attributes</a>
+        <a class="item" data-tab="abilities">Abilities</a>
     </nav>
-  
-    {{!-- Sheet Body --}}
+
     <section class="sheet-body">
-      {{!-- Description Tab --}}
-      <div class="tab" data-group="primary" data-tab="description">
-        <textarea name="system.description" class="autogrow">{{system.description}}</textarea>
-      </div>
-  
-      {{!-- Attributes Tab --}}
-    <div class="tab" data-group="primary" data-tab="attributes">
-        <div class="form-group">
-            <label>Base HP</label>
-            <input type="text" name="system.baseHP" value="{{system.baseHP}}" data-dtype="Number" />
-        </div>
+        <div class="tab" data-group="primary" data-tab="description">
+            <div class="flavor-text">
+                <h3>Physical Description</h3>
+                <div class="description">
+                    <textarea name="system.description" class="autogrow">{{system.description}}</textarea>
+                </div>
 
-        <div class="form-group">
-            <label>Creature Type</label>
-            <select name="system.creatureType">
-                {{selectOptions creatureTypeOptions selected=system.creatureType}}
-            </select>
-        </div>
+                <br /><br />
 
-        <div class="form-group">
-            <label>Creature Subtype</label>
-            <input type="text" name="system.creatureSubtype" value="{{system.creatureSubtype}}" placeholder="e.g., Elf, Goblinoid, Aquatic" />
-        </div>
+                <h3>Personality</h3>
+                <div class="personality">
+                    <textarea name="system.personality" class="autogrow">{{system.personality}}</textarea>
+                </div>
 
-        <div class="form-group">
-            <label>Size</label>
-            <select name="system.size">
-                {{selectOptions sizeOptions selected=system.size}}
-            </select>
-        </div>
+                <br /><br />
 
-        <div class="form-group">
-            <label>Languages</label>
-            <input type="text" name="system.languages" value="{{system.languages}}" placeholder="Common, Elvish, etc." />
-        </div>
-
-        <h3>Ability Score Bonuses</h3>
-        <div class="grid grid-5col">
-            <div class="ability-bonus">
-                <label>PHY</label>
-                <input type="text" name="system.abilityBonuses.physique" value="{{system.abilityBonuses.physique}}" data-dtype="Number" />
+                <h3>History</h3>
+                <div class="history">
+                    <textarea name="system.history" class="autogrow">{{system.history}}</textarea>
+                </div>
             </div>
-            <div class="ability-bonus">
-                <label>FIN</label>
-                <input type="text" name="system.abilityBonuses.finesse" value="{{system.abilityBonuses.finesse}}" data-dtype="Number" />
-            </div>
-            <div class="ability-bonus">
-                <label>MND</label>
-                <input type="text" name="system.abilityBonuses.mind" value="{{system.abilityBonuses.mind}}" data-dtype="Number" />
-            </div>
-            <div class="ability-bonus">
-                <label>PRS</label>
-                <input type="text" name="system.abilityBonuses.presence" value="{{system.abilityBonuses.presence}}" data-dtype="Number" />
-            </div>
-            <div class="ability-bonus">
-                <label>SOL</label>
-                <input type="text" name="system.abilityBonuses.soul" value="{{system.abilityBonuses.soul}}" data-dtype="Number" />
+
+            <br /><br />
+
+            <h3>Lifespan</h3>
+            <div class="form-group">
+                <div class="young">
+                    Young
+                    <input type="text" name="system.youngAge" value="{{system.youngAge}}">
+                </div>
+                <div class="adult">
+                    Adult
+                    <input type="text" name="system.adultAge" value="{{system.adultAge}}">
+                </div>
+                <div class="old">
+                    Old
+                    <input type="text" name="system.oldAge" value="{{system.oldAge}}">
+                </div>
+                <div class="maximum">
+                    Max. Lifespan
+                    <input type="text" name="system.maximumAge" data-dtype="Number" value="{{system.maximumAge}}">
+                </div>
             </div>
         </div>
 
-        <div class="form-group">
-            <label>Flexible Ability Bonus</label>
-            <div class="flex-row">
-                <input type="number" name="system.flexibleBonus.value" value="{{system.flexibleBonus.value}}" data-dtype="Number" />
-                <p class="hint">Bonus points that can be applied to any one ability score</p>
+        <div class="tab" data-group="primary" data-tab="attributes">
+            <div class="form-group">
+                <label>Base HP</label>
+                <input type="text" name="system.baseHP" value="{{system.baseHP}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Creature Type</label>
+                <select name="system.creatureType">
+                    {{selectOptions creatureTypeOptions selected=system.creatureType}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Creature Subtype</label>
+                <input type="text" name="system.creatureSubtype" value="{{system.creatureSubtype}}" placeholder="e.g., Elf, Goblinoid, Aquatic" />
+            </div>
+
+            <div class="form-group">
+                <label>Size</label>
+                <select name="system.size">
+                    {{selectOptions sizeOptions selected=system.size}}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Languages</label>
+                <input type="text" name="system.languages" value="{{system.languages}}" placeholder="Common, Elvish, etc." />
+            </div>
+
+            <h3>Ability Score Bonuses</h3>
+            <div class="grid grid-5col">
+                <div class="ability-bonus">
+                    <label>PHY</label>
+                    <input type="text" name="system.abilityBonuses.physique" value="{{system.abilityBonuses.physique}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>FIN</label>
+                    <input type="text" name="system.abilityBonuses.finesse" value="{{system.abilityBonuses.finesse}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>MND</label>
+                    <input type="text" name="system.abilityBonuses.mind" value="{{system.abilityBonuses.mind}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>PRS</label>
+                    <input type="text" name="system.abilityBonuses.presence" value="{{system.abilityBonuses.presence}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>SOL</label>
+                    <input type="text" name="system.abilityBonuses.soul" value="{{system.abilityBonuses.soul}}" data-dtype="Number" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Flexible Ability Bonus</label>
+                <div class="flex-row">
+                    <input type="number" name="system.flexibleBonus.value" value="{{system.flexibleBonus.value}}" data-dtype="Number" />
+                    <p class="hint">Bonus points that can be applied to any one ability score</p>
+                </div>
+            </div>
+
+            <h3>Vision</h3>
+            <div class="form-group">
+                <select name="system.visionType">
+                    
+                </select>
+            </div>
+
+            <h3>Movement</h3>
+            <div class="grid grid-3col">
+                <div class="movement">
+                    <label>Land Speed</label>
+                    <input type="text" name="system.movement.land" value="{{system.movement.land}}" data-dtype="Number" />
+                </div>
+                <div class="movement">
+                    <label>Fly Speed</label>
+                    <input type="text" name="system.movement.fly" value="{{system.movement.fly}}" data-dtype="Number" />
+                </div>
+                <div class="movement">
+                    <label>Swim Speed</label>
+                    <input type="text" name="system.movement.swim" value="{{system.movement.swim}}" data-dtype="Number" />
+                </div>
+                <div class="movement">
+                    <label>Climb Speed</label>
+                    <input type="text" name="system.movement.climb" value="{{system.movement.climb}}" data-dtype="Number" />
+                </div>
+                <div class="movement">
+                    <label>Burrow Speed</label>
+                    <input type="text" name="system.movement.burrow" value="{{system.movement.burrow}}" data-dtype="Number" />
+                </div>
             </div>
         </div>
 
-        <h3>Movement</h3>
-        <div class="grid grid-3col">
-            <div class="movement">
-                <label>Land Speed</label>
-                <input type="text" name="system.movement.land" value="{{system.movement.land}}" data-dtype="Number" />
+        <div class="tab" data-group="primary" data-tab="abilities">
+            <h2>
+                Species Abilities
+                <a class="ability-add" title="Add Ability"><i class="fas fa-plus"></i></a>
+            </h2>
+
+            {{#each system.speciesAbilities as |ability id|}}
+            <div class="ability-item" data-ability-id="{{id}}">
+                <div class="ability-header flexrow">
+                    <input type="text" name="system.speciesAbilities.{{id}}.name" value="{{ability.name}}" placeholder="Ability Name" />
+                    <div class="ability-controls">
+                        <a class="ability-delete" title="Delete Ability"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                <textarea name="system.speciesAbilities.{{id}}.description">{{ability.description}}</textarea>
             </div>
-            <div class="movement">
-                <label>Fly Speed</label>
-                <input type="text" name="system.movement.fly" value="{{system.movement.fly}}" data-dtype="Number" />
-            </div>
-            <div class="movement">
-                <label>Swim Speed</label>
-                <input type="text" name="system.movement.swim" value="{{system.movement.swim}}" data-dtype="Number" />
-            </div>
-            <div class="movement">
-                <label>Climb Speed</label>
-                <input type="text" name="system.movement.climb" value="{{system.movement.climb}}" data-dtype="Number" />
-            </div>
-            <div class="movement">
-                <label>Burrow Speed</label>
-                <input type="text" name="system.movement.burrow" value="{{system.movement.burrow}}" data-dtype="Number" />
-            </div>
+            {{/each}}
         </div>
-    </div>
-      
-      {{!-- Abilities Tab --}}
-      <div class="tab" data-group="primary" data-tab="abilities">
-        <h2>Species Abilities 
-          <a class="ability-add" title="Add Ability"><i class="fas fa-plus"></i></a>
-        </h2>
-        
-        {{#each system.speciesAbilities as |ability id|}}
-        <div class="ability-item" data-ability-id="{{id}}">
-          <div class="ability-header flexrow">
-            <input type="text" name="system.speciesAbilities.{{id}}.name" value="{{ability.name}}" placeholder="Ability Name"/>
-            <div class="ability-controls">
-              <a class="ability-delete" title="Delete Ability"><i class="fas fa-trash"></i></a>
-            </div>
-          </div>
-          <textarea name="system.speciesAbilities.{{id}}.description">{{ability.description}}</textarea>
-        </div>
-        {{/each}}
-      </div>
     </section>
-  </form>
+</form>

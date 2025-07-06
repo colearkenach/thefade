@@ -309,7 +309,19 @@
         "climb": 0,
         "burrow": 0
       },
-      "speciesAbilities": {}
+      "speciesAbilities": {},
+      "description": "",
+      "personality": "",
+      "history": "",
+      "youngAge": "",
+      "adultAge": "",
+      "oldAge": "",
+      "maximumAge": 0,
+      "visionType": [
+        "normal",
+        "enhanced",
+        "darkvision"
+      ]
     },
     "magicitem": {
       "templates": [ "base", "physical" ],
@@ -332,9 +344,11 @@
     "drug": {
       "templates": [ "base", "physical" ],
       "addiction": "",
+      "addictionRating": 0,
       "overdose": "",
       "effect": "",
-      "duration": ""
+      "duration": "",
+      "sideEffects": ""
     },
     "poison": {
       "templates": [ "base", "physical" ],
@@ -409,7 +423,8 @@
       "templates": [ "base", "physical" ],
       "range": "",
       "complexity": "audio",
-      "relayCode": ""
+      "relayCode": "",
+      "usesPerDay": 0
     },
     "containment": {
       "templates": [ "base", "physical" ],
@@ -418,13 +433,19 @@
     "dream": {
       "templates": [ "base", "physical" ],
       "el": 1,
-      "effect": ""
+      "effect": "",
+      "dreamType": "",
+      "duration": ""
     },
     "fleshcraft": {
       "templates": [ "base", "physical" ],
       "creatureType": "",
       "naturalWeapons": "",
-      "specialAbilities": ""
+      "specialAbilities": "",
+      "hp": 0,
+      "type": "",
+      "sanityCost": 0,
+      "active": false
     }
   }
 }

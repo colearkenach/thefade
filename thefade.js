@@ -7551,7 +7551,23 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/chat/skill-roll.html",
         "systems/thefade/templates/chat/spell-cast.html",
         "systems/thefade/templates/dialogs/ability-edit.html",
-        "systems/thefade/templates/dialogs/character-select.html"
+        "systems/thefade/templates/dialogs/character-select.html",
+
+        "systems/thefade/templates/item/communication-sheet.html",
+        "systems/thefade/templates/item/containment-sheet.html",
+        "systems/thefade/templates/item/dream-sheet.html",
+        "systems/thefade/templates/item/drug-sheet.html",
+        "systems/thefade/templates/item/fleshcraft-sheet.html",
+        "systems/thefade/templates/item/gate-sheet.html",
+        "systems/thefade/templates/item/medical-sheet.html",
+        "systems/thefade/templates/item/mount-sheet.html",
+        "systems/thefade/templates/item/musical-sheet.html",
+        "systems/thefade/templates/item/poison-sheet.html",
+        "systems/thefade/templates/item/potion-sheet.html",
+        "systems/thefade/templates/item/staff-sheet.html",
+        "systems/thefade/templates/item/travel-sheet.html",
+        "systems/thefade/templates/item/vehicle-sheet.html",
+        "systems/thefade/templates/item/wand-sheet.html"
     ]);
 
     // --------------------------------------------------------------------

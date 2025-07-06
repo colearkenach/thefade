@@ -7,21 +7,18 @@
         </div>
     </header>
 
-    {{!-- Sheet Tab Navigation --}}
     <nav class="sheet-tabs tabs" data-group="primary">
         <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="details">Details</a>
         <a class="item" data-tab="attributes">Attributes</a>
     </nav>
 
-    {{!-- Sheet Body --}}
     <section class="sheet-body">
-        {{!-- Description Tab --}}
         <div class="tab" data-group="primary" data-tab="description">
             <textarea name="system.description">{{system.description}}</textarea>
         </div>
 
-        {{!-- Attributes Tab --}}
-        <div class="tab" data-group="primary" data-tab="attributes">
+        <div class="tab" data-group="primary" data-tab="details">
             <div class="form-group">
                 <label>Effect</label>
                 <input type="text" name="system.effect" value="{{system.effect}}" />
@@ -31,7 +28,10 @@
                 <label>Duration</label>
                 <input type="text" name="system.duration" value="{{system.duration}}" />
             </div>
+        </div>
 
+
+        <div class="tab" data-group="primary" data-tab="attributes">
             <div class="form-group">
                 <label>Quantity</label>
                 <input type="number" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" min="0" />
