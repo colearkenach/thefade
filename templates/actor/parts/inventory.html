@@ -514,21 +514,19 @@
                         </div>
                     </header>
 
-                    <div class="collapsible-content" id="unequipped-armor-content">
-                        <div class="items-list armor-items-list">
-                            {{#each actor.unequippedArmor as |item id|}}
-                            <div class="item flexrow armor-item" data-item-id="{{item._id}}">
-                                <div class="armor-name">{{item.name}}</div>
-                                <div class="armor-location">{{item.system.location}}</div>
-                                <div class="armor-ap">{{item.system.currentAP}}/{{item.system.ap}}</div>
-                                <div class="armor-controls">
-                                    <a class="item-equip" title="Equip Armor"><i class="fas fa-shield-alt"></i></a>
-                                    <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                                    <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                                </div>
+                    <div class="items-list armor-items-list">
+                        {{#each actor.unequippedArmor as |item id|}}
+                        <div class="item flexrow armor-item" data-item-id="{{item._id}}">
+                            <div class="armor-name">{{item.name}}</div>
+                            <div class="armor-location">{{item.system.location}}</div>
+                            <div class="armor-ap">{{item.system.currentAP}}/{{item.system.ap}}</div>
+                            <div class="armor-controls">
+                                <a class="item-equip" title="Equip Armor"><i class="fas fa-shield-alt"></i></a>
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
                             </div>
-                            {{/each}}
                         </div>
+                        {{/each}}
                     </div>
                 </div>
             </div>
@@ -804,27 +802,27 @@
                         <div class="item-slot">Slot</div>
                         <div class="item-attunement">Attuned</div>
                         <div class="item-controls">
-                            <a class="item-create" title="Add Item of Power" data-type="item" data-category="magicitem"><i class="fas fa-plus"></i></a>
+                            <a class="item-create" title="Add Item of Power" data-type="magicitem"><i class="fas fa-plus"></i></a>
                             <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
                         </div>
                     </header>
 
-                        <div class="items-list magic-items-list">
-                            {{#each actor.unequippedItemsOfPower as |item id|}}
-                            <div class="item flexrow magic-item" data-item-id="{{item._id}}">
-                                <div class="item-name">{{item.name}}</div>
-                                <div class="item-slot">{{item.system.slot}}</div>
-                                <div class="item-attunement">
-                                    <input type="checkbox" data-item-id="{{item._id}}" class="attunement-checkbox" title="Attune" {{#if item.system.attunement}} checked{{/if}} />
-                                </div>
-                                <div class="item-controls">
-                                    <a class="item-equip" title="Equip Item" data-slot="{{item.system.slot}}"><i class="fas fa-hand-paper"></i></a>
-                                    <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                                    <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                                </div>
+                    <div class="items-list magic-items-list">
+                        {{#each actor.unequippedItemsOfPower as |item id|}}
+                        <div class="item flexrow magic-item" data-item-id="{{item._id}}">
+                            <div class="item-name">{{item.name}}</div>
+                            <div class="item-slot">{{item.system.slot}}</div>
+                            <div class="item-attunement">
+                                <input type="checkbox" data-item-id="{{item._id}}" class="attunement-checkbox" title="Attune" {{#if item.system.attunement}} checked{{/if}} />
                             </div>
-                            {{/each}}
+                            <div class="item-controls">
+                                <a class="item-equip" title="Equip Item" data-slot="{{item.system.slot}}"><i class="fas fa-hand-paper"></i></a>
+                                <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                            </div>
                         </div>
+                        {{/each}}
+                    </div>
 
                 </div>
             </div>
@@ -859,7 +857,7 @@
                         </header>
 
                         <ol class="items-list">
-                            {{#each actor.potions as |potion id|}}
+                            {{#each actor.potion as |potion id|}}
                             <li class="item flexrow" data-item-id="{{potion._id}}">
                                 <div class="potion-name">
                                     <img src="{{potion.img}}" class="item-icon" alt="{{potion.name}}" />
@@ -872,22 +870,13 @@
                                 <div class="potion-duration">{{potion.system.duration}}</div>
                                 <div class="potion-rarity">{{potion.system.rarity}}</div>
                                 <div class="potion-controls">
-                                    <a class="potion-use" title="Use Potion"><i class="fas fa-drinking-glass"></i></a>
+                                    <a class="potion-drink" title="Use Potion"><i class="fas fa-drinking-glass"></i></a>
                                     <a class="item-edit" title="Edit Potion"><i class="fas fa-edit"></i></a>
                                     <a class="item-delete" title="Delete Potion"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.potions.length}}
-                        <div class="empty-section">
-                            <p>No potions in inventory.</p>
-                            <a class="item-create" title="Add Potion" data-type="potion">
-                                <i class="fas fa-plus"></i> Add Potion
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -930,15 +919,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.drugs.length}}
-                        <div class="empty-section">
-                            <p>No drugs in inventory.</p>
-                            <a class="item-create" title="Add Drug" data-type="drug">
-                                <i class="fas fa-plus"></i> Add Drug
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -979,15 +959,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.poisons.length}}
-                        <div class="empty-section">
-                            <p>No poisons in inventory.</p>
-                            <a class="item-create" title="Add Poison" data-type="poison">
-                                <i class="fas fa-plus"></i> Add Poison
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
             </div>
@@ -1014,9 +985,8 @@
                         <h3>Staffs</h3>
                         <header class="gear-header flexrow">
                             <div class="staff-name">Name</div>
-                            <div class="staff-charges">Charges</div>
-                            <div class="staff-spells">Spells</div>
-                            <div class="staff-attunement">Attuned</div>
+                            <div class="staff-charges">Uses Per Day</div>
+                            <div class="staff-spells">Spell Level</div>
                             <div class="staff-controls">
                                 <a class="item-create" title="Add Staff" data-type="staff"><i class="fas fa-plus"></i></a>
                                 <a class="staff-browse" title="Browse Staffs"><i class="fas fa-search"></i></a>
@@ -1024,38 +994,25 @@
                         </header>
 
                         <ol class="items-list">
-                            {{#each actor.staffs as |staff id|}}
+                            {{#each actor.staff as |staff id|}}
                             <li class="item flexrow" data-item-id="{{staff._id}}">
                                 <div class="staff-name">
                                     <img src="{{staff.img}}" class="item-icon" alt="{{staff.name}}" />
                                     <span>{{staff.name}}</span>
                                 </div>
                                 <div class="staff-charges">
-                                    <input type="number" name="system.charges.current" value="{{staff.system.charges.current}}" data-dtype="Number" min="0" class="small-input" />
-                                    <span>/</span>
-                                    <span>{{staff.system.charges.max}}</span>
+                                    <input type="number" name="staff.usesPerDay" value="{{staff.usesPerDay}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
-                                <div class="staff-spells">{{staff.system.spellCount}}</div>
-                                <div class="staff-attunement">
-                                    <input type="checkbox" name="system.attunement" {{#if staff.system.attunement}} checked{{/if}} />
-                                </div>
+                                <div class="staff-spells">{{staff.system.spellLevel}}</div>
                                 <div class="staff-controls">
-                                    <a class="staff-cast" title="Cast Spell"><i class="fas fa-magic"></i></a>
+                                    <a class="staff-use" title="Cast Spell"><i class="fas fa-magic"></i></a>
+                                    <a class="staff-reset" title="Refresh"><i class="fas fa-sync-alt"></i></a>
                                     <a class="item-edit" title="Edit Staff"><i class="fas fa-edit"></i></a>
                                     <a class="item-delete" title="Delete Staff"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.staffs.length}}
-                        <div class="empty-section">
-                            <p>No staffs in inventory.</p>
-                            <a class="item-create" title="Add Staff" data-type="staff">
-                                <i class="fas fa-plus"></i> Add Staff
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1075,7 +1032,7 @@
                         </header>
 
                         <ol class="items-list">
-                            {{#each actor.wands as |wand id|}}
+                            {{#each actor.wand as |wand id|}}
                             <li class="item flexrow" data-item-id="{{wand._id}}">
                                 <div class="wand-name">
                                     <img src="{{wand.img}}" class="item-icon" alt="{{wand.name}}" />
@@ -1089,22 +1046,13 @@
                                 <div class="wand-spell">{{wand.system.spell}}</div>
                                 <div class="wand-level">{{wand.system.spellLevel}}</div>
                                 <div class="wand-controls">
-                                    <a class="wand-cast" title="Cast Spell"><i class="fas fa-magic"></i></a>
+                                    <a class="wand-use" title="Cast Spell"><i class="fas fa-magic"></i></a>
                                     <a class="item-edit" title="Edit Wand"><i class="fas fa-edit"></i></a>
                                     <a class="item-delete" title="Delete Wand"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.wands.length}}
-                        <div class="empty-section">
-                            <p>No wands in inventory.</p>
-                            <a class="item-create" title="Add Wand" data-type="wand">
-                                <i class="fas fa-plus"></i> Add Wand
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1136,22 +1084,13 @@
                                     <input type="checkbox" name="system.active" {{#if comm.system.active}} checked{{/if}} />
                                 </div>
                                 <div class="comm-controls">
-                                    <a class="comm-use" title="Use Device"><i class="fas fa-broadcast-tower"></i></a>
+                                    <a class="communication-use" title="Use Device"><i class="fas fa-broadcast-tower"></i></a>
                                     <a class="item-edit" title="Edit Device"><i class="fas fa-edit"></i></a>
                                     <a class="item-delete" title="Delete Device"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.communication.length}}
-                        <div class="empty-section">
-                            <p>No communication devices in inventory.</p>
-                            <a class="item-create" title="Add Communication Device" data-type="communication">
-                                <i class="fas fa-plus"></i> Add Communication Device
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1181,22 +1120,13 @@
                                 <div class="container-contents">{{container.system.contents}}</div>
                                 <div class="container-security">{{container.system.security}}</div>
                                 <div class="container-controls">
-                                    <a class="container-open" title="Open Container"><i class="fas fa-box-open"></i></a>
+                                    <a class="containment-open" title="Open Container"><i class="fas fa-box-open"></i></a>
                                     <a class="item-edit" title="Edit Container"><i class="fas fa-edit"></i></a>
                                     <a class="item-delete" title="Delete Container"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.containment.length}}
-                        <div class="empty-section">
-                            <p>No containment devices in inventory.</p>
-                            <a class="item-create" title="Add Container" data-type="containment">
-                                <i class="fas fa-plus"></i> Add Container
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1216,7 +1146,7 @@
                         </header>
 
                         <ol class="items-list">
-                            {{#each actor.gates as |gate id|}}
+                            {{#each actor.gate as |gate id|}}
                             <li class="item flexrow" data-item-id="{{gate._id}}">
                                 <div class="gate-name">
                                     <img src="{{gate.img}}" class="item-icon" alt="{{gate.name}}" />
@@ -1237,15 +1167,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.gates.length}}
-                        <div class="empty-section">
-                            <p>No dimensional gates in inventory.</p>
-                            <a class="item-create" title="Add Gate" data-type="gate">
-                                <i class="fas fa-plus"></i> Add Gate
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1259,13 +1180,13 @@
                             <div class="dream-stored">Stored Dreams</div>
                             <div class="dream-quality">Quality</div>
                             <div class="dream-controls">
-                                <a class="item-create" title="Add Dream Device" data-type="dreamharvest"><i class="fas fa-plus"></i></a>
+                                <a class="item-create" title="Add Dream Device" data-type="dream"><i class="fas fa-plus"></i></a>
                                 <a class="dream-browse" title="Browse Dream Devices"><i class="fas fa-search"></i></a>
                             </div>
                         </header>
 
                         <ol class="items-list">
-                            {{#each actor.dreamHarvest as |dream id|}}
+                            {{#each actor.dream as |dream id|}}
                             <li class="item flexrow" data-item-id="{{dream._id}}">
                                 <div class="dream-name">
                                     <img src="{{dream.img}}" class="item-icon" alt="{{dream.name}}" />
@@ -1282,15 +1203,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.dreamHarvest.length}}
-                        <div class="empty-section">
-                            <p>No dream harvesting devices in inventory.</p>
-                            <a class="item-create" title="Add Dream Device" data-type="dreamharvest">
-                                <i class="fas fa-plus"></i> Add Dream Device
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
             </div>
@@ -1350,15 +1262,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.medical.length}}
-                        <div class="empty-section">
-                            <p>No medical gear in inventory.</p>
-                            <a class="item-create" title="Add Medical Item" data-type="medical">
-                                <i class="fas fa-plus"></i> Add Medical Item
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1399,15 +1302,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.biological.length}}
-                        <div class="empty-section">
-                            <p>No biological samples in inventory.</p>
-                            <a class="item-create" title="Add Biological Item" data-type="biological">
-                                <i class="fas fa-plus"></i> Add Biological Item
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1446,15 +1340,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.travel.length}}
-                        <div class="empty-section">
-                            <p>No travel gear in inventory.</p>
-                            <a class="item-create" title="Add Travel Item" data-type="travel">
-                                <i class="fas fa-plus"></i> Add Travel Item
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1491,15 +1376,6 @@
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.musical.length}}
-                        <div class="empty-section">
-                            <p>No musical instruments in inventory.</p>
-                            <a class="item-create" title="Add Instrument" data-type="musical">
-                                <i class="fas fa-plus"></i> Add Instrument
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
             </div>
@@ -1534,7 +1410,7 @@
                         </header>
 
                         <ol class="items-list">
-                            {{#each actor.mounts as |mount id|}}
+                            {{#each actor.mount as |mount id|}}
                             <li class="item flexrow" data-item-id="{{mount._id}}">
                                 <div class="mount-name">
                                     <img src="{{mount.img}}" class="item-icon" alt="{{mount.name}}" />
@@ -1551,22 +1427,13 @@
                                     <input type="number" name="system.loyalty" value="{{mount.system.loyalty}}" data-dtype="Number" min="0" max="10" class="small-input" />
                                 </div>
                                 <div class="mount-controls">
-                                    <a class="mount-sheet" title="Open Mount Sheet"><i class="fas fa-user"></i></a>
+                                    <a class="mount-ride" title="Open Mount Sheet"><i class="fas fa-bolt"></i></a>
                                     <a class="item-edit" title="Edit Mount"><i class="fas fa-edit"></i></a>
                                     <a class="item-delete" title="Delete Mount"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.mounts.length}}
-                        <div class="empty-section">
-                            <p>No mounts owned.</p>
-                            <a class="item-create" title="Add Mount" data-type="mount">
-                                <i class="fas fa-plus"></i> Add Mount
-                            </a>
-                        </div>
-                        {{/unless}}
                     </div>
                 </div>
 
@@ -1615,15 +1482,6 @@
                             {{/each}}
                         </ol>
 
-                        {{#unless actor.fleshcraft.length}}
-                        <div class="empty-section">
-                            <p>No fleshcraft created.</p>
-                            <a class="item-create" title="Add Fleshcraft" data-type="fleshcraft">
-                                <i class="fas fa-plus"></i> Create Fleshcraft
-                            </a>
-                        </div>
-                        {{/unless}}
-
                         <!-- Fleshcraft Info Panel -->
                         <div class="fleshcraft-info">
                             <h4>Active Fleshcraft Effects</h4>
@@ -1669,7 +1527,7 @@
                         </header>
 
                         <ol class="items-list">
-                            {{#each actor.vehicles as |vehicle id|}}
+                            {{#each actor.vehicle as |vehicle id|}}
                             <li class="item flexrow" data-item-id="{{vehicle._id}}">
                                 <div class="vehicle-name">
                                     <img src="{{vehicle.img}}" class="item-icon" alt="{{vehicle.name}}" />
@@ -1688,22 +1546,13 @@
                                     </select>
                                 </div>
                                 <div class="vehicle-controls">
-                                    <a class="vehicle-sheet" title="Open Vehicle Sheet"><i class="fas fa-cog"></i></a>
+                                    <a class="vehicle-drive" title="Open Vehicle Sheet"><i class="fas fa-cog"></i></a>
                                     <a class="item-edit" title="Edit Vehicle"><i class="fas fa-edit"></i></a>
                                     <a class="item-delete" title="Delete Vehicle"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
                         </ol>
-
-                        {{#unless actor.vehicles.length}}
-                        <div class="empty-section">
-                            <p>No vehicles owned.</p>
-                            <a class="item-create" title="Add Vehicle" data-type="vehicle">
-                                <i class="fas fa-plus"></i> Add Vehicle
-                            </a>
-                        </div>
-                        {{/unless}}
 
                         <!-- Vehicle Details Panel -->
                         <div class="vehicle-details">

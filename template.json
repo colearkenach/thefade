@@ -185,7 +185,8 @@
       "physical": {
         "weight": 0,
         "price": 0,
-        "quantity": 1
+        "quantity": 1,
+        "equipped":  false
       }
     },
     "weapon": {
@@ -286,6 +287,12 @@
         "darkvision"
       ],
       "biologicallyImmortal": false
+    },
+    "item": {
+      "templates": [ "base", "physical" ],
+      "itemCategory": "mundane",
+      "effect": "",
+      "duration": ""
     },
     "magicitem": {
       "templates": [ "base", "physical" ],

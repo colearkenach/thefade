@@ -1065,6 +1065,21 @@ class TheFadeCharacterSheet extends ActorSheet {
         const itemsOfPower = [];
         const potions = [];
         const drugs = [];
+        const poisons = []; // Templates expect this
+        const biological = []; // Templates expect this  
+        const medical = []; // Templates expect this
+        const travel = []; // Templates expect this
+        const musical = []; // Templates expect this
+        const clothing = []; // Templates expect this
+        const staff = []; // Templates expect this
+        const wand = []; // Templates expect this
+        const gate = []; // Templates expect this
+        const communication = []; // Templates expect this
+        const containment = []; // Templates expect this
+        const dream = []; // Templates expect this
+        const mount = []; // Templates expect this
+        const vehicle = []; // Templates expect this
+        const fleshcraft = []; // Templates expect this
 
         // Safely iterate through items
         for (let i of items) {
@@ -1079,19 +1094,61 @@ class TheFadeCharacterSheet extends ActorSheet {
                 i.system = {};
             }
 
-            // Categorize items safely
+            // Categorize items by specific type - put each type in its own array
             try {
-                if (i.type === 'item') {
-                    const itemCategory = i.system.itemCategory;
-                    if (itemCategory === 'magicitem') {
-                        itemsOfPower.push(i);
-                    } else if (itemCategory === 'potion') {
-                        potions.push(i);
-                    } else if (itemCategory === 'drug') {
-                        drugs.push(i);
-                    } else {
-                        gear.push(i);
-                    }
+                if (i.type === 'magicitem') {
+                    itemsOfPower.push(i);
+                }
+                else if (i.type === 'potion') {
+                    potions.push(i);
+                }
+                else if (i.type === 'drug') {
+                    drugs.push(i);
+                }
+                else if (i.type === 'poison') {
+                    poisons.push(i);
+                }
+                else if (i.type === 'biological') {
+                    biological.push(i);
+                }
+                else if (i.type === 'medical') {
+                    medical.push(i);
+                }
+                else if (i.type === 'travel') {
+                    travel.push(i);
+                }
+                else if (i.type === 'musical') {
+                    musical.push(i);
+                }
+                else if (i.type === 'clothing') {
+                    clothing.push(i);
+                }
+                else if (i.type === 'staff') {
+                    staff.push(i);
+                }
+                else if (i.type === 'wand') {
+                    wand.push(i);
+                }
+                else if (i.type === 'gate') {
+                    gate.push(i);
+                }
+                else if (i.type === 'communication') {
+                    communication.push(i);
+                }
+                else if (i.type === 'containment') {
+                    containment.push(i);
+                }
+                else if (i.type === 'dream') {
+                    dream.push(i);
+                }
+                else if (i.type === 'mount') {
+                    mount.push(i);
+                }
+                else if (i.type === 'vehicle') {
+                    vehicle.push(i);
+                }
+                else if (i.type === 'fleshcraft') {
+                    fleshcraft.push(i);
                 }
                 else if (i.type === 'weapon') {
                     weapons.push(i);
@@ -1111,12 +1168,12 @@ class TheFadeCharacterSheet extends ActorSheet {
                 else if (i.type === 'talent') {
                     talents.push(i);
                 }
-                else if (i.type === 'talent') {
-                    if (i.system.talentType === 'trait') {
-                        traits.push(i);
-                    } else {
-                        talents.push(i);
-                    }
+                else if (i.type === 'trait') {
+                    traits.push(i);
+                }
+                // Fallback to general gear for any unrecognized types
+                else {
+                    gear.push(i);
                 }
             } catch (error) {
                 console.warn(`Error categorizing item ${i.name || 'unknown'}:`, error);
@@ -1176,6 +1233,21 @@ class TheFadeCharacterSheet extends ActorSheet {
         actorData.armorTotals = armorTotals;
         actorData.potions = potions;
         actorData.drugs = drugs;
+        actorData.poisons = poisons;
+        actorData.biological = biological;
+        actorData.medical = medical;
+        actorData.travel = travel;
+        actorData.musical = musical;
+        actorData.clothing = clothing;
+        actorData.staff = staff;
+        actorData.wand = wand;
+        actorData.gate = gate;
+        actorData.communication = communication;
+        actorData.containment = containment;
+        actorData.dream = dream;
+        actorData.mount = mount;
+        actorData.vehicle = vehicle;
+        actorData.fleshcraft = fleshcraft;
         actorData.currentAttunements = currentAttunements;
         actorData.maxAttunements = maxAttunements;
 
@@ -2168,14 +2240,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             newParry = 0;
             avoidPenalty = -2;
         }
-
-        // Log the changes for debugging
-        /*
-        console.log(`Defense adjustments:
-        Original Dodge: ${originalDodge} → New Dodge: ${newDodge}
-        Original Parry: ${originalParry} → New Parry: ${newParry}
-        Avoid Penalty: ${avoidPenalty}`);
-        */
 
         // Update the actor with the new calculated values
         await actor.update({
@@ -3896,23 +3960,28 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('.item-create').click(ev => {
             ev.preventDefault();
             const element = ev.currentTarget;
-            const dataset = element.dataset;
+            let itemType = element.dataset.type;
 
-            // Get the item type from data-type attribute
-            let itemType = dataset.type || "item";
-
-            // Check if this is in the Items of Power section
-            const section = $(element).closest('.tab-content').attr('id');
-            if (section === 'items-of-power-tab' && itemType === 'item') {
-                itemType = "magicitem";
+            // Skip skill creation - they're auto-provided
+            if (itemType === 'skill') {
+                ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
+                return;
             }
 
-            // Check for specific category
-            if (dataset.category === 'magicitem') {
-                itemType = "magicitem";
+            // Handle legacy "item" type by defaulting to medical
+            if (itemType === 'item') {
+                itemType = 'medical';
+                ui.notifications.info("Creating a Medical item. Edit the item to change its type if needed.");
             }
 
-            // Create the item
+            // Validate that the item type is supported
+            if (!CONFIG.Item.types.includes(itemType)) {
+                ui.notifications.error(`Invalid item type: ${itemType}`);
+                console.error(`Attempted to create item with invalid type: ${itemType}`);
+                return;
+            }
+
+            // Create the item with proper name formatting
             const itemData = {
                 name: `New ${itemType.charAt(0).toUpperCase() + itemType.slice(1)}`,
                 type: itemType,
@@ -3938,16 +4007,18 @@ class TheFadeCharacterSheet extends ActorSheet {
             item.sheet.render(true);
         });
 
+
+
         // Inventory Tab Navigation
         html.find('.tab-button').click((event) => {
             const clickedTab = $(event.currentTarget);
             const tabName = clickedTab.data('tab');
 
-            // Remove active class from all tabs and content
+            this._activeInventoryTab = tabName;
+
             html.find('.tab-button').removeClass('active');
             html.find('.tab-content').removeClass('active');
 
-            // Add active class to clicked tab and corresponding content
             clickedTab.addClass('active');
             html.find(`#${tabName}-tab`).addClass('active');
         });
@@ -3957,14 +4028,16 @@ class TheFadeCharacterSheet extends ActorSheet {
             const clickedSubtab = $(event.currentTarget);
             const subtabName = clickedSubtab.data('subtab');
 
-            // Find the parent tab to scope the subtab changes
             const parentTab = clickedSubtab.closest('.tab-content');
+            const parentTabId = parentTab.attr('id').replace('-tab', '');
 
-            // Remove active class from all subtabs and content within this tab
+            // Store the new active subtab
+            if (!this._activeSubtabs) this._activeSubtabs = {};
+            this._activeSubtabs[parentTabId] = subtabName;
+
             parentTab.find('.subtab-button').removeClass('active');
             parentTab.find('.subtab-content').removeClass('active');
 
-            // Add active class to clicked subtab and corresponding content
             clickedSubtab.addClass('active');
             parentTab.find(`#${subtabName}-subtab`).addClass('active');
         });
@@ -4110,55 +4183,111 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         html.find('.item-browse').click(ev => {
             ev.preventDefault();
-            openCompendiumBrowser("item", this.actor);
-
-            // Check which section this browse button is in
             const section = $(ev.currentTarget).closest('.tab-content').attr('id');
 
             if (section === 'items-of-power-tab') {
-                // Browse magic items for Items of Power
-                openCompendiumBrowser("magicitem", this.actor, "magic-item");
+                openCompendiumBrowser("magicitem", this.actor);
             } else {
-                // Default to mundane items for other sections
-                openCompendiumBrowser("item", this.actor, "mundane-item");
+                openCompendiumBrowser("medical", this.actor);
             }
+            
         });
 
-        // Specific handlers for different gear types
-        html.find('.medical-browse').click(ev => {
-            ev.preventDefault();
-            openCompendiumBrowser("item", this.actor, "mundane-item");
-        });
-
-        html.find('.biological-browse').click(ev => {
-            ev.preventDefault();
-            openCompendiumBrowser("item", this.actor, "mundane-item");
-        });
-
-        html.find('.travel-browse').click(ev => {
-            ev.preventDefault();
-            openCompendiumBrowser("item", this.actor, "mundane-item");
-        });
-
-        html.find('.musical-browse').click(ev => {
-            ev.preventDefault();
-            openCompendiumBrowser("item", this.actor, "mundane-item");
-        });
+        /*
+        Browse for Consumables
+        */
 
         html.find('.potion-browse').click(ev => {
             ev.preventDefault();
-            openCompendiumBrowser("item", this.actor, "magic-item");
+            openCompendiumBrowser("potion", this.actor);
         });
 
         html.find('.drug-browse').click(ev => {
             ev.preventDefault();
-            openCompendiumBrowser("item", this.actor, "mundane-item");
+            openCompendiumBrowser("drug", this.actor);
         });
 
         html.find('.poison-browse').click(ev => {
             ev.preventDefault();
-            openCompendiumBrowser("item", this.actor, "mundane-item");
+            openCompendiumBrowser("poison", this.actor);
         });
+
+
+        /*
+            Browse for Magic Gear
+        */
+        html.find('.staff-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("staff", this.actor);
+        });
+
+        html.find('.wand-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("wand", this.actor);
+        });
+
+        html.find('.comm-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("communication", this.actor);
+        });
+
+        html.find('.container-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("containment", this.actor);
+        });
+
+        html.find('.gate-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("dimensional gate", this.actor);
+        });
+
+        html.find('.dream-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("dream", this.actor);
+        });
+
+        /*
+        Browse for Mundane Gear
+        */
+        html.find('.medical-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("medical", this.actor);
+        });
+
+        html.find('.biological-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("biological", this.actor);
+        });
+
+        html.find('.travel-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("travel", this.actor);
+        });
+
+        html.find('.musical-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("musical", this.actor);
+        });
+
+        /*
+        Browse for Companions & Ridden
+        */
+        html.find('.mount-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("mount", this.actor);
+        });
+
+        html.find('.fleshcraft-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("fleshcraft", this.actor);
+        });
+
+        html.find('.vehicle-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("vehicle", this.actor);
+        });
+
+
 
         // Add custom skill creation buttons
         html.find('.add-custom-craft').click(async ev => {
@@ -4332,6 +4461,8 @@ class TheFadeCharacterSheet extends ActorSheet {
                 console.log(`Updated successfully`);
             }
         });
+
+        this._restoreTabState(html);
     }
 
     _onAddFamilyMember(event) {
@@ -4368,37 +4499,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             console.error("Invalid HTML element passed to _activateInventoryListeners");
             return;
         }
-
-        // Collapsible sections
-        html.find('.collapsible-header').click(event => {
-            event.preventDefault();
-            const header = $(event.currentTarget);
-
-            // Safety check
-            if (!header || !header.length) {
-                console.warn("Header element not found");
-                return;
-            }
-
-            const targetId = header.data('target');
-            const content = html.find(`#${targetId}`);
-            const icon = header.find('i');
-
-            if (content.hasClass('collapsed')) {
-                content.removeClass('collapsed');
-                content.css('max-height', content[0].scrollHeight + 'px');
-                header.removeClass('collapsed');
-            } else {
-                content.addClass('collapsed');
-                content.css('max-height', '0');
-                header.addClass('collapsed');
-            }
-        });
-
-        // Initialize collapsed state
-        html.find('.collapsible-content').each(function () {
-            $(this).css('max-height', this.scrollHeight + 'px');
-        });
 
         // Equip Items - handle both armor and magic items
         html.find('.item-equip').click(async (event) => {
@@ -4452,7 +4552,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                     return;
                 }
 
-            } else if (item.type === 'item' && item.system.itemCategory === 'magicitem') {
+            } else if (item.type === 'magicitem') {
                 // Handle magic item conflicts
                 const slot = item.system.slot;
 
@@ -4867,6 +4967,341 @@ class TheFadeCharacterSheet extends ActorSheet {
                 this.render(false);
             }
         });
+
+        // ============================================================================
+        // COMPREHENSIVE ITEM ACTION HANDLERS
+        // ============================================================================
+
+        // 1. UNIVERSAL EDIT BUTTON HANDLER
+        // This should catch all edit buttons regardless of context
+        html.find('.item-edit, .item-edit-btn').click(ev => {
+            ev.preventDefault();
+            console.log("Edit button clicked");
+
+            // Try multiple ways to find the item ID
+            const element = $(ev.currentTarget);
+            let itemId = element.closest('[data-item-id]').attr('data-item-id') ||
+                element.closest('[data-item-id]').data('item-id') ||
+                element.closest('.item').attr('data-item-id') ||
+                element.closest('.item').data('item-id');
+
+            console.log("Found item ID:", itemId);
+
+            if (!itemId) {
+                console.error("Could not find item ID for edit button");
+                ui.notifications.error("Could not find item to edit");
+                return;
+            }
+
+            const item = this.actor.items.get(itemId);
+            if (!item) {
+                console.error("Item not found:", itemId);
+                ui.notifications.error("Item not found");
+                return;
+            }
+
+            console.log("Opening item sheet for:", item.name);
+            item.sheet.render(true);
+        });
+
+        // 2. POISON ACTION HANDLERS
+        html.find('.poison-apply').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Applied ${item.name}! Effects: ${item.system.effect || 'See item description'}`);
+
+            // Reduce quantity by 1
+            const currentQuantity = item.system.quantity || 1;
+            if (currentQuantity > 1) {
+                await item.update({ "system.quantity": currentQuantity - 1 });
+            } else {
+                // Ask if they want to delete the item
+                new Dialog({
+                    title: "Use Last Dose",
+                    content: `<p>This was the last dose of ${item.name}. Delete the item?</p>`,
+                    buttons: {
+                        delete: {
+                            label: "Delete",
+                            callback: () => this.actor.deleteEmbeddedDocuments("Item", [itemId])
+                        },
+                        keep: {
+                            label: "Keep Empty",
+                            callback: () => item.update({ "system.quantity": 0 })
+                        }
+                    },
+                    default: "delete"
+                }).render(true);
+            }
+        });
+
+        // 3. BIOLOGICAL ITEM HANDLERS
+        html.find('.bio-analyze').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Analyzing ${item.name}... Results: ${item.system.effect || 'Requires laboratory equipment'}`);
+        });
+
+        html.find('.bio-harvest').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Harvesting ${item.name}...`);
+            // Could add dice rolling logic here for harvest success
+        });
+
+        // 4. MEDICAL ITEM HANDLERS
+        html.find('.medical-use').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Using ${item.name}! Effect: ${item.system.effect || 'See item description'}`);
+
+            // Reduce quantity
+            const currentQuantity = item.system.quantity || 1;
+            if (currentQuantity > 1) {
+                await item.update({ "system.quantity": currentQuantity - 1 });
+            }
+        });
+
+        // 5. TRAVEL GEAR HANDLERS
+        html.find('.travel-use').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Using ${item.name} for travel purposes`);
+        });
+
+        // 6. MUSICAL INSTRUMENT HANDLERS
+        html.find('.musical-play').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Playing ${item.name}... Make a Perform check!`);
+        });
+
+        // 7. STAFF HANDLERS
+        html.find('.staff-use').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            const usesRemaining = (item.system.usesPerDay || 3) - (item.system.usesToday || 0);
+
+            if (usesRemaining > 0) {
+                await item.update({ "system.usesToday": (item.system.usesToday || 0) + 1 });
+                ui.notifications.info(`${item.name} activated! Spell: ${item.system.spellName || 'Unknown'}`);
+            } else {
+                ui.notifications.warn(`${item.name} has no uses remaining today`);
+            }
+        });
+
+        html.find('.staff-reset').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            await item.update({ "system.usesToday": 0 });
+            ui.notifications.info(`${item.name} uses reset for a new day`);
+        });
+
+        // 8. WAND HANDLERS
+        html.find('.wand-use').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            const charges = item.system.charges || 0;
+
+            if (charges > 0) {
+                await item.update({ "system.charges": charges - 1 });
+                ui.notifications.info(`${item.name} activated! Charges remaining: ${charges - 1}`);
+            } else {
+                ui.notifications.warn(`${item.name} has no charges remaining`);
+            }
+        });
+
+        // 9. GATE HANDLERS
+        html.find('.gate-activate').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            const usesRemaining = (item.system.usesPerDay || 1) - (item.system.usesToday || 0);
+
+            if (usesRemaining > 0) {
+                await item.update({ "system.usesToday": (item.system.usesToday || 0) + 1 });
+                ui.notifications.info(`${item.name} portal opened! Range: ${item.system.range || 'Unknown'}`);
+            } else {
+                ui.notifications.warn(`${item.name} cannot be used again today`);
+            }
+        });
+
+        // 10. COMMUNICATION DEVICE HANDLERS
+        html.find('.communication-use').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            // Could open a dialog for entering relay codes, etc.
+            ui.notifications.info(`Activating ${item.name}... Range: ${item.system.range || 'Unknown'}`);
+        });
+
+        // 11. CONTAINMENT ITEM HANDLERS
+        html.find('.containment-open').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Opening ${item.name}... Contents: ${item.system.contents || 'Empty'}`);
+        });
+
+        // 12. DREAM HARVESTING HANDLERS
+        html.find('.dream-harvest').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Using ${item.name} to harvest dreams... EL: ${item.system.el || 1}`);
+        });
+
+        // 13. MOUNT HANDLERS
+        html.find('.mount-ride').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Mounting ${item.name}! Movement: ${item.system.movement || 'Unknown'}`);
+        });
+
+        // 14. VEHICLE HANDLERS
+        html.find('.vehicle-drive').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Piloting ${item.name}! Passengers: ${item.system.passengers || 0}`);
+        });
+
+        // 15. FLESHCRAFT HANDLERS
+        html.find('.fleshcraft-activate').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            const isActive = item.system.active || false;
+            await item.update({ "system.active": !isActive });
+
+            if (!isActive) {
+                ui.notifications.info(`${item.name} activated! Sanity cost: ${item.system.sanityCost || 0}`);
+            } else {
+                ui.notifications.info(`${item.name} deactivated`);
+            }
+        });
+
+        // 16. CLOTHING HANDLERS
+        html.find('.clothing-wear').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            const isWorn = item.system.equipped || false;
+            await item.update({ "system.equipped": !isWorn });
+
+            ui.notifications.info(`${item.name} ${isWorn ? 'removed' : 'worn'}`);
+        });
+
+        // 17. POTION CONSUMPTION (if not already handled elsewhere)
+        html.find('.potion-drink, .potion-consume').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`${item.name} consumed! Effect: ${item.system.effect || 'See description'}`);
+
+            // Reduce quantity or delete
+            const currentQuantity = item.system.quantity || 1;
+            if (currentQuantity > 1) {
+                await item.update({ "system.quantity": currentQuantity - 1 });
+            } else {
+                await this.actor.deleteEmbeddedDocuments("Item", [itemId]);
+            }
+        });
+
+        // 18. DRUG USE HANDLERS
+        html.find('.drug-use').click(async ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.warn(`Using ${item.name}! Addiction rating: ${item.system.addictionRating || 0}`);
+
+            // Reduce quantity
+            const currentQuantity = item.system.quantity || 1;
+            if (currentQuantity > 1) {
+                await item.update({ "system.quantity": currentQuantity - 1 });
+            }
+        });
+
+        // 19. GENERIC ITEM USE HANDLER (fallback)
+        html.find('.item-use, .item-activate').click(ev => {
+            ev.preventDefault();
+            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
+            const item = this.actor.items.get(itemId);
+
+            if (!item) return;
+
+            ui.notifications.info(`Using ${item.name}! ${item.system.effect || 'See item description for effects'}`);
+        });
+
+        // console.log("All item action handlers registered");
+
+
     }
 
     _preserveExpandedState(html) {
@@ -5092,6 +5527,65 @@ class TheFadeCharacterSheet extends ActorSheet {
         }
     }
 
+    _storeTabState(html) {
+        if (!html || !html.length) return;
+
+        // Store main inventory tab
+        const activeTab = html.find('.tab-button.active');
+        if (activeTab.length) {
+            this._activeInventoryTab = activeTab.data('tab') || 'weapons';
+        }
+
+        // Store active subtabs for each main tab
+        this._activeSubtabs = {};
+        html.find('.tab-content').each((index, tabContent) => {
+            const $tabContent = $(tabContent);
+            const activeSubtab = $tabContent.find('.subtab-button.active');
+            if (activeSubtab.length) {
+                const tabId = tabContent.id.replace('-tab', '');
+                this._activeSubtabs[tabId] = activeSubtab.data('subtab');
+            }
+        });
+    }
+
+    _restoreTabState(html) {
+        if (!html || !html.length) return;
+
+        // Restore main inventory tab
+        if (this._activeInventoryTab) {
+            html.find('.tab-button').removeClass('active');
+            html.find('.tab-content').removeClass('active');
+
+            const targetTab = html.find(`.tab-button[data-tab="${this._activeInventoryTab}"]`);
+            const targetContent = html.find(`#${this._activeInventoryTab}-tab`);
+
+            if (targetTab.length && targetContent.length) {
+                targetTab.addClass('active');
+                targetContent.addClass('active');
+            }
+        }
+
+        // Restore subtabs
+        if (this._activeSubtabs) {
+            Object.entries(this._activeSubtabs).forEach(([tabId, subtabName]) => {
+                const tabContent = html.find(`#${tabId}-tab`);
+                if (tabContent.length) {
+                    tabContent.find('.subtab-button').removeClass('active');
+                    tabContent.find('.subtab-content').removeClass('active');
+
+                    const targetSubtab = tabContent.find(`.subtab-button[data-subtab="${subtabName}"]`);
+                    const targetSubcontent = tabContent.find(`#${subtabName}-subtab`);
+
+                    if (targetSubtab.length && targetSubcontent.length) {
+                        targetSubtab.addClass('active');
+                        targetSubcontent.addClass('active');
+                    }
+                }
+            });
+        }
+    }
+
+
     async close(options = {}) {
         // Clean up tooltips when sheet closes
         this._removeTooltip();
@@ -5099,6 +5593,10 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         return super.close(options);
     }
+
+
+
+
 }
 
 // ====================================================================
@@ -7178,8 +7676,24 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
             case "spell": compendiumName = "spells"; break;
             case "talent": compendiumName = "talents"; break;
             case "armor": compendiumName = "armor"; break;
-            case "item": compendiumName = "mundane-item"; break;
-            case "item": compendiumName = "magic-item"; break;
+            case "magicitem": compendiumName = "magic-item"; break;
+            case "potion": compendiumName = "magic-item"; break;
+            case "medical": compendiumName = "mundane-item"; break;
+            case "travel": compendiumName = "mundane-item"; break;
+            case "biological": compendiumName = "mundane-item"; break;
+            case "musical": compendiumName = "mundane-item"; break;
+            case "drug": compendiumName = "mundane-item"; break;
+            case "poison": compendiumName = "mundane-item"; break;
+            case "clothing": compendiumName = "mundane-item"; break;
+            case "communication": compendiumName = "mundane-item"; break;
+            case "containment": compendiumName = "mundane-item"; break;
+            case "dream": compendiumName = "mundane-item"; break;
+            case "staff": compendiumName = "magic-item"; break;
+            case "wand": compendiumName = "magic-item"; break;
+            case "gate": compendiumName = "magic-item"; break;
+            case "mount": compendiumName = "mundane-item"; break;
+            case "vehicle": compendiumName = "mundane-item"; break;
+            case "fleshcraft": compendiumName = "mundane-item"; break;
             default: compendiumName = itemType + "s"; // Fallback to pluralized name
         }
     }
@@ -7206,28 +7720,25 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
                     icon: '<i class="fas fa-plus"></i>',
                     callback: async (li) => {
                         try {
-                            // Get the item from the compendium
                             const entryId = li.data("document-id");
                             const item = await pack.getDocument(entryId);
 
                             if (item) {
-                                // If we have an actor, add the item to the actor
                                 if (actor) {
-                                    // Check if the item already exists
                                     const exists = actor.items.some(i => i.name === item.name && i.type === item.type);
 
                                     if (!exists) {
-                                        // Create a new item for the actor
-                                        await actor.createEmbeddedDocuments("Item", [item.toObject()]);
+                                        // Convert old item types to new types
+                                        let itemData = item.toObject();
+                                        itemData = convertLegacyItemType(itemData, itemType);
+
+                                        await actor.createEmbeddedDocuments("Item", [itemData]);
                                         ui.notifications.info(`Added ${item.name} to ${actor.name}.`);
                                     } else {
                                         ui.notifications.warn(`${item.name} is already added to this character.`);
                                     }
-                                }
-                                // Otherwise handle special cases (like adding skills to paths)
-                                else {
+                                } else {
                                     ui.notifications.info(`Selected ${item.name} from compendium.`);
-                                    // Trigger custom event that sheet classes can listen for
                                     const event = new CustomEvent("compendiumSelection", {
                                         detail: { item: item }
                                     });
@@ -7243,6 +7754,67 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
             ]);
         }
     });
+
+    function convertLegacyItemType(itemData, expectedType) {
+        // If the item is already the correct type, return as-is
+        if (itemData.type === expectedType) {
+            return itemData;
+        }
+
+        // If it's an old "item" type, convert based on itemCategory or expected type
+        if (itemData.type === "item") {
+            const itemCategory = itemData.system?.itemCategory;
+
+            // Convert based on itemCategory first
+            if (itemCategory === "magicitem") {
+                itemData.type = "magicitem";
+            } else if (itemCategory === "potion") {
+                itemData.type = "potion";
+            } else if (itemCategory === "drug") {
+                itemData.type = "drug";
+            } else if (itemCategory === "poison") {
+                itemData.type = "poison";
+            } else if (itemCategory === "biological") {
+                itemData.type = "biological";
+            } else if (itemCategory === "medical") {
+                itemData.type = "medical";
+            } else if (itemCategory === "travel") {
+                itemData.type = "travel";
+            } else if (itemCategory === "musical") {
+                itemData.type = "musical";
+            } else if (itemCategory === "clothing") {
+                itemData.type = "clothing";
+            } else if (itemCategory === "communication") {
+                itemData.type = "communication";
+            } else if (itemCategory === "containment") {
+                itemData.type = "containment";
+            } else if (itemCategory === "dream") {
+                itemData.type = "dream";
+            } else if (itemCategory === "staff") {
+                itemData.type = "staff";
+            } else if (itemCategory === "wand") {
+                itemData.type = "wand";
+            } else if (itemCategory === "gate") {
+                itemData.type = "gate";
+            } else if (itemCategory === "mount") {
+                itemData.type = "mount";
+            } else if (itemCategory === "vehicle") {
+                itemData.type = "vehicle";
+            } else if (itemCategory === "fleshcraft") {
+                itemData.type = "fleshcraft";
+            } else {
+                // No specific category, use the expected type
+                itemData.type = expectedType;
+            }
+
+            // Remove the old itemCategory since we're now using specific types
+            if (itemData.system && itemData.system.itemCategory) {
+                delete itemData.system.itemCategory;
+            }
+        }
+
+        return itemData;
+    }
 }
 
 /**
@@ -7653,7 +8225,7 @@ Hooks.once('init', async function () {
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
             "weapon", "armor", "skill", "path", "spell", "talent", "trait", "precept",
-            "species", "drug", "poison", "biological", "medical", "travel",
+            "species", "drug", "poison", "biological", "medical", "travel", "item",
             "mount", "vehicle", "musical", "potion", "staff", "wand", "gate",
             "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing"
         ],
@@ -7925,14 +8497,6 @@ Hooks.once('ready', async function () {
             "left": "10px",
             "z-index": "1000"
         });
-
-        //$('#controls').append(fixButton);
-        //fixButton.css({
-        //    "position": "fixed",
-        //    "bottom": "10px",
-        //    "left": "10px",
-        //    "z-index": "1000"
-        //});
     }
 });
 
