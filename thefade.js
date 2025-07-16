@@ -4108,13 +4108,9 @@ class TheFadeCharacterSheet extends ActorSheet {
             openCompendiumBrowser("talent", this.actor); // Use same browser as talents, will filter by type
         });
 
-        //html.find('.item-browse').click(ev => {
-        //    ev.preventDefault();
-        //    openCompendiumBrowser("item", this.actor);
-        //});
-
         html.find('.item-browse').click(ev => {
             ev.preventDefault();
+            openCompendiumBrowser("item", this.actor);
 
             // Check which section this browse button is in
             const section = $(ev.currentTarget).closest('.tab-content').attr('id');
@@ -7182,8 +7178,8 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
             case "spell": compendiumName = "spells"; break;
             case "talent": compendiumName = "talents"; break;
             case "armor": compendiumName = "armor"; break;
-            case "item": compendiumName = "mundane-items"; break;
-            case "item": compendiumName = "magic-items"; break;
+            case "item": compendiumName = "mundane-item"; break;
+            case "item": compendiumName = "magic-item"; break;
             default: compendiumName = itemType + "s"; // Fallback to pluralized name
         }
     }
