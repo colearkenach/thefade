@@ -3893,6 +3893,35 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         html.find('.tool-header').click(this._onToggleTool.bind(this));
 
+        html.find('.item-create').click(ev => {
+            ev.preventDefault();
+            const element = ev.currentTarget;
+            const dataset = element.dataset;
+
+            // Get the item type from data-type attribute
+            let itemType = dataset.type || "item";
+
+            // Check if this is in the Items of Power section
+            const section = $(element).closest('.tab-content').attr('id');
+            if (section === 'items-of-power-tab' && itemType === 'item') {
+                itemType = "magicitem";
+            }
+
+            // Check for specific category
+            if (dataset.category === 'magicitem') {
+                itemType = "magicitem";
+            }
+
+            // Create the item
+            const itemData = {
+                name: `New ${itemType.charAt(0).toUpperCase() + itemType.slice(1)}`,
+                type: itemType,
+                system: {}
+            };
+
+            this.actor.createEmbeddedDocuments("Item", [itemData]);
+        });
+
         html.find('.item-create[data-type="skill"]').click(ev => {
             ev.preventDefault();
             ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
@@ -4079,9 +4108,60 @@ class TheFadeCharacterSheet extends ActorSheet {
             openCompendiumBrowser("talent", this.actor); // Use same browser as talents, will filter by type
         });
 
+        //html.find('.item-browse').click(ev => {
+        //    ev.preventDefault();
+        //    openCompendiumBrowser("item", this.actor);
+        //});
+
         html.find('.item-browse').click(ev => {
             ev.preventDefault();
-            openCompendiumBrowser("item", this.actor);
+
+            // Check which section this browse button is in
+            const section = $(ev.currentTarget).closest('.tab-content').attr('id');
+
+            if (section === 'items-of-power-tab') {
+                // Browse magic items for Items of Power
+                openCompendiumBrowser("magicitem", this.actor, "magic-item");
+            } else {
+                // Default to mundane items for other sections
+                openCompendiumBrowser("item", this.actor, "mundane-item");
+            }
+        });
+
+        // Specific handlers for different gear types
+        html.find('.medical-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("item", this.actor, "mundane-item");
+        });
+
+        html.find('.biological-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("item", this.actor, "mundane-item");
+        });
+
+        html.find('.travel-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("item", this.actor, "mundane-item");
+        });
+
+        html.find('.musical-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("item", this.actor, "mundane-item");
+        });
+
+        html.find('.potion-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("item", this.actor, "magic-item");
+        });
+
+        html.find('.drug-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("item", this.actor, "mundane-item");
+        });
+
+        html.find('.poison-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("item", this.actor, "mundane-item");
         });
 
         // Add custom skill creation buttons
@@ -7102,7 +7182,8 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
             case "spell": compendiumName = "spells"; break;
             case "talent": compendiumName = "talents"; break;
             case "armor": compendiumName = "armor"; break;
-            case "item": compendiumName = "equipment"; break;
+            case "item": compendiumName = "mundane-items"; break;
+            case "item": compendiumName = "magic-items"; break;
             default: compendiumName = itemType + "s"; // Fallback to pluralized name
         }
     }

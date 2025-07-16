@@ -502,9 +502,7 @@
 
                 <!-- Unequipped Armor -->
                 <div class="unequipped-armor">
-                    <h3 class="collapsible-header" data-target="unequipped-armor-content">
-                        Unequipped Armor <i class="fas fa-chevron-down"></i>
-                    </h3>
+                    <h3>Unequipped Armor</h3>
 
                     <header class="gear-header flexrow">
                         <div class="armor-name">Name</div>
@@ -800,9 +798,7 @@
 
                 <!-- Unequipped Items of Power -->
                 <div class="unequipped-magic-items">
-                    <h3 class="collapsible-header" data-target="unequipped-items-content">
-                        Unequipped Items of Power <i class="fas fa-chevron-down"></i>
-                    </h3>
+                    <h3>Unequipped Items of Power</h3>
                     <header class="gear-header flexrow">
                         <div class="item-name">Name</div>
                         <div class="item-slot">Slot</div>
@@ -813,7 +809,6 @@
                         </div>
                     </header>
 
-                    <div class="collapsible-content" id="unequipped-items-content">
                         <div class="items-list magic-items-list">
                             {{#each actor.unequippedItemsOfPower as |item id|}}
                             <div class="item flexrow magic-item" data-item-id="{{item._id}}">
@@ -830,7 +825,7 @@
                             </div>
                             {{/each}}
                         </div>
-                    </div>
+
                 </div>
             </div>
         </div>
