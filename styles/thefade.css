@@ -375,6 +375,161 @@
 
 /* ===== CHARACTER STATS & ATTRIBUTES ===== */
 
+/* Character Progression Section */
+.character-progression {
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+    .character-progression h3 {
+        margin: 0 0 15px 0;
+        font-size: 18px;
+        color: #333;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 5px;
+    }
+
+    .character-progression h4 {
+        margin: 15px 0 10px 0;
+        font-size: 14px;
+        color: #555;
+        font-weight: bold;
+    }
+
+/* Core Stats Layout */
+.progression-core {
+    margin-bottom: 15px;
+}
+
+.core-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 15px;
+    align-items: end;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        margin-bottom: 0;
+    }
+
+/* Path Stats Layout */
+.progression-paths {
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+    margin-bottom: 15px;
+}
+
+.path-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+/* Tier Levels */
+.progression-tiers {
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+
+.tier-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.tier-stat {
+    display: flex;
+    flex-direction: column;
+}
+
+    .tier-stat label {
+        font-size: 11px;
+        color: #666;
+        margin-bottom: 3px;
+        font-weight: normal;
+    }
+
+    .tier-stat input {
+        background: rgba(0, 0, 0, 0.05);
+        border: 1px solid #bbb;
+        color: #666;
+        font-size: 12px;
+        text-align: center;
+    }
+
+/* Level input highlighting */
+.level-input {
+    font-weight: bold;
+    font-size: 16px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Readonly field styling */
+input[readonly] {
+    background: rgba(0, 0, 0, 0.05);
+    color: #666;
+    cursor: not-allowed;
+}
+
+/* Collapsible header styling */
+.collapsible-header {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    .collapsible-header:hover {
+        color: #0066cc;
+    }
+
+    .collapsible-header i {
+        transition: transform 0.2s ease;
+    }
+
+    .collapsible-header.collapsed i {
+        transform: rotate(-90deg);
+    }
+
+.collapsible-content {
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .core-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .path-stats {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .tier-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
 /* Resources */
 .thefade .resource {
     border: 1px solid var(--border-color);
@@ -1449,6 +1604,7 @@
     .item-type-badge.armor {
         background: linear-gradient(135deg, #4682B4, #87CEEB);
         border-color: #87CEEB;
+        color: #000000; /* Dark text for light background */
     }
 
     .item-type-badge.potion {
@@ -1474,6 +1630,7 @@
     .item-type-badge.wand {
         background: linear-gradient(135deg, #D2B48C, #F4A460);
         border-color: #F4A460;
+        color: #000000; /* Dark text for light background */
     }
 
     .item-type-badge.communication {
@@ -1514,6 +1671,7 @@
     .item-type-badge.musical {
         background: linear-gradient(135deg, #FF8C00, #FFA500);
         border-color: #FFA500;
+        color: #000000; /* Dark text for bright background */
     }
 
     .item-type-badge.mount {
@@ -1559,6 +1717,23 @@
     .item-type-badge.species {
         background: linear-gradient(135deg, #006400, #228B22);
         border-color: #228B22;
+    }
+
+    /* NEW BADGE TYPES */
+    .item-type-badge.trait {
+        background: linear-gradient(135deg, #1E6091, #2E8BC0);
+        border-color: #2E8BC0;
+    }
+
+    .item-type-badge.precept {
+        background: linear-gradient(135deg, #B8860B, #FFD700);
+        border-color: #FFD700;
+        color: #000000; /* Dark text for gold background */
+    }
+
+    .item-type-badge.clothing {
+        background: linear-gradient(135deg, #8B4789, #DA70D6);
+        border-color: #DA70D6;
     }
 
     .item-type-badge.item {
@@ -1864,115 +2039,149 @@
     align-items: center;
 }
 
-.thefade .path-item {
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
-    background: rgba(0, 0, 0, 0.05);
-    transition: all var(--transition-speed) ease;
+/* Apply the same styling to all four sections */
+.path-item,
+.talent-item,
+.trait-item,
+.precept-item {
+    border-bottom: 1px solid #ddd;
+    position: relative;
 }
 
-    .thefade .path-item:hover {
-        box-shadow: var(--box-shadow-hover);
-        transform: translateY(-1px);
+    .path-item:last-child,
+    .talent-item:last-child,
+    .trait-item:last-child,
+    .precept-item:last-child {
+        border-bottom: none;
     }
 
-.thefade .path-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 5px;
-}
-
-.thefade .path-name {
-    margin: 0;
-}
-
-.thefade .path-tier {
-    font-size: 0.8em;
-    color: var(--secondary-color);
-}
-
-.thefade .path-controls a {
-    margin: 0 3px;
-    opacity: 0.7;
-    transition: opacity var(--transition-speed) ease;
-}
-
-    .thefade .path-controls a:hover {
-        opacity: 1;
-    }
-
-.thefade .path-ability-list {
-    margin-top: 5px;
-}
-
-.thefade .path-ability {
-    margin-bottom: 5px;
-    padding: 5px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.talent-item {
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 8px;
-    margin-bottom: 8px;
-    background: rgba(0, 0, 0, 0.05);
-    transition: all var(--transition-speed) ease;
-}
-
-    .talent-item:hover {
-        box-shadow: var(--box-shadow-hover);
-    }
-
-.talent-checkbox {
+.path-checkbox,
+.talent-checkbox,
+.trait-checkbox,
+.precept-checkbox {
     display: none;
 }
 
-.talent-header {
+.path-header,
+.talent-header,
+.trait-header,
+.precept-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 8px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ccc;
 }
 
-.talent-name-container {
+.path-name-container,
+.talent-name-container,
+.trait-name-container,
+.precept-name-container {
     display: flex;
     align-items: center;
-    cursor: pointer;
     flex: 1;
+    cursor: pointer;
 }
 
-.talent-name {
+.path-name,
+.talent-name,
+.trait-name,
+.precept-name {
     font-weight: bold;
-    margin: 0;
+    margin-right: 10px;
 }
 
-.talent-toggle-icon {
-    margin-left: 5px;
+.path-tier {
+    font-weight: normal;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.path-toggle-icon,
+.talent-toggle-icon,
+.trait-toggle-icon,
+.precept-toggle-icon {
+    margin-left: auto;
     transition: transform 0.3s ease;
 }
 
-.talent-checkbox:checked ~ .talent-description {
-    display: block;
-}
-
-.talent-checkbox:checked + .talent-header .talent-toggle-icon {
+.path-checkbox:checked ~ .path-header .path-toggle-icon,
+.talent-checkbox:checked ~ .talent-header .talent-toggle-icon,
+.trait-checkbox:checked ~ .trait-header .trait-toggle-icon,
+.precept-checkbox:checked ~ .precept-header .precept-toggle-icon {
     transform: rotate(180deg);
 }
 
-.talent-description {
-    display: none;
-    margin-top: 8px;
-    padding-top: 5px;
-    border-top: 1px dashed var(--border-color);
-    animation: fadeIn 0.3s ease-out;
+.path-controls,
+.talent-controls,
+.trait-controls,
+.precept-controls {
+    display: flex;
+    gap: 5px;
 }
 
-.talent-controls {
-    flex: 0 0 60px;
-    text-align: right;
+    .path-controls a,
+    .talent-controls a,
+    .trait-controls a,
+    .precept-controls a {
+        padding: 2px 4px;
+        color: #666;
+    }
+
+        .path-controls a:hover,
+        .talent-controls a:hover,
+        .trait-controls a:hover,
+        .precept-controls a:hover {
+            color: #000;
+        }
+
+.path-description,
+.talent-description,
+.trait-description,
+.precept-description {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    background: #fff;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.path-checkbox:checked ~ .path-description,
+.talent-checkbox:checked ~ .talent-description,
+.trait-checkbox:checked ~ .trait-description,
+.precept-checkbox:checked ~ .precept-description {
+    max-height: 500px;
+    padding: 10px;
+}
+
+.path-description p,
+.talent-description p,
+.trait-description p,
+.precept-description p {
+    margin: 0 0 5px 0;
+}
+
+    .path-description p:last-child,
+    .talent-description p:last-child,
+    .trait-description p:last-child,
+    .precept-description p:last-child {
+        margin-bottom: 0;
+    }
+
+/* Ensure all section lists have consistent borders */
+.paths-list,
+.talents-list,
+.traits-list,
+.precepts-list {
+    border: 1px solid #ccc;
+    border-radius: 3px;
+}
+
+/* Path-specific content styling */
+.path-ability {
+    margin-bottom: 3px;
+    padding-left: 10px;
 }
 
 /* ===== SPELLS SYSTEM ===== */
@@ -3614,3 +3823,100 @@ select[name="system.aura.color"] option[value="white"] {
     }
 }
 
+/* =================================================================== */
+/* TRAITS & PRECEPTS - COPY TALENTS STYLING */
+/* =================================================================== */
+
+/* Traits - copy all talent styles but with trait selectors */
+.trait-item,
+.precept-item {
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+    .trait-item:last-child,
+    .precept-item:last-child {
+        border-bottom: none;
+    }
+
+.trait-checkbox,
+.precept-checkbox {
+    display: none;
+}
+
+.trait-header,
+.precept-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    background: #f5f5f5;
+    border-bottom: 1px solid #ccc;
+}
+
+.trait-name-container,
+.precept-name-container {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    cursor: pointer;
+}
+
+.trait-name,
+.precept-name {
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.trait-toggle-icon,
+.precept-toggle-icon {
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.trait-checkbox:checked ~ .trait-header .trait-toggle-icon,
+.precept-checkbox:checked ~ .precept-header .precept-toggle-icon {
+    transform: rotate(180deg);
+}
+
+.trait-controls,
+.precept-controls {
+    display: flex;
+    gap: 5px;
+}
+
+    .trait-controls a,
+    .precept-controls a {
+        padding: 2px 4px;
+        color: #666;
+    }
+
+        .trait-controls a:hover,
+        .precept-controls a:hover {
+            color: #000;
+        }
+
+.trait-description,
+.precept-description {
+    padding: 0;
+    max-height: 0;
+    overflow: hidden;
+    background: #fff;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+}
+
+.trait-checkbox:checked ~ .trait-description,
+.precept-checkbox:checked ~ .precept-description {
+    max-height: 200px;
+    padding: 10px;
+}
+
+.trait-description p,
+.precept-description p {
+    margin: 0 0 5px 0;
+}
+
+    .trait-description p:last-child,
+    .precept-description p:last-child {
+        margin-bottom: 0;
+    }

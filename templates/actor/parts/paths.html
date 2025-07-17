@@ -1,61 +1,66 @@
 <section class="paths-section">
-    <!-- Character Level -->
-    <div class="character-level">
-        <div class="form-group">
-            <label>Character Level</label>
-            <input type="number" name="system.level" value="{{system.level}}" data-dtype="Number" class="level-input" />
-        </div>
-        <div class="form-group">
-            <label>Experience</label>
-            <input type="number" name="system.experience" value="{{system.experience}}" data-dtype="Number" />
-        </div>
-        <!--<div class="level-buttons">
-            <button type="button" class="level-up-btn">Level Up</button>
-            <button type="button" class="experience-check-btn">Check Experience</button>
-        </div>-->
-    </div>
+    <!-- Character Progression Section -->
+    <div class="character-progression">
+        <h3>Character Progression</h3>
 
-    <!-- Paths Info -->
-    <div class="paths-info">
-        <h3 class="collapsible-header" data-target="path-info-content">
-            Path & Tier Progression <i class="fas fa-chevron-down"></i>
-        </h3>
-
-        <div class="collapsible-content" id="path-info-content">
-            <div class="paths-progression">
+        <!-- Core Stats -->
+        <div class="progression-core">
+            <div class="core-stats">
                 <div class="form-group">
-                    <label>
-                        <input type="checkbox" name="system.isMonster" {{#if system.isMonster}} checked{{/if}} />
-                        Is a Monster
-                    </label>
+                    <label>Level</label>
+                    <input type="number" name="system.level" value="{{system.level}}" data-dtype="Number" class="level-input" />
                 </div>
                 <div class="form-group">
-                    <label>Number of Paths</label>
+                    <label>Experience</label>
+                    <input type="number" name="system.experience" value="{{system.experience}}" data-dtype="Number" />
+                </div>
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" name="system.isMonster" {{#if system.isMonster}} checked{{/if}} />
+                        Monster
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Path Progression -->
+        <div class="progression-paths">
+            <h4>Path Progression</h4>
+            <div class="path-stats">
+                <div class="form-group">
+                    <label>Paths Allowed</label>
                     <input type="number" name="system.pathsAllowed" value="{{system.pathsAllowed}}" data-dtype="Number" readonly />
                 </div>
                 <div class="form-group">
-                    <label>Maximum Tier</label>
+                    <label>Max Tier</label>
                     <input type="number" name="system.maxTier" value="{{system.maxTier}}" data-dtype="Number" readonly />
                 </div>
             </div>
-            <h3>Total Level for Path Abilities</h3>
-            <div class="total-level-for-path">
-                <div class="form-group">
-                    <label>Tier 1 - Effective TL</label>
-                    <input type="number" name="system.tier1tl" value="{{system.tier1tl}}" data-dtype="Number" min="0" readonly />
-                </div>
-                <div class="form-group">
-                    <label>Tier 2 - Effective TL</label>
-                    <input type="number" name="system.tier2tl" value="{{system.tier2tl}}" data-dtype="Number" readonly />
-                </div>
-                <div class="form-group">
-                    <label>Tier 3 - Effective TL</label>
-                    <input type="number" name="system.tier3tl" value="{{system.tier3tl}}" data-dtype="Number" readonly />
+        </div>
+
+        <!-- Tier Levels (Collapsible) -->
+        <div class="progression-tiers">
+            <h4 class="progression-stats" data-target="tier-levels-content">
+                Tier Effective Levels
+            </h4>
+            <div class="collapsible-content" id="tier-levels-content">
+                <div class="tier-grid">
+                    <div class="tier-stat">
+                        <label>Tier 1 TL</label>
+                        <input type="number" name="system.tier1tl" value="{{system.tier1tl}}" data-dtype="Number" readonly />
+                    </div>
+                    <div class="tier-stat">
+                        <label>Tier 2 TL</label>
+                        <input type="number" name="system.tier2tl" value="{{system.tier2tl}}" data-dtype="Number" readonly />
+                    </div>
+                    <div class="tier-stat">
+                        <label>Tier 3 TL</label>
+                        <input type="number" name="system.tier3tl" value="{{system.tier3tl}}" data-dtype="Number" readonly />
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
 
     <!-- Paths -->
     <div class="paths">
@@ -65,39 +70,40 @@
             <a class="path-browse" title="Browse Paths"><i class="fas fa-search"></i></a>
         </h2>
 
-        {{#each actor.paths as |path id|}}
-        <div class="path-item" data-item-id="{{path._id}}">
-            <div class="path-header flexrow">
-                <h3 class="path-name">{{path.name}} <span class="path-tier">(Tier {{path.system.tier}})</span></h3>
-                <div class="path-controls">
-                    <a class="item-edit" title="Edit Path"><i class="fas fa-edit"></i></a>
-                    <a class="item-delete" title="Delete Path"><i class="fas fa-trash"></i></a>
-                </div>
-            </div>
-
-            <div class="path-details">
-                <div class="path-info">
-                    <div class="path-baseHP">
-                        <label>Base HP:</label>
-                        <span>{{path.system.baseHP}}</span>
+        <div class="paths-list">
+            {{#each actor.paths as |path id|}}
+            <div class="path-item" data-item-id="{{path._id}}">
+                <input type="checkbox" id="toggle-path-{{path._id}}" class="path-checkbox">
+                <div class="path-header">
+                    <label for="toggle-path-{{path._id}}" class="path-name-container">
+                        <div class="path-name">{{path.name}} <span class="path-tier">(Tier {{path.system.tier}})</span></div>
+                        <i class="fas fa-chevron-down path-toggle-icon"></i>
+                    </label>
+                    <div class="path-controls">
+                        <a class="item-edit" title="Edit Path"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Path"><i class="fas fa-trash"></i></a>
                     </div>
+                </div>
+                <div class="path-description">
+                    <p><strong>Base HP:</strong> {{path.system.baseHP}}</p>
+                    {{#if path.system.description}}
+                    <p>{{path.system.description}}</p>
+                    {{/if}}
+                    {{#if path.system.abilities}}
                     <div class="path-abilities">
-                        <label>Path Abilities:</label>
-                        <div class="path-ability-list">
-                            {{#each path.system.abilities as |ability|}}
-                            <div class="path-ability">
-                                <strong>{{ability.name}}:</strong> {{ability.description}}
-                            </div>
-                            {{/each}}
+                        <p><strong>Path Abilities:</strong></p>
+                        {{#each path.system.abilities as |ability|}}
+                        <div class="path-ability">
+                            <strong>{{ability.name}}:</strong> {{ability.description}}
                         </div>
+                        {{/each}}
                     </div>
+                    {{/if}}
                 </div>
             </div>
+            {{/each}}
         </div>
-        {{/each}}
     </div>
-
-
 
     <!-- Talents -->
     <div class="talents">
@@ -165,8 +171,12 @@
         <div class="precepts-list">
             {{#each actor.precepts as |precept id|}}
             <div class="precept-item" data-item-id="{{precept._id}}">
+                <input type="checkbox" id="toggle-precept-{{precept._id}}" class="precept-checkbox">
                 <div class="precept-header">
-                    <div class="precept-name">{{precept.name}}</div>
+                    <label for="toggle-precept-{{precept._id}}" class="precept-name-container">
+                        <div class="precept-name">{{precept.name}}</div>
+                        <i class="fas fa-chevron-down precept-toggle-icon"></i>
+                    </label>
                     <div class="precept-controls">
                         <a class="item-edit" title="Edit Precept"><i class="fas fa-edit"></i></a>
                         <a class="item-delete" title="Delete Precept"><i class="fas fa-trash"></i></a>
@@ -177,42 +187,52 @@
                     {{#if precept.system.deity}}
                     <p><strong>Deity:</strong> {{precept.system.deity}}</p>
                     {{/if}}
+                    {{#if precept.system.domain}}
+                    <p><strong>Domain:</strong> {{precept.system.domain}}</p>
+                    {{/if}}
+                    {{#if precept.system.commandment}}
+                    <p><strong>Commandment:</strong> {{precept.system.commandment}}</p>
+                    {{/if}}
                 </div>
-            </div>
-            {{else}}
-            <div class="precept-item">
-                <div class="precept-name">No precepts</div>
             </div>
             {{/each}}
         </div>
     </div>
 
 
-    <!-- Traits Section -->
-    <div class="traits-section">
-        <div class="section-header">
-            <h2>
-                Traits
-                <a class="trait-browse" title="Browse Traits"><i class="fas fa-search"></i></a>
-            </h2>
+    <!-- Traits -->
+    <div class="traits">
+        <h2>
+            Traits
+            <a class="item-create" title="Add Trait" data-type="trait"><i class="fas fa-plus"></i></a>
+            <a class="trait-browse" title="Browse Traits"><i class="fas fa-search"></i></a>
+        </h2>
 
-        </div>
-
-        <ol class="items-list traits-list">
+        <div class="traits-list">
             {{#each actor.traits as |trait id|}}
-            <li class="item trait-item" data-item-id="{{trait._id}}">
-                <div class="item-name">{{trait.name}}</div>
-                <div class="item-type">{{trait.system.talentType}}</div>
-                <div class="item-controls">
-                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+            <div class="trait-item" data-item-id="{{trait._id}}">
+                <input type="checkbox" id="toggle-trait-{{trait._id}}" class="trait-checkbox">
+                <div class="trait-header">
+                    <label for="toggle-trait-{{trait._id}}" class="trait-name-container">
+                        <div class="trait-name">{{trait.name}}</div>
+                        <i class="fas fa-chevron-down trait-toggle-icon"></i>
+                    </label>
+                    <div class="trait-controls">
+                        <a class="item-edit" title="Edit Trait"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Trait"><i class="fas fa-trash"></i></a>
+                    </div>
                 </div>
-            </li>
-            {{else}}
-            <li class="item trait-item">
-                <div class="item-name">No traits</div>
-            </li>
+                <div class="trait-description">
+                    <p>{{trait.system.description}}</p>
+                    {{#if trait.system.prerequisites}}
+                    <p><strong>Prerequisites:</strong> {{trait.system.prerequisites}}</p>
+                    {{/if}}
+                    {{#if trait.system.source}}
+                    <p><strong>Source:</strong> {{trait.system.source}}</p>
+                    {{/if}}
+                </div>
+            </div>
             {{/each}}
-        </ol>
+        </div>
     </div>
 </section>

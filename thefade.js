@@ -1062,6 +1062,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         const skills = [];
         const talents = [];
         const traits = [];
+        const precepts = [];
         const itemsOfPower = [];
         const potions = [];
         const drugs = [];
@@ -1171,6 +1172,9 @@ class TheFadeCharacterSheet extends ActorSheet {
                 else if (i.type === 'trait') {
                     traits.push(i);
                 }
+                else if (i.type === 'precept') {
+                    precepts.push(i);
+                }
                 // Fallback to general gear for any unrecognized types
                 else {
                     gear.push(i);
@@ -1225,6 +1229,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         actorData.skills = skills;
         actorData.talents = talents;
         actorData.traits = traits;
+        actorData.precepts = precepts;
         actorData.itemsOfPower = itemsOfPower;
         actorData.equippedItemsOfPower = equippedItemsOfPower;
         actorData.unequippedItemsOfPower = unequippedItemsOfPower;
@@ -1431,6 +1436,7 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Calculate current talents (excluding traits)
         const actualTalents = sheetData.actor.talents ? sheetData.actor.talents.length : 0;
+        const actualTraits = sheetData.actor.traits ? sheetData.actor.traits.length : 0;
         data.currentTalents = actualTalents;
 
         // Calculate current traits separately
@@ -4181,6 +4187,11 @@ class TheFadeCharacterSheet extends ActorSheet {
             openCompendiumBrowser("talent", this.actor); // Use same browser as talents, will filter by type
         });
 
+        html.find('.precept-browse').click(ev => {
+            ev.preventDefault();
+            openCompendiumBrowser("precept", this.actor);
+        });
+
         html.find('.item-browse').click(ev => {
             ev.preventDefault();
             const section = $(ev.currentTarget).closest('.tab-content').attr('id');
@@ -5635,6 +5646,8 @@ class TheFadeItem extends Item {
         else if (itemData.type === 'magicitem') this._prepareMagicItemData(itemData);
         else if (itemData.type === 'fleshcraft') this._prepareFleshcraftData(itemData);
         else if (itemData.type === 'talent') this._prepareTalentData(itemData);
+        else if (itemData.type === 'trait') this._prepareTraitData(itemData);
+        else if (itemData.type === 'precept') this._preparePreceptData(itemData);
     }
 
     // --------------------------------------------------------------------
@@ -5911,6 +5924,34 @@ class TheFadeItem extends Item {
         if (!data.description) data.description = "";
         if (!data.effect) data.effect = "";
         if (!data.prerequisites) data.prerequisites = "";
+    }
+
+
+    /**
+    * Prepare trait-specific data
+    * @param {Object} itemData - Item data object
+    */
+    _prepareTraitData(itemData) {
+        const data = itemData.system;
+
+        // Initialize trait properties if undefined
+        if (!data.description) data.description = "";
+        if (!data.prerequisites) data.prerequisites = "";
+        if (!data.traitType) data.traitType = "general";
+        if (!data.source) data.source = "";
+    }
+
+    /**
+    * Prepare precept-specific data
+    * @param {Object} itemData - Item data object
+    */
+    _preparePreceptData(itemData) {
+        const data = itemData.system;
+
+        // Initialize precept properties if undefined
+        if (!data.description) data.description = "";
+        if (!data.deity) data.deity = "";
+        if (!data.domain) data.domain = "";
     }
 }
 
@@ -6227,7 +6268,8 @@ class TheFadeItemSheet extends ItemSheet {
                     "magic": "Magic Talents",
                     "species": "Species Talents",
                     "monster": "Monster Talents",
-                    "trait": "Traits"
+                    "trait": "Traits",
+                    "precept": "Precepts"
                 };
             }
         } catch (error) {
@@ -6961,6 +7003,34 @@ class TheFadeItemSheet extends ItemSheet {
             }
         });
 
+        const sections = ['path', 'talent', 'trait', 'precept'];
+
+        sections.forEach(section => {
+            // Checkbox toggle handler
+            html.find(`.${section}-checkbox`).change(function () {
+                const checkbox = $(this);
+                const description = checkbox.siblings(`.${section}-description`);
+                const icon = checkbox.siblings(`.${section}-header`).find(`.${section}-toggle-icon`);
+
+                if (checkbox.is(':checked')) {
+                    description.css('max-height', '500px');
+                    description.css('padding', '10px');
+                    icon.css('transform', 'rotate(180deg)');
+                } else {
+                    description.css('max-height', '0');
+                    description.css('padding', '0');
+                    icon.css('transform', 'rotate(0deg)');
+                }
+            });
+
+            // Header click handler (to trigger checkbox)
+            html.find(`.${section}-header`).click(function (e) {
+                if ($(e.target).closest(`.${section}-controls`).length) return; // Don't trigger on control buttons
+                const checkbox = $(this).siblings(`.${section}-checkbox`);
+                checkbox.prop('checked', !checkbox.prop('checked')).trigger('change');
+            });
+        });
+
         if (this.item.type === 'species') {
             html.find('input[name="system.biologicallyImmortal"]').change((ev) => {
                 const isChecked = ev.currentTarget.checked;
@@ -7675,6 +7745,8 @@ function openCompendiumBrowser(itemType, actor, compendiumName = null) {
             case "weapon": compendiumName = "weapons"; break;
             case "spell": compendiumName = "spells"; break;
             case "talent": compendiumName = "talents"; break;
+            case "trait": compendiumName = "talents"; break;
+            case "precept": compendiumName = "talents"; break;
             case "armor": compendiumName = "armor"; break;
             case "magicitem": compendiumName = "magic-item"; break;
             case "potion": compendiumName = "magic-item"; break;
@@ -8184,8 +8256,8 @@ Hooks.once('init', async function () {
         path: "TYPES.Item.path",
         spell: "TYPES.Item.spell",
         talent: "TYPES.Item.talent",
-        talent: "TYPES.Item.trait",
-        talent: "TYPES.Item.precept",
+        trait: "TYPES.Item.trait",
+        precept: "TYPES.Item.precept",
         species: "TYPES.Item.species",
         drug: "TYPES.Item.drug",
         poison: "TYPES.Item.poison",
@@ -8380,11 +8452,135 @@ Hooks.on("createItem", async (item, options, userId) => {
         const actor = item.parent;
         const path = item;
 
-        // Initialize default skills if character doesn't have them
-        await initializeDefaultSkills(actor);
+        // Check if the path has associated skills
+        if (path.system.pathSkills && path.system.pathSkills.length > 0) {
+            let skillsModified = 0;
+            let customSkillsCreated = 0;
+            let choicesMade = 0;
 
-        // Apply path skill modifications instead of adding skills
-        await applyPathSkillModifications(actor, path);
+            for (const pathSkill of path.system.pathSkills) {
+                const entryType = pathSkill.system.entryType;
+
+                switch (entryType) {
+                    case PATH_SKILL_TYPES.SPECIFIC_SKILL:
+                        // Handle specific core skills
+                        const coreSkill = actor.items.find(i =>
+                            i.type === 'skill' && i.name === pathSkill.name
+                        );
+
+                        if (coreSkill) {
+                            // Upgrade existing skill if path offers better training
+                            const pathRankValue = getRankValue(pathSkill.system.rank);
+                            const currentRankValue = getRankValue(coreSkill.system.rank);
+
+                            if (pathRankValue > currentRankValue) {
+                                await coreSkill.update({
+                                    "system.rank": pathSkill.system.rank
+                                });
+                                skillsModified++;
+                            }
+                        } else {
+                            // Create new skill
+                            const newSkill = {
+                                name: pathSkill.name,
+                                type: "skill",
+                                system: {
+                                    rank: pathSkill.system.rank,
+                                    category: pathSkill.system.category,
+                                    attribute: pathSkill.system.attribute
+                                }
+                            };
+                            await actor.createEmbeddedDocuments("Item", [newSkill]);
+                            skillsModified++;
+                        }
+                        break;
+
+                    case PATH_SKILL_TYPES.SPECIFIC_CUSTOM:
+                        // Create specific custom skill
+                        const skillType = pathSkill.system.skillType;
+                        const subtype = pathSkill.system.subtype;
+                        await createCustomSkill(actor, skillType, subtype, pathSkill.system.rank);
+                        customSkillsCreated++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_CATEGORY:
+                        // Show dialog to choose from category
+                        await showChooseRegularSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.chooseCategory,
+                            pathSkill.system.rank,
+                            path
+                        );
+                        choicesMade++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_LORE:
+                        // Show dialog to create lore skills
+                        await showChooseLoreSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.rank
+                        );
+                        choicesMade++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_PERFORM:
+                        // Show dialog to create perform skills
+                        await showChoosePerformSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.rank
+                        );
+                        choicesMade++;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_CRAFT:
+                        // Show dialog to create craft skills
+                        await showChooseCraftSkillsDialog(
+                            actor,
+                            pathSkill.system.chooseCount,
+                            pathSkill.system.rank
+                        );
+                        choicesMade++;
+                        break;
+
+                    default:
+                        // Fallback for old-style entries without entryType
+                        const existingSkill = actor.items.find(i =>
+                            i.type === 'skill' && i.name === pathSkill.name
+                        );
+
+                        if (!existingSkill) {
+                            const newSkill = duplicate(pathSkill);
+                            delete newSkill._id;
+                            await actor.createEmbeddedDocuments("Item", [newSkill]);
+                            skillsModified++;
+                        } else {
+                            const pathRankValue = getRankValue(pathSkill.system.rank);
+                            const existingRankValue = getRankValue(existingSkill.system.rank);
+
+                            if (pathRankValue > existingRankValue) {
+                                await existingSkill.update({
+                                    "system.rank": pathSkill.system.rank
+                                });
+                                skillsModified++;
+                            }
+                        }
+                        break;
+                }
+            }
+
+            // Show results
+            let message = [];
+            if (skillsModified > 0) message.push(`${skillsModified} skills improved`);
+            if (customSkillsCreated > 0) message.push(`${customSkillsCreated} custom skills added`);
+            if (choicesMade > 0) message.push(`${choicesMade} skill choices made`);
+
+            if (message.length > 0) {
+                ui.notifications.info(`${path.name} applied to ${actor.name}: ${message.join(', ')}`);
+            }
+        }
     }
 
     // Handle Species addition to characters
