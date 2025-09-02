@@ -1,5 +1,14 @@
-2025/09/02-14:39:06.528 18108 Log #220: 0 ops saved to Table #221 OK
-2025/09/02-14:39:06.529 18108 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/000220.log: OK
-2025/09/02-14:39:06.529 18108 Table #81: 141 entries OK
-2025/09/02-14:39:06.529 18108 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/MANIFEST-000218: OK
-2025/09/02-14:39:06.530 18108 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells; recovered 1 files; 78864 bytes. Some data may have been lost. ****
+2025/09/02-18:31:16.177 2650 Recovering log #226
+2025/09/02-18:31:16.180 2650 Delete type=0 #226
+2025/09/02-18:31:16.180 2650 Delete type=3 #224
+2025/09/02-18:41:37.523 1019c Level-0 table #230: started
+2025/09/02-18:41:37.523 1019c Level-0 table #230: 0 bytes OK
+2025/09/02-18:41:37.523 1019c Delete type=0 #228
+2025/09/02-18:41:37.526 1019c Manual compaction at level-0 from '!folders!07CY2wQxFHFASY9a' @ 72057594037927935 : 1 .. '!items!zXM2fbGDYsS8jfon' @ 0 : 0; will stop at '!items!zXM2fbGDYsS8jfon' @ 2504 : 1
+2025/09/02-18:41:37.526 1019c Compacting 2@0 + 0@1 files
+2025/09/02-18:41:37.527 1019c Generated table #231@0: 141 keys, 79719 bytes
+2025/09/02-18:41:37.528 1019c Compacted 2@0 + 0@1 files => 79719 bytes
+2025/09/02-18:41:37.528 1019c compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/09/02-18:41:37.528 1019c Delete type=2 #81
+2025/09/02-18:41:37.528 1019c Delete type=2 #225
+2025/09/02-18:41:37.531 1019c Manual compaction at level-0 from '!items!zXM2fbGDYsS8jfon' @ 2504 : 1 .. '!items!zXM2fbGDYsS8jfon' @ 0 : 0; will stop at (end)

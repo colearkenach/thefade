@@ -1,5 +1,14 @@
-2025/09/02-14:39:06.539 18108 Log #183: 0 ops saved to Table #184 OK
-2025/09/02-14:39:06.539 18108 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents/000183.log: OK
-2025/09/02-14:39:06.540 18108 Table #176: 265 entries OK
-2025/09/02-14:39:06.540 18108 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents/MANIFEST-000181: OK
-2025/09/02-14:39:06.542 18108 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents; recovered 1 files; 115476 bytes. Some data may have been lost. ****
+2025/09/02-18:31:16.183 ccb8 Recovering log #189
+2025/09/02-18:31:16.185 ccb8 Delete type=0 #189
+2025/09/02-18:31:16.185 ccb8 Delete type=3 #187
+2025/09/02-18:41:37.510 1019c Level-0 table #193: started
+2025/09/02-18:41:37.510 1019c Level-0 table #193: 0 bytes OK
+2025/09/02-18:41:37.511 1019c Delete type=0 #191
+2025/09/02-18:41:37.518 1019c Manual compaction at level-0 from '!folders!1tib82n3eZ9o2X6z' @ 72057594037927935 : 1 .. '!items!zh2VmRg9guYSbozf' @ 0 : 0; will stop at '!items!zh2VmRg9guYSbozf' @ 1796 : 1
+2025/09/02-18:41:37.518 1019c Compacting 2@0 + 0@1 files
+2025/09/02-18:41:37.520 1019c Generated table #194@0: 265 keys, 117184 bytes
+2025/09/02-18:41:37.520 1019c Compacted 2@0 + 0@1 files => 117184 bytes
+2025/09/02-18:41:37.521 1019c compacted to: files[ 0 1 0 0 0 0 0 ]
+2025/09/02-18:41:37.521 1019c Delete type=2 #176
+2025/09/02-18:41:37.521 1019c Delete type=2 #188
+2025/09/02-18:41:37.521 1019c Manual compaction at level-0 from '!items!zh2VmRg9guYSbozf' @ 1796 : 1 .. '!items!zh2VmRg9guYSbozf' @ 0 : 0; will stop at (end)

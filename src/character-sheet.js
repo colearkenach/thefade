@@ -3341,7 +3341,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             } else {
                 openCompendiumBrowser("medical", this.actor);
             }
-            
+
         });
 
         /*
@@ -4736,7 +4736,4 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         return super.close(options);
     }
-
-
-
-
+}
