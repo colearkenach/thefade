@@ -69,30 +69,6 @@
 }
 
 
-.app.window-app.sheet.actor.thefade {
-    height: auto !important;
-    min-height: 400px !important;
-}
-
-    .app.window-app.sheet.actor.thefade .window-content {
-        height: auto !important;
-        min-height: 100% !important;
-        display: block !important;
-        overflow-y: auto !important;
-    }
-
-        .app.window-app.sheet.actor.thefade .window-content form {
-            height: auto !important;
-            min-height: 100% !important;
-            display: block !important;
-        }
-
-    .app.window-app.sheet.actor.thefade .sheet-body {
-        height: auto !important;
-        min-height: 300px !important;
-    }
-
-
     /* ===== TYPOGRAPHY ===== */
     .thefade h2 {
         font-size: 1.4em;
