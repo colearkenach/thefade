@@ -18,6 +18,8 @@
 // 1. CONSTANTS
 // ====================================================================
 
+import { SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS, FLEXIBLE_BONUS_OPTIONS, BODY_PARTS, DEFAULT_WEAPON, DEFAULT_ARMOR, DEFAULT_SKILL } from './src/constants.js';
+import { applyBonusHandlers } from './src/chat.js';
 
 /**
  * Default skills that every character should have (from The Fade Abyss)
@@ -259,8 +261,7 @@ class TheFadeActor extends Actor {
             data.naturalDeflection = {};
         }
 
-        const bodyParts = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg'];
-        bodyParts.forEach(part => {
+        BODY_PARTS.forEach(part => {
             if (!data.naturalDeflection[part] || typeof data.naturalDeflection[part] !== 'object') {
                 data.naturalDeflection[part] = {
                     current: 0,
@@ -744,18 +745,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                 system: FALLBACK_ACTOR_DATA,
                 items: [],
                 dtypes: ["String", "Number", "Boolean"],
-                sizeOptions: {
-                    "miniscule": "Miniscule",
-                    "diminutive": "Diminutive",
-                    "tiny": "Tiny",
-                    "small": "Small",
-                    "medium": "Medium",
-                    "large": "Large",
-                    "massive": "Massive",
-                    "immense": "Immense",
-                    "enormous": "Enormous",
-                    "titanic": "Titanic"
-                }
+                sizeOptions: SIZE_OPTIONS
             };
         }
 
@@ -769,74 +759,17 @@ class TheFadeCharacterSheet extends ActorSheet {
                 system: this.actor?.system || FALLBACK_ACTOR_DATA,
                 items: this.actor?.items?.contents || [],
                 dtypes: ["String", "Number", "Boolean"],
-                sizeOptions: {
-                    "miniscule": "Miniscule",
-                    "diminutive": "Diminutive",
-                    "tiny": "Tiny",
-                    "small": "Small",
-                    "medium": "Medium",
-                    "large": "Large",
-                    "massive": "Massive",
-                    "immense": "Immense",
-                    "enormous": "Enormous",
-                    "titanic": "Titanic"
-                }
+                sizeOptions: SIZE_OPTIONS
             };
         }
 
-        data.sizeOptions = {
-            "miniscule": "Miniscule",
-            "diminutive": "Diminutive",
-            "tiny": "Tiny",
-            "small": "Small",
-            "medium": "Medium",
-            "large": "Large",
-            "massive": "Massive",
-            "immense": "Immense",
-            "enormous": "Enormous",
-            "titanic": "Titanic"
-        };
+        data.sizeOptions = SIZE_OPTIONS;
 
-        data.flexibleBonusAttributeOptions = {
-            "": "-- Select Ability --",
-            "physique": "Physique",
-            "finesse": "Finesse",
-            "mind": "Mind",
-            "presence": "Presence",
-            "soul": "Soul"
-        };
+        data.flexibleBonusAttributeOptions = FLEXIBLE_BONUS_OPTIONS;
 
-        data.auraColorOptions = {
-            "": "None",
-            "red": "Red",
-            "blue": "Blue",
-            "green": "Green",
-            "yellow": "Yellow",
-            "purple": "Purple",
-            "orange": "Orange",
-            "pink": "Pink",
-            "gold": "Gold",
-            "silver": "Silver",
-            "turquoise": "Turquoise",
-            "indigo": "Indigo",
-            "brown": "Brown",
-            "violet": "Violet",
-            "gray": "Gray",
-            "black": "Black",
-            "white": "White"
-        };
+        data.auraColorOptions = AURA_COLOR_OPTIONS;
 
-        data.auraShapeOptions = {
-            "": "None",
-            "circular": "Circular",
-            "jagged": "Jagged",
-            "flowing": "Flowing",
-            "spiky": "Spiky",
-            "radiant": "Radiant",
-            "dense": "Dense",
-            "wispy": "Wispy",
-            "geometric": "Geometric"
-        };
+        data.auraShapeOptions = AURA_SHAPE_OPTIONS;
 
         data.auraIntensityOptions = {
             "": "None",
@@ -889,29 +822,13 @@ class TheFadeCharacterSheet extends ActorSheet {
         data.dtypes = ["String", "Number", "Boolean"];
 
         // Add size options to template data
-        data.sizeOptions = {
-            "miniscule": "Miniscule",
-            "diminutive": "Diminutive",
-            "tiny": "Tiny",
-            "small": "Small",
-            "medium": "Medium",
-            "large": "Large",
-            "massive": "Massive",
-            "immense": "Immense",
-            "enormous": "Enormous",
-            "titanic": "Titanic"
-        };
+        data.sizeOptions = SIZE_OPTIONS;
 
         // Only prepare character data if we have a valid actor and system data
         if (data.actor?.type === 'character' && data.system) {
             try {
-                // console.log("Preparing character items...");
                 this._prepareCharacterItems(data);
-                // console.log("Character items prepared successfully");
-
-                // console.log("Preparing character data...");
                 this._prepareCharacterData(data);
-                // console.log("Character data prepared successfully");
             } catch (error) {
                 console.error("Error preparing character data:", error);
                 console.error("Error stack:", error.stack);
@@ -934,8 +851,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             data.actor.currentAttunements = 0;
             data.actor.maxAttunements = 0;
         }
-
-        // console.log("getData completed successfully");
         return data;
     }
 
@@ -1966,16 +1881,13 @@ class TheFadeCharacterSheet extends ActorSheet {
     * @param {HTMLElement} html - Sheet HTML element
     */
     _setupArmorResetListeners(html) {
-        // console.log("Setting up armor reset listeners");
 
         // Individual armor reset
         const resetButtons = html.find('.reset-armor-button');
-        // console.log(`Found ${resetButtons.length} individual reset buttons`);
 
         resetButtons.on('click', async (event) => {
             event.preventDefault();
             event.stopPropagation();
-            // console.log("Reset armor button clicked");
 
             const button = event.currentTarget;
             const li = button.closest('.item');
@@ -1986,7 +1898,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
 
             const itemId = li.dataset.itemId || $(li).data("itemId");
-            // console.log("Item ID:", itemId);
 
             if (!itemId) {
                 console.error("No item ID found");
@@ -2004,9 +1915,6 @@ class TheFadeCharacterSheet extends ActorSheet {
                 return;
             }
 
-            // console.log(`Resetting armor ${item.name} (${itemId})`);
-            // console.log(`Current AP: ${item.system.currentAP}, Max AP: ${item.system.ap}`);
-
             try {
                 // Convert to numbers to ensure type consistency
                 const maxAP = Number(item.system.ap);
@@ -2014,8 +1922,6 @@ class TheFadeCharacterSheet extends ActorSheet {
                 await item.update({
                     "system.currentAP": maxAP
                 });
-
-                // console.log(`Reset successful, new AP: ${maxAP}`);
                 ui.notifications.info(`${item.name}'s armor protection has been restored to full.`);
             } catch (error) {
                 console.error("Error updating armor:", error);
@@ -2025,15 +1931,12 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Reset all armor
         const resetAllButton = html.find('.reset-all-armor');
-        // console.log(`Found ${resetAllButton.length} reset all armor buttons`);
 
         resetAllButton.on('click', async (event) => {
             event.preventDefault();
             event.stopPropagation();
-            // console.log("Reset all armor button clicked");
 
             const armorItems = this.actor.items.filter(i => i.type === "armor");
-            // console.log(`Found ${armorItems.length} armor items`);
 
             if (armorItems.length === 0) {
                 ui.notifications.warn("No armor items found.");
@@ -2043,7 +1946,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             try {
                 for (const armor of armorItems) {
                     const maxAP = Number(armor.system.ap);
-                    // console.log(`Resetting ${armor.name} from ${armor.system.currentAP} to ${maxAP}`);
 
                     await armor.update({
                         "system.currentAP": maxAP
@@ -2091,8 +1993,6 @@ class TheFadeCharacterSheet extends ActorSheet {
         const actor = this.actor;
         const sheet = this;
         const newFacing = event.target.value;
-
-        // console.log(`Facing changed to: ${newFacing}`);
 
         try {
             // Store facing in flags
@@ -2181,7 +2081,6 @@ class TheFadeCharacterSheet extends ActorSheet {
         facingDropdown.on('change', async function (event) {
             event.preventDefault();
             const newFacing = this.value;
-            // console.log(`Facing direct change to: ${newFacing}`);
 
             try {
                 // First update the actor with the new facing
@@ -2195,8 +2094,6 @@ class TheFadeCharacterSheet extends ActorSheet {
 
                 // Force a complete re-render
                 sheet.render(true);
-
-                // console.log(`Facing successfully updated to: ${newFacing}`);
                 ui.notifications.info(`Facing changed to: ${newFacing}`);
             } catch (error) {
                 console.error("Facing update failed:", error);
@@ -2217,7 +2114,6 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Get the current facing
         const facing = data.defenses.facing || "front";
-        // console.log(`Recalculating defenses with facing: ${facing}`);
 
         // Store original values for debugging
         const originalDodge = data.defenses.passiveDodge;
@@ -2273,8 +2169,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             await actor.setFlag("thefade", "facing", currentFacing);
         }
 
-        // console.log("Initializing facing from flags:", currentFacing);
-
         // Set dropdown to match flag
         facingDropdown.val(currentFacing);
 
@@ -2285,8 +2179,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             event.preventDefault();
 
             const newFacing = this.value;
-
-            // console.log(`Facing changed to: ${newFacing}`);
 
             try {
                 // Store facing in flags
@@ -2325,7 +2217,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         let avoidPenalty = 0;
 
         /*
-        console.log(`Updating defenses for facing ${facing} with base values:
+        CONFIG.debug.thefade && console.debug(`Updating defenses for facing ${facing} with base values:
         Base Dodge: ${basePassiveDodge}
         Base Parry: ${basePassiveParry}`);
         */
@@ -2349,7 +2241,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         }
 
         /*
-        console.log(`New defense values after facing ${facing}:
+        CONFIG.debug.thefade && console.debug(`New defense values after facing ${facing}:
         New Dodge: ${newDodge}
         New Parry: ${newParry}
         Avoid Penalty: ${avoidPenalty}`);
@@ -2415,7 +2307,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         const basePassiveParry = highestParry;
 
         /*
-        console.log(`Calculated base defenses:
+        CONFIG.debug.thefade && console.debug(`Calculated base defenses:
         Base Passive Dodge: ${basePassiveDodge}
         Base Passive Parry: ${basePassiveParry}`);
         */
@@ -3795,7 +3687,6 @@ class TheFadeCharacterSheet extends ActorSheet {
 
         // Handle defense bonus changes
         html.find('input[name="system.defenses.resilienceBonus"], input[name="system.defenses.avoidBonus"], input[name="system.defenses.gritBonus"]').change(async (ev) => {
-            // console.log("=== DEFENSE BONUS CHANGE START ===");
 
             ev.preventDefault();
             ev.stopImmediatePropagation();
@@ -3804,20 +3695,14 @@ class TheFadeCharacterSheet extends ActorSheet {
             const fieldName = input.name;
 
             let value = Number(input.value) || 0;
-            // console.log("Updating field:", fieldName, "to value:", value);
 
             // Update actor data directly without triggering render
-            // console.log("About to call actor.update with render: false");
             await this.actor.update({
                 [fieldName]: value
             }, { render: false });
-            // console.log("actor.update completed");
 
             // Manually update the defense displays
-            // console.log("About to call _updateDefenseDisplays");
             await this._updateDefenseDisplays();
-            // console.log("_updateDefenseDisplays completed");
-            // console.log("=== DEFENSE BONUS CHANGE END ===");
 
             ev.stopPropagation();
         });
@@ -3868,14 +3753,12 @@ class TheFadeCharacterSheet extends ActorSheet {
         html.find('select[name="system.defenses.facing"]').on('change', async function (event) {
             event.preventDefault();
             const facing = this.value;
-            // console.log("Facing changed to:", facing);
 
             // Use direct document API to update
             try {
                 await actor.update({
                     "system.defenses.facing": facing
                 });
-                // console.log("Facing update successful");
             } catch (error) {
                 console.error("Error updating facing:", error);
             }
@@ -4443,7 +4326,7 @@ class TheFadeCharacterSheet extends ActorSheet {
             const fieldName = input.name;
             const value = parseInt(input.value) || 0;
 
-            console.log(`Movement field changed: ${fieldName} = ${value}`);
+            CONFIG.debug.thefade && console.debug(`Movement field changed: ${fieldName} = ${value}`);
 
             // Determine which overland field to update - FIXED TO MATCH HTML
             let overlandField = '';
@@ -4461,7 +4344,7 @@ class TheFadeCharacterSheet extends ActorSheet {
 
             if (overlandField) {
                 const overlandValue = value * 6;
-                console.log(`Updating ${overlandField} to ${overlandValue}`);
+                CONFIG.debug.thefade && console.debug(`Updating ${overlandField} to ${overlandValue}`);
 
                 // Update both the movement field and corresponding overland field
                 const updateData = {};
@@ -4469,7 +4352,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                 updateData[overlandField] = overlandValue;
 
                 await this.actor.update(updateData);
-                console.log(`Updated successfully`);
+                CONFIG.debug.thefade && console.debug(`Updated successfully`);
             }
         });
 
@@ -4514,7 +4397,6 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Equip Items - handle both armor and magic items
         html.find('.item-equip').click(async (event) => {
             event.preventDefault();
-            // console.log("Equip button clicked");
 
             const button = $(event.currentTarget);
             const itemElement = button.closest('.item, .magic-item, .armor-item');
@@ -4526,7 +4408,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
 
             const itemId = itemElement.data('item-id') || itemElement.attr('data-item-id');
-            // console.log("Item ID:", itemId);
 
             if (!itemId) {
                 console.error("No item ID found");
@@ -4540,8 +4421,6 @@ class TheFadeCharacterSheet extends ActorSheet {
                 ui.notifications.error("Item not found in character");
                 return;
             }
-
-            // console.log(`Equipping ${item.name} (${item.type})`);
 
             // Handle different item types
             if (item.type === 'armor') {
@@ -4611,7 +4490,6 @@ class TheFadeCharacterSheet extends ActorSheet {
         // Unequip Items - handle both old and new HTML structures
         html.find('.item-unequip').click(async (event) => {
             event.preventDefault();
-            // console.log("Unequip button clicked");
 
             const button = $(event.currentTarget);
 
@@ -4631,7 +4509,6 @@ class TheFadeCharacterSheet extends ActorSheet {
             }
 
             const itemId = equippedItem.data('item-id') || equippedItem.attr('data-item-id');
-            // console.log("Unequipping item ID:", itemId);
 
             if (!itemId) {
                 console.error("No item ID found for unequip");
@@ -4987,7 +4864,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         // This should catch all edit buttons regardless of context
         html.find('.item-edit, .item-edit-btn').click(ev => {
             ev.preventDefault();
-            console.log("Edit button clicked");
+            CONFIG.debug.thefade && console.debug("Edit button clicked");
 
             // Try multiple ways to find the item ID
             const element = $(ev.currentTarget);
@@ -4996,7 +4873,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                 element.closest('.item').attr('data-item-id') ||
                 element.closest('.item').data('item-id');
 
-            console.log("Found item ID:", itemId);
+            CONFIG.debug.thefade && console.debug("Found item ID:", itemId);
 
             if (!itemId) {
                 console.error("Could not find item ID for edit button");
@@ -5011,7 +4888,7 @@ class TheFadeCharacterSheet extends ActorSheet {
                 return;
             }
 
-            console.log("Opening item sheet for:", item.name);
+            CONFIG.debug.thefade && console.debug("Opening item sheet for:", item.name);
             item.sheet.render(true);
         });
 
@@ -5309,8 +5186,6 @@ class TheFadeCharacterSheet extends ActorSheet {
 
             ui.notifications.info(`Using ${item.name}! ${item.system.effect || 'See item description for effects'}`);
         });
-
-        // console.log("All item action handlers registered");
 
 
     }
@@ -5630,24 +5505,28 @@ class TheFadeItem extends Item {
         const data = itemData.system;
         const flags = itemData.flags;
 
-        // Different preparations based on item type
-        if (itemData.type === 'weapon') this._prepareWeaponData(itemData);
-        else if (itemData.type === 'armor') this._prepareArmorData(itemData);
-        else if (itemData.type === 'skill') this._prepareSkillData(itemData);
-        else if (itemData.type === 'spell') this._prepareSpellData(itemData);
-        else if (itemData.type === 'species') this._prepareSpeciesData(itemData);
-        else if (itemData.type === 'drug') this._prepareDrugData(itemData);
-        else if (itemData.type === 'poison') this._preparePoisonData(itemData);
-        else if (itemData.type === 'biological') this._prepareBiologicalData(itemData);
-        else if (itemData.type === 'mount') this._prepareMountData(itemData);
-        else if (itemData.type === 'vehicle') this._prepareVehicleData(itemData);
-        else if (itemData.type === 'staff' || itemData.type === 'wand') this._prepareMagicToolData(itemData);
-        else if (itemData.type === 'gate') this._prepareGateData(itemData);
-        else if (itemData.type === 'magicitem') this._prepareMagicItemData(itemData);
-        else if (itemData.type === 'fleshcraft') this._prepareFleshcraftData(itemData);
-        else if (itemData.type === 'talent') this._prepareTalentData(itemData);
-        else if (itemData.type === 'trait') this._prepareTraitData(itemData);
-        else if (itemData.type === 'precept') this._preparePreceptData(itemData);
+        const prepMap = {
+            weapon: this._prepareWeaponData,
+            armor: this._prepareArmorData,
+            skill: this._prepareSkillData,
+            spell: this._prepareSpellData,
+            species: this._prepareSpeciesData,
+            drug: this._prepareDrugData,
+            poison: this._preparePoisonData,
+            biological: this._prepareBiologicalData,
+            mount: this._prepareMountData,
+            vehicle: this._prepareVehicleData,
+            staff: this._prepareMagicToolData,
+            wand: this._prepareMagicToolData,
+            gate: this._prepareGateData,
+            magicitem: this._prepareMagicItemData,
+            fleshcraft: this._prepareFleshcraftData,
+            talent: this._prepareTalentData,
+            trait: this._prepareTraitData,
+            precept: this._preparePreceptData
+        };
+        const fn = prepMap[itemData.type];
+        if (fn) fn.call(this, itemData);
     }
 
     // --------------------------------------------------------------------
@@ -5661,18 +5540,11 @@ class TheFadeItem extends Item {
     _prepareWeaponData(itemData) {
         const data = itemData.system;
 
-        // Initialize weapon properties if undefined
-        if (!data.damage) data.damage = 0;
-        if (!data.damageType) data.damageType = "S";
-        if (!data.critical) data.critical = 4;
-        if (!data.handedness) data.handedness = "One-Handed";
-        if (!data.range) data.range = "Melee";
-        if (!data.integrity) data.integrity = 10;
-        if (!data.weight) data.weight = 1;
-        if (!data.qualities) data.qualities = "";
-        if (!data.skill) data.skill = "Sword";
-        if (!data.attribute) data.attribute = "physique";
-        if (!data.miscBonus) data.miscBonus = 0;
+        foundry.utils.mergeObject(data, DEFAULT_WEAPON, {
+            enforceTypes: false,
+            insertKeys: true,
+            overwrite: false
+        });
     }
 
     /**
@@ -5682,17 +5554,14 @@ class TheFadeItem extends Item {
     _prepareArmorData(itemData) {
         const data = itemData.system;
 
-        // Initialize armor properties if undefined
-        if (!data.ap) data.ap = 0; // Armored Protection
-        if (data.currentAP === undefined) data.currentAP = data.ap; // Set current AP to max if not defined
-        if (!data.isHeavy) data.isHeavy = false;
-        if (!data.location) data.location = "body"; // Use lowercase to match template
-        if (!data.weight) data.weight = 1;
-        if (!data.autoBlock) data.autoBlock = ""; // For shields
-        if (!data.equipped) data.equipped = false; // Ensure equipped property exists
+        foundry.utils.mergeObject(data, DEFAULT_ARMOR, {
+            enforceTypes: false,
+            insertKeys: true,
+            overwrite: false
+        });
 
-        // Initialize other limb AP for arms/legs
-        if ((data.location === "Arms" || data.location === "Legs" || data.location == "Arms+" || data.location == "Legs+") && data.otherLimbAP === undefined) {
+        if (data.currentAP === 0) data.currentAP = data.ap;
+        if ((data.location === "Arms" || data.location === "Legs" || data.location == "Arms+" || data.location == "Legs+") && data.otherLimbAP === 0) {
             data.otherLimbAP = data.ap;
         }
     }
@@ -5704,12 +5573,11 @@ class TheFadeItem extends Item {
     _prepareSkillData(itemData) {
         const data = itemData.system;
 
-        // Initialize skill properties if undefined
-        if (!data.rank) data.rank = "untrained";
-        if (!data.category) data.category = "Combat";
-        if (!data.attribute) data.attribute = "physique";
-        if (!data.description) data.description = "";
-        if (!data.miscBonus) data.miscBonus = 0;
+        foundry.utils.mergeObject(data, DEFAULT_SKILL, {
+            enforceTypes: false,
+            insertKeys: true,
+            overwrite: false
+        });
     }
 
     /**
@@ -5991,7 +5859,6 @@ class TheFadeItemSheet extends ItemSheet {
     * @returns {string} Template path
     */
     getData() {
-        // console.log("TheFadeItemSheet.getData() starting for item:", this.item?.type);
 
         let data = {};
 
@@ -6009,7 +5876,6 @@ class TheFadeItemSheet extends ItemSheet {
             if (superData && typeof superData === 'object') {
                 data = foundry.utils.mergeObject(data, superData);
             }
-            // console.log("super.getData() succeeded");
         } catch (error) {
             console.error("Error in super.getData():", error);
         }
@@ -6235,20 +6101,7 @@ class TheFadeItemSheet extends ItemSheet {
                 "3": "Tier 3"
             };
 
-            data.sizeOptions = {
-                "miniscule": "Miniscule",
-                "diminutive": "Diminutive",
-                "tiny": "Tiny",
-                "small": "Small",
-                "medium": "Medium",
-                "large": "Large",
-                "massive": "Massive",
-                "immense": "Immense",
-                "enormous": "Enormous",
-                "titanic": "Titanic"
-            };
-
-            // console.log("All options set successfully");
+            data.sizeOptions = SIZE_OPTIONS;
         } catch (error) {
             console.error("Error setting options:", error);
         }
@@ -6275,8 +6128,6 @@ class TheFadeItemSheet extends ItemSheet {
         } catch (error) {
             console.error("Error in special item type handling:", error);
         }
-
-        // console.log("TheFadeItemSheet.getData() completing, data:", data);
         return data;
     }
 
@@ -7548,7 +7399,6 @@ class TheFadeItemSheet extends ItemSheet {
     * @param {Event} event - Drop event
     */
     async _onDrop(event) {
-        // console.log("Drop event triggered on path sheet");
         event.preventDefault();
 
         // Get dropped data
@@ -7569,7 +7419,6 @@ class TheFadeItemSheet extends ItemSheet {
             }
 
             dragData = JSON.parse(data);
-            // console.log("Dropped data:", dragData);
         } catch (err) {
             console.error("Error parsing drop data:", err);
             return false;
@@ -7577,25 +7426,21 @@ class TheFadeItemSheet extends ItemSheet {
 
         // Only process if this is a path sheet
         if (this.item.type !== 'path') {
-            // console.log("Not a path sheet");
             return super._onDrop(event);
         }
 
         // Handle dropping a skill
         if (dragData.type === "Item") {
-            // console.log("Item drop detected");
             let skillDoc;
 
             // Try to load the item from various sources
             try {
                 // From UUID
                 if (dragData.uuid) {
-                    // console.log("Loading from UUID:", dragData.uuid);
                     skillDoc = await fromUuid(dragData.uuid);
                 }
                 // From compendium
                 else if (dragData.pack && dragData.id) {
-                    // console.log("Loading from compendium:", dragData.pack, dragData.id);
                     const pack = game.packs.get(dragData.pack);
                     if (pack) {
                         skillDoc = await pack.getDocument(dragData.id);
@@ -7603,7 +7448,6 @@ class TheFadeItemSheet extends ItemSheet {
                 }
                 // Directly from data
                 else if (dragData.data) {
-                    // console.log("Using raw data");
                     skillDoc = dragData.data;
                 }
             } catch (err) {
@@ -7613,7 +7457,6 @@ class TheFadeItemSheet extends ItemSheet {
 
             // Check if we got a skill
             if (!skillDoc) {
-                // console.log("No skill document found");
                 return false;
             }
 
@@ -7634,8 +7477,6 @@ class TheFadeItemSheet extends ItemSheet {
             } else {
                 skillData = duplicate(skillDoc);
             }
-
-            // console.log("Skill data:", skillData);
 
             // Initialize path skills array if needed
             let pathSkills = duplicate(this.item.system.pathSkills || []);
@@ -7912,314 +7753,11 @@ function registerItemSheets() {
 * Handle bonus options in chat messages
 * @param {HTMLElement} html - Chat message HTML
 */
-function handleBonusOptions(html) {
-    if (!html.find('.bonus-options').length) return;
-
-    const bonusOptions = html.find('.bonus-option');
-    const appliedEffects = html.find('.applied-effects');
-    let remainingSuccesses = parseInt(html.find('.remaining-successes').text());
-
-    // Track used effects to ensure each can only be used once
-    const usedEffects = new Set();
-
-    bonusOptions.on('click', async (event) => {
-        const button = event.currentTarget;
-        const option = button.dataset.option;
-        const cost = parseInt(button.dataset.cost);
-
-        // Check if we have enough successes
-        if (remainingSuccesses < cost) {
-            ui.notifications.warn(`Not enough bonus successes remaining.`);
-            return;
-        }
-
-        // Decrement remaining successes
-        remainingSuccesses -= cost;
-        html.find('.remaining-successes').text(remainingSuccesses);
-
-        // Process the effect based on option type
-        let effectHTML = "";
-
-        switch (option) {
-            case "critical":
-                const critDamage = parseInt(button.dataset.damage);
-                effectHTML = `<p><strong>Critical Hit:</strong> +${critDamage} damage - Additional damage from a powerful strike</p>`;
-                break;
-            case "fire":
-                const fireDuration = await new Roll("1d6").evaluate({ async: true });
-                const fireRounds = fireDuration.total + (cost - 2);
-                effectHTML = `<p><strong>Fire:</strong> Target catches fire for ${fireRounds} rounds - 1d6 fire damage per round until extinguished</p>`;
-                usedEffects.add(option);
-                break;
-            case "cold":
-                effectHTML = `<p><strong>Cold:</strong> Fatigue (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to physical actions</p>`;
-                usedEffects.add(option);
-                break;
-            case "acid":
-                effectHTML = `<p><strong>Acid:</strong> Pain (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to concentration</p>`;
-                usedEffects.add(option);
-                break;
-            case "electricity":
-                effectHTML = `<p><strong>Electricity:</strong> Chain lightning - Attack chains to adjacent target for half damage</p>`;
-                usedEffects.add(option);
-                break;
-            case "sonic":
-                const halfDamage = parseInt(button.dataset.damage || 1);
-                effectHTML = `<p><strong>Sonic:</strong> Deafness for ${halfDamage} rounds - Target cannot hear and has disadvantage on awareness checks</p>`;
-                usedEffects.add(option);
-                break;
-            case "smiting":
-                const fearDuration = await new Roll("1d6").evaluate({ async: true });
-                effectHTML = `<p><strong>Smiting:</strong> Fear (Moderate) for ${fearDuration.total} rounds - Target must make a Grit check to take aggressive actions</p>`;
-                usedEffects.add(option);
-                break;
-            case "expel":
-                const stunDuration = await new Roll("1d6").evaluate({ async: true });
-                effectHTML = `<p><strong>Expel:</strong> Stunned (Moderate) for ${stunDuration.total} rounds - Target can take only one action per turn</p>`;
-                usedEffects.add(option);
-                break;
-            case "psychokinetic-damage":
-                effectHTML = `<p><strong>Psychokinetic (Sanity):</strong> Deal half damage to target's sanity as well as HP</p>`;
-                usedEffects.add(option);
-                break;
-            case "psychokinetic-confusion":
-                const confusionDuration = await new Roll("1d6").evaluate({ async: true });
-                effectHTML = `<p><strong>Psychokinetic (Confusion):</strong> Confusion for ${confusionDuration.total} rounds - Target has trouble determining friend from foe</p>`;
-                usedEffects.add(option);
-                break;
-            case "corruption":
-                effectHTML = `<p><strong>Corruption:</strong> Half damage unhealable for 24 hours - Wounds resist magical and natural healing</p>`;
-                usedEffects.add(option);
-                break;
-        }
-
-        // Add effect to display
-        appliedEffects.append(effectHTML);
-
-        // Disable clicked button if it's not critical (can use critical multiple times)
-        //if (option !== "critical") {
-        //    $(button).prop('disabled', true).addClass('disabled');
-        //}
-
-        // Disable all buttons if not enough successes remain
-        bonusOptions.each((i, btn) => {
-            if (parseInt(btn.dataset.cost) > remainingSuccesses) {
-                $(btn).prop('disabled', true).addClass('disabled');
-            }
-        });
-    });
-}
-
-/**
-* Handle spell bonus options in chat messages
-* @param {HTMLElement} html - Chat message HTML
-*/
-function handleSpellBonusOptions(html) {
-    const bonusOptions = html.find('.spell-bonus, .spell-custom-bonus');
-    const appliedEffects = html.find('.applied-effects');
-    let remainingSuccesses = parseInt(html.find('.remaining-successes').text());
-
-    // Track used effects and counters for multi-use options
-    const usedEffects = new Set();
-    const counters = {
-        damageIncrease: 0,
-        rangeIncrease: 0,
-        durationIncrease: 0
-    };
-
-    bonusOptions.on('click', async (event) => {
-        const button = event.currentTarget;
-        const option = button.dataset.option;
-        const cost = parseInt(button.dataset.cost);
-
-        // For options that can only be used once
-        //if (option !== "increasedamage" && option !== "increaserange" && option !== "increaseduration" && usedEffects.has(option)) {
-        //    ui.notifications.warn(`This effect has already been applied.`);
-        //    return;
-        //}
-
-        if (remainingSuccesses < cost) {
-            ui.notifications.warn(`Not enough bonus successes remaining.`);
-            return;
-        }
-
-        remainingSuccesses -= cost;
-        html.find('.remaining-successes').text(remainingSuccesses);
-
-        let effectHTML = "";
-        switch (option) {
-            case "critical":
-                const critDamage = parseInt(button.dataset.damage);
-                effectHTML = `<p><strong>Critical Hit:</strong> +${critDamage} damage - Additional damage from a powerful magical strike</p>`;
-                usedEffects.add(option);
-                break;
-
-            case "increasedamage":
-                counters.damageIncrease++;
-                effectHTML = `<p><strong>Increased Damage:</strong> +${counters.damageIncrease} to base damage</p>`;
-                break;
-
-            case "increaserange":
-                counters.rangeIncrease++;
-                effectHTML = `<p><strong>Increased Range:</strong> +${counters.rangeIncrease} hex to spell range</p>`;
-                break;
-
-            case "increaseduration":
-                counters.durationIncrease++;
-                effectHTML = `<p><strong>Increased Duration:</strong> +${counters.durationIncrease} time increment</p>`;
-                break;
-
-            case "spellbonus":
-                effectHTML = `<p><strong>Enhanced Effect:</strong> Spell potency increased</p>`;
-                usedEffects.add(option);
-                break;
-
-            case "custombonus":
-                effectHTML = `<p><strong>Bonus Effect:</strong> ${button.textContent.trim()}</p>`;
-                usedEffects.add(option);
-                break;
-        }
-
-        // Add effect to display
-        appliedEffects.append(effectHTML);
-
-        // For single-use options, disable the button
-        //if (option !== "increasedamage" && option !== "increaserange" && option !== "increaseduration") {
-        //    $(button).prop('disabled', true).addClass('disabled');
-        //}
-
-        // Disable all buttons if not enough successes
-        bonusOptions.each((i, btn) => {
-            if (parseInt(btn.dataset.cost) > remainingSuccesses) {
-                $(btn).prop('disabled', true).addClass('disabled');
-            }
-        });
-    });
-}
-
-/**
-* Handle attack bonus options in chat messages
-* @param {HTMLElement} html - Chat message HTML
-*/
-function handleAttackBonusOptions(html) {
-    const bonusOptions = html.find('.attack-bonus');
-    const appliedEffects = html.find('.attack-applied-effects');
-    let remainingSuccesses = parseInt(html.find('.attack-remaining-successes').text());
-
-    // Track used effects to ensure each can only be used once
-    const usedEffects = new Set();
-
-    bonusOptions.on('click', async (event) => {
-        const button = event.currentTarget;
-        const option = button.dataset.option;
-        const cost = parseInt(button.dataset.cost);
-
-        // Don't allow selecting the same effect twice
-        if (option !== "critical" && usedEffects.has(option)) {
-            ui.notifications.warn(`This effect has already been applied.`);
-            return;
-        }
-
-        // Check if we have enough successes
-        if (remainingSuccesses < cost) {
-            ui.notifications.warn(`Not enough bonus successes remaining.`);
-            return;
-        }
-
-        // Decrement remaining successes
-        remainingSuccesses -= cost;
-        html.find('.attack-remaining-successes').text(remainingSuccesses);
-
-        // Process the effect based on option type
-        let effectHTML = "";
-
-        switch (option) {
-            case "critical":
-                const critDamage = parseInt(button.dataset.damage);
-                effectHTML = `<p><strong>Critical Hit:</strong> +${critDamage} damage - Additional damage from a powerful strike</p>`;
-                break;
-            case "fire":
-                const fireDuration = await new Roll("1d6").evaluate({ async: true });
-                const fireRounds = fireDuration.total + (cost - 2);
-                effectHTML = `<p><strong>Fire:</strong> Target catches fire for ${fireRounds} rounds - 1d6 fire damage per round until extinguished</p>`;
-                break;
-            case "cold":
-                effectHTML = `<p><strong>Cold:</strong> Fatigue (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to physical actions</p>`;
-                break;
-            case "acid":
-                effectHTML = `<p><strong>Acid:</strong> Pain (Low Intensity) for ${cost - 1} rounds - Target suffers penalties to concentration</p>`;
-                break;
-            case "electricity":
-                effectHTML = `<p><strong>Electricity:</strong> Chain lightning - Attack chains to adjacent target for half damage</p>`;
-                break;
-            case "sonic":
-                const halfDamage = parseInt(button.dataset.damage || 1);
-                effectHTML = `<p><strong>Sonic:</strong> Deafness for ${halfDamage} rounds - Target cannot hear and has disadvantage on awareness checks</p>`;
-                break;
-            case "smiting":
-                const fearDuration = await new Roll("1d6").evaluate({ async: true });
-                effectHTML = `<p><strong>Smiting:</strong> Fear (Moderate) for ${fearDuration.total} rounds - Target must make a Grit check to take aggressive actions</p>`;
-                break;
-            case "expel":
-                const stunDuration = await new Roll("1d6").evaluate({ async: true });
-                effectHTML = `<p><strong>Expel:</strong> Stunned (Moderate) for ${stunDuration.total} rounds - Target can take only one action per turn</p>`;
-                break;
-            case "psychokinetic-damage":
-                effectHTML = `<p><strong>Psychokinetic (Sanity):</strong> Deal half damage to target's sanity as well as HP</p>`;
-                break;
-            case "psychokinetic-confusion":
-                const confusionDuration = await new Roll("1d6").evaluate({ async: true });
-                effectHTML = `<p><strong>Psychokinetic (Confusion):</strong> Confusion for ${confusionDuration.total} rounds - Target has trouble determining friend from foe</p>`;
-                break;
-            case "corruption":
-                effectHTML = `<p><strong>Corruption:</strong> Half damage unhealable for 24 hours - Wounds resist magical and natural healing</p>`;
-                break;
-        }
-
-        // Add effect to display
-        appliedEffects.append(effectHTML);
-
-        // Mark effect as used if it's not critical
-        if (option !== "critical") {
-            usedEffects.add(option);
-        }
-
-        // Disable clicked button
-        // $(button).prop('disabled', true).addClass('disabled');
-
-        // Disable all buttons if not enough successes remain
-        bonusOptions.each((i, btn) => {
-            // Disable the button if it's a used one-time effect
-            if (usedEffects.has(btn.dataset.option)) {
-                $(btn).prop('disabled', true).addClass('disabled');
-            }
-
-            // Disable if not enough successes
-            if (parseInt(btn.dataset.cost) > remainingSuccesses) {
-                $(btn).prop('disabled', true).addClass('disabled');
-            }
-        });
-    });
-}
-
 /**
 * Chat message rendering hook - add interactive elements to chat
 */
 Hooks.on("renderChatMessage", (message, html, data) => {
-    // Handle weapon attack bonus options
-    if (html.find('.bonus-options').length) {
-        handleBonusOptions(html);
-    }
-
-    // Handle spell manifestation bonus options
-    if (html.find('.spell-bonus').length) {
-        handleSpellBonusOptions(html);
-    }
-
-    // Handle spell attack bonus options
-    if (html.find('.attack-bonus-options').length) {
-        handleAttackBonusOptions(html);
-    }
+    applyBonusHandlers(html);
 });
 
 
