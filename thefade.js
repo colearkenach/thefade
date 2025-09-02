@@ -7,7 +7,7 @@ export { TheFadeItem } from './src/item.js';
 export { TheFadeItemSheet } from './src/item-sheet.js';
 
 registerSystemHooks();
-=======
+
 import { SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS, FLEXIBLE_BONUS_OPTIONS, BODY_PARTS, DEFAULT_WEAPON, DEFAULT_ARMOR, DEFAULT_SKILL } from './src/constants.js';
 import { applyBonusHandlers } from './src/chat.js';
 
