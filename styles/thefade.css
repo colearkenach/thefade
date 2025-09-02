@@ -23,6 +23,18 @@
   --border-color: #8d99ae;
   --background-color: #edf2f4;
   --header-background: #2b2d42;
+  --white: #ffffff;
+  --black: #000000;
+  --gray-50: #f9f9f9;
+  --gray-100: #f5f5f5;
+  --gray-150: #eeeeee;
+  --gray-200: #dddddd;
+  --gray-300: #cccccc;
+  --gray-400: #bbbbbb;
+  --gray-500: #999999;
+  --gray-600: #666666;
+  --gray-700: #555555;
+  --gray-800: #333333;
   /* Effect Variables */
   --transition-speed: 0.2s;
   --box-shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -35,7 +47,8 @@
   background: var(--background-color);
   color: var(--text-color);
   font-family: "EideticNeo-Omni", sans-serif;
-  font-size: 14px;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .app.sheet.actor.thefade .window-content {
@@ -125,7 +138,8 @@
 
 /* Small Input Utilities */
 .small-input {
-  width: 40px !important;
+  width: 60px !important;
+  line-height: 1.4;
   text-align: center;
   margin-left: 4px;
 }
@@ -160,8 +174,8 @@
 
 /* Specialized Buttons */
 .create-item-button {
-  background-color: #2b2d42;
-  color: #edf2f4;
+  background-color: var(--primary-color);
+  color: var(--light-text);
   border: none;
   padding: 5px 10px;
   border-radius: 3px;
@@ -170,7 +184,7 @@
 }
 
 .create-item-button:hover {
-  background-color: #ef233c;
+  background-color: var(--accent-color);
   transform: translateY(-1px);
   box-shadow: var(--box-shadow-hover);
 }
@@ -182,7 +196,7 @@
 }
 
 .disabled-button:hover {
-  color: #999 !important;
+  color: var(--gray-500) !important;
 }
 
 /* ===== LINKS ===== */
@@ -302,19 +316,19 @@
 }
 
 .thefade .grid-2col {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
 
 .thefade .grid-3col {
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 .thefade .grid-4col {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
 }
 
 .thefade .grid-5col {
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
 }
 
 .thefade .flexrow {
@@ -352,7 +366,7 @@
 /* Character Progression Section */
 .character-progression {
   background: rgba(0, 0, 0, 0.1);
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-300);
   border-radius: 5px;
   padding: 15px;
   margin-bottom: 20px;
@@ -360,16 +374,16 @@
 
 .character-progression h3 {
   margin: 0 0 15px 0;
-  font-size: 18px;
-  color: #333;
-  border-bottom: 2px solid #ddd;
+  font-size: 1.125rem;
+  color: var(--gray-800);
+  border-bottom: 2px solid var(--gray-200);
   padding-bottom: 5px;
 }
 
 .character-progression h4 {
   margin: 15px 0 10px 0;
   font-size: 14px;
-  color: #555;
+  color: var(--gray-700);
   font-weight: bold;
 }
 
@@ -401,7 +415,7 @@
 
 /* Path Stats Layout */
 .progression-paths {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--gray-200);
   padding-top: 15px;
   margin-bottom: 15px;
 }
@@ -414,7 +428,7 @@
 
 /* Tier Levels */
 .progression-tiers {
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--gray-200);
   padding-top: 15px;
 }
 
@@ -432,15 +446,15 @@
 
 .tier-stat label {
   font-size: 11px;
-  color: #666;
+  color: var(--gray-600);
   margin-bottom: 3px;
   font-weight: normal;
 }
 
 .tier-stat input {
   background: rgba(0, 0, 0, 0.05);
-  border: 1px solid #bbb;
-  color: #666;
+  border: 1px solid var(--gray-400);
+  color: var(--gray-600);
   font-size: 12px;
   text-align: center;
 }
@@ -456,7 +470,7 @@
 /* Readonly field styling */
 input[readonly] {
   background: rgba(0, 0, 0, 0.05);
-  color: #666;
+  color: var(--gray-600);
   cursor: not-allowed;
 }
 
@@ -505,12 +519,17 @@ input[readonly] {
 }
 
 /* Resources */
-.thefade .resource {
+/* Reusable panel styling */
+.panel {
   border: 1px solid var(--border-color);
   border-radius: 5px;
-  padding: 5px;
   background: rgba(0, 0, 0, 0.05);
+  padding: 5px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Resources */
+.thefade .resource {
   transition: all var(--transition-speed) ease;
 }
 
@@ -529,10 +548,7 @@ input[readonly] {
 
 /* Attributes */
 .thefade .attribute {
-  border: 1px solid var(--border-color);
-  border-radius: 5px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
   text-align: center;
   transition: all var(--transition-speed) ease;
   position: relative;
@@ -724,7 +740,7 @@ input[readonly] {
 .excess-penalty-tooltip {
   position: absolute;
   background: rgba(220, 53, 69, 0.9);
-  color: #fff;
+  color: var(--white);
   padding: 6px 10px;
   border-radius: 4px;
   font-size: 0.8em;
@@ -1151,10 +1167,7 @@ input[readonly] {
 
 /* Individual armor sections */
 .armor-slot-container {
-  border: 1px solid var(--border-color);
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 5px;
   font-size: 1em; /* Normal readable size */
 }
 
@@ -1671,7 +1684,7 @@ input[readonly] {
 .item-type-badge.armor {
   background: linear-gradient(135deg, #4682b4, #87ceeb);
   border-color: #87ceeb;
-  color: #000000; /* Dark text for light background */
+  color: var(--black); /* Dark text for light background */
 }
 
 .item-type-badge.potion {
@@ -1697,7 +1710,7 @@ input[readonly] {
 .item-type-badge.wand {
   background: linear-gradient(135deg, #d2b48c, #f4a460);
   border-color: #f4a460;
-  color: #000000; /* Dark text for light background */
+  color: var(--black); /* Dark text for light background */
 }
 
 .item-type-badge.communication {
@@ -1738,7 +1751,7 @@ input[readonly] {
 .item-type-badge.musical {
   background: linear-gradient(135deg, #ff8c00, #ffa500);
   border-color: #ffa500;
-  color: #000000; /* Dark text for bright background */
+  color: var(--black); /* Dark text for bright background */
 }
 
 .item-type-badge.mount {
@@ -1795,7 +1808,7 @@ input[readonly] {
 .item-type-badge.precept {
   background: linear-gradient(135deg, #b8860b, #ffd700);
   border-color: #ffd700;
-  color: #000000; /* Dark text for gold background */
+  color: var(--black); /* Dark text for gold background */
 }
 
 .item-type-badge.clothing {
@@ -1869,7 +1882,7 @@ input[readonly] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--gray-300);
   margin-bottom: 10px;
 }
 
@@ -1880,7 +1893,7 @@ input[readonly] {
 
 .current-attunements {
   font-weight: bold;
-  color: #333;
+  color: var(--gray-800);
 }
 
 .equipment-slots {
@@ -1895,11 +1908,11 @@ input[readonly] {
 
 .slot-container {
   flex: 1;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-300);
   border-radius: 4px;
   padding: 8px;
   min-height: 60px;
-  background: #f9f9f9;
+  background: var(--gray-50);
 }
 
 .slot-label {
@@ -1907,7 +1920,7 @@ input[readonly] {
   font-size: 0.9em;
   margin-bottom: 4px;
   text-align: center;
-  color: #666;
+  color: var(--gray-600);
 }
 
 .slot-content {
@@ -1919,7 +1932,7 @@ input[readonly] {
 
 .empty-slot {
   text-align: center;
-  color: #999;
+  color: var(--gray-500);
   font-style: italic;
   font-size: 0.9em;
 }
@@ -1968,7 +1981,7 @@ input[readonly] {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #ccc;
+  background: var(--gray-300);
   margin: 2px;
 }
 
@@ -1985,7 +1998,7 @@ input[readonly] {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--gray-200);
   margin-bottom: 8px;
 }
 
@@ -1997,13 +2010,13 @@ input[readonly] {
 .magic-items-list {
   max-height: 200px;
   overflow-y: auto;
-  border: 1px solid #ddd;
+  border: 1px solid var(--gray-200);
   border-radius: 4px;
 }
 
 .magic-item {
   padding: 8px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--gray-150);
   align-items: center;
 }
 
@@ -2020,7 +2033,7 @@ input[readonly] {
   flex: 1;
   text-align: center;
   font-size: 0.9em;
-  color: #666;
+  color: var(--gray-600);
 }
 
 .magic-item .item-attunement {
@@ -2040,7 +2053,7 @@ input[readonly] {
 }
 
 .no-attunement {
-  color: #999;
+  color: var(--gray-500);
 }
 
 .slot-conflict {
@@ -2117,7 +2130,7 @@ input[readonly] {
 .talent-item,
 .trait-item,
 .precept-item {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--gray-200);
   position: relative;
 }
 
@@ -2143,8 +2156,8 @@ input[readonly] {
   justify-content: space-between;
   align-items: center;
   padding: 8px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  background: var(--gray-100);
+  border-bottom: 1px solid var(--gray-300);
 }
 
 .path-name-container,
@@ -2167,7 +2180,7 @@ input[readonly] {
 
 .path-tier {
   font-weight: normal;
-  color: #666;
+  color: var(--gray-600);
   font-size: 0.9em;
 }
 
@@ -2199,7 +2212,7 @@ input[readonly] {
 .trait-controls a,
 .precept-controls a {
   padding: 2px 4px;
-  color: #666;
+  color: var(--gray-600);
 }
 
 .path-controls a:hover,
@@ -2216,7 +2229,7 @@ input[readonly] {
   padding: 0;
   max-height: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--white);
   transition:
     max-height 0.3s ease,
     padding 0.3s ease;
@@ -2249,7 +2262,7 @@ input[readonly] {
 .talents-list,
 .traits-list,
 .precepts-list {
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-300);
   border-radius: 3px;
 }
 
@@ -2494,7 +2507,7 @@ input[readonly] {
 .level-up-btn,
 .experience-check-btn {
   padding: 6px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-300);
   border-radius: 4px;
   background: #f0f0f0;
   cursor: pointer;
@@ -2505,7 +2518,7 @@ input[readonly] {
 .level-up-btn:hover,
 .experience-check-btn:hover {
   background: #e0e0e0;
-  border-color: #999;
+  border-color: var(--gray-500);
 }
 
 .level-up-btn {
@@ -2523,7 +2536,7 @@ input[readonly] {
 .spells-learned-counter {
   margin: 16px 0;
   padding: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--gray-200);
   border-radius: 6px;
   background: #fafafa;
 }
@@ -2532,9 +2545,9 @@ input[readonly] {
 .talents-counter h3,
 .spells-learned-counter h3 {
   margin: 0 0 12px 0;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: bold;
-  color: #333;
+  color: var(--gray-800);
 }
 
 .paths-progression,
@@ -2554,20 +2567,20 @@ input[readonly] {
   font-size: 11px;
   font-weight: bold;
   margin-bottom: 2px;
-  color: #555;
+  color: var(--gray-700);
 }
 
 .form-group input[type="number"] {
   width: 100%;
   padding: 4px 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-300);
   border-radius: 3px;
   font-size: 12px;
 }
 
 .form-group input[readonly] {
-  background: #f5f5f5;
-  color: #666;
+  background: var(--gray-100);
+  color: var(--gray-600);
 }
 
 .form-group label input[type="checkbox"] {
@@ -2592,7 +2605,7 @@ input[readonly] {
 .species-details {
   margin-bottom: 1em;
   padding: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--gray-200);
   border-radius: 5px;
   background-color: rgba(0, 0, 0, 0.05);
 }
@@ -3261,7 +3274,7 @@ select[name="system.aura.color"] option[value="white"] {
   min-width: auto;
   font-size: 1.2em;
   font-weight: bold;
-  border: 1px solid #ccc;
+  border: 1px solid var(--gray-300);
   padding: 4px 8px;
   border-radius: 3px;
 }
@@ -3438,7 +3451,7 @@ select[name="system.aura.color"] option[value="white"] {
   padding: 0.5rem;
   background: rgba(0, 0, 0, 0.05);
   border-radius: 5px;
-  border: 1px solid #bbb;
+  border: 1px solid var(--gray-400);
   transition: all var(--transition-speed) ease;
 }
 
@@ -3516,7 +3529,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .dialog .hint {
   font-size: 0.85em;
-  color: #666;
+  color: var(--gray-600);
   margin-top: 5px;
   font-style: italic;
 }
@@ -3732,7 +3745,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .dialog .hint {
   font-size: 0.85em;
-  color: #666;
+  color: var(--gray-600);
   margin-top: 3px;
   font-style: italic;
 }
@@ -3741,7 +3754,7 @@ select[name="system.aura.color"] option[value="white"] {
 .data-tooltip {
   position: absolute;
   background: rgba(0, 0, 0, 0.9);
-  color: #fff;
+  color: var(--white);
   padding: 4px 8px;
   border-radius: 3px;
   font-size: 0.8em;
@@ -3907,7 +3920,7 @@ select[name="system.aura.color"] option[value="white"] {
 /* Traits - copy all talent styles but with trait selectors */
 .trait-item,
 .precept-item {
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--gray-200);
   position: relative;
 }
 
@@ -3927,8 +3940,8 @@ select[name="system.aura.color"] option[value="white"] {
   justify-content: space-between;
   align-items: center;
   padding: 8px;
-  background: #f5f5f5;
-  border-bottom: 1px solid #ccc;
+  background: var(--gray-100);
+  border-bottom: 1px solid var(--gray-300);
 }
 
 .trait-name-container,
@@ -3965,7 +3978,7 @@ select[name="system.aura.color"] option[value="white"] {
 .trait-controls a,
 .precept-controls a {
   padding: 2px 4px;
-  color: #666;
+  color: var(--gray-600);
 }
 
 .trait-controls a:hover,
@@ -3978,7 +3991,7 @@ select[name="system.aura.color"] option[value="white"] {
   padding: 0;
   max-height: 0;
   overflow: hidden;
-  background: #fff;
+  background: var(--white);
   transition:
     max-height 0.3s ease,
     padding 0.3s ease;
