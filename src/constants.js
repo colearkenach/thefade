@@ -54,6 +54,31 @@ export const FLEXIBLE_BONUS_OPTIONS = {
     soul: "Soul"
 };
 
+export const AURA_INTENSITY_OPTIONS = {
+    "": "None",
+    faint: "Faint",
+    moderate: "Moderate",
+    intense: "Intense",
+};
+
+export const ADDICTION_LEVEL_OPTIONS = {
+    none: "None",
+    early: "Early Stages (+2D)",
+    middle: "Middle Stage (+4D)",
+    late: "Late Stage (+6D)",
+    terminal: "Terminal (N/A)",
+};
+
+export const SKILL_RANK_OPTIONS = {
+    untrained: "Untrained",
+    learned: "Learned",
+    practiced: "Practiced",
+    adept: "Adept",
+    experienced: "Experienced",
+    expert: "Expert",
+    mastered: "Mastered",
+};
+
 export const BODY_PARTS = ["head", "body", "leftarm", "rightarm", "leftleg", "rightleg"];
 
 export const DEFAULT_WEAPON = {

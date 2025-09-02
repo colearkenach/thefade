@@ -1,4 +1,4 @@
-import { SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS, FLEXIBLE_BONUS_OPTIONS } from './constants.js';
+import { SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS, FLEXIBLE_BONUS_OPTIONS, AURA_INTENSITY_OPTIONS, ADDICTION_LEVEL_OPTIONS, SKILL_RANK_OPTIONS, FALLBACK_ACTOR_DATA } from './constants.js';
 import { createCustomSkill, initializeDefaultSkills, showCustomSkillDialog } from './skills.js';
 import { openCompendiumBrowser } from './compendium.js';
 
@@ -45,42 +45,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 system: this.actor?.system || FALLBACK_ACTOR_DATA,
                 items: this.actor?.items?.contents || [],
                 dtypes: ["String", "Number", "Boolean"],
-                sizeOptions: SIZE_OPTIONS
             };
         }
 
         data.sizeOptions = SIZE_OPTIONS;
-
         data.flexibleBonusAttributeOptions = FLEXIBLE_BONUS_OPTIONS;
-
         data.auraColorOptions = AURA_COLOR_OPTIONS;
-
         data.auraShapeOptions = AURA_SHAPE_OPTIONS;
-
-        data.auraIntensityOptions = {
-            "": "None",
-            "faint": "Faint",
-            "moderate": "Moderate",
-            "intense": "Intense"
-        };
-
-        data.addictionLevelOptions = {
-            "none": "None",
-            "early": "Early Stages (+2D)",
-            "middle": "Middle Stage (+4D)",
-            "late": "Late Stage (+6D)",
-            "terminal": "Terminal (N/A)"
-        }
-
-        data.skillRankOptions = {
-            "untrained": "Untrained",
-            "learned": "Learned",
-            "practiced": "Practiced",
-            "adept": "Adept",
-            "experienced": "Experienced",
-            "expert": "Expert",
-            "mastered": "Mastered"
-        };
+        data.auraIntensityOptions = AURA_INTENSITY_OPTIONS;
+        data.addictionLevelOptions = ADDICTION_LEVEL_OPTIONS;
+        data.skillRankOptions = SKILL_RANK_OPTIONS;
 
         // Additional safety checks
         if (!data.actor) {
@@ -106,9 +80,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
         }
 
         data.dtypes = ["String", "Number", "Boolean"];
-
-        // Add size options to template data
-        data.sizeOptions = SIZE_OPTIONS;
 
         // Only prepare character data if we have a valid actor and system data
         if (data.actor?.type === 'character' && data.system) {
