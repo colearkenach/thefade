@@ -2,7 +2,7 @@
   "name": "thefade",
   "title": "The Fade (Abyss)",
   "description": "A system for playing The Fade (Abyss) TTRPG in Foundry VTT",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "authors": [
     {
       "name": "Jeremy H.",
@@ -11,8 +11,8 @@
   ],
   "compatibility": {
     "minimum": 9,
-    "verified": "12",
-    "maximum": "12"
+    "verified": "13",
+    "maximum": "13"
   },
   "esmodules": [
     "thefade.js"
