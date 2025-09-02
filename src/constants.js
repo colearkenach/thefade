@@ -58,7 +58,7 @@ export const AURA_INTENSITY_OPTIONS = {
     "": "None",
     faint: "Faint",
     moderate: "Moderate",
-    intense: "Intense",
+    intense: "Intense"
 };
 
 export const ADDICTION_LEVEL_OPTIONS = {
@@ -66,7 +66,7 @@ export const ADDICTION_LEVEL_OPTIONS = {
     early: "Early Stages (+2D)",
     middle: "Middle Stage (+4D)",
     late: "Late Stage (+6D)",
-    terminal: "Terminal (N/A)",
+    terminal: "Terminal (N/A)"
 };
 
 export const SKILL_RANK_OPTIONS = {
@@ -76,7 +76,7 @@ export const SKILL_RANK_OPTIONS = {
     adept: "Adept",
     experienced: "Experienced",
     expert: "Expert",
-    mastered: "Mastered",
+    mastered: "Mastered"
 };
 
 export const BODY_PARTS = ["head", "body", "leftarm", "rightarm", "leftleg", "rightleg"];
@@ -122,7 +122,7 @@ export const PATH_SKILL_TYPES = {
     CHOOSE_CATEGORY: "choose-category",
     CHOOSE_LORE: "choose-lore",
     CHOOSE_PERFORM: "choose-perform",
-    CHOOSE_CRAFT: "choose-craft",
+    CHOOSE_CRAFT: "choose-craft"
 };
 
 export const DEFAULT_SKILLS = [
@@ -219,7 +219,7 @@ export const FALLBACK_ACTOR_DATA = {
         abilities: "",
         flexibleBonus: {
             value: 0,
-            selectedAttribute: "",
+            selectedAttribute: ""
         }
     },
     naturalDeflection: {
