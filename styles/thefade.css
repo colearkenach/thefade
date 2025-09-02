@@ -1052,13 +1052,95 @@ input[readonly] {
             opacity: 1;
         }
 
+/* Weapon table column sizing and spacing */
+.thefade .weapon-header,
+.thefade .items-list .item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+}
+
+.thefade .weapon-icon {
+    flex: 0 0 40px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.thefade .weapon-name {
+    flex: 2 1 120px;
+    min-width: 120px;
+}
+
+.thefade .weapon-skill {
+    flex: 1 1 80px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.thefade .weapon-dice {
+    flex: 0 0 60px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.thefade .weapon-dmg-attr {
+    flex: 0 0 50px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.thefade .weapon-damage {
+    flex: 1 1 80px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.thefade .weapon-crit {
+    flex: 0 0 50px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.thefade .weapon-range {
+    flex: 1 1 70px;
+    min-width: 70px;
+    text-align: center;
+}
+
+.thefade .weapon-qualities {
+    flex: 2 1 100px;
+    min-width: 100px;
+}
+
+.thefade .weapon-controls {
+    flex: 0 0 80px;
+    min-width: 80px;
+    text-align: right;
+}
+
+/* Add padding to weapon table for better spacing */
+.thefade .weapon-header {
+    padding: 8px 12px;
+}
+
+.thefade .weapons .items-list .item {
+    padding: 6px 12px;
+}
+
+/* Ensure weapon table doesn't overflow container */
+.thefade .weapons {
+    overflow-x: auto;
+    min-width: 800px;
+}
+
 /* Currency */
 .thefade .currency {
-    margin-bottom: 15px;
-    padding: 10px;
-    background: rgba(255, 215, 0, 0.05);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 5px;
+margin-bottom: 15px;
+padding: 10px;
+background: rgba(255, 215, 0, 0.05);
+border: 1px solid rgba(255, 215, 0, 0.2);
+border-radius: 5px;
 }
 
 .thefade .currency-item {

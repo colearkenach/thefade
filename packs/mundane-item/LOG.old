@@ -1,7 +1,5 @@
-2025/07/19-22:45:56.109 830c Recovering log #38
-2025/07/19-22:45:56.112 830c Delete type=0 #38
-2025/07/19-22:45:56.112 830c Delete type=3 #36
-2025/07/19-22:54:59.999 6f90 Level-0 table #43: started
-2025/07/19-22:54:59.999 6f90 Level-0 table #43: 0 bytes OK
-2025/07/19-22:55:00.000 6f90 Delete type=0 #41
-2025/07/19-22:55:00.002 6f90 Manual compaction at level-0 from '!folders!1jhNYsT5dDTl5f7R' @ 72057594037927935 : 1 .. '!items!mwV2Kzx6K8RC9vJ8' @ 0 : 0; will stop at (end)
+2025/09/02-14:39:06.508 18108 Log #46: 0 ops saved to Table #47 OK
+2025/09/02-14:39:06.508 18108 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/000046.log: OK
+2025/09/02-14:39:06.508 18108 Table #17: 28 entries OK
+2025/09/02-14:39:06.509 18108 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/MANIFEST-000044: OK
+2025/09/02-14:39:06.510 18108 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item; recovered 1 files; 8498 bytes. Some data may have been lost. ****
