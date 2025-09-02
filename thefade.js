@@ -1,23 +1,13 @@
-/**
-* ====================================================================
-* THE FADE (ABYSS) CHARACTER SHEET FOR FOUNDRY VTT
-* ====================================================================
-* This module defines the complete system for The Fade (Abyss) TTRPG
-*
-* TABLE OF CONTENTS:
-* 0. CONSTANTS
-* 1. CORE ACTOR CLASSES
-* 2. CHARACTER SHEET IMPLEMENTATION
-* 3. ITEM CLASSES & SHEETS
-* 4. UTILITY FUNCTIONS
-* 5. SYSTEM HOOKS & INITIALIZATION
-* ====================================================================
-*/
+// Entry point for The Fade system; wires up documents and hooks
+import { registerSystemHooks } from './src/hooks.js';
 
-// ====================================================================
-// 1. CONSTANTS
-// ====================================================================
+export { TheFadeActor } from './src/actor.js';
+export { TheFadeCharacterSheet } from './src/character-sheet.js';
+export { TheFadeItem } from './src/item.js';
+export { TheFadeItemSheet } from './src/item-sheet.js';
 
+registerSystemHooks();
+=======
 import { SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS, FLEXIBLE_BONUS_OPTIONS, BODY_PARTS, DEFAULT_WEAPON, DEFAULT_ARMOR, DEFAULT_SKILL } from './src/constants.js';
 import { applyBonusHandlers } from './src/chat.js';
 
@@ -8890,4 +8880,3 @@ async function showChooseCraftSkillsDialog(actor, numToChoose, rank) {
 // --------------------------------------------------------------------
 // PATHS AND SKILLS CONFIGURATION
 // --------------------------------------------------------------------
-
