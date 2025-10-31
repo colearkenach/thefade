@@ -8,8 +8,6 @@ This is the Foundry VTT code necessary to spin up and play The Fade (Abyss) with
 The Fade - Abyss (Foundry VTT Sheet)  © 2025 by Jeremy Harris is licensed under CC BY-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/
 
 This work uses content from The Fade - Abyss TTRPG. See below for attribution.
+See this page for the game: https://colearkenach.itch.io/the-fade-abyss
 
-Title: “The Fade - Abyss”
-Author: Jeremy Harris (https://colearkenach.itch.io)
-Source: The Fade - Abyss (https://colearkenach.itch.io/the-fade-abyss)
-License: CC BY-SA 4.0
+The Fade - Abyss © 2025 by Jeremy Harris is licensed under CC BY-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-sa/4.0/
