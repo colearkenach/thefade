@@ -475,7 +475,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
                                 // Save changes to the path
                                 await this.item.update({ "system.pathSkills": pathSkills });
-                                this.render(true);
+                                // this.render(true);
                             }
                         }
                     },
@@ -505,7 +505,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
                 // Save changes to the path
                 await this.item.update({ "system.pathSkills": pathSkills });
-                this.render(true);
+                // this.render(true);
 
                 ui.notifications.info(`Updated ${pathSkills[skillIndex].name} to ${newRank} rank.`);
             }
@@ -694,7 +694,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
             // Use a small timeout to ensure data is processed
             setTimeout(() => {
-                this.render(false);
+                // this.render(false);
             }, 50);
         });
 
@@ -707,7 +707,7 @@ export class TheFadeItemSheet extends ItemSheet {
             });
 
             // Refresh the sheet to show the updated bonus
-            this.render(true);
+            // this.render(true);
         });
 
         // Handle autogrow textareas
@@ -1024,7 +1024,7 @@ export class TheFadeItemSheet extends ItemSheet {
                 pathSkills.push(skillEntry);
 
                 await this.item.update({ "system.pathSkills": pathSkills });
-                this.render(true);
+                // this.render(true);
                 ui.notifications.info(`Added "${skillEntry.name}" to path skills`);
             }
         });
@@ -1392,7 +1392,7 @@ export class TheFadeItemSheet extends ItemSheet {
         pathSkills.push(skillEntry);
 
         await this.item.update({ "system.pathSkills": pathSkills });
-        this.render(true);
+        // this.render(true);
         ui.notifications.info(`Added "${skillEntry.name}" to path skills`);
     }
 
@@ -1565,7 +1565,7 @@ export class TheFadeItemSheet extends ItemSheet {
         // Only update if we found something to delete
         if (Object.keys(updateData).length > 0) {
             await this.item.update(updateData);
-            this.render(true);
+            // this.render(true);
         }
     }
 
@@ -1679,7 +1679,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
             // Show success and refresh
             ui.notifications.info(`Added ${skillData.name} to ${this.item.name}`);
-            this.render(true);
+            // this.render(true);
             return true;
         }
 

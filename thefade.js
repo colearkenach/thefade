@@ -1,10 +1,10 @@
 // Entry point for The Fade system; wires up documents and hooks
 import { registerSystemHooks } from './src/hooks.js';
 
-export { TheFadeActor } from './src/actor.js';
-export { TheFadeCharacterSheet } from './src/character-sheet.js';
-export { TheFadeItem } from './src/item.js';
-export { TheFadeItemSheet } from './src/item-sheet.js';
+//export { TheFadeActor } from './src/actor.js';
+//export { TheFadeCharacterSheet } from './src/character-sheet.js';
+//export { TheFadeItem } from './src/item.js';
+//export { TheFadeItemSheet } from './src/item-sheet.js';
 
 registerSystemHooks();
 
@@ -1141,7 +1141,7 @@ class TheFadeCharacterSheet extends ActorSheet {
         actorData.equippedArmor = equippedArmor;
         actorData.unequippedArmor = unequippedArmor;
         actorData.armorTotals = armorTotals;
-        actorData.potions = potions;
+        actorData.potion = potions;
         actorData.drugs = drugs;
         actorData.poisons = poisons;
         actorData.biological = biological;
@@ -3670,7 +3670,11 @@ class TheFadeCharacterSheet extends ActorSheet {
         if (!this.options.editable) return;
 
         // Initialize defense system with flags
-        this._initializeDefenseSystem(html);
+        if (!this._defensesInitialized) {
+            this._defensesInitialized = true;
+            this._initializeDefenseSystem(html);
+        }
+
         this._initializeExcessPenaltyTooltips(html);
 
         this._activateInventoryListeners(html);
@@ -5938,6 +5942,7 @@ class TheFadeItemSheet extends ItemSheet {
             data.materialOptions = {
                 "iron": "Iron (Standard)",
                 "bone": "Bone",
+                "obsidian": "Obsidian",
                 "wood": "Wood",
                 "leather": "Leather",
                 "copper": "Copper",
@@ -6008,8 +6013,11 @@ class TheFadeItemSheet extends ItemSheet {
             };
 
             data.weaponAttributeOptions = {
+                "N/A": "N/A",
                 "physique": "Physique",
                 "finesse": "Finesse",
+                "mind": "Mind",
+                "presence": "Presence",
                 "soul": "Soul"
             };
 
@@ -7981,124 +7989,155 @@ Hooks.on("createItem", async (item, options, userId) => {
         const actor = item.parent;
         const path = item;
 
+        if (actor.getFlag("thefade", "addingSkills")) return;
+        await actor.setFlag("thefade", "addingSkills", true);
+
         // Check if the path has associated skills
         if (path.system.pathSkills && path.system.pathSkills.length > 0) {
-            let skillsModified = 0;
-            let customSkillsCreated = 0;
-            let choicesMade = 0;
+            const skillsToAdd = [];
+            let skillsUpgraded = 0;
+
+            //let skillsModified = 0;
+            //let customSkillsCreated = 0;
+            //let choicesMade = 0;
 
             for (const pathSkill of path.system.pathSkills) {
-                const entryType = pathSkill.system.entryType;
+                const existingSkill = actor.items.find(i =>
+                    i.type === 'skill' && i.name === pathSkill.name
+                );
 
-                switch (entryType) {
-                    case PATH_SKILL_TYPES.SPECIFIC_SKILL:
-                        // Handle specific core skills
-                        const coreSkill = actor.items.find(i =>
-                            i.type === 'skill' && i.name === pathSkill.name
-                        );
+                if (!existingSkill) {
+                    const newSkill = duplicate(pathSkill);
+                    delete newSkill._id;
+                    skillsToAdd.push(newSkill);
+                } else {
+                    const pathRankValue = getRankValue(pathSkill.system.rank);
+                    const existingRankValue = getRankValue(existingSkill.system.rank);
 
-                        if (coreSkill) {
-                            // Upgrade existing skill if path offers better training
-                            const pathRankValue = getRankValue(pathSkill.system.rank);
-                            const currentRankValue = getRankValue(coreSkill.system.rank);
-
-                            if (pathRankValue > currentRankValue) {
-                                await coreSkill.update({
-                                    "system.rank": pathSkill.system.rank
-                                });
-                                skillsModified++;
-                            }
-                        } else {
-                            // Create new skill
-                            const newSkill = {
-                                name: pathSkill.name,
-                                type: "skill",
-                                system: {
-                                    rank: pathSkill.system.rank,
-                                    category: pathSkill.system.category,
-                                    attribute: pathSkill.system.attribute
-                                }
-                            };
-                            await actor.createEmbeddedDocuments("Item", [newSkill]);
-                            skillsModified++;
-                        }
-                        break;
-
-                    case PATH_SKILL_TYPES.SPECIFIC_CUSTOM:
-                        // Create specific custom skill
-                        const skillType = pathSkill.system.skillType;
-                        const subtype = pathSkill.system.subtype;
-                        await createCustomSkill(actor, skillType, subtype, pathSkill.system.rank);
-                        customSkillsCreated++;
-                        break;
-
-                    case PATH_SKILL_TYPES.CHOOSE_CATEGORY:
-                        // Show dialog to choose from category
-                        await showChooseRegularSkillsDialog(
-                            actor,
-                            pathSkill.system.chooseCount,
-                            pathSkill.system.chooseCategory,
-                            pathSkill.system.rank,
-                            path
-                        );
-                        choicesMade++;
-                        break;
-
-                    case PATH_SKILL_TYPES.CHOOSE_LORE:
-                        // Show dialog to create lore skills
-                        await showChooseLoreSkillsDialog(
-                            actor,
-                            pathSkill.system.chooseCount,
-                            pathSkill.system.rank
-                        );
-                        choicesMade++;
-                        break;
-
-                    case PATH_SKILL_TYPES.CHOOSE_PERFORM:
-                        // Show dialog to create perform skills
-                        await showChoosePerformSkillsDialog(
-                            actor,
-                            pathSkill.system.chooseCount,
-                            pathSkill.system.rank
-                        );
-                        choicesMade++;
-                        break;
-
-                    case PATH_SKILL_TYPES.CHOOSE_CRAFT:
-                        // Show dialog to create craft skills
-                        await showChooseCraftSkillsDialog(
-                            actor,
-                            pathSkill.system.chooseCount,
-                            pathSkill.system.rank
-                        );
-                        choicesMade++;
-                        break;
-
-                    default:
-                        // Fallback for old-style entries without entryType
-                        const existingSkill = actor.items.find(i =>
-                            i.type === 'skill' && i.name === pathSkill.name
-                        );
-
-                        if (!existingSkill) {
-                            const newSkill = duplicate(pathSkill);
-                            delete newSkill._id;
-                            await actor.createEmbeddedDocuments("Item", [newSkill]);
-                            skillsModified++;
-                        } else {
-                            const pathRankValue = getRankValue(pathSkill.system.rank);
-                            const existingRankValue = getRankValue(existingSkill.system.rank);
-
-                            if (pathRankValue > existingRankValue) {
-                                await existingSkill.update({
-                                    "system.rank": pathSkill.system.rank
-                                });
-                                skillsModified++;
-                            }
-                        }
-                        break;
+                    if (pathRankValue > existingRankValue) {
+                        await existingSkill.update({ "system.rank": pathSkill.system.rank });
+                        skillsUpgraded++;
+                    }
                 }
             }
+
+            if (skillsToAdd.length > 0) {
+                await actor.createEmbeddedDocuments("Item", skillsToAdd);
+            }
+
+            //for (const pathSkill of path.system.pathSkills) {
+            //    const entryType = pathSkill.system.entryType;
+
+            //    switch (entryType) {
+            //        case PATH_SKILL_TYPES.SPECIFIC_SKILL:
+            //            // Handle specific core skills
+            //            const coreSkill = actor.items.find(i =>
+            //                i.type === 'skill' && i.name === pathSkill.name
+            //            );
+
+            //            if (coreSkill) {
+            //                // Upgrade existing skill if path offers better training
+            //                const pathRankValue = getRankValue(pathSkill.system.rank);
+            //                const currentRankValue = getRankValue(coreSkill.system.rank);
+
+            //                if (pathRankValue > currentRankValue) {
+            //                    await coreSkill.update({
+            //                        "system.rank": pathSkill.system.rank
+            //                    });
+            //                    skillsModified++;
+            //                }
+            //            } else {
+            //                // Create new skill
+            //                const newSkill = {
+            //                    name: pathSkill.name,
+            //                    type: "skill",
+            //                    system: {
+            //                        rank: pathSkill.system.rank,
+            //                        category: pathSkill.system.category,
+            //                        attribute: pathSkill.system.attribute
+            //                    }
+            //                };
+            //                await actor.createEmbeddedDocuments("Item", [newSkill]);
+            //                skillsModified++;
+            //            }
+            //            break;
+
+            //        case PATH_SKILL_TYPES.SPECIFIC_CUSTOM:
+            //            // Create specific custom skill
+            //            const skillType = pathSkill.system.skillType;
+            //            const subtype = pathSkill.system.subtype;
+            //            await createCustomSkill(actor, skillType, subtype, pathSkill.system.rank);
+            //            customSkillsCreated++;
+            //            break;
+
+            //        case PATH_SKILL_TYPES.CHOOSE_CATEGORY:
+            //            // Show dialog to choose from category
+            //            await showChooseRegularSkillsDialog(
+            //                actor,
+            //                pathSkill.system.chooseCount,
+            //                pathSkill.system.chooseCategory,
+            //                pathSkill.system.rank,
+            //                path
+            //            );
+            //            choicesMade++;
+            //            break;
+
+            //        case PATH_SKILL_TYPES.CHOOSE_LORE:
+            //            // Show dialog to create lore skills
+            //            await showChooseLoreSkillsDialog(
+            //                actor,
+            //                pathSkill.system.chooseCount,
+            //                pathSkill.system.rank
+            //            );
+            //            choicesMade++;
+            //            break;
+
+            //        case PATH_SKILL_TYPES.CHOOSE_PERFORM:
+            //            // Show dialog to create perform skills
+            //            await showChoosePerformSkillsDialog(
+            //                actor,
+            //                pathSkill.system.chooseCount,
+            //                pathSkill.system.rank
+            //            );
+            //            choicesMade++;
+            //            break;
+
+            //        case PATH_SKILL_TYPES.CHOOSE_CRAFT:
+            //            // Show dialog to create craft skills
+            //            await showChooseCraftSkillsDialog(
+            //                actor,
+            //                pathSkill.system.chooseCount,
+            //                pathSkill.system.rank
+            //            );
+            //            choicesMade++;
+            //            break;
+
+            //        default:
+            //            // Fallback for old-style entries without entryType
+            //            const existingSkill = actor.items.find(i =>
+            //                i.type === 'skill' && i.name === pathSkill.name
+            //            );
+
+            //            if (!existingSkill) {
+            //                const newSkill = duplicate(pathSkill);
+            //                delete newSkill._id;
+            //                await actor.createEmbeddedDocuments("Item", [newSkill]);
+            //                skillsModified++;
+            //            } else {
+            //                const pathRankValue = getRankValue(pathSkill.system.rank);
+            //                const existingRankValue = getRankValue(existingSkill.system.rank);
+
+            //                if (pathRankValue > existingRankValue) {
+            //                    await existingSkill.update({
+            //                        "system.rank": pathSkill.system.rank
+            //                    });
+            //                    skillsModified++;
+            //                }
+            //            }
+            //            break;
+            //    }
+            //}
+
 
             // Show results
             let message = [];
@@ -8109,6 +8148,8 @@ Hooks.on("createItem", async (item, options, userId) => {
             if (message.length > 0) {
                 ui.notifications.info(`${path.name} applied to ${actor.name}: ${message.join(', ')}`);
             }
+
+            await actor.unsetFlag("thefade", "addingSkills");
         }
     }
 
@@ -8195,6 +8236,12 @@ Hooks.on("createItem", async (item, options, userId) => {
     }
 });
 
+Hooks.on("createActor", async (actor, options, userId) => {
+    if (actor.type === 'character' && game.user.id === userId) {
+        await initializeDefaultSkills(actor);
+    }
+});
+
 /**
  * System ready hook - final setup after all systems loaded
  */
@@ -8235,6 +8282,8 @@ Hooks.once('ready', async function () {
 */
 async function initializeDefaultSkills(actor) {
     if (actor.type !== 'character') return;
+    if (actor.getFlag("thefade", "addingSkills")) return;
+    await actor.setFlag("thefade", "addingSkills", true);
 
     const skillsToCreate = [];
 
@@ -8264,6 +8313,9 @@ async function initializeDefaultSkills(actor) {
         await actor.createEmbeddedDocuments("Item", skillsToCreate);
         ui.notifications.info(`Added ${skillsToCreate.length} missing default skills to ${actor.name}.`);
     }
+
+    await actor.unsetFlag("thefade", "addingSkills");
+
 }
 
 /**

@@ -4012,3 +4012,1901 @@ select[name="system.aura.color"] option[value="white"] {
 .precept-description p:last-child {
   margin-bottom: 0;
 }
+
+/* =================================================================== */
+/* THE FADE - CLEAN SHEET STYLING                                       */
+/* Paste this at the END of your thefade.css to override messy styles   */
+/* =================================================================== */
+
+/* ===== REDUCE VISUAL NOISE - CLEANER PANELS ===== */
+.thefade .panel,
+.thefade .resource,
+.thefade .attribute,
+.thefade .defense {
+    border: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 6px;
+}
+
+    .thefade .panel:hover,
+    .thefade .resource:hover,
+    .thefade .attribute:hover {
+        border-color: transparent;
+        box-shadow: none;
+    }
+
+/* ===== CLEANER HEADER ===== */
+.thefade .sheet-header {
+    border-bottom: 2px solid var(--primary-color, #4a5568);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.thefade .charname input {
+    font-size: 1.75em;
+    font-weight: 600;
+    border: none;
+    border-bottom: 1px solid transparent;
+}
+
+    .thefade .charname input:focus {
+        border-bottom-color: var(--accent-color, #667eea);
+        outline: none;
+    }
+
+/* ===== CLEANER DICE ROLLERATOR ===== */
+.thefade .header-tool {
+    background: rgba(0, 0, 0, 0.04);
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.thefade .tool-header h2 {
+    font-size: 0.9em;
+    font-weight: 600;
+    margin: 0;
+    color: var(--gray-600, #718096);
+}
+
+/* ===== CLEANER TABS ===== */
+.thefade .sheet-tabs {
+    border-bottom: 1px solid var(--gray-200, #e2e8f0);
+    gap: 2px;
+}
+
+    .thefade .sheet-tabs .item {
+        border: none;
+        background: transparent;
+        border-radius: 0;
+        padding: 8px 14px;
+        font-size: 0.85em;
+        font-weight: 500;
+        color: var(--gray-600, #718096);
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+    }
+
+        .thefade .sheet-tabs .item:hover {
+            background: transparent;
+            color: var(--gray-800, #2d3748);
+            transform: none;
+        }
+
+        .thefade .sheet-tabs .item.active {
+            background: transparent;
+            color: var(--primary-color, #4a5568);
+            border-color: transparent;
+            border-bottom-color: var(--primary-color, #4a5568);
+        }
+
+/* ===== VITAL STATS - SIMPLIFIED ===== */
+.thefade .vital-stats {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+    .thefade .vital-stats .resource {
+        padding: 12px;
+    }
+
+    .thefade .vital-stats label {
+        font-size: 0.75em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--gray-500, #a0aec0);
+        margin-bottom: 4px;
+    }
+
+    .thefade .vital-stats input {
+        font-size: 1.25em;
+        font-weight: 600;
+        text-align: center;
+        border: none;
+        background: transparent;
+        padding: 4px;
+    }
+
+        .thefade .vital-stats input:focus {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 4px;
+        }
+
+/* ===== ATTRIBUTES - CLEANER GRID ===== */
+.thefade .attributes-grid {
+    gap: 8px;
+}
+
+.thefade .attribute {
+    padding: 12px 8px;
+    text-align: center;
+}
+
+    .thefade .attribute::before {
+        display: none; /* Remove radial gradient effect */
+    }
+
+    .thefade .attribute label {
+        font-size: 0.7em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--gray-500, #a0aec0);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .thefade .attribute input {
+        font-size: 1.5em;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        text-align: center;
+        width: 100%;
+    }
+
+/* ===== DEFENSES - MAJOR CLEANUP ===== */
+.thefade h2,
+.thefade h3 {
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--gray-700, #4a5568);
+    margin: 20px 0 12px 0;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200, #e2e8f0);
+}
+
+.thefade h3 {
+    font-size: 0.9em;
+    margin: 16px 0 10px 0;
+}
+
+.thefade .defense {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.thefade .defense-label {
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--gray-600, #718096);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .thefade .defense-label .toggle-icon {
+        font-size: 0.7em;
+        opacity: 0.5;
+        transition: transform 0.2s ease;
+    }
+
+.thefade .defense-checkbox:checked ~ .defense-label .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.thefade .defense-value {
+    margin: 6px 0;
+}
+
+    .thefade .defense-value .total-value {
+        font-size: 1.4em;
+        font-weight: 700;
+        border: none;
+        background: transparent;
+        text-align: center;
+        width: 60px;
+    }
+
+.thefade .defense-desc {
+    font-size: 0.7em;
+    color: var(--gray-400, #cbd5e0);
+    font-style: italic;
+    margin-top: 4px;
+}
+
+.thefade .defense-details {
+    font-size: 0.75em;
+    color: var(--gray-600, #718096);
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
+    margin-top: 6px;
+}
+
+    .thefade .defense-details .detail-row {
+        padding: 2px 0;
+    }
+
+/* ===== EXCESS PENALTY BADGES ===== */
+.thefade .excess-penalty {
+    font-size: 0.7em;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: var(--gray-200, #e2e8f0);
+    color: var(--gray-600, #718096);
+    margin-left: 4px;
+}
+
+/* ===== FACING DROPDOWN ===== */
+.thefade .facing-select {
+    font-size: 0.85em;
+    padding: 4px 8px;
+    border: 1px solid var(--gray-300, #e2e8f0);
+    border-radius: 4px;
+    background: white;
+}
+
+/* ===== CARRYING CAPACITY - SIMPLIFIED ===== */
+.thefade .capacity {
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    text-align: center;
+}
+
+    .thefade .capacity label {
+        font-size: 0.7em;
+        color: var(--gray-500, #a0aec0);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .thefade .capacity input {
+        font-size: 1.1em;
+        font-weight: 600;
+        border: none;
+        background: transparent;
+        text-align: center;
+    }
+
+/* ===== SECTION DIVIDERS ===== */
+.thefade hr {
+    border: none;
+    border-top: 1px solid var(--gray-200, #e2e8f0);
+    margin: 20px 0;
+}
+
+/* ===== FORM GROUPS - CLEANER ===== */
+.thefade .form-group {
+    margin-bottom: 12px;
+}
+
+    .thefade .form-group label {
+        font-size: 0.8em;
+        font-weight: 500;
+        color: var(--gray-600, #718096);
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .thefade .form-group input,
+    .thefade .form-group select,
+    .thefade .form-group textarea {
+        border: 1px solid var(--gray-300, #e2e8f0);
+        border-radius: 4px;
+        padding: 6px 10px;
+        font-size: 0.9em;
+        transition: border-color 0.2s ease;
+    }
+
+        .thefade .form-group input:focus,
+        .thefade .form-group select:focus,
+        .thefade .form-group textarea:focus {
+            border-color: var(--primary-color, #4a5568);
+            outline: none;
+        }
+
+/* ===== GRIDS - TIGHTER SPACING ===== */
+.thefade .grid {
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.thefade .grid-2col {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.thefade .grid-3col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.thefade .grid-5col {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* ===== CHARACTER PROGRESSION - CLEANER ===== */
+.thefade .character-progression {
+    background: rgba(0, 0, 0, 0.02);
+    border: none;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+    .thefade .character-progression h3 {
+        margin: 0 0 12px 0;
+        padding-bottom: 8px;
+    }
+
+    .thefade .character-progression h4 {
+        font-size: 0.8em;
+        color: var(--gray-500, #a0aec0);
+        margin: 12px 0 8px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+/* ===== SPECIES ABILITIES ===== */
+.thefade .species-abilities-list .species-ability {
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+.thefade .species-ability .ability-header {
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+.thefade .species-ability .ability-description {
+    font-size: 0.85em;
+    color: var(--gray-600, #718096);
+    margin-top: 4px;
+}
+
+/* ===== ITEMS LIST - CLEANER ===== */
+.thefade .items-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .thefade .items-list .item {
+        padding: 8px;
+        border-bottom: 1px solid var(--gray-100, #f7fafc);
+        transition: background 0.15s ease;
+    }
+
+        .thefade .items-list .item:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .thefade .items-list .item:last-child {
+            border-bottom: none;
+        }
+
+.thefade .item-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+    border-radius: 4px;
+}
+
+/* ===== SKILL/TALENT ACCORDIONS ===== */
+.thefade .skill-item,
+.thefade .talent-item,
+.thefade .trait-item,
+.thefade .precept-item {
+    border-bottom: 1px solid var(--gray-100, #f7fafc);
+}
+
+.thefade .skill-header,
+.thefade .talent-header,
+.thefade .trait-header,
+.thefade .precept-header {
+    background: transparent;
+    border: none;
+    padding: 8px 0;
+}
+
+.thefade .skill-name,
+.thefade .talent-name,
+.thefade .trait-name,
+.thefade .precept-name {
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+/* ===== BACKGROUND TAB - CLEANER ===== */
+.thefade .background-section,
+.thefade .appearance-section,
+.thefade .notes-section {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin-bottom: 16px;
+}
+
+    .thefade .background-section label,
+    .thefade .appearance-section label,
+    .thefade .notes-section label {
+        font-size: 0.85em;
+        font-weight: 600;
+        color: var(--gray-700, #4a5568);
+    }
+
+    .thefade .background-section textarea,
+    .thefade .appearance-section textarea,
+    .thefade .notes-section textarea {
+        border: 1px solid var(--gray-200, #e2e8f0);
+        background: white;
+        min-height: 100px;
+    }
+
+/* ===== BUTTONS - CONSISTENT STYLE ===== */
+.thefade button,
+.thefade .roll-dice {
+    background: var(--primary-color, #4a5568);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 0.85em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+    .thefade button:hover,
+    .thefade .roll-dice:hover {
+        background: var(--gray-700, #2d3748);
+    }
+
+/* ===== ICON BUTTONS ===== */
+.thefade a[class*="-add"],
+.thefade a[class*="-edit"],
+.thefade a[class*="-delete"],
+.thefade a.item-create {
+    color: var(--gray-400, #cbd5e0);
+    padding: 4px;
+    transition: color 0.15s ease;
+}
+
+    .thefade a[class*="-add"]:hover,
+    .thefade a.item-create:hover {
+        color: var(--green-500, #48bb78);
+    }
+
+    .thefade a[class*="-edit"]:hover {
+        color: var(--blue-500, #4299e1);
+    }
+
+    .thefade a[class*="-delete"]:hover {
+        color: var(--red-500, #f56565);
+    }
+
+/* ===== TAB CONTENT PADDING ===== */
+.thefade .tab[data-tab] {
+    padding: 8px 0;
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.thefade .sheet-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.thefade .sheet-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.thefade .sheet-body::-webkit-scrollbar-thumb {
+    background: var(--gray-300, #e2e8f0);
+    border-radius: 3px;
+}
+
+    .thefade .sheet-body::-webkit-scrollbar-thumb:hover {
+        background: var(--gray-400, #cbd5e0);
+    }
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 700px) {
+    .thefade .grid-3col,
+    .thefade .grid-5col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .thefade .sheet-tabs .item {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+}
+
+/* =================================================================== */
+/* THE FADE - CLASSIC TTRPG SHEET STYLE                                 */
+/* Paste at END of thefade.css to override                              */
+/* =================================================================== */
+
+:root {
+    --sheet-border: #000;
+    --sheet-bg: #fff;
+    --header-bg: #333;
+    --header-text: #fff;
+    --field-bg: #fafafa;
+    --label-size: 0.65em;
+}
+
+/* ===== BASE SHEET ===== */
+.thefade.sheet {
+    background: var(--sheet-bg);
+    border: 2px solid var(--sheet-border);
+    font-family: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* ===== HEADER - CHARACTER NAME ===== */
+.thefade .sheet-header {
+    border-bottom: 2px solid var(--sheet-border);
+    padding: 6px 10px;
+    background: var(--field-bg);
+}
+
+.thefade .charname {
+    margin: 0;
+}
+
+    .thefade .charname input {
+        font-size: 1.4em;
+        font-weight: bold;
+        border: none;
+        border-bottom: 1px solid #999;
+        background: transparent;
+        width: 100%;
+        padding: 2px 0;
+    }
+
+/* ===== DICE ROLLER - COMPACT ===== */
+.thefade .header-tool {
+    border: 1px solid var(--sheet-border);
+    padding: 4px 8px;
+    background: var(--field-bg);
+    margin-top: 6px;
+}
+
+.thefade .tool-header h2 {
+    font-size: 0.8em;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.thefade .dice-input input {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #999;
+    padding: 2px;
+}
+
+.thefade .roll-dice {
+    padding: 2px 8px;
+    font-size: 0.85em;
+}
+
+/* ===== TABS - CLASSIC STYLE ===== */
+.thefade .sheet-tabs {
+    background: var(--header-bg);
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+    .thefade .sheet-tabs .item {
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        color: #ccc;
+        padding: 6px 12px;
+        margin: 0;
+        font-size: 0.85em;
+        text-transform: uppercase;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+    }
+
+        .thefade .sheet-tabs .item:hover {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            transform: none;
+        }
+
+        .thefade .sheet-tabs .item.active {
+            background: var(--sheet-bg);
+            color: var(--sheet-border);
+            border-color: transparent;
+        }
+
+/* ===== SHEET BODY ===== */
+.thefade .sheet-body {
+    padding: 8px;
+}
+
+.thefade .tab[data-tab] {
+    padding: 0;
+}
+
+/* ===== SECTION HEADERS ===== */
+.thefade h2 {
+    background: var(--header-bg);
+    color: var(--header-text);
+    font-size: 0.85em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    margin: 0 0 8px 0;
+    border: none;
+}
+
+.thefade h3 {
+    background: #666;
+    color: #fff;
+    font-size: 0.75em;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 3px 6px;
+    margin: 8px 0 6px 0;
+    border: none;
+}
+
+/* ===== BORDERED SECTIONS ===== */
+.thefade .section-box {
+    border: 1px solid var(--sheet-border);
+    padding: 6px;
+    margin-bottom: 8px;
+    background: var(--sheet-bg);
+}
+
+/* ===== VITAL STATS - BOXED LAYOUT ===== */
+.thefade .vital-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    padding: 0;
+    margin-bottom: 8px;
+    background: transparent;
+    border: none;
+}
+
+    .thefade .vital-stats .resource,
+    .thefade .vital-stats .panel {
+        border: 2px solid var(--sheet-border);
+        border-radius: 0;
+        padding: 4px;
+        background: var(--sheet-bg);
+        box-shadow: none;
+    }
+
+    .thefade .vital-stats label {
+        display: block;
+        background: var(--header-bg);
+        color: var(--header-text);
+        font-size: var(--label-size);
+        font-weight: bold;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 2px 4px;
+        margin: -4px -4px 4px -4px;
+    }
+
+    .thefade .vital-stats input {
+        border: 1px solid #999;
+        background: var(--field-bg);
+        text-align: center;
+        font-size: 1.1em;
+        font-weight: bold;
+        padding: 2px;
+        width: 50px;
+    }
+
+    .thefade .vital-stats .resource-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        margin: 0;
+    }
+
+/* ===== ATTRIBUTES - STACKED BOXES ===== */
+.thefade .attributes-grid,
+.thefade .grid-5col.attributes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+}
+
+.thefade .attribute {
+    border: 2px solid var(--sheet-border);
+    border-radius: 0;
+    padding: 0;
+    background: var(--sheet-bg);
+    text-align: center;
+    box-shadow: none;
+}
+
+    .thefade .attribute::before {
+        display: none;
+    }
+
+    .thefade .attribute label {
+        display: block;
+        background: var(--header-bg);
+        color: var(--header-text);
+        font-size: var(--label-size);
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 3px 2px;
+        margin: 0;
+    }
+
+    .thefade .attribute input {
+        border: none;
+        background: transparent;
+        font-size: 1.4em;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+        padding: 4px 0;
+    }
+
+    .thefade .attribute .attr-modifier {
+        font-size: 0.8em;
+        color: #666;
+        border-top: 1px solid #ccc;
+        padding: 2px;
+        background: var(--field-bg);
+    }
+
+/* ===== DEFENSES - COMPACT GRID ===== */
+.thefade .defenses-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+}
+
+.thefade .defense {
+    border: 1px solid var(--sheet-border);
+    border-radius: 0;
+    padding: 0;
+    background: var(--sheet-bg);
+    box-shadow: none;
+}
+
+.thefade .defense-label {
+    display: block;
+    background: #555;
+    color: #fff;
+    font-size: var(--label-size);
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 3px 4px;
+    cursor: pointer;
+    margin: 0;
+}
+
+    .thefade .defense-label .toggle-icon {
+        font-size: 0.7em;
+        margin-left: 4px;
+    }
+
+.thefade .defense-value {
+    text-align: center;
+    padding: 4px;
+    margin: 0;
+}
+
+    .thefade .defense-value .total-value {
+        border: 1px solid #999;
+        background: var(--field-bg);
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align: center;
+        width: 45px;
+        padding: 2px;
+    }
+
+.thefade .defense-desc {
+    font-size: 0.65em;
+    color: #666;
+    text-align: center;
+    padding: 2px 4px;
+    border-top: 1px solid #ddd;
+    background: #f5f5f5;
+    margin: 0;
+    font-style: normal;
+}
+
+.thefade .defense-details {
+    font-size: 0.7em;
+    padding: 4px;
+    background: #f9f9f9;
+    border-top: 1px solid #ddd;
+    margin: 0;
+}
+
+    .thefade .defense-details .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 1px 0;
+    }
+
+    .thefade .defense-details input {
+        border: 1px solid #ccc;
+        width: 35px;
+        text-align: center;
+        font-size: 0.9em;
+        padding: 1px;
+    }
+
+.thefade .excess-penalty {
+    font-size: 0.7em;
+    background: #eee;
+    border: 1px solid #ccc;
+    padding: 1px 4px;
+    margin-left: 2px;
+}
+
+/* ===== FACING SELECT ===== */
+.thefade .facing-select {
+    font-size: 0.85em;
+    padding: 2px 4px;
+    border: 1px solid #999;
+    width: 100%;
+}
+
+/* ===== CARRYING CAPACITY ===== */
+.thefade .capacity {
+    border: 1px solid var(--sheet-border);
+    padding: 0;
+    background: var(--sheet-bg);
+    text-align: center;
+    border-radius: 0;
+}
+
+    .thefade .capacity label {
+        display: block;
+        background: #666;
+        color: #fff;
+        font-size: 0.6em;
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 3px 2px;
+    }
+
+    .thefade .capacity input {
+        border: none;
+        background: transparent;
+        font-size: 1em;
+        font-weight: bold;
+        text-align: center;
+        width: 100%;
+        padding: 4px 0;
+    }
+
+/* ===== GRIDS ===== */
+.thefade .grid {
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.thefade .grid-2col {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.thefade .grid-3col {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.thefade .grid-4col {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.thefade .grid-5col {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* ===== FORM GROUPS ===== */
+.thefade .form-group {
+    margin-bottom: 6px;
+}
+
+    .thefade .form-group label {
+        font-size: var(--label-size);
+        font-weight: bold;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    .thefade .form-group input,
+    .thefade .form-group select,
+    .thefade .form-group textarea {
+        border: 1px solid #999;
+        border-radius: 0;
+        padding: 3px 6px;
+        font-size: 0.9em;
+        background: var(--field-bg);
+        width: 100%;
+    }
+
+/* ===== SKILLS LIST - CHECKBOX STYLE ===== */
+.thefade .skills-list {
+    column-count: 2;
+    column-gap: 8px;
+}
+
+.thefade .skill-item {
+    break-inside: avoid;
+    border: none;
+    border-bottom: 1px dotted #ccc;
+    padding: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85em;
+}
+
+    .thefade .skill-item:last-child {
+        border-bottom: none;
+    }
+
+.thefade .skill-checkbox {
+    width: 10px;
+    height: 10px;
+    margin: 0;
+}
+
+.thefade .skill-name {
+    flex: 1;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+.thefade .skill-rank {
+    font-size: 0.8em;
+    color: #666;
+    width: 60px;
+    text-align: right;
+}
+
+.thefade .skill-dice {
+    font-weight: bold;
+    width: 30px;
+    text-align: center;
+    border: 1px solid #999;
+    background: var(--field-bg);
+    padding: 1px;
+}
+
+.thefade .skill-header,
+.thefade .skill-description {
+    padding: 0;
+    background: transparent;
+    border: none;
+}
+
+/* ===== ITEMS LIST ===== */
+.thefade .items-list {
+    border: 1px solid var(--sheet-border);
+    margin-bottom: 8px;
+}
+
+    .thefade .items-list .item-header,
+    .thefade .gear-header {
+        background: var(--header-bg);
+        color: var(--header-text);
+        font-size: var(--label-size);
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 3px 6px;
+    }
+
+    .thefade .items-list .item {
+        border-bottom: 1px solid #ddd;
+        padding: 4px 6px;
+        font-size: 0.85em;
+    }
+
+        .thefade .items-list .item:last-child {
+            border-bottom: none;
+        }
+
+        .thefade .items-list .item:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+.thefade .item-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    border: 1px solid #ccc;
+}
+
+/* ===== TALENTS/TRAITS ACCORDION ===== */
+.thefade .talent-item,
+.thefade .trait-item,
+.thefade .precept-item {
+    border: 1px solid #ccc;
+    margin-bottom: 4px;
+}
+
+.thefade .talent-header,
+.thefade .trait-header,
+.thefade .precept-header {
+    background: #eee;
+    padding: 4px 6px;
+    font-size: 0.85em;
+    border: none;
+}
+
+.thefade .talent-name,
+.thefade .trait-name,
+.thefade .precept-name {
+    font-weight: bold;
+}
+
+/* ===== PATHS ===== */
+.thefade .path-item {
+    border: 1px solid var(--sheet-border);
+    margin-bottom: 6px;
+}
+
+.thefade .path-header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    padding: 4px 8px;
+}
+
+.thefade .path-name {
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+/* ===== SPELLS ===== */
+.thefade .spell-item {
+    border: 1px solid #999;
+    margin-bottom: 4px;
+    padding: 4px 6px;
+    font-size: 0.85em;
+}
+
+/* ===== BACKGROUND TAB ===== */
+.thefade .background-section,
+.thefade .appearance-section,
+.thefade .notes-section {
+    border: 1px solid var(--sheet-border);
+    padding: 0;
+    margin-bottom: 8px;
+    background: var(--sheet-bg);
+}
+
+    .thefade .background-section label,
+    .thefade .appearance-section label,
+    .thefade .notes-section label {
+        display: block;
+        background: var(--header-bg);
+        color: var(--header-text);
+        font-size: var(--label-size);
+        font-weight: bold;
+        text-transform: uppercase;
+        padding: 3px 6px;
+        margin: 0;
+    }
+
+    .thefade .background-section textarea,
+    .thefade .appearance-section textarea,
+    .thefade .notes-section textarea {
+        border: none;
+        border-radius: 0;
+        padding: 6px;
+        min-height: 80px;
+        resize: vertical;
+        width: 100%;
+        background: var(--field-bg);
+    }
+
+/* ===== FAMILY SECTION ===== */
+.thefade .family-row {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    font-size: 0.85em;
+}
+
+    .thefade .family-row label:first-child {
+        font-weight: bold;
+        width: 60px;
+        text-transform: uppercase;
+        font-size: var(--label-size);
+    }
+
+.thefade .family-input {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+    .thefade .family-input input[type="text"] {
+        flex: 1;
+        border: 1px solid #999;
+        padding: 2px 4px;
+    }
+
+.thefade .alive-checkbox {
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+/* ===== BUTTONS ===== */
+.thefade button,
+.thefade .roll-dice {
+    background: var(--header-bg);
+    color: var(--header-text);
+    border: 1px solid var(--sheet-border);
+    border-radius: 0;
+    padding: 3px 8px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+    .thefade button:hover,
+    .thefade .roll-dice:hover {
+        background: #555;
+    }
+
+/* ===== ICON LINKS ===== */
+.thefade a[class*="-add"],
+.thefade a[class*="-edit"],
+.thefade a[class*="-delete"],
+.thefade a.item-create {
+    color: #666;
+    padding: 2px;
+}
+
+    .thefade a[class*="-add"]:hover,
+    .thefade a.item-create:hover {
+        color: #090;
+    }
+
+    .thefade a[class*="-edit"]:hover {
+        color: #009;
+    }
+
+    .thefade a[class*="-delete"]:hover {
+        color: #900;
+    }
+
+/* ===== DIVIDERS ===== */
+.thefade hr {
+    border: none;
+    border-top: 1px solid var(--sheet-border);
+    margin: 8px 0;
+}
+
+/* ===== CHARACTER PROGRESSION BOX ===== */
+.thefade .character-progression {
+    border: 2px solid var(--sheet-border);
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 8px;
+    background: var(--sheet-bg);
+}
+
+    .thefade .character-progression h3 {
+        margin: 0;
+        padding: 4px 8px;
+    }
+
+    .thefade .character-progression .progression-core,
+    .thefade .character-progression .progression-paths,
+    .thefade .character-progression .progression-tiers {
+        padding: 6px 8px;
+        border-top: 1px solid #ccc;
+    }
+
+.thefade .core-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+.thefade .stat-group label {
+    font-size: var(--label-size);
+    font-weight: bold;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.thefade .stat-group input {
+    border: 1px solid #999;
+    padding: 2px 4px;
+    text-align: center;
+    width: 60px;
+}
+
+/* ===== AURA/SPECIES SELECTS ===== */
+.thefade select {
+    border: 1px solid #999;
+    border-radius: 0;
+    padding: 2px 4px;
+    font-size: 0.9em;
+    background: var(--field-bg);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 700px) {
+    .thefade .attributes-grid,
+    .thefade .grid-5col.attributes {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .thefade .defenses-section {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .thefade .skills-list {
+        column-count: 1;
+    }
+}
+
+/* =================================================================== */
+/* THE FADE - CLASSIC TTRPG LAYOUT CSS                                  */
+/* Replace your existing thefade.css with this, or paste at the end    */
+/* =================================================================== */
+
+:root {
+    --border-dark: #000;
+    --border-light: #999;
+    --header-bg: #333;
+    --header-text: #fff;
+    --field-bg: #fafafa;
+    --section-bg: #f5f5f5;
+}
+
+/* ===== BASE SHEET ===== */
+.thefade.sheet {
+    background: #fff;
+    font-family: "Arial Narrow", "Roboto Condensed", Arial, sans-serif;
+    font-size: 11px;
+    border: 2px solid var(--border-dark);
+}
+
+/* ===== HEADER ===== */
+.thefade .sheet-header {
+    background: var(--section-bg);
+    border-bottom: 2px solid var(--border-dark);
+    padding: 6px 8px;
+}
+
+.thefade .header-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    margin-bottom: 4px;
+}
+
+    .thefade .header-row:last-child {
+        margin-bottom: 0;
+    }
+
+.thefade .header-name {
+    flex: 2;
+}
+
+.thefade .header-field {
+    flex: 1;
+}
+
+    .thefade .header-name label,
+    .thefade .header-field label {
+        display: block;
+        font-size: 0.7em;
+        text-transform: uppercase;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+.thefade .header-name input {
+    width: 100%;
+    font-size: 1.4em;
+    font-weight: bold;
+    border: none;
+    border-bottom: 1px solid var(--border-dark);
+    background: transparent;
+    padding: 2px 0;
+}
+
+.thefade .header-field input,
+.thefade .header-field select {
+    width: 100%;
+    border: 1px solid var(--border-light);
+    padding: 3px 4px;
+    font-size: 0.95em;
+}
+
+/* Dice Roller - Compact inline */
+.thefade .header-tool {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85em;
+}
+
+    .thefade .header-tool .tool-label {
+        font-weight: bold;
+    }
+
+    .thefade .header-tool input {
+        width: 35px;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        padding: 2px;
+    }
+
+    .thefade .header-tool .roll-dice {
+        padding: 2px 8px;
+        background: var(--header-bg);
+        color: var(--header-text);
+        border: 1px solid var(--border-dark);
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: bold;
+    }
+
+/* ===== TABS ===== */
+.thefade .sheet-tabs {
+    display: flex;
+    background: var(--header-bg);
+    margin: 0;
+    padding: 0;
+    border-bottom: none;
+}
+
+    .thefade .sheet-tabs .item {
+        padding: 5px 12px;
+        color: #ccc;
+        font-size: 0.8em;
+        font-weight: bold;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+        margin: 0;
+    }
+
+        .thefade .sheet-tabs .item:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+            transform: none;
+        }
+
+        .thefade .sheet-tabs .item.active {
+            background: #fff;
+            color: #000;
+        }
+
+/* ===== SHEET BODY ===== */
+.thefade .sheet-body {
+    padding: 8px;
+    overflow-y: auto;
+}
+
+/* ===== SECTION HEADERS ===== */
+.thefade .section-header {
+    background: var(--header-bg);
+    color: var(--header-text);
+    font-size: 0.75em;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 3px 6px;
+    margin: 8px 0 4px 0;
+}
+
+    .thefade .section-header:first-child {
+        margin-top: 0;
+    }
+
+    .thefade .section-header a {
+        color: var(--header-text);
+        float: right;
+    }
+
+/* ===== MAIN TAB 3-COLUMN GRID ===== */
+.thefade .main-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr 180px;
+    gap: 8px;
+}
+
+/* ===== LEFT COLUMN: ATTRIBUTES ===== */
+.thefade .attributes-column {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.thefade .attribute-box {
+    border: 2px solid var(--border-dark);
+    background: #fff;
+    text-align: center;
+    padding: 0;
+}
+
+    .thefade .attribute-box .attr-label {
+        background: var(--header-bg);
+        color: var(--header-text);
+        font-size: 0.8em;
+        font-weight: bold;
+        padding: 2px;
+    }
+
+    .thefade .attribute-box .attr-name {
+        font-size: 0.65em;
+        text-transform: uppercase;
+        color: #666;
+        padding: 1px;
+    }
+
+    .thefade .attribute-box .attr-value {
+        width: 50px;
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        border: none;
+        background: transparent;
+        margin: 4px auto;
+        display: block;
+    }
+
+    .thefade .attribute-box .attr-bonus {
+        display: block;
+        font-size: 0.75em;
+        color: #090;
+        padding-bottom: 4px;
+    }
+
+/* Initiative box */
+.thefade .initiative-box .attr-value {
+    font-size: 0.9em;
+    padding: 4px 8px;
+    background: var(--header-bg);
+    color: var(--header-text);
+    border: 1px solid var(--border-dark);
+    cursor: pointer;
+    width: auto;
+    margin: 4px;
+}
+
+.thefade .initiative-box .init-bonus {
+    font-size: 0.7em;
+    padding: 2px 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+}
+
+    .thefade .initiative-box .init-bonus input {
+        width: 30px;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        padding: 1px;
+    }
+
+/* ===== MIDDLE COLUMN: VITALS + DEFENSES ===== */
+.thefade .vitals-column {
+    min-width: 0;
+}
+
+/* Vitals Row */
+.thefade .vitals-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 4px;
+}
+
+.thefade .vital-box {
+    border: 2px solid var(--border-dark);
+    padding: 0;
+    text-align: center;
+}
+
+    .thefade .vital-box .vital-label {
+        background: var(--header-bg);
+        color: var(--header-text);
+        font-weight: bold;
+        font-size: 0.85em;
+        padding: 2px;
+    }
+
+    .thefade .vital-box .vital-values {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+    }
+
+    .thefade .vital-box .vital-current {
+        width: 45px;
+        font-size: 1.3em;
+        font-weight: bold;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        padding: 2px;
+    }
+
+    .thefade .vital-box .vital-max {
+        width: 40px;
+        font-size: 1em;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        background: var(--field-bg);
+        padding: 2px;
+    }
+
+    .thefade .vital-box .vital-bonus {
+        font-size: 0.7em;
+        padding: 2px 4px;
+        background: var(--section-bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+    }
+
+        .thefade .vital-box .vital-bonus input {
+            width: 30px;
+            text-align: center;
+            border: 1px solid var(--border-light);
+            padding: 1px;
+        }
+
+/* ===== DEFENSE TABLE ===== */
+.thefade .defense-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+}
+
+    .thefade .defense-table th {
+        background: #666;
+        color: #fff;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        padding: 3px 4px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .thefade .defense-table td {
+        border: 1px solid var(--border-light);
+        padding: 3px 4px;
+        text-align: center;
+    }
+
+    .thefade .defense-table .defense-name {
+        text-align: left;
+        font-weight: bold;
+        background: var(--section-bg);
+    }
+
+    .thefade .defense-table .defense-total {
+        width: 35px;
+        font-weight: bold;
+        font-size: 1.1em;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        background: #fff;
+    }
+
+    .thefade .defense-table .defense-base {
+        width: 30px;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        background: var(--field-bg);
+    }
+
+    .thefade .defense-table .defense-bonus {
+        width: 30px;
+        text-align: center;
+        border: 1px solid var(--border-light);
+    }
+
+    .thefade .defense-table .defense-note {
+        font-size: 0.8em;
+        color: #666;
+        text-align: left;
+    }
+
+/* Passive table */
+.thefade .passive-table td {
+    padding: 2px 4px;
+}
+
+.thefade .facing-select {
+    width: 100%;
+    border: 1px solid var(--border-light);
+    padding: 2px;
+    font-size: 0.9em;
+}
+
+/* ===== MOVEMENT TABLE ===== */
+.thefade .movement-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4px;
+}
+
+    .thefade .movement-table td {
+        padding: 2px;
+    }
+
+    .thefade .movement-table label {
+        display: block;
+        font-size: 0.7em;
+        text-transform: uppercase;
+        font-weight: bold;
+        margin-bottom: 1px;
+    }
+
+    .thefade .movement-table input {
+        width: 100%;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        padding: 2px;
+    }
+
+/* ===== CAPACITY TABLE ===== */
+.thefade .capacity-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    .thefade .capacity-table td {
+        padding: 2px;
+        text-align: center;
+    }
+
+    .thefade .capacity-table label {
+        display: block;
+        font-size: 0.65em;
+        text-transform: uppercase;
+        color: #666;
+    }
+
+    .thefade .capacity-table input {
+        width: 100%;
+        text-align: center;
+        border: 1px solid var(--border-light);
+        background: var(--field-bg);
+        padding: 2px;
+    }
+
+/* ===== RIGHT COLUMN: INFO ===== */
+.thefade .info-column {
+    font-size: 0.9em;
+}
+
+.thefade .info-box {
+    border: 1px solid var(--border-light);
+    padding: 4px;
+    margin-bottom: 4px;
+    background: #fff;
+}
+
+.thefade .info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 3px;
+}
+
+    .thefade .info-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .thefade .info-row label {
+        width: 60px;
+        font-size: 0.75em;
+        text-transform: uppercase;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .thefade .info-row input,
+    .thefade .info-row select {
+        flex: 1;
+        border: 1px solid var(--border-light);
+        padding: 2px 4px;
+        font-size: 0.95em;
+    }
+
+/* Abilities List */
+.thefade .abilities-list {
+    border: 1px solid var(--border-light);
+    max-height: 120px;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.thefade .ability-entry {
+    padding: 4px;
+    border-bottom: 1px solid #eee;
+}
+
+    .thefade .ability-entry:last-child {
+        border-bottom: none;
+    }
+
+.thefade .ability-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85em;
+}
+
+    .thefade .ability-row strong {
+        font-weight: bold;
+    }
+
+.thefade .ability-controls a {
+    color: #999;
+    margin-left: 4px;
+}
+
+    .thefade .ability-controls a:hover {
+        color: #000;
+    }
+
+.thefade .ability-desc {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 2px;
+}
+
+/* ===== BACKGROUND TAB ===== */
+.thefade .background-grid {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 12px;
+}
+
+.thefade .background-main textarea {
+    width: 100%;
+    border: 1px solid var(--border-light);
+    padding: 6px;
+    font-family: inherit;
+    font-size: 0.9em;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.thefade .background-portrait {
+    text-align: center;
+}
+
+    .thefade .background-portrait .profile-img {
+        width: 100%;
+        max-width: 180px;
+        border: 2px solid var(--border-dark);
+        cursor: pointer;
+    }
+
+/* Family Table */
+.thefade .family-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+}
+
+    .thefade .family-table td {
+        padding: 3px 4px;
+        border: 1px solid var(--border-light);
+    }
+
+    .thefade .family-table .family-label {
+        width: 60px;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.8em;
+        background: var(--section-bg);
+    }
+
+    .thefade .family-table input[type="text"] {
+        width: 100%;
+        border: none;
+        padding: 2px;
+    }
+
+    .thefade .family-table .family-alive {
+        width: 60px;
+        text-align: center;
+    }
+
+        .thefade .family-table .family-alive label {
+            font-size: 0.8em;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            justify-content: center;
+        }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 700px) {
+    .thefade .main-grid {
+        grid-template-columns: 80px 1fr;
+    }
+
+    .thefade .info-column {
+        grid-column: 1 / -1;
+    }
+
+    .thefade .background-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .thefade .background-portrait {
+        order: -1;
+    }
+}
+
+/* Fix oversized tabs area */
+.thefade .sheet-tabs {
+    height: auto !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+    padding: 0 !important;
+}
+
+.thefade .sheet-body {
+    flex: 1 1 auto !important;
+    min-height: 0 !important;
+}
+
+.thefade.sheet.actor {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fix header layout */
+.thefade .sheet-header {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+    height: auto !important;
+}

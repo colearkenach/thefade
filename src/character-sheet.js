@@ -1130,7 +1130,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             await this.actor.updateEmbeddedDocuments("Item", itemUpdates);
         }
 
-        this.render(false);
+        // this.render((false);
     }
 
     /**
@@ -1350,7 +1350,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 sheet._onDefenseRecalculation(fakedEvent);
 
                 // Force a complete re-render
-                sheet.render(true);
+                // sheet.render(true);
                 ui.notifications.info(`Facing changed to: ${newFacing}`);
             } catch (error) {
                 console.error("Facing update failed:", error);
@@ -1445,7 +1445,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 await sheet._updateDefensesForFacing(newFacing);
 
                 // Force re-render
-                sheet.render(true);
+                // sheet.render(true);
 
                 // Show notification
                 ui.notifications.info(`Facing changed to: ${newFacing}`);
@@ -3053,7 +3053,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.facing-select').change(ev => {
             // The update happens automatically via the general handler above
             // The re-render will ensure calculated values reflect the new facing
-            this.render(false);
+            // this.render((false);
         });
 
         // Handle changes to embedded items (skills, weapons, etc.)
@@ -3214,7 +3214,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
                             label: "Delete",
                             callback: () => {
                                 this.actor.deleteEmbeddedDocuments("Item", [itemId]);
-                                li.slideUp(200, () => this.render(false));
+                                //li.slideUp(200, () => // this.render((false));
                             }
                         },
                         cancel: {
@@ -3230,7 +3230,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
             // Regular deletion for non-skill items
             this.actor.deleteEmbeddedDocuments("Item", [itemId]);
-            li.slideUp(200, () => this.render(false));
+            //li.slideUp(200, () => // this.render((false));
         });
 
         html.find('.species-ability-add').click(async ev => {
@@ -3272,7 +3272,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             await this.actor.update(updateData);
 
             // Optional: force re-render to ensure visual update
-            this.render(false);
+            // this.render((false);
         });
 
         html.find('.skill-roll').click(this._onSkillRoll.bind(this));
@@ -3444,26 +3444,26 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.add-custom-craft').click(async ev => {
             ev.preventDefault();
             await showCustomSkillDialog(this.actor);
-            this.render(false);
+            // this.render((false);
         });
 
         html.find('.add-custom-lore').click(async ev => {
             ev.preventDefault();
             await createCustomSkill(this.actor, "lore", await getCustomSkillSubtype("Lore", "e.g., Anthropology, History"), "learned");
-            this.render(false);
+            // this.render((false);
         });
 
         html.find('.add-custom-perform').click(async ev => {
             ev.preventDefault();
             await createCustomSkill(this.actor, "perform", await getCustomSkillSubtype("Perform", "e.g., Singing, Dancing"), "learned");
-            this.render(false);
+            // this.render((false);
         });
 
         // Add universal custom skill button
         html.find('.add-custom-skill').click(async ev => {
             ev.preventDefault();
             await showCustomSkillDialog(this.actor);
-            this.render(false);
+            // this.render((false);
         });
 
         // Handle spell filtering
@@ -3536,7 +3536,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             html.find('.initialize-skills').click(async ev => {
                 ev.preventDefault();
                 await initializeDefaultSkills(this.actor);
-                this.render(false);
+                // this.render((false);
             });
         }
 
@@ -3737,7 +3737,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             try {
                 await item.update({ 'system.equipped': true });
                 ui.notifications.info(`${item.name} equipped.`);
-                this.render(false);
+                // this.render((false);
             } catch (error) {
                 console.error("Error equipping item:", error);
                 ui.notifications.error("Failed to equip item");
@@ -3783,7 +3783,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             try {
                 await item.update({ 'system.equipped': false });
                 ui.notifications.info(`${item.name} unequipped.`);
-                this.render(false);
+                // this.render((false);
             } catch (error) {
                 console.error("Error unequipping item:", error);
                 ui.notifications.error("Failed to unequip item");
@@ -3866,7 +3866,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             const newAP = Math.max(0, currentAP - amount);
             await item.update({ 'system.currentAP': newAP });
             ui.notifications.info(`${item.name} AP reduced by ${amount} to ${newAP}`);
-            this.render(false);
+            // this.render((false);
         });
 
         // Armor AP Reset
@@ -3884,7 +3884,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             const maxAP = item.system.ap || 0;
             await item.update({ 'system.currentAP': maxAP });
             ui.notifications.info(`${item.name} AP reset to ${maxAP}`);
-            this.render(false);
+            // this.render((false);
         });
 
         // Reset Derived AP 
@@ -4095,7 +4095,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             if (item) {
                 await item.update({ 'system.attunement': false });
                 ui.notifications.info(`${item.name} unattuned.`);
-                this.render(false);
+                // this.render((false);
             }
         });
 
@@ -4109,7 +4109,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             if (item) {
                 await item.update({ 'system.equipped': false });
                 ui.notifications.info(`${item.name} unequipped.`);
-                this.render(false);
+                // this.render((false);
             }
         });
 
