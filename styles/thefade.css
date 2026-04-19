@@ -11,35 +11,55 @@
 }
 
 .thefade {
-  /* Color Variables */
-  --primary-color: #2b2d42;
-  --secondary-color: #8d99ae;
-  --tertiary-color: #edf2f4;
-  --accent-color: #ef233c;
-  --dark-accent: #d90429;
-  --text-color: #2b2d42;
-  --light-text: #edf2f4;
-  --dark-text: #2b2d42;
-  --border-color: #8d99ae;
-  --background-color: #edf2f4;
-  --header-background: #2b2d42;
+  /* ===== MOODY PALETTE ===== */
+  --bg-ink:          #1a1416;
+  --bg-surface:      #241c1f;
+  --bg-surface-alt:  #2e2528;
+  --bg-surface-deep: #120e0f;
+
+  --border-faint:    #3d2f32;
+  --border-strong:   #5a4347;
+  --border-accent:   #7a1b1b;
+
+  --text-primary:    #e8dfd3;
+  --text-muted:      #8a7f7b;
+  --text-dim:        #5d5450;
+
+  --accent-crimson:  #7a1b1b;
+  --accent-hot:      #a82828;
+  --accent-ghost:    #4a3333;
+  --accent-gold:     #a88a4c;
+
+  /* Legacy aliases — keep so old rules continue to work */
+  --primary-color:    var(--bg-surface);
+  --secondary-color:  var(--text-muted);
+  --tertiary-color:   var(--text-primary);
+  --accent-color:     var(--accent-crimson);
+  --dark-accent:      var(--accent-hot);
+  --text-color:       var(--text-primary);
+  --light-text:       var(--text-primary);
+  --dark-text:        var(--text-primary);
+  --border-color:     var(--border-faint);
+  --background-color: var(--bg-ink);
+  --header-background:var(--bg-surface);
   --white: #ffffff;
   --black: #000000;
-  --gray-50: #f9f9f9;
-  --gray-100: #f5f5f5;
-  --gray-150: #eeeeee;
-  --gray-200: #dddddd;
-  --gray-300: #cccccc;
-  --gray-400: #bbbbbb;
-  --gray-500: #999999;
-  --gray-600: #666666;
-  --gray-700: #555555;
-  --gray-800: #333333;
-  /* Effect Variables */
+  --gray-50:  #2a2325;
+  --gray-100: #2e2629;
+  --gray-150: #322a2d;
+  --gray-200: #3a3134;
+  --gray-300: #45393d;
+  --gray-400: #5a4b4f;
+  --gray-500: #7a6b6f;
+  --gray-600: #9a8b8f;
+  --gray-700: #bfb3b0;
+  --gray-800: #d9cec9;
+
   --transition-speed: 0.2s;
-  --box-shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --box-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.2);
-  --focus-shadow: 0 0 0 2px rgba(239, 35, 60, 0.2);
+  --box-shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --box-shadow-hover:  0 2px 8px rgba(0, 0, 0, 0.6);
+  --box-shadow-card:   0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  --focus-shadow:      0 0 0 2px rgba(168, 40, 40, 0.35);
 }
 
 /* ===== BASE STYLES ===== */
@@ -102,7 +122,7 @@
 .thefade input[type="text"],
 .thefade input[type="number"],
 .thefade select {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 3px;
   padding: 0.25em;
@@ -116,11 +136,11 @@
   outline: none;
   border-color: var(--accent-color);
   box-shadow: var(--focus-shadow);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .thefade textarea {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 3px;
   padding: 0.5em;
@@ -133,7 +153,7 @@
   outline: none;
   border-color: var(--accent-color);
   box-shadow: var(--focus-shadow);
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 /* Small Input Utilities */
@@ -290,7 +310,7 @@
   padding: 5px 10px;
   margin-right: 5px;
   border-radius: 5px 5px 0 0;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-bottom: none;
   transition: all var(--transition-speed) ease;
@@ -452,7 +472,7 @@
 }
 
 .tier-stat input {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--gray-400);
   color: var(--gray-600);
   font-size: 12px;
@@ -464,12 +484,12 @@
   font-weight: bold;
   font-size: 1.2em;
   text-align: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 /* Readonly field styling */
 input[readonly] {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   color: var(--gray-600);
   cursor: not-allowed;
 }
@@ -532,7 +552,7 @@ input[readonly] {
 .panel {
   border: 1px solid var(--border-color);
   border-radius: 5px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   padding: 5px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -635,7 +655,7 @@ input[readonly] {
   border: 1px solid var(--border-color);
   border-radius: 5px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   transition: all var(--transition-speed) ease;
   position: relative;
   overflow: hidden;
@@ -772,7 +792,7 @@ input[readonly] {
   width: 120px !important;
   padding: 5px;
   border-radius: 3px;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   font-weight: normal;
   font-size: 14px;
@@ -835,7 +855,7 @@ input[readonly] {
 }
 
 .thefade .items-list .item:nth-child(even) {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .thefade .items-list .item:hover {
@@ -888,7 +908,7 @@ input[readonly] {
   align-items: center;
   gap: 10px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border-radius: 5px;
   margin-bottom: 15px;
   border: 1px solid var(--border-color);
@@ -1538,7 +1558,7 @@ input[readonly] {
   display: flex;
   border-bottom: 1px solid var(--border-color);
   margin: 15px 0;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .subtab-button {
@@ -2304,7 +2324,7 @@ input[readonly] {
 }
 
 .thefade .spell-item:nth-child(even) {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .thefade .spell-item:hover {
@@ -2356,7 +2376,7 @@ input[readonly] {
 
 .thefade .spell-detail-item {
   padding: 5px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border-radius: 3px;
 }
 
@@ -2422,7 +2442,7 @@ input[readonly] {
 
 .thefade .spell-school.malevolent {
   background: rgba(50, 50, 50, 0.3);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.06);
 }
 
 .thefade .spell-school.alchemy {
@@ -2435,7 +2455,7 @@ input[readonly] {
 
 .thefade .spell-school.rituals {
   background: rgba(75, 0, 130, 0.2);
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.06);
 }
 
 .thefade .spell-school.runes {
@@ -2448,7 +2468,7 @@ input[readonly] {
   gap: 10px;
   margin-bottom: 15px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 5px;
 }
@@ -2577,7 +2597,7 @@ input[readonly] {
   padding: 5px;
   border: 1px solid var(--gray-200);
   border-radius: 5px;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.35);
 }
 
 .species-details label {
@@ -2630,7 +2650,7 @@ input[readonly] {
   margin-top: 10px;
   margin-bottom: 15px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 5px;
 }
@@ -2764,7 +2784,7 @@ select[name="system.aura.color"] option[value="white"] {
 .vital-stats {
   margin-bottom: 15px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 5px;
 }
@@ -2772,7 +2792,7 @@ select[name="system.aura.color"] option[value="white"] {
 .initiative-bonus {
   margin-bottom: 15px;
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 5px;
 }
@@ -2832,13 +2852,13 @@ select[name="system.aura.color"] option[value="white"] {
   border-radius: 4px;
   padding: 8px;
   font-family: inherit;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .character-details-section {
   margin-top: 20px;
   padding: 15px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 8px;
 }
@@ -3028,7 +3048,7 @@ select[name="system.aura.color"] option[value="white"] {
   border: 1px solid var(--border-color);
   border-radius: 5px;
   margin-bottom: 5px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.04);
   animation: slideIn 0.3s ease-out;
 }
 
@@ -3256,7 +3276,7 @@ select[name="system.aura.color"] option[value="white"] {
   border-radius: 5px;
   padding: 10px;
   margin-bottom: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   transition: all var(--transition-speed) ease;
 }
 
@@ -3297,7 +3317,7 @@ select[name="system.aura.color"] option[value="white"] {
   padding: 5px;
   border: 1px solid var(--border-color);
   border-radius: 3px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .thefade .gate-properties .property-name {
@@ -3335,7 +3355,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .item-type {
   padding: 10px;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 5px;
   text-align: center;
@@ -3386,7 +3406,7 @@ select[name="system.aura.color"] option[value="white"] {
 .skill-choice-item {
   margin-bottom: 1rem;
   padding: 0.5rem;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   border-radius: 5px;
   border: 1px solid var(--gray-400);
   transition: all var(--transition-speed) ease;
@@ -3440,7 +3460,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .skill-examples {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   padding: 15px;
   border-radius: 5px;
   margin-top: 15px;
@@ -3549,7 +3569,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .no-skills-message {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   padding: 20px;
   border-radius: 5px;
   margin: 15px 0;
@@ -3615,7 +3635,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .path-skills-legend {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.35);
   padding: 15px;
   border-radius: 5px;
   margin-top: 15px;
@@ -5746,4 +5766,1140 @@ select[name="system.aura.color"] option[value="white"] {
     flex: 0 0 auto !important;
     min-height: 0 !important;
     height: auto !important;
+}
+
+/* ============================================================
+   REDESIGN v1 — moody palette, portrait header, hero attributes,
+   6-col defense band, 2-col movement, species/aura side-by-side.
+   All new selectors live below. Kept at end for source-order wins.
+   ============================================================ */
+
+/* ----- Window chrome ----- */
+.thefade .window-content {
+    background: var(--bg-ink);
+    color: var(--text-primary);
+}
+
+.thefade hr {
+    border: none;
+    border-top: 1px solid var(--border-faint);
+    margin: 16px 0;
+}
+
+/* ----- Redesigned sheet header ----- */
+.thefade .sheet-header.redesigned-header {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
+    border: 1px solid var(--border-faint);
+    border-bottom: 2px solid var(--accent-crimson);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    box-shadow: var(--box-shadow-card);
+}
+
+.thefade .redesigned-header .profile-img {
+    width: 120px !important;
+    height: 120px !important;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid var(--border-strong);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.6);
+    flex-shrink: 0;
+    cursor: pointer;
+    transition: border-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+}
+
+.thefade .redesigned-header .profile-img:hover {
+    border-color: var(--accent-hot);
+    transform: scale(1.01);
+}
+
+.thefade .redesigned-header .header-fields {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+.thefade .redesigned-header .char-identity {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 12px;
+    align-items: start;
+}
+
+.thefade .redesigned-header .charname {
+    grid-column: 1;
+    grid-row: 1;
+    margin: 0;
+    border: none;
+}
+
+.thefade .redesigned-header .charname input {
+    width: 100%;
+    font-family: "EideticNeo-Omni", serif;
+    font-size: 1.9em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-faint);
+    padding: 2px 0 4px 0;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.thefade .redesigned-header .charname input:focus {
+    border-bottom-color: var(--accent-hot);
+    box-shadow: none;
+    background: transparent;
+}
+
+.thefade .redesigned-header .char-subtitle {
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
+
+.thefade .redesigned-header .char-subtitle .sep {
+    color: var(--text-dim);
+}
+
+/* Dice rollerator as a small tool in the top-right of the header */
+.thefade .redesigned-header .dice-section {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    position: relative;
+}
+
+.thefade .redesigned-header .dice-section .tool-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.85em;
+    transition: all var(--transition-speed) ease;
+}
+
+.thefade .redesigned-header .dice-section .tool-header h2 {
+    display: none;
+}
+
+.thefade .redesigned-header .dice-section .tool-header:hover {
+    border-color: var(--accent-crimson);
+    color: var(--text-primary);
+    background: var(--bg-surface-alt);
+}
+
+.thefade .redesigned-header .dice-section .tool-label {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.thefade .redesigned-header .dice-section .tool-content {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 10;
+    padding: 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    box-shadow: var(--box-shadow-hover);
+    min-width: 160px;
+}
+
+.thefade .redesigned-header .dice-section[data-collapsed="true"] .tool-content {
+    display: none;
+}
+
+.thefade .redesigned-header .dice-section .dice-input {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.thefade .redesigned-header .dice-section .dice-input input {
+    width: 50px;
+    text-align: center;
+}
+
+/* ----- Vitals strip (HP / Sanity / Initiative) ----- */
+.thefade .vitals-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+}
+
+.thefade .vital-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-crimson);
+    border-radius: 3px;
+}
+
+.thefade .vital-pill.vital-hp { border-left-color: var(--accent-hot); }
+.thefade .vital-pill.vital-sanity { border-left-color: var(--accent-gold); }
+.thefade .vital-pill.vital-init { border-left-color: var(--border-strong); }
+
+.thefade .vital-pill label {
+    font-size: 0.75em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.thefade .vital-pill .vital-values {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
+}
+
+.thefade .vital-pill .vital-values input {
+    width: 42px;
+    text-align: center;
+    padding: 3px;
+    font-size: 1.05em;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+}
+
+.thefade .vital-pill .vital-values input:disabled {
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.thefade .vital-pill .vital-values input:focus {
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: var(--focus-shadow);
+}
+
+.thefade .vital-pill .vital-values .sep {
+    color: var(--text-dim);
+}
+
+.thefade .vital-pill .vital-bonus {
+    width: 44px !important;
+    padding: 3px !important;
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    background: rgba(0,0,0,0.3);
+}
+
+.thefade .vital-pill .initiative-roll {
+    flex: 1;
+    padding: 5px 8px;
+    font-size: 0.9em;
+    background: var(--accent-crimson);
+    color: var(--text-primary);
+    border: 1px solid var(--accent-crimson);
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all var(--transition-speed) ease;
+}
+
+.thefade .vital-pill .initiative-roll:hover {
+    background: var(--accent-hot);
+    border-color: var(--accent-hot);
+    transform: none;
+}
+
+/* ----- Sheet tabs on dark theme ----- */
+.thefade .sheet-tabs {
+    border-bottom: 1px solid var(--border-faint);
+    margin-bottom: 14px;
+}
+
+.thefade .sheet-tabs .item {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-bottom: none;
+    color: var(--text-muted);
+    padding: 6px 14px;
+    font-size: 0.92em;
+    letter-spacing: 0.3px;
+}
+
+.thefade .sheet-tabs .item:hover {
+    background: var(--bg-surface-alt);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+.thefade .sheet-tabs .item.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--accent-crimson);
+    border-bottom: 1px solid var(--bg-surface);
+    margin-bottom: -1px;
+}
+
+/* ----- Attribute hero cards ----- */
+.thefade .tab[data-tab="main"] h2:first-of-type {
+    margin-top: 0;
+}
+
+.thefade .tab[data-tab="main"] .grid-5col > .attribute.panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 10px 12px;
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    box-shadow: var(--box-shadow-card);
+    transition: border-color var(--transition-speed) ease, transform var(--transition-speed) ease;
+    position: relative;
+}
+
+.thefade .tab[data-tab="main"] .grid-5col > .attribute.panel:hover {
+    border-color: var(--accent-crimson);
+    transform: translateY(-1px);
+}
+
+.thefade .attribute.panel > label {
+    order: 1;
+    font-size: 0.75em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent-gold);
+    margin-bottom: 4px;
+}
+
+.thefade .attribute.panel .attribute-value {
+    order: 2;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    margin: 2px 0 8px;
+}
+
+.thefade .attribute.panel .attribute-value input[type="text"] {
+    width: 64px;
+    height: auto;
+    text-align: center;
+    font-family: "EideticNeo-Omni", serif;
+    font-size: 2.2em;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-faint);
+    padding: 0 0 2px;
+}
+
+.thefade .attribute.panel .attribute-value input[type="text"]:focus {
+    border-bottom-color: var(--accent-hot);
+    background: transparent;
+}
+
+.thefade .attribute.panel .attribute-value .species-bonus,
+.thefade .attribute.panel .attribute-value .flexible-bonus {
+    font-size: 0.7em;
+    color: var(--accent-gold);
+    font-weight: 600;
+    padding: 1px 5px;
+    background: rgba(168, 138, 76, 0.12);
+    border-radius: 2px;
+}
+
+.thefade .attribute.panel .attribute-desc {
+    order: 3;
+    text-align: center;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    line-height: 1.3;
+}
+
+.thefade .attribute.panel .attribute-desc p {
+    margin: 0;
+}
+
+/* Flexible bonus selector — card-style dropdown */
+.thefade .flexible-bonus-selector {
+    margin: 10px 0 0;
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.thefade .flexible-bonus-selector label {
+    font-size: 0.85em;
+    color: var(--accent-gold);
+    font-weight: 600;
+}
+
+/* ----- Section headers ----- */
+.thefade .tab[data-tab="main"] h2 {
+    font-family: "EideticNeo-Omni", serif;
+    font-size: 1.15em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-faint);
+    padding-bottom: 6px;
+    margin: 20px 0 12px;
+    position: relative;
+}
+
+.thefade .tab[data-tab="main"] h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 40px;
+    height: 2px;
+    background: var(--accent-crimson);
+}
+
+.thefade .tab[data-tab="main"] h3 {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin: 14px 0 8px;
+}
+
+/* ----- Defenses — single 6-col band ----- */
+.thefade .defenses-band {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.thefade .defenses-band .defense {
+    padding: 10px 8px 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    position: relative;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.thefade .defenses-band .defense:hover {
+    border-color: var(--accent-crimson);
+}
+
+.thefade .defenses-band .defense-label {
+    font-size: 0.72em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: var(--accent-gold);
+    text-align: center;
+    cursor: pointer;
+    display: block;
+}
+
+.thefade .defenses-band .defense-label .toggle-icon {
+    font-size: 0.75em;
+    opacity: 0.6;
+    margin-left: 3px;
+}
+
+.thefade .defenses-band .defense-checkbox {
+    display: none;
+}
+
+.thefade .defenses-band .defense-value {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.thefade .defenses-band .defense-value .total-value,
+.thefade .defenses-band .defense-value input.facing-select,
+.thefade .defenses-band .defense-value select {
+    width: 100%;
+    text-align: center;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    padding: 2px 0;
+}
+
+.thefade .defenses-band .defense-value select,
+.thefade .defenses-band .defense-value .facing-select {
+    font-size: 0.9em;
+    font-weight: 500;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+    padding: 4px;
+}
+
+.thefade .defenses-band .defense-value .excess-penalty {
+    font-size: 0.7em;
+    color: var(--accent-hot);
+    font-weight: 500;
+}
+
+.thefade .defenses-band .defense-details {
+    display: none;
+    font-size: 0.75em;
+    color: var(--text-muted);
+    border-top: 1px dashed var(--border-faint);
+    padding-top: 6px;
+    margin-top: 2px;
+}
+
+.thefade .defenses-band .defense-checkbox:checked ~ .defense-details {
+    display: block;
+}
+
+.thefade .defenses-band .defense-details .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 3px;
+    font-size: 0.85em;
+}
+
+.thefade .defenses-band .defense-details .detail-row span {
+    color: var(--text-muted);
+}
+
+.thefade .defenses-band .defense-details input {
+    width: 40px;
+    padding: 2px;
+    text-align: center;
+    font-size: 1em;
+}
+
+.thefade .defenses-band .defense-desc {
+    font-size: 0.7em;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.2;
+    margin-top: auto;
+}
+
+/* narrower → wrap 3+3 */
+@media (max-width: 760px) {
+    .thefade .defenses-band {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ----- Movement — 2-col Hexes/Miles table ----- */
+.thefade .movement-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.thefade .movement-table thead th {
+    padding: 8px 12px;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--accent-gold);
+    background: var(--bg-surface-alt);
+    border-bottom: 1px solid var(--border-faint);
+    text-align: left;
+    font-weight: 600;
+}
+
+.thefade .movement-table thead th:nth-child(2),
+.thefade .movement-table thead th:nth-child(3) {
+    text-align: center;
+    width: 110px;
+}
+
+.thefade .movement-table tbody tr {
+    border-bottom: 1px solid var(--border-faint);
+}
+
+.thefade .movement-table tbody tr:last-child { border-bottom: none; }
+
+.thefade .movement-table tbody td {
+    padding: 7px 12px;
+    font-size: 0.95em;
+    color: var(--text-primary);
+    border-top: 1px solid var(--border-faint);
+}
+
+.thefade .movement-table tbody tr:first-child td { border-top: none; }
+
+.thefade .movement-table .movement-label {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.thefade .movement-table .movement-label .speed-unit {
+    font-size: 0.78em;
+    color: var(--text-dim);
+    margin-left: 4px;
+    text-transform: lowercase;
+}
+
+.thefade .movement-table td input {
+    width: 56px;
+    text-align: center;
+    padding: 3px;
+    margin: 0 auto;
+    display: block;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+}
+
+.thefade .movement-table td input:disabled {
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.25);
+    border-color: transparent;
+}
+
+.thefade .movement-table tbody tr.is-empty td {
+    opacity: 0.5;
+}
+
+/* ----- Species + Aura side-by-side ----- */
+.thefade .identity-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 720px) {
+    .thefade .identity-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.thefade .identity-row .species-item,
+.thefade .identity-row .aura-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 12px 14px;
+    box-shadow: var(--box-shadow-card);
+}
+
+.thefade .identity-row h2 {
+    margin-top: 0 !important;
+    margin-bottom: 10px !important;
+    font-size: 1em !important;
+}
+
+.thefade .identity-row .form-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.thefade .identity-row .form-group label {
+    flex: 0 0 110px;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.thefade .identity-row .form-group input,
+.thefade .identity-row .form-group select {
+    flex: 1;
+    min-width: 0;
+}
+
+.thefade .identity-row .species-abilities-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.thefade .identity-row .species-ability {
+    padding: 6px 8px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.thefade .identity-row .species-ability .ability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.thefade .identity-row .species-ability .ability-description {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.thefade .identity-row .species-browse,
+.thefade .identity-row .species-ability-add {
+    color: var(--accent-gold);
+    margin-left: 6px;
+    cursor: pointer;
+}
+
+.thefade .identity-row .species-browse:hover,
+.thefade .identity-row .species-ability-add:hover {
+    color: var(--accent-hot);
+}
+
+.thefade .identity-row .aura-info {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--bg-surface-deep);
+    border-radius: 3px;
+    border-left: 2px solid var(--accent-gold);
+    font-size: 0.88em;
+}
+
+.thefade .identity-row .aura-property {
+    margin-bottom: 5px;
+}
+
+.thefade .identity-row .aura-property:last-child { margin-bottom: 0; }
+
+.thefade .identity-row .aura-property strong {
+    color: var(--text-primary);
+    margin-right: 6px;
+}
+
+.thefade .identity-row .aura-property .aura-bonus {
+    color: var(--accent-gold);
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+/* ----- Minor footer (Carrying + Religion) ----- */
+.thefade .minor-stats-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 720px) {
+    .thefade .minor-stats-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.thefade .minor-stats-row .capacity-card,
+.thefade .minor-stats-row .religion-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 10px 14px;
+}
+
+.thefade .minor-stats-row .capacity-card h3,
+.thefade .minor-stats-row .religion-card h3 {
+    margin: 0 0 8px !important;
+    font-size: 0.75em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-gold);
+}
+
+.thefade .minor-stats-row .capacity-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.thefade .minor-stats-row .capacity-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.thefade .minor-stats-row .capacity-cell label {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.thefade .minor-stats-row .capacity-cell input {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    text-align: center;
+}
+
+/* ----- Panel / input polish on dark theme ----- */
+.thefade .panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+}
+
+.thefade input[type="text"],
+.thefade input[type="number"],
+.thefade select,
+.thefade textarea {
+    background: var(--bg-surface-deep);
+    border-color: var(--border-faint);
+    color: var(--text-primary);
+}
+
+.thefade input[type="text"]:focus,
+.thefade input[type="number"]:focus,
+.thefade select:focus,
+.thefade textarea:focus {
+    border-color: var(--accent-crimson);
+    background: var(--bg-surface);
+}
+
+.thefade input[disabled],
+.thefade input:disabled {
+    color: var(--text-muted);
+}
+
+.thefade label {
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   REDESIGN v1 — GLOBAL DARK THEME (applies across all tabs)
+   Scope everything inside .thefade so non-main tabs match too.
+   ============================================================ */
+
+/* ----- Foundry window chrome on dark theme ----- */
+.app.window-app.thefade .window-header,
+.app.window-app.sheet.thefade .window-header {
+    background: var(--bg-surface-deep);
+    border-bottom: 1px solid var(--border-faint);
+    color: var(--text-primary);
+}
+
+.app.window-app.thefade .window-header .window-title,
+.app.window-app.thefade .window-header a {
+    color: var(--text-primary);
+    text-shadow: none;
+}
+
+.app.window-app.thefade .window-header a:hover {
+    color: var(--accent-hot);
+    text-shadow: 0 0 6px rgba(168, 40, 40, 0.5);
+}
+
+.app.window-app.thefade .window-resizable-handle {
+    opacity: 0.4;
+}
+
+/* ----- Make h2/h3 consistent across tabs (was main-only) ----- */
+.thefade .sheet-body h2 {
+    font-family: "EideticNeo-Omni", serif;
+    font-size: 1.15em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-faint);
+    padding-bottom: 6px;
+    margin: 20px 0 12px;
+    position: relative;
+}
+
+.thefade .sheet-body h2::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 40px;
+    height: 2px;
+    background: var(--accent-crimson);
+}
+
+.thefade .sheet-body h3 {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin: 14px 0 8px;
+}
+
+/* ----- Skills tab — match dark theme ----- */
+.thefade .skills-section {
+    color: var(--text-primary);
+}
+
+.thefade .skills-section .skills-header {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    padding: 8px 12px;
+    color: var(--text-muted);
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+}
+
+.thefade .skills-section .skills-header .skill-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.thefade .skills-section .skills-header a {
+    color: var(--text-muted);
+    background: transparent;
+    width: auto;
+    height: auto;
+    font-size: 1em;
+    transition: color var(--transition-speed) ease;
+}
+
+.thefade .skills-section .skills-header a:hover {
+    color: var(--accent-hot);
+    text-shadow: 0 0 6px rgba(168, 40, 40, 0.4);
+}
+
+.thefade .skills-section .skills-header a.initialize-skills {
+    color: var(--accent-gold);
+}
+
+.thefade .skills-section .skills-header a.initialize-skills:hover {
+    color: var(--accent-hot);
+}
+
+.thefade .custom-skills-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    margin: 8px 0 14px;
+}
+
+.thefade .custom-skills-bar label {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-right: 4px;
+}
+
+.thefade .custom-skills-bar button {
+    flex: 0 1 auto;
+    padding: 5px 12px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    font-size: 0.85em;
+    letter-spacing: 0.4px;
+    transition: all var(--transition-speed) ease;
+}
+
+.thefade .custom-skills-bar button:hover {
+    background: var(--bg-surface-alt);
+    border-color: var(--accent-crimson);
+    color: var(--text-primary);
+    transform: none;
+}
+
+.thefade .custom-skills-bar button i {
+    margin-right: 5px;
+    color: var(--accent-gold);
+}
+
+/* Skill list rows */
+.thefade .skills-section .items-list,
+.thefade .items-list {
+    background: transparent;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.thefade .skills-section .items-list .item,
+.thefade .items-list .item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-top: none;
+    color: var(--text-primary);
+    padding: 6px 10px;
+    transition: background var(--transition-speed) ease;
+}
+
+.thefade .skills-section .items-list .item:first-child {
+    border-top: 1px solid var(--border-faint);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+}
+
+.thefade .skills-section .items-list .item:last-child {
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.thefade .skills-section .items-list .item:nth-child(even) {
+    background: var(--bg-surface-alt);
+}
+
+.thefade .skills-section .items-list .item:hover {
+    background: var(--bg-surface-alt);
+    border-color: var(--border-strong);
+}
+
+.thefade .skills-section .skill-name {
+    color: var(--text-primary);
+}
+
+.thefade .skills-section .skill-attribute {
+    color: var(--text-muted);
+    font-size: 0.9em;
+    text-transform: capitalize;
+}
+
+.thefade .skills-section .skill-total {
+    color: var(--accent-gold);
+    font-weight: 500;
+}
+
+.thefade .skills-section .skill-controls a {
+    color: var(--text-muted);
+    margin: 0 2px;
+    transition: color var(--transition-speed) ease;
+}
+
+.thefade .skills-section .skill-controls a:hover {
+    color: var(--accent-hot);
+    text-shadow: none;
+}
+
+.thefade .skills-section .skill-controls .skill-roll:hover {
+    color: var(--accent-gold);
+}
+
+.thefade .skills-section .custom-badge {
+    background: var(--accent-ghost);
+    color: var(--text-primary);
+    font-size: 0.7em;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Untrained skill rows — slightly dimmed */
+.thefade .skills-section .item.untrained,
+.thefade .skills-section .item[data-rank="untrained"] {
+    opacity: 0.78;
+}
+
+/* ----- Inventory / paths / spells — generic dark polish ----- */
+.thefade .items-list .item-header,
+.thefade .items-header {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-muted);
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.thefade .tab .items-list .item {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-faint);
+    color: var(--text-primary);
+}
+
+.thefade .tab .items-list .item:nth-child(even) {
+    background: var(--bg-surface-alt);
+}
+
+.thefade .tab .items-list .item:hover {
+    background: var(--bg-surface-alt);
+}
+
+/* ----- Buttons across the sheet — calmer ----- */
+.thefade button:not(.initiative-roll):not(.vital-pill button) {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+}
+
+.thefade button:not(.initiative-roll):hover {
+    background: var(--bg-surface-alt);
+    border-color: var(--accent-crimson);
+    color: var(--text-primary);
+    transform: none;
+}
+
+/* ----- Scrollbar — dark-theme friendly ----- */
+.thefade ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.thefade ::-webkit-scrollbar-track {
+    background: var(--bg-ink);
+}
+
+.thefade ::-webkit-scrollbar-thumb {
+    background: var(--border-faint);
+    border-radius: 4px;
+}
+
+.thefade ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-crimson);
 }
