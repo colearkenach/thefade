@@ -1,145 +1,12 @@
-// Entry point for The Fade system; wires up documents and hooks
-import { registerSystemHooks } from './src/hooks.js';
-
-//export { TheFadeActor } from './src/actor.js';
-//export { TheFadeCharacterSheet } from './src/character-sheet.js';
-//export { TheFadeItem } from './src/item.js';
-//export { TheFadeItemSheet } from './src/item-sheet.js';
-
-registerSystemHooks();
-
-import { SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS, FLEXIBLE_BONUS_OPTIONS, BODY_PARTS, DEFAULT_WEAPON, DEFAULT_ARMOR, DEFAULT_SKILL } from './src/constants.js';
+// Entry point for The Fade system; defines documents, sheets, and hooks.
+import {
+    SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS, FLEXIBLE_BONUS_OPTIONS,
+    AURA_INTENSITY_OPTIONS, ADDICTION_LEVEL_OPTIONS, SKILL_RANK_OPTIONS,
+    BODY_PARTS, DEFAULT_WEAPON, DEFAULT_ARMOR, DEFAULT_SKILL,
+    DEFAULT_TOKEN, PATH_SKILL_TYPES, DEFAULT_SKILLS, FALLBACK_ACTOR_DATA
+} from './src/constants.js';
 import { applyBonusHandlers } from './src/chat.js';
 
-/**
- * Default skills that every character should have (from The Fade Abyss)
- */
-const DEFAULT_SKILLS = [
-    // Combat Skills
-    { name: "Axe", category: "Combat", attribute: "physique", rank: "untrained" },
-    { name: "Bow", category: "Combat", attribute: "finesse", rank: "untrained" },
-    { name: "Cudgel", category: "Combat", attribute: "physique", rank: "untrained" },
-    { name: "Firearm", category: "Combat", attribute: "finesse", rank: "untrained" },
-    { name: "Polearm", category: "Combat", attribute: "physique", rank: "untrained" },
-    { name: "Sword", category: "Combat", attribute: "physique", rank: "untrained" },
-    { name: "Thrown", category: "Combat", attribute: "finesse", rank: "untrained" },
-    { name: "Unarmed", category: "Combat", attribute: "physique", rank: "untrained" }, // Default to PHY, can be changed
-
-    // Craft Skills
-    { name: "Blacksmithing", category: "Craft", attribute: "physique", rank: "untrained" },
-    { name: "Carpentry", category: "Craft", attribute: "finesse", rank: "untrained" },
-    { name: "Chemistry", category: "Craft", attribute: "mind", rank: "untrained" },
-    { name: "Cooking", category: "Craft", attribute: "mind", rank: "untrained" },
-    { name: "Herbalism", category: "Craft", attribute: "mind", rank: "untrained" },
-    { name: "Toxicology", category: "Craft", attribute: "mind", rank: "untrained" },
-
-    // Knowledge Skills
-    { name: "Appraise", category: "Knowledge", attribute: "mind", rank: "untrained" },
-    { name: "Gambling", category: "Knowledge", attribute: "mind", rank: "untrained" },
-    { name: "Insight", category: "Knowledge", attribute: "mind", rank: "untrained" },
-    { name: "Linguistics", category: "Knowledge", attribute: "mind", rank: "untrained" },
-    { name: "Medicine", category: "Knowledge", attribute: "mind", rank: "untrained" },
-    { name: "Research", category: "Knowledge", attribute: "mind", rank: "untrained" },
-    { name: "Symbology", category: "Knowledge", attribute: "mind", rank: "untrained" },
-    { name: "Tracking", category: "Knowledge", attribute: "mind", rank: "untrained" },
-
-    // Magical Skills
-    { name: "Arcana", category: "Magical", attribute: "mind", rank: "untrained" },
-    { name: "Spellcasting", category: "Magical", attribute: "soul", rank: "untrained" },
-    { name: "Ritual", category: "Magical", attribute: "mind_soul", rank: "untrained" }, // Combined attribute
-
-    // Physical Skills
-    { name: "Acrobatics", category: "Physical", attribute: "finesse", rank: "untrained" },
-    { name: "Athletics", category: "Physical", attribute: "physique", rank: "untrained" },
-    { name: "Contortion", category: "Physical", attribute: "physique_finesse", rank: "untrained" }, // Combined attribute
-    { name: "Drive", category: "Physical", attribute: "finesse", rank: "untrained" },
-    { name: "Flight", category: "Physical", attribute: "physique_finesse", rank: "untrained" }, // Combined attribute
-    { name: "Hunting", category: "Physical", attribute: "physique_mind", rank: "untrained" }, // Combined attribute
-    { name: "Lockpicking", category: "Physical", attribute: "finesse", rank: "untrained" },
-    { name: "Ride", category: "Physical", attribute: "finesse", rank: "untrained" },
-    { name: "Rope Use", category: "Physical", attribute: "finesse", rank: "untrained" },
-    { name: "Sneaking", category: "Physical", attribute: "finesse", rank: "untrained" },
-    { name: "Trickery", category: "Physical", attribute: "finesse", rank: "untrained" },
-
-    // Sense Skills
-    { name: "Hearing", category: "Sense", attribute: "mind", rank: "untrained" },
-    { name: "Sight", category: "Sense", attribute: "mind", rank: "untrained" },
-    { name: "Smell", category: "Sense", attribute: "mind", rank: "untrained" },
-    { name: "Taste", category: "Sense", attribute: "mind", rank: "untrained" },
-    { name: "Touch", category: "Sense", attribute: "mind", rank: "untrained" },
-
-    // Social Skills
-    { name: "Animal Handling", category: "Social", attribute: "presence", rank: "untrained" },
-    { name: "Deception", category: "Social", attribute: "presence", rank: "untrained" },
-    { name: "Disguise", category: "Social", attribute: "presence", rank: "untrained" },
-    { name: "Etiquette", category: "Social", attribute: "presence", rank: "untrained" },
-    { name: "Haggling", category: "Social", attribute: "presence", rank: "untrained" },
-    { name: "Intimidate", category: "Social", attribute: "presence", rank: "untrained" },
-    { name: "Persuasion", category: "Social", attribute: "presence", rank: "untrained" },
-    { name: "Seduction", category: "Social", attribute: "presence", rank: "untrained" }
-];
-
-/**
-* Types of skill entries that can be added to paths
-*/
-const PATH_SKILL_TYPES = {
-    SPECIFIC_SKILL: "specific",           // e.g., "Sword", "Medicine"
-    SPECIFIC_CUSTOM: "specific-custom",   // e.g., "Lore (Religion)", "Perform (Singing)"
-    CHOOSE_CATEGORY: "choose-category",   // e.g., "Choose 1 Combat Skills"
-    CHOOSE_LORE: "choose-lore",          // e.g., "Choose 2 Lore Skills"
-    CHOOSE_PERFORM: "choose-perform",     // e.g., "Choose 1 Perform Skills"
-    CHOOSE_CRAFT: "choose-craft"         // e.g., "Choose 3 Custom Craft Skills"
-};
-
-/**
- * Default token image for items
- */
-const DEFAULT_TOKEN = "icons/svg/item-bag.svg";
-
-/**
- * Additional constants for error handling
- */
-const FALLBACK_ACTOR_DATA = {
-    attributes: {
-        physique: { value: 1, speciesBonus: 0 },
-        finesse: { value: 1, speciesBonus: 0 },
-        mind: { value: 1, speciesBonus: 0 },
-        presence: { value: 1, speciesBonus: 0 },
-        soul: { value: 1, speciesBonus: 0 }
-    },
-    defenses: {
-        resilience: 1,
-        avoid: 1,
-        grit: 1,
-        resilienceBonus: 0,
-        avoidBonus: 0,
-        gritBonus: 0,
-        passiveDodge: 0,
-        passiveParry: 0,
-        facing: "front",
-        avoidPenalty: 0
-    },
-    hp: { value: 1, max: 1 },
-    sanity: { value: 10, max: 10 },
-    species: {
-        name: "",
-        baseHP: 0,
-        size: "medium",
-        abilities: "",
-        flexibleBonus: {
-            value: 0,
-            selectedAttribute: ""
-        }
-    },
-    naturalDeflection: {
-        head: { current: 0, max: 0, stacks: false },
-        body: { current: 0, max: 0, stacks: false },
-        leftarm: { current: 0, max: 0, stacks: false },
-        rightarm: { current: 0, max: 0, stacks: false },
-        leftleg: { current: 0, max: 0, stacks: false },
-        rightleg: { current: 0, max: 0, stacks: false }
-    }
-};
 
 // ====================================================================
 // 1. CORE ACTOR CLASSES
@@ -3974,8 +3841,8 @@ class TheFadeCharacterSheet extends ActorSheet {
             ev.preventDefault();
 
             // Get current abilities
-            const abilities = duplicate(this.actor.system.species.speciesAbilities || {});
-            const id = randomID(16);
+            const abilities = foundry.utils.deepClone(this.actor.system.species.speciesAbilities || {});
+            const id = foundry.utils.randomID(16);
 
             // Add new ability
             abilities[id] = { name: "New Ability", description: "" };
@@ -6289,7 +6156,7 @@ class TheFadeItemSheet extends ItemSheet {
                         label: "Delete",
                         callback: async () => {
                             // Get the current path skills
-                            const pathSkills = duplicate(this.item.system.pathSkills || []);
+                            const pathSkills = foundry.utils.deepClone(this.item.system.pathSkills || []);
 
                             // Remove the skill from the array
                             const index = pathSkills.findIndex(s => s._id === skillId);
@@ -6319,7 +6186,7 @@ class TheFadeItemSheet extends ItemSheet {
             const newRank = select.value;
 
             // Get the current path skills
-            const pathSkills = duplicate(this.item.system.pathSkills || []);
+            const pathSkills = foundry.utils.deepClone(this.item.system.pathSkills || []);
             const skillIndex = pathSkills.findIndex(s => s._id === skillId);
 
             if (skillIndex !== -1) {
@@ -6400,7 +6267,7 @@ class TheFadeItemSheet extends ItemSheet {
 
                                         if (!existingSkill) {
                                             // Add this skill to our list
-                                            const newSkill = duplicate(pathSkill);
+                                            const newSkill = foundry.utils.deepClone(pathSkill);
                                             delete newSkill._id; // Remove the path's ID to allow Foundry to generate a new one
                                             skillsToAdd.push(newSkill);
                                         } else {
@@ -6477,14 +6344,14 @@ class TheFadeItemSheet extends ItemSheet {
             event.preventDefault();
 
             if (this.item.type === 'path') {
-                const abilities = duplicate(this.item.system.abilities || {});
-                const id = randomID(16);
+                const abilities = foundry.utils.deepClone(this.item.system.abilities || {});
+                const id = foundry.utils.randomID(16);
                 abilities[id] = { name: "New Ability", description: "" };
                 this.item.update({ "system.abilities": abilities });
             }
             else if (this.item.type === 'species') {
-                const abilities = duplicate(this.item.system.speciesAbilities || {});
-                const id = randomID(16);
+                const abilities = foundry.utils.deepClone(this.item.system.speciesAbilities || {});
+                const id = foundry.utils.randomID(16);
                 abilities[id] = { name: "New Ability", description: "" };
                 this.item.update({ "system.speciesAbilities": abilities });
             }
@@ -6781,7 +6648,7 @@ class TheFadeItemSheet extends ItemSheet {
             switch (type) {
                 case 'choose-combat-1':
                     skillEntry = {
-                        _id: randomID(16),
+                        _id: foundry.utils.randomID(16),
                         name: "Choose 1 Combat Skill",
                         type: "skill",
                         system: {
@@ -6797,7 +6664,7 @@ class TheFadeItemSheet extends ItemSheet {
 
                 case 'choose-social-1':
                     skillEntry = {
-                        _id: randomID(16),
+                        _id: foundry.utils.randomID(16),
                         name: "Choose 1 Social Skill",
                         type: "skill",
                         system: {
@@ -6813,7 +6680,7 @@ class TheFadeItemSheet extends ItemSheet {
 
                 case 'choose-lore-1':
                     skillEntry = {
-                        _id: randomID(16),
+                        _id: foundry.utils.randomID(16),
                         name: "Choose 1 Lore Skill",
                         type: "skill",
                         system: {
@@ -6828,7 +6695,7 @@ class TheFadeItemSheet extends ItemSheet {
 
                 case 'choose-craft-1':
                     skillEntry = {
-                        _id: randomID(16),
+                        _id: foundry.utils.randomID(16),
                         name: "Choose 1 Custom Craft Skill",
                         type: "skill",
                         system: {
@@ -6843,7 +6710,7 @@ class TheFadeItemSheet extends ItemSheet {
             }
 
             if (skillEntry) {
-                const pathSkills = duplicate(this.item.system.pathSkills || []);
+                const pathSkills = foundry.utils.deepClone(this.item.system.pathSkills || []);
                 pathSkills.push(skillEntry);
 
                 await this.item.update({ "system.pathSkills": pathSkills });
@@ -6913,7 +6780,7 @@ class TheFadeItemSheet extends ItemSheet {
         if (this.item.system.pathSkills && Array.isArray(this.item.system.pathSkills)) {
             for (const skillData of this.item.system.pathSkills) {
                 const processedSkill = {
-                    _id: skillData._id || randomID(16),
+                    _id: skillData._id || foundry.utils.randomID(16),
                     name: skillData.name,
                     system: skillData.system || {},
                     img: skillData.img || "icons/svg/item-bag.svg",
@@ -7005,14 +6872,14 @@ class TheFadeItemSheet extends ItemSheet {
 
             if (skill && skill.type === "skill") {
                 // Add as specific skill entry
-                const pathSkills = duplicate(self.item.system.pathSkills || []);
+                const pathSkills = foundry.utils.deepClone(self.item.system.pathSkills || []);
 
                 // Check if already exists
                 const exists = pathSkills.some(s => s.name === skill.name);
 
                 if (!exists) {
                     const skillEntry = {
-                        _id: randomID(16),
+                        _id: foundry.utils.randomID(16),
                         name: skill.name,
                         type: "skill",
                         system: {
@@ -7057,7 +6924,7 @@ class TheFadeItemSheet extends ItemSheet {
                 }
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: skillName,
                     type: "skill",
                     system: {
@@ -7077,7 +6944,7 @@ class TheFadeItemSheet extends ItemSheet {
                 }
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: `Craft (${craftName})`,
                     type: "skill",
                     system: {
@@ -7099,7 +6966,7 @@ class TheFadeItemSheet extends ItemSheet {
                 }
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: `Lore (${loreSubject})`,
                     type: "skill",
                     system: {
@@ -7121,7 +6988,7 @@ class TheFadeItemSheet extends ItemSheet {
                 }
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: `Perform (${performType})`,
                     type: "skill",
                     system: {
@@ -7140,7 +7007,7 @@ class TheFadeItemSheet extends ItemSheet {
                 const count = parseInt(html.find('#choose-count').val());
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: `Choose ${count} ${category} Skill${count > 1 ? 's' : ''}`,
                     type: "skill",
                     system: {
@@ -7158,7 +7025,7 @@ class TheFadeItemSheet extends ItemSheet {
                 const loreCount = parseInt(html.find('#choose-count').val());
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: `Choose ${loreCount} Lore Skill${loreCount > 1 ? 's' : ''}`,
                     type: "skill",
                     system: {
@@ -7175,7 +7042,7 @@ class TheFadeItemSheet extends ItemSheet {
                 const performCount = parseInt(html.find('#choose-count').val());
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: `Choose ${performCount} Perform Skill${performCount > 1 ? 's' : ''}`,
                     type: "skill",
                     system: {
@@ -7192,7 +7059,7 @@ class TheFadeItemSheet extends ItemSheet {
                 const craftCount = parseInt(html.find('#choose-count').val());
 
                 skillEntry = {
-                    _id: randomID(16),
+                    _id: foundry.utils.randomID(16),
                     name: `Choose ${craftCount} Custom Craft Skill${craftCount > 1 ? 's' : ''}`,
                     type: "skill",
                     system: {
@@ -7211,7 +7078,7 @@ class TheFadeItemSheet extends ItemSheet {
         }
 
         // Add to path skills
-        const pathSkills = duplicate(this.item.system.pathSkills || []);
+        const pathSkills = foundry.utils.deepClone(this.item.system.pathSkills || []);
         pathSkills.push(skillEntry);
 
         await this.item.update({ "system.pathSkills": pathSkills });
@@ -7367,7 +7234,7 @@ class TheFadeItemSheet extends ItemSheet {
         let updateData = {};
 
         if (this.item.type === 'path') {
-            const abilities = duplicate(this.item.system.abilities || {});
+            const abilities = foundry.utils.deepClone(this.item.system.abilities || {});
             if (abilities[abilityId]) {
                 delete abilities[abilityId];
                 updateData = {
@@ -7376,7 +7243,7 @@ class TheFadeItemSheet extends ItemSheet {
             }
         }
         else if (this.item.type === 'species') {
-            const abilities = duplicate(this.item.system.speciesAbilities || {});
+            const abilities = foundry.utils.deepClone(this.item.system.speciesAbilities || {});
             if (abilities[abilityId]) {
                 delete abilities[abilityId];
                 updateData = {
@@ -7473,11 +7340,11 @@ class TheFadeItemSheet extends ItemSheet {
             if (skillDoc.toObject) {
                 skillData = skillDoc.toObject();
             } else {
-                skillData = duplicate(skillDoc);
+                skillData = foundry.utils.deepClone(skillDoc);
             }
 
             // Initialize path skills array if needed
-            let pathSkills = duplicate(this.item.system.pathSkills || []);
+            let pathSkills = foundry.utils.deepClone(this.item.system.pathSkills || []);
             if (!Array.isArray(pathSkills)) {
                 pathSkills = [];
             }
@@ -7491,7 +7358,7 @@ class TheFadeItemSheet extends ItemSheet {
 
             // Add unique ID if needed
             if (!skillData._id) {
-                skillData._id = randomID(16);
+                skillData._id = foundry.utils.randomID(16);
             }
 
             // Add to path skills and update
@@ -7914,7 +7781,7 @@ Hooks.once('init', async function () {
 
             const actorFormula = this.getInitiativeFormula(combatant);
             const roll = new Roll(actorFormula);
-            await roll.evaluate({ async: true });
+            await roll.evaluate();
 
             await this.updateEmbeddedDocuments("Combatant", [{
                 _id: id,
@@ -8007,7 +7874,7 @@ Hooks.on("createItem", async (item, options, userId) => {
                 );
 
                 if (!existingSkill) {
-                    const newSkill = duplicate(pathSkill);
+                    const newSkill = foundry.utils.deepClone(pathSkill);
                     delete newSkill._id;
                     skillsToAdd.push(newSkill);
                 } else {
@@ -8119,7 +7986,7 @@ Hooks.on("createItem", async (item, options, userId) => {
             //            );
 
             //            if (!existingSkill) {
-            //                const newSkill = duplicate(pathSkill);
+            //                const newSkill = foundry.utils.deepClone(pathSkill);
             //                delete newSkill._id;
             //                await actor.createEmbeddedDocuments("Item", [newSkill]);
             //                skillsModified++;
@@ -8207,7 +8074,7 @@ Hooks.on("createItem", async (item, options, userId) => {
         });
 
         // Apply ability bonuses
-        const updatedAttributes = duplicate(actor.system.attributes);
+        const updatedAttributes = foundry.utils.deepClone(actor.system.attributes);
         for (const [attr, bonus] of Object.entries(species.system.abilityBonuses)) {
             if (updatedAttributes[attr] && bonus !== 0) {
                 updatedAttributes[attr].speciesBonus = bonus;
