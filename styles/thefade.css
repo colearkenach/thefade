@@ -462,7 +462,7 @@
 /* Level input highlighting */
 .level-input {
   font-weight: bold;
-  font-size: 16px;
+  font-size: 1.2em;
   text-align: center;
   background: rgba(255, 255, 255, 0.9);
 }
@@ -474,21 +474,26 @@ input[readonly] {
   cursor: not-allowed;
 }
 
-/* Collapsible header styling */
+/* ===== COLLAPSIBLE COMPONENTS ===== */
 .collapsible-header {
   cursor: pointer;
   user-select: none;
+  padding: 4px 0;
+  font-size: 0.9em;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 6px;
+  transition: color 0.2s ease;
 }
 
 .collapsible-header:hover {
-  color: #0066cc;
+  color: var(--accent-color);
 }
 
 .collapsible-header i {
   transition: transform 0.2s ease;
+  font-size: 0.8em;
 }
 
 .collapsible-header.collapsed i {
@@ -497,7 +502,11 @@ input[readonly] {
 
 .collapsible-content {
   overflow: hidden;
-  transition: max-height 0.3s ease;
+  transition: max-height 0.2s ease;
+}
+
+.collapsible-content.collapsed {
+  max-height: 0 !important;
 }
 
 /* Responsive adjustments */
@@ -926,17 +935,6 @@ input[readonly] {
   font-weight: bold;
 }
 
-.choice-badge {
-  display: inline-block;
-  background: #17a2b8;
-  color: white;
-  font-size: 0.7em;
-  padding: 2px 5px;
-  border-radius: 2px;
-  margin-left: 5px;
-  font-weight: bold;
-}
-
 .core-skill-indicator {
   color: var(--primary-color);
   opacity: 0.6;
@@ -1229,11 +1227,12 @@ input[readonly] {
   position: relative;
 }
 
-.reduce-armor-ap,
-.reset-armor-ap {
+.reduce-nd,
+.reduce-armor-ap {
   background: #dc3545;
 }
 
+.reset-nd,
 .reset-armor-ap {
   background: #17a2b8;
 }
@@ -1246,7 +1245,6 @@ input[readonly] {
   background: #138496;
 }
 
-/* Fix Natural Deflection buttons */
 .nd-action-buttons button {
   padding: 2px 4px;
   font-size: 1.25em;
@@ -1259,12 +1257,10 @@ input[readonly] {
   line-height: 1;
 }
 
-/* Make button text smaller and more compact */
 .armor-controls button::before {
   font-size: 1.25em;
 }
 
-/* Override any conflicting button styles */
 .equipped-armor-item .armor-controls button {
   padding: 2px 4px !important;
   font-size: 1.25em !important;
@@ -1272,7 +1268,6 @@ input[readonly] {
   min-width: 24px !important;
 }
 
-/* Fix the derived armor buttons specifically */
 .reduce-derived-btn {
   padding: 2px 4px !important;
   font-size: 1.25em !important;
@@ -1283,16 +1278,6 @@ input[readonly] {
   cursor: pointer;
   min-height: 24px !important;
   min-width: 24px !important;
-}
-
-.reduce-nd,
-.reduce-armor-ap {
-  background: #dc3545;
-}
-
-.reset-nd,
-.reset-armor-ap {
-  background: #17a2b8;
 }
 
 /* Equipped items */
@@ -1356,15 +1341,15 @@ input[readonly] {
   margin-bottom: 20px;
 }
 
-.slot-row {
+.armor-slots-grid .slot-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
 
-.slot-row .shield-section,
-.slot-row .arms-armor-section,
-.slot-row .legs-armor-section {
+.armor-slots-grid .slot-row .shield-section,
+.armor-slots-grid .slot-row .arms-armor-section,
+.armor-slots-grid .slot-row .legs-armor-section {
   grid-column: 1 / -1;
 }
 
@@ -1416,16 +1401,6 @@ input[readonly] {
   font-size: 0.8em;
 }
 
-.reduce-derived-btn {
-  padding: 2px 6px;
-  font-size: 0.7em;
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  min-height: 20px;
-}
 
 .reduce-derived-btn:hover {
   background: #c82333;
@@ -2493,11 +2468,6 @@ input[readonly] {
   text-align: center;
 }
 
-.level-input {
-  font-size: 1.2em;
-  font-weight: bold;
-}
-
 .level-buttons {
   display: flex;
   gap: 8px;
@@ -3016,39 +2986,6 @@ select[name="system.aura.color"] option[value="white"] {
   background: #45a049;
 }
 
-/* ===== COLLAPSIBLE COMPONENTS ===== */
-.collapsible-header {
-  cursor: pointer;
-  user-select: none;
-  padding: 4px 0;
-  font-size: 0.9em;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  transition: color 0.2s ease;
-}
-
-.collapsible-header:hover {
-  color: var(--accent-color);
-}
-
-.collapsible-header i {
-  transition: transform 0.2s ease;
-  font-size: 0.8em;
-}
-
-.collapsible-header.collapsed i {
-  transform: rotate(-90deg);
-}
-
-.collapsible-content {
-  overflow: hidden;
-  transition: max-height 0.2s ease;
-}
-
-.collapsible-content.collapsed {
-  max-height: 0 !important;
-}
 
 .header-tool {
   margin-bottom: 10px;
@@ -3911,106 +3848,6 @@ select[name="system.aura.color"] option[value="white"] {
   .thefade .grid-2col {
     grid-template-columns: 1fr;
   }
-}
-
-/* =================================================================== */
-/* TRAITS & PRECEPTS - COPY TALENTS STYLING */
-/* =================================================================== */
-
-/* Traits - copy all talent styles but with trait selectors */
-.trait-item,
-.precept-item {
-  border-bottom: 1px solid var(--gray-200);
-  position: relative;
-}
-
-.trait-item:last-child,
-.precept-item:last-child {
-  border-bottom: none;
-}
-
-.trait-checkbox,
-.precept-checkbox {
-  display: none;
-}
-
-.trait-header,
-.precept-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px;
-  background: var(--gray-100);
-  border-bottom: 1px solid var(--gray-300);
-}
-
-.trait-name-container,
-.precept-name-container {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  cursor: pointer;
-}
-
-.trait-name,
-.precept-name {
-  font-weight: bold;
-  margin-right: 10px;
-}
-
-.trait-toggle-icon,
-.precept-toggle-icon {
-  margin-left: auto;
-  transition: transform 0.3s ease;
-}
-
-.trait-checkbox:checked ~ .trait-header .trait-toggle-icon,
-.precept-checkbox:checked ~ .precept-header .precept-toggle-icon {
-  transform: rotate(180deg);
-}
-
-.trait-controls,
-.precept-controls {
-  display: flex;
-  gap: 5px;
-}
-
-.trait-controls a,
-.precept-controls a {
-  padding: 2px 4px;
-  color: var(--gray-600);
-}
-
-.trait-controls a:hover,
-.precept-controls a:hover {
-  color: #000;
-}
-
-.trait-description,
-.precept-description {
-  padding: 0;
-  max-height: 0;
-  overflow: hidden;
-  background: var(--white);
-  transition:
-    max-height 0.3s ease,
-    padding 0.3s ease;
-}
-
-.trait-checkbox:checked ~ .trait-description,
-.precept-checkbox:checked ~ .precept-description {
-  max-height: 200px;
-  padding: 10px;
-}
-
-.trait-description p,
-.precept-description p {
-  margin: 0 0 5px 0;
-}
-
-.trait-description p:last-child,
-.precept-description p:last-child {
-  margin-bottom: 0;
 }
 
 /* =================================================================== */
