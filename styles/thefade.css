@@ -7548,3 +7548,374 @@ select[name="system.aura.color"] option[value="white"] {
     color: var(--text-muted);
     white-space: nowrap;
 }
+
+/* =====================================================================
+   REDESIGN v3 — CHAT CARD POLISH
+   Roll/spell/attack result cards rendered via templates/chat/*.html
+   ===================================================================== */
+
+.thefade.chat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    font-family: inherit;
+}
+
+.thefade.chat-card .card-header {
+    background: linear-gradient(135deg, var(--bg-surface-deep), var(--bg-surface-alt));
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 6px 10px;
+}
+
+.thefade.chat-card .card-header h3 {
+    color: var(--accent-gold);
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.thefade.chat-card .card-content {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 10px 12px;
+}
+
+.thefade.chat-card .card-content p {
+    margin: 4px 0;
+    color: var(--text-primary);
+}
+
+.thefade.chat-card .card-content em {
+    color: var(--text-muted);
+}
+
+.thefade.chat-card h4 {
+    color: var(--accent-gold) !important;
+    border-bottom: 1px solid var(--border-faint) !important;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 8px 0 6px;
+    padding-bottom: 3px !important;
+}
+
+.thefade.chat-card .spell-casting-section,
+.thefade.chat-card .spell-attack-section,
+.thefade.chat-card .damage-section,
+.thefade.chat-card .spell-description-section {
+    border-bottom: 1px dashed var(--border-faint);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/* ----- Die result chips ----- */
+.thefade.chat-card .die-result {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    margin: 0 2px;
+}
+
+.thefade.chat-card .die-result.success {
+    background: rgba(168, 138, 76, 0.18);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.thefade.chat-card .die-result.critical {
+    background: rgba(168, 40, 40, 0.22);
+    border-color: var(--accent-hot);
+    color: #f2c879;
+    box-shadow: 0 0 6px rgba(168, 40, 40, 0.35);
+}
+
+.thefade.chat-card .die-result.failure {
+    background: rgba(0, 0, 0, 0.45);
+    border-color: var(--border-faint);
+    color: var(--text-muted);
+}
+
+/* ----- Casting / attack result banner ----- */
+.thefade.chat-card .casting-result,
+.thefade.chat-card .attack-result,
+.thefade.chat-card p.success,
+.thefade.chat-card p.failure {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-size: 0.85em;
+    margin-top: 6px;
+    border: 1px solid transparent;
+}
+
+.thefade.chat-card .casting-result.success,
+.thefade.chat-card .attack-result.success,
+.thefade.chat-card p.success {
+    background: rgba(168, 138, 76, 0.15);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.thefade.chat-card .casting-result.failure,
+.thefade.chat-card .attack-result.failure,
+.thefade.chat-card p.failure {
+    background: rgba(122, 27, 27, 0.22);
+    border-color: var(--accent-crimson);
+    color: #d89b9b;
+}
+
+/* ----- Mishap callout ----- */
+.thefade.chat-card .mishap-section {
+    background: rgba(122, 27, 27, 0.18);
+    border: 1px solid var(--accent-crimson);
+    border-left: 3px solid var(--accent-hot);
+    border-radius: 2px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    color: var(--text-primary);
+    animation: none;
+}
+
+.thefade.chat-card .mishap-section p {
+    margin: 2px 0;
+    color: var(--text-primary);
+}
+
+.thefade.chat-card .mishap-section strong {
+    color: var(--accent-hot);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 0.85em;
+}
+
+/* ----- Damage block ----- */
+.thefade.chat-card .damage-section p {
+    font-size: 1em;
+    color: var(--text-primary);
+}
+
+.thefade.chat-card .damage-section strong {
+    color: var(--accent-hot);
+}
+
+/* ----- Bonus options (attack / spell buttons) ----- */
+.thefade.chat-card .bonus-options,
+.thefade.chat-card .attack-bonus-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 8px 0;
+}
+
+.thefade.chat-card .bonus-option {
+    background: var(--bg-surface-deep);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--accent-crimson);
+    border-radius: 2px;
+    padding: 6px 10px;
+    font-size: 0.85em;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.thefade.chat-card .bonus-option:hover {
+    background: var(--bg-surface-alt);
+    border-left-color: var(--accent-hot);
+    color: var(--text-primary);
+    transform: translateX(2px);
+    box-shadow: none;
+}
+
+.thefade.chat-card .bonus-option.spell-bonus,
+.thefade.chat-card .bonus-option.spell-custom-bonus {
+    border-left-color: var(--accent-gold);
+}
+
+.thefade.chat-card .bonus-option.spell-bonus:hover,
+.thefade.chat-card .bonus-option.spell-custom-bonus:hover {
+    border-left-color: #d4b070;
+}
+
+.thefade.chat-card .bonus-option.disabled,
+.thefade.chat-card .bonus-option:disabled {
+    background: var(--bg-surface);
+    border-color: var(--border-faint);
+    border-left-color: var(--border-faint);
+    color: var(--text-dim);
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.5;
+}
+
+.thefade.chat-card .remaining-successes,
+.thefade.chat-card .attack-remaining-successes {
+    display: inline-block;
+    min-width: 22px;
+    padding: 1px 8px;
+    background: var(--accent-ghost);
+    border: 1px solid var(--accent-gold);
+    border-radius: 2px;
+    color: var(--accent-gold);
+    font-weight: 700;
+    text-align: center;
+}
+
+/* ----- Applied effects list ----- */
+.thefade.chat-card .applied-effects,
+.thefade.chat-card .attack-applied-effects {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-faint);
+}
+
+.thefade.chat-card .applied-effects p,
+.thefade.chat-card .attack-applied-effects p {
+    background: var(--bg-surface-deep);
+    border-left: 3px solid var(--accent-gold);
+    padding: 6px 10px;
+    margin: 4px 0;
+    border-radius: 0 2px 2px 0;
+    color: var(--text-primary);
+    font-size: 0.9em;
+    animation: slideInLeft 0.25s ease-out;
+}
+
+.thefade.chat-card .applied-effects strong,
+.thefade.chat-card .attack-applied-effects strong {
+    color: var(--accent-gold);
+}
+
+/* =====================================================================
+   REDESIGN v3 — DIALOGS (Foundry Dialog app)
+   The renderDialog hook in thefade.js tags every dialog with `.thefade`
+   so we can style the whole wrapper without per-callsite edits.
+   ===================================================================== */
+
+.dialog.thefade .window-header {
+    background: linear-gradient(135deg, var(--bg-surface-deep), var(--bg-surface));
+    border-bottom: 1px solid var(--border-strong);
+    color: var(--text-primary);
+}
+
+.dialog.thefade .window-header .window-title {
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
+}
+
+.dialog.thefade .window-content {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.dialog.thefade .dialog-content {
+    color: var(--text-primary);
+}
+
+.dialog.thefade .dialog-content p,
+.dialog.thefade .dialog-content label,
+.dialog.thefade .dialog-content span,
+.dialog.thefade .dialog-content li {
+    color: var(--text-primary);
+}
+
+.dialog.thefade .dialog-content a {
+    color: var(--accent-gold);
+}
+
+.dialog.thefade .dialog-content a:hover {
+    color: #d4b070;
+    text-shadow: 0 0 4px rgba(168, 138, 76, 0.5);
+}
+
+.dialog.thefade .dialog-content h1,
+.dialog.thefade .dialog-content h2,
+.dialog.thefade .dialog-content h3,
+.dialog.thefade .dialog-content h4 {
+    color: var(--accent-gold);
+    border-color: var(--border-faint);
+}
+
+.dialog.thefade .dialog-content input[type="text"],
+.dialog.thefade .dialog-content input[type="number"],
+.dialog.thefade .dialog-content input[type="search"],
+.dialog.thefade .dialog-content select,
+.dialog.thefade .dialog-content textarea {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
+    padding: 3px 6px;
+    border-radius: 2px;
+}
+
+.dialog.thefade .dialog-content input[type="text"]:focus,
+.dialog.thefade .dialog-content input[type="number"]:focus,
+.dialog.thefade .dialog-content input[type="search"]:focus,
+.dialog.thefade .dialog-content select:focus,
+.dialog.thefade .dialog-content textarea:focus {
+    border-color: var(--accent-gold);
+    outline: none;
+    box-shadow: 0 0 4px rgba(168, 138, 76, 0.4);
+}
+
+.dialog.thefade .dialog-content hr {
+    border: none;
+    border-top: 1px dashed var(--border-faint);
+    margin: 10px 0;
+}
+
+.dialog.thefade .dialog-buttons {
+    border-top: 1px solid var(--border-faint);
+    padding-top: 8px;
+    margin-top: 10px;
+    gap: 6px;
+    background: transparent;
+}
+
+.dialog.thefade .dialog-button {
+    background: var(--bg-surface-deep);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    padding: 5px 10px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    text-shadow: none;
+}
+
+.dialog.thefade .dialog-button:hover {
+    background: var(--accent-ghost);
+    border-color: var(--accent-crimson);
+    color: var(--text-primary);
+    box-shadow: none;
+}
+
+.dialog.thefade .dialog-button.default {
+    border-left: 3px solid var(--accent-gold);
+}
+
+.dialog.thefade .dialog-button.default:hover {
+    border-color: var(--accent-gold);
+    border-left-color: #d4b070;
+    color: var(--accent-gold);
+}
+
+/* Item/Compendium search-style dialogs often use a form */
+.dialog.thefade form.dialog-content,
+.dialog.thefade .dialog-content form {
+    background: transparent;
+    padding: 0;
+}
