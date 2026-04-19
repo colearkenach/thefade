@@ -6903,3 +6903,648 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-crimson);
 }
+
+/* ============================================================
+   REDESIGN v2 — inventory / paths / spells / item sheets
+   ============================================================ */
+
+/* ----- Inventory sub-tabs ----- */
+.thefade .inventory-tabs {
+    margin-top: 0;
+}
+
+.thefade .inventory-tabs .tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    background: transparent;
+    border-bottom: 1px solid var(--border-faint);
+    margin-bottom: 12px;
+    padding-bottom: 0;
+}
+
+.thefade .inventory-tabs .tab-button {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-bottom: none;
+    color: var(--text-muted);
+    padding: 7px 14px;
+    font-size: 0.85em;
+    letter-spacing: 0.4px;
+    font-weight: 500;
+    border-radius: 3px 3px 0 0;
+    transition: all var(--transition-speed) ease;
+}
+
+.thefade .inventory-tabs .tab-button:hover {
+    background: var(--bg-surface-alt);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+.thefade .inventory-tabs .tab-button.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--accent-crimson);
+    border-bottom: 1px solid var(--bg-surface);
+    margin-bottom: -1px;
+    position: relative;
+}
+
+/* Subtabs */
+.thefade .subtab-nav {
+    background: var(--bg-surface-deep);
+    border-bottom: 1px solid var(--border-faint);
+}
+
+.thefade .subtab-button {
+    color: var(--text-muted);
+}
+
+.thefade .subtab-button:hover,
+.thefade .subtab-button.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--accent-crimson);
+}
+
+/* ----- Inventory headers (weapon/armor/etc columns) ----- */
+.thefade .weapon-header,
+.thefade .armor-header,
+.thefade .consumables-header,
+.thefade .gear-header,
+.thefade .items-of-power-header,
+.thefade .magic-gear-header,
+.thefade .companions-header {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px 3px 0 0;
+    color: var(--text-muted);
+    font-size: 0.76em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    padding: 8px 10px;
+    margin-bottom: 0;
+}
+
+.thefade .weapon-header a,
+.thefade .armor-header a,
+.thefade .items-of-power-header a,
+.thefade .magic-gear-header a,
+.thefade .consumables-header a,
+.thefade .gear-header a,
+.thefade .companions-header a {
+    color: var(--text-muted);
+    transition: color var(--transition-speed) ease;
+}
+
+.thefade .weapon-header a:hover,
+.thefade .armor-header a:hover,
+.thefade .items-of-power-header a:hover,
+.thefade .magic-gear-header a:hover,
+.thefade .consumables-header a:hover,
+.thefade .gear-header a:hover,
+.thefade .companions-header a:hover {
+    color: var(--accent-hot);
+}
+
+/* Item list rows in inventory */
+.thefade .inventory-section .items-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.thefade .inventory-section .items-list .item {
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-faint);
+    border-right: 1px solid var(--border-faint);
+    border-bottom: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    transition: background var(--transition-speed) ease;
+}
+
+.thefade .inventory-section .items-list .item:nth-child(even) {
+    background: var(--bg-surface-alt);
+}
+
+.thefade .inventory-section .items-list .item:hover {
+    background: var(--bg-surface-alt);
+    border-left-color: var(--accent-crimson);
+}
+
+.thefade .inventory-section .items-list .item:last-child {
+    border-radius: 0 0 3px 3px;
+}
+
+.thefade .inventory-section .item-icon,
+.thefade .inventory-section .item-img {
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+}
+
+.thefade .inventory-section a.item-edit,
+.thefade .inventory-section a.item-delete,
+.thefade .inventory-section a.attack-roll,
+.thefade .inventory-section a.item-create,
+.thefade .inventory-section a.weapon-browse,
+.thefade .inventory-section a.armor-browse {
+    color: var(--text-muted);
+    transition: color var(--transition-speed) ease;
+    margin: 0 2px;
+}
+
+.thefade .inventory-section a.item-edit:hover,
+.thefade .inventory-section a.attack-roll:hover { color: var(--accent-gold); }
+
+.thefade .inventory-section a.item-delete:hover { color: var(--accent-hot); }
+
+.thefade .inventory-section a.item-create:hover,
+.thefade .inventory-section a.weapon-browse:hover,
+.thefade .inventory-section a.armor-browse:hover { color: var(--accent-hot); }
+
+/* ----- Currency card ----- */
+.thefade .inventory-section .currency {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-gold);
+    border-radius: 3px;
+    margin-bottom: 14px;
+}
+
+.thefade .inventory-section .currency h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 0.85em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-gold);
+}
+
+.thefade .inventory-section .currency h2::before { display: none; }
+
+.thefade .inventory-section .currency-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.thefade .inventory-section .currency-item label {
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+.thefade .inventory-section .currency-item input {
+    width: 80px;
+    text-align: right;
+}
+
+/* ----- Armor slot panels ----- */
+.thefade .armor-slots-grid .armor-slot-container.panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.thefade .armor-slots-grid .slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-faint);
+    margin-bottom: 8px;
+}
+
+.thefade .armor-slots-grid .slot-header h4 {
+    margin: 0;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent-gold);
+}
+
+.thefade .armor-slots-grid .total-ap {
+    font-size: 0.8em;
+    color: var(--text-muted);
+}
+
+.thefade .armor-slots-grid .current-total-ap,
+.thefade .armor-slots-grid .max-total-ap {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ----- Paths tab ----- */
+.thefade .character-progression {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+}
+
+.thefade .character-progression h3,
+.thefade .character-progression h4 {
+    margin-top: 0 !important;
+    color: var(--accent-gold) !important;
+    font-size: 0.8em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thefade .progression-core,
+.thefade .progression-paths,
+.thefade .progression-tiers {
+    padding: 8px 0;
+}
+
+.thefade .progression-core + .progression-paths,
+.thefade .progression-paths + .progression-tiers {
+    border-top: 1px dashed var(--border-faint);
+}
+
+.thefade .core-stats,
+.thefade .path-stats,
+.thefade .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.thefade .core-stats .form-group,
+.thefade .path-stats .form-group,
+.thefade .tier-grid .tier-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.thefade .core-stats label,
+.thefade .path-stats label,
+.thefade .tier-grid label {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.thefade .paths-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thefade .path-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    padding: 0;
+    overflow: hidden;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.thefade .path-item:hover {
+    border-color: var(--accent-crimson);
+}
+
+.thefade .path-item .path-header {
+    display: flex;
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    gap: 8px;
+    cursor: pointer;
+}
+
+.thefade .path-item .path-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.thefade .path-item .path-tier {
+    font-size: 0.85em;
+    color: var(--accent-gold);
+    font-weight: 500;
+    margin-left: 6px;
+}
+
+.thefade .path-item .path-toggle-icon {
+    color: var(--text-muted);
+    transition: transform var(--transition-speed) ease;
+}
+
+.thefade .path-item .path-checkbox:checked + .path-header .path-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* ----- Spells tab ----- */
+.thefade .spells-learned-counter {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-gold);
+    border-radius: 3px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.thefade .spells-learned-counter h3 {
+    margin: 0 0 8px !important;
+    color: var(--accent-gold) !important;
+    font-size: 0.8em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thefade .spells-learned-counter .spell-numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.thefade .spells-learned-counter .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.thefade .spells-learned-counter label {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.thefade .sin-dark-magic-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-crimson);
+    border-radius: 3px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+}
+
+.thefade .sin-dark-magic-section .dark-magic-spells {
+    margin-bottom: 12px;
+}
+
+.thefade .sin-dark-magic-section .dark-magic-spells > label {
+    display: block;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+}
+
+.thefade .dark-magic-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.thefade .dark-magic-checkboxes .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+.thefade .dark-magic-checkboxes .checkbox-label:hover {
+    border-color: var(--accent-crimson);
+}
+
+.thefade .sin-management {
+    gap: 10px;
+}
+
+.thefade .spell-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    margin-bottom: 12px;
+}
+
+.thefade .spell-filters select,
+.thefade .spell-filters input[type="text"] {
+    flex: 1 1 140px;
+}
+
+/* ----- Item sheet popup — generic dark theme ----- */
+.thefade.sheet.item {
+    background: var(--bg-ink);
+    color: var(--text-primary);
+}
+
+.thefade.sheet.item .window-content {
+    background: var(--bg-ink);
+    color: var(--text-primary);
+}
+
+.thefade.sheet.item .sheet-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
+    border: 1px solid var(--border-faint);
+    border-bottom: 2px solid var(--accent-crimson);
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.thefade.sheet.item .profile-img {
+    width: 64px !important;
+    height: 64px !important;
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.thefade.sheet.item .item-name-dynamic,
+.thefade.sheet.item h1.charname {
+    margin: 0;
+    border: none;
+}
+
+.thefade.sheet.item .item-name-dynamic input,
+.thefade.sheet.item h1.charname input {
+    width: 100%;
+    font-family: "EideticNeo-Omni", serif;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-faint);
+    padding: 2px 0;
+}
+
+.thefade.sheet.item .item-type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-top: 4px;
+    background: var(--accent-ghost);
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--accent-gold);
+}
+
+.thefade.sheet.item .header-fields {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Form groups in item sheets */
+.thefade.sheet.item .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.thefade.sheet.item .form-group label {
+    font-size: 0.78em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+}
+
+.thefade.sheet.item .form-group.flexrow {
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.thefade.sheet.item .form-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: var(--text-primary);
+}
+
+.thefade.sheet.item .hint {
+    font-size: 0.78em;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 4px 0 0;
+}
+
+.thefade.sheet.item textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+/* ----- Checkboxes (generic) ----- */
+.thefade input[type="checkbox"] {
+    accent-color: var(--accent-crimson);
+    cursor: pointer;
+}
+
+/* ----- Fix rogue white/light leftovers ----- */
+.thefade .form-group label {
+    color: var(--text-primary);
+}
+
+.thefade .detail-row {
+    color: var(--text-primary);
+}
+
+.thefade .detail-row span {
+    color: var(--text-muted);
+}
+
+.thefade .dynamic-family-list .family-member {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+}
+
+/* ----- Background tab portrait sidebar ----- */
+.thefade .background-layout {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 14px;
+}
+
+@media (max-width: 720px) {
+    .thefade .background-layout {
+        grid-template-columns: 1fr;
+    }
+    .thefade .character-portrait-sidebar {
+        order: -1;
+    }
+}
+
+.thefade .character-portrait-sidebar {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.thefade .character-portrait-sidebar .character-image {
+    width: 100%;
+    height: auto;
+    max-height: 240px;
+    object-fit: cover;
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+}
+
+.thefade .character-details-section {
+    border-top: 1px solid var(--border-faint);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.thefade .character-details-section h3 {
+    margin-top: 0 !important;
+    color: var(--accent-gold) !important;
+    font-size: 0.75em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thefade .background-section,
+.thefade .appearance-section,
+.thefade .notes-section {
+    margin-bottom: 14px;
+}
+
+.thefade .family-row .family-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.thefade .alive-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
