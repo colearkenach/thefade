@@ -6604,6 +6604,52 @@ select[name="system.aura.color"] option[value="white"] {
     background: var(--bg-surface);
 }
 
+/* Native dropdown: force dark palette on the select chrome AND its options.
+   Without option styling, Chrome/Edge render the menu with OS colors, which
+   often ends up white-on-white once the theme touches the select. */
+.thefade select {
+    color: var(--text-primary) !important;
+    background-color: var(--bg-surface-deep) !important;
+    background-image: linear-gradient(45deg, transparent 50%, var(--accent-gold) 50%),
+                      linear-gradient(-45deg, transparent 50%, var(--accent-gold) 50%);
+    background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 22px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.thefade select option,
+.thefade select optgroup {
+    background-color: var(--bg-surface-deep);
+    color: var(--text-primary);
+}
+
+.thefade select option:checked,
+.thefade select option:hover {
+    background-color: var(--accent-ghost);
+    color: var(--accent-gold);
+}
+
+.thefade select:disabled {
+    opacity: 0.55;
+    color: var(--text-muted) !important;
+    background-color: var(--bg-surface) !important;
+}
+
+/* Dialog dropdowns inherit the same rules via the .thefade class on the app */
+.dialog.thefade select {
+    color: var(--text-primary) !important;
+    background-color: var(--bg-surface-deep) !important;
+}
+
+.dialog.thefade select option {
+    background-color: var(--bg-surface-deep);
+    color: var(--text-primary);
+}
+
 .thefade input[disabled],
 .thefade input:disabled {
     color: var(--text-muted);
