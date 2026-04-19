@@ -1,7 +1,5 @@
-2026/01/10-04:39:19.002 5818 Recovering log #144
-2026/01/10-04:39:19.005 5818 Delete type=0 #144
-2026/01/10-04:39:19.005 5818 Delete type=3 #143
-2026/01/10-04:42:17.051 ad94 Level-0 table #148: started
-2026/01/10-04:42:17.051 ad94 Level-0 table #148: 0 bytes OK
-2026/01/10-04:42:17.052 ad94 Delete type=0 #146
-2026/01/10-04:42:17.052 ad94 Manual compaction at level-0 from '!folders!0e3LfiJsLi3AGhUo' @ 72057594037927935 : 1 .. '!items!yYTX2krzjSllmlpI' @ 0 : 0; will stop at (end)
+2026/04/19-02:14:47.942 7850 Log #157: 0 ops saved to Table #158 OK
+2026/04/19-02:14:47.942 7850 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\magic-item/000157.log: OK
+2026/04/19-02:14:47.943 7850 Table #56: 116 entries OK
+2026/04/19-02:14:47.945 7850 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\magic-item/MANIFEST-000155: OK
+2026/04/19-02:14:47.947 7850 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\magic-item; recovered 1 files; 67108 bytes. Some data may have been lost. ****

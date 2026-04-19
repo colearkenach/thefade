@@ -1,7 +1,5 @@
-2026/01/10-04:39:18.984 4b18 Recovering log #318
-2026/01/10-04:39:18.986 4b18 Delete type=0 #318
-2026/01/10-04:39:18.986 4b18 Delete type=3 #317
-2026/01/10-04:42:17.044 ad94 Level-0 table #322: started
-2026/01/10-04:42:17.044 ad94 Level-0 table #322: 0 bytes OK
-2026/01/10-04:42:17.044 ad94 Delete type=0 #320
-2026/01/10-04:42:17.048 ad94 Manual compaction at level-0 from '!folders!MXdiNBU5X4JVkUZf' @ 72057594037927935 : 1 .. '!items!zvpBwi9CRpcO4OrO' @ 0 : 0; will stop at (end)
+2026/04/19-02:14:47.897 7850 Log #331: 0 ops saved to Table #332 OK
+2026/04/19-02:14:47.897 7850 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/000331.log: OK
+2026/04/19-02:14:47.897 7850 Table #230: 58 entries OK
+2026/04/19-02:14:47.898 7850 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/MANIFEST-000329: OK
+2026/04/19-02:14:47.900 7850 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills; recovered 1 files; 12833 bytes. Some data may have been lost. ****

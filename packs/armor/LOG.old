@@ -1,7 +1,5 @@
-2026/01/10-04:39:18.994 26f8 Recovering log #321
-2026/01/10-04:39:18.996 26f8 Delete type=0 #321
-2026/01/10-04:39:18.996 26f8 Delete type=3 #320
-2026/01/10-04:42:17.049 ad94 Level-0 table #325: started
-2026/01/10-04:42:17.049 ad94 Level-0 table #325: 0 bytes OK
-2026/01/10-04:42:17.050 ad94 Delete type=0 #323
-2026/01/10-04:42:17.052 ad94 Manual compaction at level-0 from '!folders!DCyS7j1CTIDQYKLs' @ 72057594037927935 : 1 .. '!items!uuN8itOEN8geMG98' @ 0 : 0; will stop at (end)
+2026/04/19-02:14:47.920 7850 Log #334: 0 ops saved to Table #335 OK
+2026/04/19-02:14:47.920 7850 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/000334.log: OK
+2026/04/19-02:14:47.920 7850 Table #233: 31 entries OK
+2026/04/19-02:14:47.922 7850 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/MANIFEST-000332: OK
+2026/04/19-02:14:47.924 7850 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor; recovered 1 files; 6661 bytes. Some data may have been lost. ****
