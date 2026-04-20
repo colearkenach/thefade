@@ -5964,6 +5964,34 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade .vital-pill.vital-sanity { border-left-color: var(--accent-gold); }
 .thefade .vital-pill.vital-init { border-left-color: var(--border-strong); }
 
+/* HP state: border color shifts with health level */
+.thefade .vital-pill.hp-state-healthy    { border-left-color: #4a8a4a; }
+.thefade .vital-pill.hp-state-bloodied   { border-left-color: #a8882a; }
+.thefade .vital-pill.hp-state-wounded    { border-left-color: var(--accent-hot); }
+.thefade .vital-pill.hp-state-unconscious{ border-left-color: #6a3a8a; }
+.thefade .vital-pill.hp-state-dying      { border-left-color: #8a1a1a; }
+.thefade .vital-pill.hp-state-dead       { border-left-color: #3a3a3a; }
+
+/* HP state badge pill */
+.thefade .hp-state-badge {
+    display: inline-block;
+    font-size: 0.68em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 1px 6px;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    margin-top: 2px;
+    align-self: flex-start;
+}
+.thefade .hp-state-badge.hp-state-healthy     { background: rgba(74,138,74,0.18);  border-color: #4a8a4a; color: #7aba7a; }
+.thefade .hp-state-badge.hp-state-bloodied    { background: rgba(168,136,42,0.18); border-color: #a8882a; color: #d4aa50; }
+.thefade .hp-state-badge.hp-state-wounded     { background: rgba(168,40,40,0.18);  border-color: var(--accent-hot); color: #e07070; }
+.thefade .hp-state-badge.hp-state-unconscious { background: rgba(106,58,138,0.2);  border-color: #6a3a8a; color: #b07ad0; }
+.thefade .hp-state-badge.hp-state-dying       { background: rgba(138,26,26,0.3);   border-color: #8a1a1a; color: #ff6060; }
+.thefade .hp-state-badge.hp-state-dead        { background: rgba(40,40,40,0.4);    border-color: #5a5a5a; color: #888; }
+
 .thefade .vital-pill label {
     font-size: 0.75em;
     font-weight: 600;

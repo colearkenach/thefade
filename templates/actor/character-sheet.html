@@ -33,7 +33,7 @@
             </div>
 
             <div class="vitals-strip">
-                <div class="vital-pill vital-hp">
+                <div class="vital-pill vital-hp hp-state-{{system.hp.state}}">
                     <label>HP</label>
                     <div class="vital-values">
                         <input type="text" name="system.hp.value" value="{{system.hp.value}}" data-dtype="Number" />
@@ -41,6 +41,9 @@
                         <input type="text" name="system.hp.max" value="{{system.hp.max}}" data-dtype="Number" disabled />
                     </div>
                     <input type="text" name="system.hpMiscBonus" value="{{system.hpMiscBonus}}" data-dtype="Number" title="HP Misc Bonus" class="vital-bonus" placeholder="+0" />
+                    {{#if system.hp.stateLabel}}
+                    <span class="hp-state-badge hp-state-{{system.hp.state}}" title="HP State">{{system.hp.stateLabel}}</span>
+                    {{/if}}
                 </div>
 
                 <div class="vital-pill vital-sanity">
