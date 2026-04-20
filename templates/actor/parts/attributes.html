@@ -1,16 +1,16 @@
 <h2>Ability Scores</h2>
 
-{{#if (eq creationMode "pointbuy")}}
-<div class="attribute-pointbuy-panel {{#if pointBuy.over}}over-budget{{/if}} {{#if pointBuy.capExceeded}}cap-exceeded{{/if}}">
+{{#if (eq system.creationMode "pointbuy")}}
+<div class="attribute-pointbuy-panel {{#if system.pointBuy.over}}over-budget{{/if}} {{#if system.pointBuy.capExceeded}}cap-exceeded{{/if}}">
     <span class="pointbuy-label">Point buy:</span>
-    <strong>{{pointBuy.spent}}</strong> / {{pointBuy.budget}} spent
-    <span class="pointbuy-remaining">({{pointBuy.remaining}} remaining)</span>
-    {{#if pointBuy.over}}<span class="pointbuy-warning">Over budget!</span>{{/if}}
-    {{#if pointBuy.capExceeded}}<span class="pointbuy-warning">Attribute above 10!</span>{{/if}}
+    <strong>{{system.pointBuy.spent}}</strong> / {{system.pointBuy.budget}} spent
+    <span class="pointbuy-remaining">({{system.pointBuy.remaining}} remaining)</span>
+    {{#if system.pointBuy.over}}<span class="pointbuy-warning">Over budget!</span>{{/if}}
+    {{#if system.pointBuy.capExceeded}}<span class="pointbuy-warning">Attribute above 10!</span>{{/if}}
 </div>
 {{/if}}
 
-{{#if (eq creationMode "random")}}
+{{#if (eq system.creationMode "random")}}
 <div class="attribute-randomroll-panel">
     <span class="pointbuy-label">Random roll:</span>
     <button class="roll-attributes" type="button" title="Roll 1d6 per attribute (explodes on 6)">Roll 1d6 (exploding) &times; 5</button>
