@@ -72,8 +72,16 @@ export class TheFadeItem extends Item {
             overwrite: false
         });
 
-        if (data.currentAP === 0) data.currentAP = data.ap;
-        if ((data.location === "Arms" || data.location === "Legs" || data.location == "Arms+" || data.location == "Legs+") && data.otherLimbAP === 0) {
+        // Initialize only when the field has never been set (null/undefined).
+        // Once damage drops currentAP to 0 it MUST stay at 0 until repaired —
+        // re-seeding from max here would silently refill broken armor on every
+        // prepareData cycle. New armor gets its starting AP via the
+        // preCreateItem hook in thefade.js.
+        if (data.currentAP === null || data.currentAP === undefined) {
+            data.currentAP = data.ap;
+        }
+        if ((data.location === "Arms" || data.location === "Legs" || data.location == "Arms+" || data.location == "Legs+")
+            && (data.otherLimbAP === null || data.otherLimbAP === undefined)) {
             data.otherLimbAP = data.ap;
         }
     }

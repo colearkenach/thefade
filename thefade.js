@@ -335,6 +335,27 @@ Hooks.once('init', async function () {
 });
 
 /**
+ * Seed new armor with its starting AP on creation. prepareData no longer
+ * refills currentAP when it hits 0 (that was the "broken armor refills
+ * itself" bug), so freshly created armor needs currentAP populated once
+ * here to avoid starting at 0.
+ */
+Hooks.on("preCreateItem", (item, data, options, userId) => {
+    if (item.type !== "armor") return;
+    const system = data.system || {};
+    const ap = Number(system.ap) || 0;
+    const updates = {};
+    if (system.currentAP === undefined || system.currentAP === null || system.currentAP === 0) {
+        updates["system.currentAP"] = ap;
+    }
+    const isLimb = ["Arms", "Legs", "Arms+", "Legs+"].includes(system.location);
+    if (isLimb && (system.otherLimbAP === undefined || system.otherLimbAP === null || system.otherLimbAP === 0)) {
+        updates["system.otherLimbAP"] = ap;
+    }
+    if (Object.keys(updates).length) item.updateSource(updates);
+});
+
+/**
 * Item creation hook - handle path and species application
 */
 Hooks.on("createItem", async (item, options, userId) => {

@@ -4,7 +4,9 @@
      data-base-damage="{{totalDamage}}"
      data-damage-type="{{damageType}}"
      data-weapon-name="{{weaponName}}"
-     data-critical-threshold="{{criticalThreshold}}">
+     data-critical-threshold="{{criticalThreshold}}"
+     data-hit-location="{{hitLocation}}"
+     data-called-shot="{{#if calledShot}}1{{else}}0{{/if}}">
     <header class="card-header">
         <h3>Attack with {{weaponName}}</h3>
     </header>
@@ -94,18 +96,16 @@
             <p>Damage: <span class="base-damage-value">{{totalDamage}}</span> {{damageType}}</p>
             {{/if}}
 
+            {{#if hitLocation}}
+            <p class="hit-location-line">
+                <strong>Hit Location:</strong> {{hitLocationLabel}}
+                {{#if calledShot}} <em>(Called Shot)</em>{{/if}}
+                {{#if hitLocationRollDetail}} <span class="hint">[{{hitLocationRollDetail}}]</span>{{/if}}
+            </p>
+            {{/if}}
+
             {{#if targetUuid}}
             <div class="damage-apply-row">
-                <label>Hit location:
-                    <select class="damage-location">
-                        <option value="head">Head</option>
-                        <option value="body" selected>Body</option>
-                        <option value="leftarm">Left Arm</option>
-                        <option value="rightarm">Right Arm</option>
-                        <option value="leftleg">Left Leg</option>
-                        <option value="rightleg">Right Leg</option>
-                    </select>
-                </label>
                 <button class="apply-damage-btn" type="button">
                     <i class="fas fa-burst"></i> Apply Damage
                 </button>

@@ -104,9 +104,10 @@ export const UNIVERSAL_ABILITIES = {
             if (!data.naturalDeflection) data.naturalDeflection = {};
             if (!data.naturalDeflection.body) data.naturalDeflection.body = { current: 0, max: 0, stacks: false };
             data.naturalDeflection.body.max = Math.max(data.naturalDeflection.body.max || 0, amount);
-            if ((data.naturalDeflection.body.current || 0) < amount) {
-                data.naturalDeflection.body.current = amount;
-            }
+            // Do NOT auto-raise current here. Damage drops current toward 0 and
+            // must persist — re-raising on every prepareData would silently
+            // refill broken ND. Players use the "Reset ND" button on the sheet
+            // to refresh a location after repair/recovery.
         }
     },
     "Fire Resistance": {
