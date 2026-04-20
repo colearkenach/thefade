@@ -3,6 +3,7 @@ import { BODY_PARTS, FALLBACK_ACTOR_DATA } from './constants.js';
 import { aggregateConditionState, computeRollModifiers, summarizeConditionState } from './conditions.js';
 import { applyBaseDefenseStances, applyPassiveStances, summarizeStance, getDamageMitigation } from './stances.js';
 import { applyAddictionPenalties, resetDailySin } from './dark-magic.js';
+import { applyAbilityEffects } from './abilities.js';
 
 /**
 * Base Actor class for The Fade system
@@ -232,6 +233,11 @@ export class TheFadeActor extends Actor {
 
             // Calculate max HP and Sanity
             this._calculateMaxValues(data, actorData);
+
+            // Apply passive universal-ability effects (Tough, Flight, etc.)
+            // before downstream calcs so HP bumps and movement modes are
+            // baked into what the sheet displays.
+            applyAbilityEffects(data, actorData);
 
             // Calculate Sin Threshold for dark magic
             this._calculateSinThreshold(data);

@@ -301,6 +301,28 @@
                                 {{/each}}
                             </div>
                         </div>
+                        {{#if system.abilityEffects}}
+                        {{#if system.abilityEffects.applied.length}}
+                        <div class="form-group ability-effects-group">
+                            <label>Automated Abilities</label>
+                            <ul class="ability-effects-applied">
+                                {{#each system.abilityEffects.applied}}
+                                <li><strong>{{name}}</strong> <span class="ability-source">({{source}})</span> &mdash; {{description}}</li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                        {{/if}}
+                        {{#if system.abilityEffects.unmatched.length}}
+                        <div class="form-group ability-effects-group ability-effects-unmatched">
+                            <label>Text-only abilities <span class="hint">(no automated effect; apply manually)</span></label>
+                            <ul>
+                                {{#each system.abilityEffects.unmatched}}
+                                <li><strong>{{name}}</strong> <span class="ability-source">({{source}})</span></li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                        {{/if}}
+                        {{/if}}
                     </div>
                 </div>
 
