@@ -6065,6 +6065,28 @@ select[name="system.aura.color"] option[value="white"] {
     transform: none;
 }
 
+.thefade .vital-pill .take-rest-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    font-size: 0.78em;
+    background: rgba(74,138,74,0.15);
+    color: #7aba7a;
+    border: 1px solid #4a8a4a;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-speed) ease;
+    flex-shrink: 0;
+}
+
+.thefade .vital-pill .take-rest-btn:hover {
+    background: rgba(74,138,74,0.35);
+    border-color: #7aba7a;
+}
+
 /* ----- Sheet tabs on dark theme ----- */
 .thefade .sheet-tabs {
     border-bottom: 1px solid var(--border-faint);
@@ -6582,16 +6604,77 @@ select[name="system.aura.color"] option[value="white"] {
     color: var(--accent-gold);
 }
 
+.thefade .minor-stats-row .capacity-card h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.thefade .capacity-load-inline {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85em;
+    font-weight: normal;
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+    margin-left: auto;
+}
+
+.thefade .capacity-load-input {
+    width: 48px !important;
+    background: var(--bg-surface-deep) !important;
+    border: 1px solid var(--border-faint) !important;
+    color: var(--text-primary) !important;
+    text-align: center;
+    padding: 1px 4px !important;
+    font-size: 0.9em !important;
+    height: 20px !important;
+}
+
+.thefade .capacity-tier-badge {
+    font-size: 0.78em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    border: 1px solid transparent;
+    background: var(--bg-surface-deep);
+    color: var(--text-muted);
+}
+.thefade .capacity-tier-badge.capacity-tier-none    { color: var(--text-muted); }
+.thefade .capacity-tier-badge.capacity-tier-light   { background: rgba(74,138,74,0.2);  border-color: #4a8a4a; color: #7aba7a; }
+.thefade .capacity-tier-badge.capacity-tier-medium  { background: rgba(180,140,40,0.2); border-color: #b48c28; color: #d4aa50; }
+.thefade .capacity-tier-badge.capacity-tier-heavy   { background: rgba(180,80,20,0.2);  border-color: #b45014; color: #d47840; }
+.thefade .capacity-tier-badge.capacity-tier-overHead  { background: rgba(180,40,40,0.2); border-color: #b42828; color: #d46060; }
+.thefade .capacity-tier-badge.capacity-tier-offGround { background: rgba(138,20,20,0.25); border-color: #8a1414; color: #ff5050; }
+.thefade .capacity-tier-badge.capacity-tier-pushOrDrag { background: rgba(100,10,10,0.3); border-color: #640a0a; color: #ff3030; }
+
 .thefade .minor-stats-row .capacity-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+    gap: 6px;
+}
+
+.thefade .minor-stats-row .capacity-grid.capacity-grid-full {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 6px;
 }
 
 .thefade .minor-stats-row .capacity-cell {
     display: flex;
     flex-direction: column;
     gap: 2px;
+    border-radius: 3px;
+    padding: 3px 4px;
+    border: 1px solid transparent;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.thefade .minor-stats-row .capacity-cell.capacity-active {
+    background: rgba(180,140,40,0.1);
+    border-color: var(--accent-gold);
 }
 
 .thefade .minor-stats-row .capacity-cell label {
@@ -6599,6 +6682,11 @@ select[name="system.aura.color"] option[value="white"] {
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    cursor: help;
+}
+
+.thefade .minor-stats-row .capacity-cell.capacity-active label {
+    color: var(--accent-gold);
 }
 
 .thefade .minor-stats-row .capacity-cell input {

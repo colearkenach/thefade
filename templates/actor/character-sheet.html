@@ -38,12 +38,13 @@
                     <div class="vital-values">
                         <input type="text" name="system.hp.value" value="{{system.hp.value}}" data-dtype="Number" />
                         <span class="sep">/</span>
-                        <input type="text" name="system.hp.max" value="{{system.hp.max}}" data-dtype="Number" disabled />
+                        <input type="text" name="system.hp.max" value="{{system.hp.max}}" data-dtype="Number" disabled title="{{system.hp.formula}}" />
                     </div>
                     <input type="text" name="system.hpMiscBonus" value="{{system.hpMiscBonus}}" data-dtype="Number" title="HP Misc Bonus" class="vital-bonus" placeholder="+0" />
                     {{#if system.hp.stateLabel}}
                     <span class="hp-state-badge hp-state-{{system.hp.state}}" title="HP State">{{system.hp.stateLabel}}</span>
                     {{/if}}
+                    <button type="button" class="take-rest-btn" title="Take a rest: roll 1d12 + Physique and restore that much HP"><i class="fas fa-bed"></i></button>
                 </div>
 
                 <div class="vital-pill vital-sanity">
@@ -51,7 +52,7 @@
                     <div class="vital-values">
                         <input type="text" name="system.sanity.value" value="{{system.sanity.value}}" data-dtype="Number" />
                         <span class="sep">/</span>
-                        <input type="text" name="system.sanity.max" value="{{system.sanity.max}}" data-dtype="Number" disabled />
+                        <input type="text" name="system.sanity.max" value="{{system.sanity.max}}" data-dtype="Number" disabled title="{{system.sanity.formula}}" />
                     </div>
                     <input type="text" name="system.sanity.miscBonus" value="{{system.sanity.miscBonus}}" data-dtype="Number" title="Sanity Misc Bonus" class="vital-bonus" placeholder="+0" />
                 </div>
@@ -88,7 +89,7 @@
                     <input type="checkbox" id="toggle-resilience" class="defense-checkbox">
                     <label for="toggle-resilience" class="defense-label">Resilience <span class="toggle-icon">▼</span></label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.totalResilience}}" disabled class="total-value" />
+                        <input type="text" value="{{system.totalResilience}}" disabled class="total-value" title="{{system.defenses.resilienceFormula}}" />
                         <span class="excess-penalty resilience-excess-penalty">+0D</span>
                     </div>
                     <div class="defense-details">
@@ -108,7 +109,7 @@
                     <input type="checkbox" id="toggle-avoid" class="defense-checkbox">
                     <label for="toggle-avoid" class="defense-label">Avoid <span class="toggle-icon">▼</span></label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" />
+                        <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" title="{{system.defenses.avoidFormula}}" />
                         <span class="excess-penalty avoid-excess-penalty">+0D</span>
                     </div>
                     <div class="defense-details">
@@ -132,7 +133,7 @@
                     <input type="checkbox" id="toggle-grit" class="defense-checkbox">
                     <label for="toggle-grit" class="defense-label">Grit <span class="toggle-icon">▼</span></label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.totalGrit}}" disabled class="total-value" />
+                        <input type="text" value="{{system.totalGrit}}" disabled class="total-value" title="{{system.defenses.gritFormula}}" />
                         <span class="excess-penalty grit-excess-penalty">+0D</span>
                     </div>
                     <div class="defense-details">
@@ -409,19 +410,36 @@
             {{!-- Carrying + Religion footer --}}
             <div class="minor-stats-row">
                 <div class="capacity-card">
-                    <h3>Carrying Capacity</h3>
-                    <div class="capacity-grid">
-                        <div class="capacity-cell">
-                            <label>Light</label>
+                    <h3>Carrying Capacity
+                        <span class="capacity-load-inline">
+                            Load: <input class="capacity-load-input" type="number" name="system.currentLoad" value="{{system.currentLoad}}" min="0" />
+                            <span class="capacity-tier-badge capacity-tier-{{system.carryingCapacity.currentTier}}">{{system.carryingCapacity.currentTierLabel}}</span>
+                        </span>
+                    </h3>
+                    <div class="capacity-grid capacity-grid-full">
+                        <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'light')}}capacity-active{{/if}}">
+                            <label title="No penalty">Light</label>
                             <input type="text" value="{{system.carryingCapacity.light}}" disabled />
                         </div>
-                        <div class="capacity-cell">
-                            <label>Medium (1/2 spd)</label>
+                        <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'medium')}}capacity-active{{/if}}">
+                            <label title="Speed ÷ 2">Medium</label>
                             <input type="text" value="{{system.carryingCapacity.medium}}" disabled />
                         </div>
-                        <div class="capacity-cell">
-                            <label>Heavy (1/4 spd, -1 Avoid)</label>
+                        <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'heavy')}}capacity-active{{/if}}">
+                            <label title="Speed ÷ 4, −1 Avoid">Heavy</label>
                             <input type="text" value="{{system.carryingCapacity.heavy}}" disabled />
+                        </div>
+                        <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'overHead')}}capacity-active{{/if}}">
+                            <label title="Over Head lift — no movement">Over Head</label>
+                            <input type="text" value="{{system.carryingCapacity.overHead}}" disabled />
+                        </div>
+                        <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'offGround')}}capacity-active{{/if}}">
+                            <label title="Lift off ground — no movement">Off Ground</label>
+                            <input type="text" value="{{system.carryingCapacity.offGround}}" disabled />
+                        </div>
+                        <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'pushOrDrag')}}capacity-active{{/if}}">
+                            <label title="Push or drag along surface">Push/Drag</label>
+                            <input type="text" value="{{system.carryingCapacity.pushOrDrag}}" disabled />
                         </div>
                     </div>
                 </div>

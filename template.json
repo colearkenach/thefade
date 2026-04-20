@@ -119,6 +119,7 @@
       },
       "currentAttunements": 0,
       "maxAttunements": 0,
+      "currentLoad": 0,
       "currency": {
         "serpents": 0
       },

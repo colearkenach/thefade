@@ -2762,6 +2762,11 @@ export class TheFadeCharacterSheet extends ActorSheet {
         await this.actor.restDaily();
     }
 
+    async _onTakeRest(event) {
+        event.preventDefault();
+        await this.actor.takeRest();
+    }
+
     async _onOpposedRoll(event) {
         event.preventDefault();
         await openOpposedRollDialog(this.actor);
@@ -3795,6 +3800,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.aid-another').click(this._onAidAnother.bind(this));
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
         html.find('.rest-daily').click(this._onRestDaily.bind(this));
+        html.find('.take-rest-btn').click(this._onTakeRest.bind(this));
         html.find('.roll-attributes').click(this._onRollAttributes.bind(this));
 
         html.find('.level-up-btn').click(this._onLevelUp.bind(this));

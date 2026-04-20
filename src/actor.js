@@ -305,6 +305,9 @@ export class TheFadeActor extends Actor {
 
         data.hp.max = calculatedMaxHP;
         data.maxHP = calculatedMaxHP; // For backward compatibility with UI
+        // Tooltip formula string for the UI
+        const miscHPPart = hpMiscBonus ? ` + ${hpMiscBonus} misc` : "";
+        data.hp.formula = `Species ${baseHP} + Path ${pathHP} + Physique ${physiqueValue}${miscHPPart} = ${calculatedMaxHP}`;
 
         // Calculate max Sanity and update both properties
         const mindValue = data.attributes?.mind?.value || 1;
@@ -313,6 +316,8 @@ export class TheFadeActor extends Actor {
 
         data.sanity.max = calculatedMaxSanity;
         data.maxSanity = calculatedMaxSanity; // For backward compatibility with UI
+        const miscSanPart = sanityMiscBonus ? ` + ${sanityMiscBonus} misc` : "";
+        data.sanity.formula = `10 + Mind ${mindValue}${miscSanPart} = ${calculatedMaxSanity}`;
 
         // Ensure HP and Sanity values don't exceed max
         if (data.hp.value > data.hp.max) data.hp.value = data.hp.max;
@@ -534,6 +539,12 @@ export class TheFadeActor extends Actor {
         data.totalAvoid = Math.max(1, data.defenses.avoid + Number(data.defenses.avoidBonus || 0));
         data.totalGrit = Math.max(1, data.defenses.grit + Number(data.defenses.gritBonus || 0));
 
+        // Tooltip formula strings
+        const phy = data.attributes.physique.value, fin = data.attributes.finesse.value, mnd = data.attributes.mind.value;
+        data.defenses.resilienceFormula = `Physique ${phy} ÷ 2 = ${data.defenses.resilience}` + (data.defenses.resilienceBonus ? ` + ${data.defenses.resilienceBonus} bonus` : "");
+        data.defenses.avoidFormula     = `Finesse ${fin} ÷ 2 = ${data.defenses.avoid}` + (data.defenses.avoidBonus ? ` + ${data.defenses.avoidBonus} bonus` : "");
+        data.defenses.gritFormula      = `Mind ${mnd} ÷ 2 = ${data.defenses.grit}` + (data.defenses.gritBonus ? ` + ${data.defenses.gritBonus} bonus` : "");
+
         // Stance-level defense overrides (Tough it Out / Resolute Will replace
         // the half-attribute formula with full-attribute for Resilience/Grit).
         applyBaseDefenseStances(data);
@@ -713,14 +724,29 @@ export class TheFadeActor extends Actor {
         }
 
         const physique = data.attributes.physique.value || 1;
+        const heavy = (5 + physique) * 30;
         data.carryingCapacity = {
-            light: (5 + physique) * 10,
-            medium: (5 + physique) * 20,
-            heavy: (5 + physique) * 30,
-            overHead: (5 + physique) * 30 * 1.5,
-            offGround: (5 + physique) * 30 * 3,
-            pushOrDrag: (5 + physique) * 30 * 5
+            light:      (5 + physique) * 10,
+            medium:     (5 + physique) * 20,
+            heavy,
+            overHead:   Math.floor(heavy * 1.5),
+            offGround:  heavy * 3,
+            pushOrDrag: heavy * 5
         };
+
+        // Determine current encumbrance tier from tracked load.
+        const load = Number(data.currentLoad) || 0;
+        const cap = data.carryingCapacity;
+        let tier, tierLabel;
+        if      (load <= 0)             { tier = "none";       tierLabel = "Unloaded"; }
+        else if (load <= cap.light)     { tier = "light";      tierLabel = "Light"; }
+        else if (load <= cap.medium)    { tier = "medium";     tierLabel = "Medium"; }
+        else if (load <= cap.heavy)     { tier = "heavy";      tierLabel = "Heavy"; }
+        else if (load <= cap.overHead)  { tier = "overHead";   tierLabel = "Over Head"; }
+        else if (load <= cap.offGround) { tier = "offGround";  tierLabel = "Off Ground"; }
+        else                            { tier = "pushOrDrag"; tierLabel = "Push/Drag"; }
+        data.carryingCapacity.currentTier = tier;
+        data.carryingCapacity.currentTierLabel = tierLabel;
     }
 
 
@@ -832,6 +858,28 @@ export class TheFadeActor extends Actor {
         ChatMessage.create({
             speaker: ChatMessage.getSpeaker({ actor: this }),
             content: `<p><strong>${this.name}</strong> rests — Sin cleared.</p>`
+        });
+    }
+
+    async takeRest() {
+        const physique = this.system?.attributes?.physique?.value ?? 1;
+        const roll = await new Roll(`1d12 + ${physique}`).evaluate({ async: true });
+        const healed = roll.total;
+        const maxHP = this.system.hp.max ?? 0;
+        const currentHP = this.system.hp.value ?? 0;
+        const newHP = Math.min(currentHP + healed, maxHP);
+        const actualHealed = newHP - currentHP;
+
+        await this.update({ "system.hp.value": newHP });
+
+        const diceResult = roll.dice[0]?.results?.[0]?.result ?? "?";
+        ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: this }),
+            content: `<div class="thefade chat-card">
+                <h3>${this.name} Takes a Rest</h3>
+                <p>Rolled <strong>1d12</strong> [${diceResult}] + Physique ${physique} = <strong>${healed}</strong></p>
+                <p>HP restored: ${currentHP} → <strong>${newHP}</strong>${actualHealed < healed ? ` (capped at max)` : ``}</p>
+            </div>`
         });
     }
 
