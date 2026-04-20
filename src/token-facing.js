@@ -18,7 +18,10 @@ const ARROWHEAD_LENGTH = 10;
 const ARROWHEAD_HALF_WIDTH = 6;
 
 function isFacingEligible(token) {
-    return token?.actor?.type === "character";
+    // Any token with an actor qualifies. The system only defines "character",
+    // but leaving this permissive avoids silently failing if a token is
+    // actorless or uses a custom document class.
+    return !!token?.actor;
 }
 
 export function getTokenFacing(token) {
@@ -99,19 +102,14 @@ Hooks.on("updateToken", (tokenDoc, change) => {
     if (token) drawFacingIndicator(token);
 });
 
-Hooks.on("renderTokenHUD", (hud, html, data) => {
-    const token = hud?.object;
-    if (!isFacingEligible(token)) return;
-
-    const root = html?.[0] ?? html;
-    if (!root) return;
-    const column = root.querySelector(".col.left") ?? root.querySelector(".col");
-    if (!column) return;
-
-    const button = document.createElement("div");
+function buildFacingButton(token) {
+    // Match Foundry v13's native HUD button markup so core styling applies.
+    const button = document.createElement("button");
+    button.type = "button";
     button.className = "control-icon thefade-set-facing";
+    button.setAttribute("data-tooltip", "THEFADE.SetFacing");
     button.title = game.i18n.localize("THEFADE.SetFacing");
-    button.innerHTML = '<i class="fas fa-compass"></i>';
+    button.innerHTML = '<i class="fa-solid fa-compass" inert></i>';
     button.addEventListener("click", async (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -142,6 +140,42 @@ Hooks.on("renderTokenHUD", (hud, html, data) => {
         };
         canvas.stage.once("mousedown", onCanvasClick);
     });
+    return button;
+}
 
-    column.appendChild(button);
-});
+function injectFacingButton(hud, html) {
+    console.debug("TheFade: renderTokenHUD fired", { hud, html });
+    const token = hud?.object;
+    if (!token) {
+        console.warn("TheFade: renderTokenHUD fired without a token object", hud);
+        return;
+    }
+    if (!isFacingEligible(token)) {
+        console.debug("TheFade: skipping facing button (no actor)", token);
+        return;
+    }
+
+    // v12 passed a jQuery object, v13 passes an HTMLElement. Accept either.
+    const root = (html instanceof HTMLElement) ? html : (html?.[0] ?? html);
+    if (!root?.querySelector) {
+        console.warn("TheFade: renderTokenHUD received unexpected html", html);
+        return;
+    }
+
+    // Avoid double-inject if the hook fires twice for the same render.
+    if (root.querySelector(".thefade-set-facing")) return;
+
+    const column =
+        root.querySelector(".col.left") ??
+        root.querySelector("[data-column='left']") ??
+        root.querySelector(".left") ??
+        root.querySelector(".col") ??
+        root;
+    if (column === root) {
+        console.warn("TheFade: no column container found in TokenHUD; appending to root", root);
+    }
+
+    column.appendChild(buildFacingButton(token));
+}
+
+Hooks.on("renderTokenHUD", injectFacingButton);
