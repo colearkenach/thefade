@@ -7568,6 +7568,120 @@ select[name="system.aura.color"] option[value="white"] {
     resize: vertical;
 }
 
+/* ----- Item attribute 2-column grid ----- */
+.thefade.sheet.item .item-attr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 14px;
+}
+
+.thefade.sheet.item .item-attr-grid .form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+/* Align checkbox groups to the bottom of their grid cell */
+.thefade.sheet.item .armor-heavy-group {
+    align-self: end;
+    padding-bottom: 2px;
+}
+
+.thefade.sheet.item .armor-heavy-group .form-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.88em;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+/* ----- Bonus section (Items of Power) ----- */
+.thefade.sheet.item .bonus-section {
+    margin-top: 14px;
+    border-top: 1px solid var(--border-faint);
+    padding-top: 10px;
+}
+
+.thefade.sheet.item .bonus-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.thefade.sheet.item .bonus-add {
+    background: none;
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    padding: 2px 8px;
+    font-size: 0.75em;
+    cursor: pointer;
+    border-radius: 2px;
+    line-height: 1.6;
+}
+
+.thefade.sheet.item .bonus-add:hover {
+    background: var(--accent-ghost);
+}
+
+.thefade.sheet.item .bonus-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 52px 26px;
+    gap: 4px;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.thefade.sheet.item .bonus-row select,
+.thefade.sheet.item .bonus-row input[type="text"],
+.thefade.sheet.item .bonus-row input[type="number"] {
+    height: 26px;
+    padding: 2px 5px;
+    font-size: 0.82em;
+    background: var(--bg-surface-alt);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    border-radius: 2px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.thefade.sheet.item .bonus-value {
+    text-align: center;
+}
+
+.thefade.sheet.item .bonus-delete {
+    background: none;
+    border: 1px solid var(--border-faint);
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    font-size: 0.8em;
+}
+
+.thefade.sheet.item .bonus-delete:hover {
+    border-color: var(--accent-crimson);
+    color: var(--accent-crimson);
+}
+
+.thefade.sheet.item .bonus-empty {
+    font-size: 0.82em;
+    color: var(--text-dim);
+    font-style: italic;
+    text-align: center;
+    padding: 8px 0;
+}
+
 /* ----- Checkboxes (generic) ----- */
 .thefade input[type="checkbox"] {
     accent-color: var(--accent-crimson);

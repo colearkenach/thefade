@@ -224,6 +224,9 @@ export class TheFadeActor extends Actor {
             // Calculate defenses based on attributes and include bonuses
             this._calculateBaseDefenses(data, actorData);
 
+            // Apply bonuses from equipped Items of Power
+            this._applyEquippedItemBonuses(data, actorData);
+
             // Apply facing modifiers
             this._applyFacingModifiers(data);
 
@@ -402,6 +405,65 @@ export class TheFadeActor extends Actor {
         const roll = new Roll(formula);
 
         return roll;
+    }
+
+    /**
+     * Collect bonuses from all equipped Items of Power and apply them.
+     * Defense/HP bonuses are applied immediately; skill/attack/damage/spell
+     * bonuses are stored in data.equippedBonuses for roll handlers to use.
+     */
+    _applyEquippedItemBonuses(data, actorData) {
+        // Initialize the lookup table roll handlers read from
+        data.equippedBonuses = { skills: {}, attack: 0, damage: 0, spell: 0 };
+
+        const equippedItems = actorData.items
+            ? [...actorData.items].filter(i => i.type === 'magicitem' && i.system?.equipped)
+            : [];
+
+        for (const item of equippedItems) {
+            const bonuses = item.system?.bonuses;
+            if (!Array.isArray(bonuses)) continue;
+
+            for (const bonus of bonuses) {
+                const val = Number(bonus.value) || 0;
+                const target = (bonus.target || "").trim().toLowerCase();
+
+                switch (bonus.type) {
+                    case "avoid":
+                        data.totalAvoid = (data.totalAvoid || 0) + val;
+                        break;
+                    case "resilience":
+                        data.totalResilience = (data.totalResilience || 0) + val;
+                        break;
+                    case "grit":
+                        data.totalGrit = (data.totalGrit || 0) + val;
+                        break;
+                    case "hp":
+                        data.hpMiscBonus = (data.hpMiscBonus || 0) + val;
+                        break;
+                    case "skill": {
+                        const key = target || "all";
+                        data.equippedBonuses.skills[key] = (data.equippedBonuses.skills[key] || 0) + val;
+                        break;
+                    }
+                    case "attack":
+                        if (!target || target === "all") {
+                            data.equippedBonuses.attack += val;
+                        } else {
+                            // Store per-skill-name attack bonus
+                            const aKey = `attack_${target}`;
+                            data.equippedBonuses[aKey] = (data.equippedBonuses[aKey] || 0) + val;
+                        }
+                        break;
+                    case "damage":
+                        data.equippedBonuses.damage += val;
+                        break;
+                    case "spell":
+                        data.equippedBonuses.spell += val;
+                        break;
+                }
+            }
+        }
     }
 
     /**

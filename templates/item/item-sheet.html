@@ -26,75 +26,110 @@
 
         {{!-- Properties Tab --}}
         <div class="tab" data-group="primary" data-tab="properties">
-            <div class="form-group">
-                <label>Equipment Slot</label>
-                <select name="system.slot">
-                    <option value="head" {{#ifEquals system.slot "head"}} selected{{/ifEquals}}>Head</option>
-                    <option value="neck" {{#ifEquals system.slot "neck"}} selected{{/ifEquals}}>Neck</option>
-                    <option value="body" {{#ifEquals system.slot "body"}} selected{{/ifEquals}}>Body</option>
-                    <option value="hands" {{#ifEquals system.slot "hands"}} selected{{/ifEquals}}>Hands</option>
-                    <option value="ring" {{#ifEquals system.slot "ring"}} selected{{/ifEquals}}>Ring</option>
-                    <option value="belt" {{#ifEquals system.slot "belt"}} selected{{/ifEquals}}>Belt</option>
-                    <option value="boots" {{#ifEquals system.slot "boots"}} selected{{/ifEquals}}>Boots</option>
-                </select>
+            <div class="item-attr-grid">
+                <div class="form-group">
+                    <label>Equipment Slot</label>
+                    <select name="system.slot">
+                        <option value="head" {{#ifEquals system.slot "head"}} selected{{/ifEquals}}>Head</option>
+                        <option value="neck" {{#ifEquals system.slot "neck"}} selected{{/ifEquals}}>Neck</option>
+                        <option value="body" {{#ifEquals system.slot "body"}} selected{{/ifEquals}}>Body</option>
+                        <option value="hands" {{#ifEquals system.slot "hands"}} selected{{/ifEquals}}>Hands</option>
+                        <option value="ring" {{#ifEquals system.slot "ring"}} selected{{/ifEquals}}>Ring</option>
+                        <option value="belt" {{#ifEquals system.slot "belt"}} selected{{/ifEquals}}>Belt</option>
+                        <option value="boots" {{#ifEquals system.slot "boots"}} selected{{/ifEquals}}>Boots</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Catalyst Used</label>
+                    <select name="system.catalyst">
+                        <option value="" {{#ifEquals system.catalyst ""}} selected{{/ifEquals}}>Unknown/Unspecified</option>
+                        <option value="planar-essence" {{#ifEquals system.catalyst "planar-essence"}} selected{{/ifEquals}}>Planar Essence</option>
+                        <option value="divine-gift" {{#ifEquals system.catalyst "divine-gift"}} selected{{/ifEquals}}>Divine Gift</option>
+                        <option value="bones-of-glory" {{#ifEquals system.catalyst "bones-of-glory"}} selected{{/ifEquals}}>Bones of Glory</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
                 <label>Magical Effect</label>
-                <textarea name="system.effect" rows="6" placeholder="Describe the magical effect this item provides...">{{system.effect}}</textarea>
+                <textarea name="system.effect" rows="4" placeholder="Describe the magical effect this item provides...">{{system.effect}}</textarea>
             </div>
 
-            <div class="form-group">
-                <label>Catalyst Used</label>
-                <select name="system.catalyst">
-                    <option value="" {{#ifEquals system.catalyst ""}} selected{{/ifEquals}}>Unknown/Unspecified</option>
-                    <option value="planar-essence" {{#ifEquals system.catalyst "planar-essence"}} selected{{/ifEquals}}>Planar Essence</option>
-                    <option value="divine-gift" {{#ifEquals system.catalyst "divine-gift"}} selected{{/ifEquals}}>Divine Gift</option>
-                    <option value="bones-of-glory" {{#ifEquals system.catalyst "bones-of-glory"}} selected{{/ifEquals}}>Bones of Glory</option>
-                </select>
-            </div>
-
-            <div class="form-group flexrow">
+            <div class="form-group flexrow" style="margin-top: 4px;">
                 <div class="form-field">
                     <label>Currently Attuned</label>
                     <input type="checkbox" name="system.attunement" {{#if system.attunement}} checked{{/if}} />
                 </div>
-
                 <div class="form-field">
                     <label>Equipped</label>
                     <input type="checkbox" name="system.equipped" {{#if system.equipped}} checked{{/if}} />
                 </div>
-
                 <div class="form-field">
                     <label>Has Aura</label>
                     <input type="checkbox" name="system.hasAura" {{#if system.hasAura}} checked{{/if}} />
                 </div>
             </div>
 
+            {{#if system.hasAura}}
             <div class="form-group">
                 <label>Aura Color</label>
-                <input type="text" name="system.auraColor" value="{{system.auraColor}}" placeholder="Dull gray (default), changes to wielder's color" />
+                <input type="text" name="system.auraColor" value="{{system.auraColor}}" placeholder="Dull gray (default)" />
                 <p class="hint">Items with auras shine like torches out to 3 hexes</p>
+            </div>
+            {{/if}}
+
+            {{!-- Bonuses Section --}}
+            <div class="bonus-section">
+                <div class="bonus-section-header">
+                    <span>Bonuses</span>
+                    <button type="button" class="bonus-add"><i class="fas fa-plus"></i> Add</button>
+                </div>
+                {{#if system.bonuses.length}}
+                    {{#each system.bonuses}}
+                    <div class="bonus-row" data-bonus-id="{{this.id}}">
+                        <select class="bonus-type" data-bonus-id="{{this.id}}">
+                            <option value="skill" {{#ifEquals this.type "skill"}}selected{{/ifEquals}}>Skill</option>
+                            <option value="attack" {{#ifEquals this.type "attack"}}selected{{/ifEquals}}>Attack</option>
+                            <option value="damage" {{#ifEquals this.type "damage"}}selected{{/ifEquals}}>Damage</option>
+                            <option value="spell" {{#ifEquals this.type "spell"}}selected{{/ifEquals}}>Spell</option>
+                            <option value="avoid" {{#ifEquals this.type "avoid"}}selected{{/ifEquals}}>Avoid</option>
+                            <option value="resilience" {{#ifEquals this.type "resilience"}}selected{{/ifEquals}}>Resilience</option>
+                            <option value="grit" {{#ifEquals this.type "grit"}}selected{{/ifEquals}}>Grit</option>
+                            <option value="hp" {{#ifEquals this.type "hp"}}selected{{/ifEquals}}>Max HP</option>
+                        </select>
+                        <input type="text" class="bonus-target" value="{{this.target}}" placeholder="Target (or blank = all)" data-bonus-id="{{this.id}}" />
+                        <input type="number" class="bonus-value" value="{{this.value}}" data-bonus-id="{{this.id}}" />
+                        <button type="button" class="bonus-delete" data-bonus-id="{{this.id}}"><i class="fas fa-times"></i></button>
+                    </div>
+                    {{/each}}
+                {{else}}
+                    <div class="bonus-empty">No bonuses — click <strong>+ Add</strong> to create one.</div>
+                {{/if}}
             </div>
         </div>
 
         {{!-- Details Tab --}}
         <div class="tab" data-group="primary" data-tab="details">
-            <div class="form-group">
-                <label>Price (sp)</label>
-                <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
-                <p class="hint">Price in Serpents</p>
-            </div>
+            <div class="item-attr-grid">
+                <div class="form-group">
+                    <label>Price (sp)</label>
+                    <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
+                    <p class="hint">Price in Serpents</p>
+                </div>
 
-            <div class="form-group">
-                <label>Weight (lbs)</label>
-                <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" step="0.1" />
-            </div>
+                <div class="form-group">
+                    <label>Weight (lbs)</label>
+                    <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" step="0.1" />
+                </div>
 
-            <div class="form-group">
-                <label>Conflicts with Armor</label>
-                <input type="checkbox" name="system.conflictsArmor" {{#if system.conflictsArmor}} checked{{/if}} />
-                <p class="hint">Head, Body, and Hands slots typically conflict with armor</p>
+                <div class="form-group full-width">
+                    <label class="form-field">
+                        <input type="checkbox" name="system.conflictsArmor" {{#if system.conflictsArmor}} checked{{/if}} />
+                        Conflicts with Armor
+                    </label>
+                    <p class="hint">Head, Body, and Hands slots typically conflict with armor</p>
+                </div>
             </div>
 
             <div class="form-group">
