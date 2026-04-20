@@ -6917,6 +6917,73 @@ select[name="system.aura.color"] option[value="white"] {
     background: var(--bg-surface-alt);
 }
 
+/* ----- Paths / Talents / Traits / Precepts accordion contrast fixes ----- */
+.thefade .paths-section .paths-list,
+.thefade .paths-section .talents-list,
+.thefade .paths-section .traits-list,
+.thefade .paths-section .precepts-list {
+    border-color: var(--border-faint);
+    background: var(--bg-surface);
+}
+
+.thefade .paths-section .path-item,
+.thefade .paths-section .talent-item,
+.thefade .paths-section .trait-item,
+.thefade .paths-section .precept-item {
+    border-color: var(--border-faint);
+    background: var(--bg-surface);
+}
+
+.thefade .paths-section .path-header,
+.thefade .paths-section .talent-header,
+.thefade .paths-section .trait-header,
+.thefade .paths-section .precept-header {
+    background: var(--bg-surface-alt);
+    border-bottom: 1px solid var(--border-faint);
+    color: var(--text-primary);
+}
+
+.thefade .paths-section .path-name,
+.thefade .paths-section .talent-name,
+.thefade .paths-section .trait-name,
+.thefade .paths-section .precept-name {
+    color: var(--text-primary);
+}
+
+.thefade .paths-section .path-tier {
+    color: var(--text-muted);
+}
+
+.thefade .paths-section .path-controls a,
+.thefade .paths-section .talent-controls a,
+.thefade .paths-section .trait-controls a,
+.thefade .paths-section .precept-controls a {
+    color: var(--text-muted);
+}
+
+.thefade .paths-section .path-controls a:hover,
+.thefade .paths-section .talent-controls a:hover,
+.thefade .paths-section .trait-controls a:hover,
+.thefade .paths-section .precept-controls a:hover {
+    color: var(--accent-hot);
+}
+
+.thefade .paths-section .path-description,
+.thefade .paths-section .talent-description,
+.thefade .paths-section .trait-description,
+.thefade .paths-section .precept-description {
+    background: var(--bg-surface-alt);
+    color: var(--text-primary);
+    border-top: 1px solid var(--border-faint);
+}
+
+.thefade .paths-section .path-description strong,
+.thefade .paths-section .talent-description strong,
+.thefade .paths-section .trait-description strong,
+.thefade .paths-section .precept-description strong {
+    color: var(--accent-gold);
+}
+
 /* ----- Buttons across the sheet — calmer ----- */
 .thefade button:not(.initiative-roll):not(.vital-pill button) {
     background: var(--bg-surface);
