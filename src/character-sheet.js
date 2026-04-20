@@ -7,6 +7,7 @@ import {
     openCompendiumBrowser, initializeDefaultSkills,
     createCustomSkill, showCustomSkillDialog
 } from './helpers.js';
+import { renderModifierHtml } from './conditions.js';
 
 /**
 * Character Sheet class for The Fade system
@@ -1999,6 +2000,26 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Add misc bonus dice
         dicePool += (skillData.miscBonus || 0);
 
+        // Apply active-condition modifiers before min-1 clamp
+        const condMods = this.actor.getConditionRollModifiers({
+            kind: "skill",
+            skillName: skill.name,
+            skillCategory: skillData.category,
+            attributeName: attributeName
+        });
+
+        if (condMods.autoFail) {
+            ChatMessage.create({
+                speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                flavor: `${skill.name} Check (${skillData.rank})`,
+                content: renderModifierHtml(condMods) +
+                    `<p><strong>${this.actor.name}</strong> cannot attempt this check due to an active condition.</p>`
+            });
+            return;
+        }
+
+        dicePool += condMods.bonusDice - condMods.penaltyDice;
+
         // Ensure minimum of 1 die
         dicePool = Math.max(1, dicePool);
 
@@ -2041,8 +2062,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
             rank: skillData.rank
         };
 
-        // Render the template
-        const content = await renderTemplate("systems/thefade/templates/chat/skill-roll.html", templateData);
+        // Render the template, prepend condition modifier banner if any
+        const content = renderModifierHtml(condMods) +
+            await renderTemplate("systems/thefade/templates/chat/skill-roll.html", templateData);
 
         // Send to chat
         roll.toMessage({
@@ -2208,6 +2230,25 @@ export class TheFadeCharacterSheet extends ActorSheet {
             // Add weapon's misc bonus
             dicePool += (weaponData.miscBonus || 0);
 
+            // Apply active-condition modifiers
+            const condModsUntrained = this.actor.getConditionRollModifiers({
+                kind: "attack",
+                skillName: skillName,
+                attributeName: attributeName,
+                isRanged: isRanged,
+                weaponSkill: skillName
+            });
+            if (condModsUntrained.autoFail) {
+                ChatMessage.create({
+                    speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                    flavor: `Attack with ${weapon.name} (Untrained) vs ${targetName}`,
+                    content: renderModifierHtml(condModsUntrained) +
+                        `<p><strong>${this.actor.name}</strong> cannot attack due to an active condition.</p>`
+                });
+                return;
+            }
+            dicePool += condModsUntrained.bonusDice - condModsUntrained.penaltyDice;
+
             // Ensure minimum of 1 die
             dicePool = Math.max(1, dicePool);
 
@@ -2255,7 +2296,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 bonusDice: weaponData.miscBonus ? `Includes +${weaponData.miscBonus} bonus dice` : null
             };
 
-            const content = await renderTemplate("systems/thefade/templates/chat/attack-roll.html", templateData);
+            const content = renderModifierHtml(condModsUntrained) +
+                await renderTemplate("systems/thefade/templates/chat/attack-roll.html", templateData);
 
             // Display the result
             roll.toMessage({
@@ -2312,6 +2354,26 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Add weapon misc bonus
         dicePool += (weaponData.miscBonus || 0);
+
+        // Apply active-condition modifiers
+        const condMods = this.actor.getConditionRollModifiers({
+            kind: "attack",
+            skillName: skill.name,
+            skillCategory: skillData.category,
+            attributeName: attributeName,
+            isRanged: isRanged,
+            weaponSkill: skill.name
+        });
+        if (condMods.autoFail) {
+            ChatMessage.create({
+                speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                flavor: `Attack with ${weapon.name} (${skillData.rank}) vs ${targetName}`,
+                content: renderModifierHtml(condMods) +
+                    `<p><strong>${this.actor.name}</strong> cannot attack due to an active condition.</p>`
+            });
+            return;
+        }
+        dicePool += condMods.bonusDice - condMods.penaltyDice;
 
         // Ensure minimum of 1 die
         dicePool = Math.max(1, dicePool);
@@ -2400,9 +2462,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 ].filter(Boolean).join(', ')}` : null
         };
 
-        const content = await renderTemplate("systems/thefade/templates/chat/attack-roll.html", templateData);
+        const content = renderModifierHtml(condMods) +
+            await renderTemplate("systems/thefade/templates/chat/attack-roll.html", templateData);
 
-        // Display the result 
+        // Display the result
         roll.toMessage({
             speaker: ChatMessage.getSpeaker({ actor: this.actor }),
             flavor: `Attack with ${weapon.name} (${skillData.rank}) vs ${targetName}`,
@@ -2645,6 +2708,25 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 break;
         }
 
+        // Apply active-condition modifiers
+        const condMods = this.actor.getConditionRollModifiers({
+            kind: "spell",
+            skillName: "Spellcasting",
+            skillCategory: skillData.category,
+            attributeName: attributeName
+        });
+        if (condMods.autoFail) {
+            ChatMessage.create({
+                speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                flavor: `Casting ${spell.name}`,
+                content: renderModifierHtml(condMods) +
+                    `<p><strong>${this.actor.name}</strong> cannot cast due to an active condition.</p>`
+            });
+            return;
+        }
+        dicePool += condMods.bonusDice - condMods.penaltyDice;
+        dicePool = Math.max(1, dicePool);
+
         // Roll the dice for spell casting check
         const roll = new Roll(`${dicePool}d12`);
         await roll.evaluate();
@@ -2790,7 +2872,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             time: spellData.time
         };
 
-        const content = await renderTemplate("systems/thefade/templates/chat/spell-cast.html", templateData);
+        const content = renderModifierHtml(condMods) +
+            await renderTemplate("systems/thefade/templates/chat/spell-cast.html", templateData);
 
         // Send the spell casting result to chat
         roll.toMessage({
@@ -3078,6 +3161,17 @@ export class TheFadeCharacterSheet extends ActorSheet {
         this._initializeExcessPenaltyTooltips(html);
 
         this._activateInventoryListeners(html);
+
+        // Combat-state: clear all conditions + stance
+        html.find('.combat-state-clear').on('click', async (ev) => {
+            ev.preventDefault();
+            const conditions = this.actor.system?.conditions || {};
+            const update = { "system.activeStance": "none" };
+            for (const key of Object.keys(conditions)) {
+                update[`system.conditions.${key}.active`] = false;
+            }
+            await this.actor.update(update);
+        });
 
         // Handle defense bonus changes
         html.find('input[name="system.defenses.resilienceBonus"], input[name="system.defenses.avoidBonus"], input[name="system.defenses.gritBonus"]').change(async (ev) => {

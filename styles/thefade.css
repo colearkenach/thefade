@@ -8032,3 +8032,218 @@ select[name="system.aura.color"] option[value="white"] {
     background: transparent;
     padding: 0;
 }
+
+/* ==========================================================================
+   Combat State panel (stances + conditions + aggregate summary)
+   ========================================================================== */
+
+.combat-state.panel {
+    border: 1px solid var(--accent-gold, #b8902c);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 10px 0;
+    background: rgba(0, 0, 0, 0.15);
+}
+
+.combat-state-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(184, 144, 44, 0.3);
+}
+
+.combat-state-header h2 {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--accent-gold, #b8902c);
+}
+
+.combat-state-clear {
+    font-size: 0.85em;
+    padding: 3px 8px;
+    cursor: pointer;
+    background: rgba(120, 40, 40, 0.3);
+    border: 1px solid #8a3a3a;
+    color: #eee;
+    border-radius: 3px;
+}
+
+.combat-state-clear:hover {
+    background: rgba(170, 60, 60, 0.5);
+}
+
+/* Stance selector row */
+.stance-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.stance-label {
+    font-weight: bold;
+    color: var(--accent-gold, #b8902c);
+    min-width: 100px;
+}
+
+.stance-options {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.stance-opt {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border: 1px solid rgba(184, 144, 44, 0.4);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.stance-opt input[type="radio"] {
+    margin: 0;
+}
+
+.stance-opt:has(input:checked) {
+    background: rgba(184, 144, 44, 0.25);
+    border-color: var(--accent-gold, #b8902c);
+    color: #fff;
+}
+
+/* Active stance summary */
+.stance-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 8px 0;
+    padding: 6px 10px;
+    background: rgba(70, 110, 180, 0.18);
+    border-left: 3px solid #4a7dc1;
+    border-radius: 3px;
+    font-size: 0.9em;
+    flex-wrap: wrap;
+}
+
+.stance-summary-label {
+    font-weight: bold;
+    color: #9fc4ff;
+    white-space: nowrap;
+}
+
+.stance-summary-label i {
+    margin-right: 4px;
+}
+
+.stance-summary-text {
+    color: #eee;
+}
+
+/* Aggregate condition effects summary */
+.condition-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin: 8px 0;
+    padding: 6px 10px;
+    background: rgba(170, 60, 60, 0.18);
+    border-left: 3px solid #aa4444;
+    border-radius: 3px;
+    font-size: 0.9em;
+    flex-wrap: wrap;
+}
+
+.condition-summary-label {
+    font-weight: bold;
+    color: #ffb0b0;
+    white-space: nowrap;
+}
+
+.condition-summary-label i {
+    margin-right: 4px;
+}
+
+.condition-summary-text {
+    color: #eee;
+    font-style: italic;
+}
+
+/* Conditions grid */
+.conditions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 6px;
+}
+
+.condition-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 5px 7px;
+    border: 1px solid rgba(184, 144, 44, 0.25);
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.2);
+    transition: all 0.15s ease;
+}
+
+.condition-card.is-active {
+    border-color: #aa4444;
+    background: rgba(170, 60, 60, 0.2);
+}
+
+.condition-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.condition-name {
+    font-weight: bold;
+    font-size: 0.95em;
+}
+
+.condition-intensity {
+    display: flex;
+    gap: 3px;
+    opacity: 0.4;
+    transition: opacity 0.15s ease;
+}
+
+.condition-card.is-active .condition-intensity {
+    opacity: 1;
+}
+
+.int-opt {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 2px 4px;
+    border: 1px solid rgba(184, 144, 44, 0.3);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.int-opt input[type="radio"] {
+    display: none;
+}
+
+.int-opt:has(input:checked) {
+    background: rgba(184, 144, 44, 0.3);
+    border-color: var(--accent-gold, #b8902c);
+    color: #fff;
+    font-weight: bold;
+}
+
+.condition-card.condition-binary {
+    justify-content: center;
+}

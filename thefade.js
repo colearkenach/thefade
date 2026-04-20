@@ -10,6 +10,7 @@ import { TheFadeActor } from './src/actor.js';
 import { TheFadeItem } from './src/item.js';
 import { TheFadeItemSheet } from './src/item-sheet.js';
 import { TheFadeCharacterSheet } from './src/character-sheet.js';
+import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
 
 
 /**
@@ -50,6 +51,38 @@ Hooks.on("renderDialog", (app, html, data) => {
     const el = html?.[0] ?? html;
     if (el && el.classList && !el.classList.contains("thefade")) {
         el.classList.add("thefade");
+    }
+});
+
+/**
+ * Turn-start periodic damage hook: applies Bleed (and any future
+ * damage-per-round condition) to the combatant whose turn just started.
+ * Only the active GM executes the update to avoid duplicate damage.
+ */
+Hooks.on("combatTurn", async (combat, updateData, updateOptions) => {
+    if (!game.user?.isGM) return;
+    try {
+        const nextTurnIndex = updateData?.turn ?? combat?.turn;
+        const combatant = combat?.turns?.[nextTurnIndex];
+        const actor = combatant?.actor;
+        if (!actor || actor.type !== "character") return;
+
+        const ticks = computePerRoundDamage(actor.system?.conditions);
+        if (!ticks.length) return;
+
+        const total = ticks.reduce((sum, t) => sum + t.damage, 0);
+        const currentHP = Number(actor.system?.hp?.value ?? 0);
+        const newHP = currentHP - total;
+
+        await actor.update({ "system.hp.value": newHP });
+
+        const lines = ticks.map(t => `<li>${t.label} (${t.intensity}): ${t.damage} damage</li>`).join("");
+        ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor }),
+            content: `<p><strong>${actor.name}</strong> suffers periodic damage at turn start:</p><ul>${lines}</ul><p>HP ${currentHP} → ${newHP}</p>`
+        });
+    } catch (err) {
+        console.error("The Fade: error applying turn-start condition damage", err);
     }
 });
 
@@ -147,6 +180,7 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/actor/parts/inventory.html",
         "systems/thefade/templates/actor/parts/paths.html",
         "systems/thefade/templates/actor/parts/spells.html",
+        "systems/thefade/templates/actor/parts/combat-state.html",
         "systems/thefade/templates/chat/attack-roll.html",
         "systems/thefade/templates/chat/skill-roll.html",
         "systems/thefade/templates/chat/spell-cast.html",
