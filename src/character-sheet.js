@@ -2814,27 +2814,22 @@ export class TheFadeCharacterSheet extends ActorSheet {
         return new Promise((resolve) => {
             const attackerToken = this._getPrimaryTokenForActor(this.actor);
 
-            // Generate list of visible tokens that can be targeted
-            const tokens = canvas.tokens.placeables.filter(t =>
-                t.actor &&
-                t.actor.id !== this.actor.id &&
-                t.visible
-            );
+            // Generate list of scene tokens that can be targeted.
+            // Do not require visibility/actor here so explicit user targets still appear.
+            const tokens = canvas.tokens.placeables.filter(t => t.id);
 
             let selectedTargetId = "";
 
-            // Prefer any user-targeted token so "Toggle Target" works directly.
+            // Prefer an explicitly user-targeted token so "Toggle Target" works directly.
             const userTargets = [...game.user.targets]
                 .map(t => canvas.tokens.get(t.id) ?? t)
                 .filter(t =>
                     t?.id &&
-                    t.actor &&
-                    t.actor.id !== this.actor.id &&
-                    t.visible
+                    t.id !== attackerToken?.id
                 );
 
-            if (userTargets.length > 0) {
-                // Use the first targeted token deterministically.
+            if (userTargets.length === 1) {
+                // Use the single targeted token to avoid surprising multi-target behavior.
                 selectedTargetId = userTargets[0].id;
             }
             // Fallback to a single controlled token (legacy behavior).
@@ -2843,11 +2838,21 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 if (controlledTokens.length === 1) selectedTargetId = controlledTokens[0].id;
             }
 
+            // Ensure targeted tokens are present in dropdown even if they were filtered from placeables.
+            const tokenMap = new Map(tokens.map(t => [t.id, t]));
+            for (const target of userTargets) {
+                if (!tokenMap.has(target.id)) tokenMap.set(target.id, target);
+            }
+
             let tokenOptions = '<option value="">No Target / Manual DT</option>';
-            if (tokens.length > 0) {
-                tokens.forEach(token => {
+            const selectableTokens = [...tokenMap.values()]
+                .filter(token => token.id !== attackerToken?.id)
+                .sort((a, b) => (a.name || a.actor?.name || "").localeCompare(b.name || b.actor?.name || ""));
+
+            if (selectableTokens.length > 0) {
+                selectableTokens.forEach(token => {
                     const selectedAttr = token.id === selectedTargetId ? " selected" : "";
-                    tokenOptions += `<option value="${token.id}"${selectedAttr}>${token.name || token.actor.name}</option>`;
+                    tokenOptions += `<option value="${token.id}"${selectedAttr}>${token.name || token.actor?.name || token.id}</option>`;
                 });
             }
 
