@@ -44,6 +44,22 @@
         </div>
     </div>
 
+    {{!-- Stance summary (visible when a stance other than None is active) --}}
+    {{#if system.stanceSummary}}
+    <div class="stance-summary" title="Defensive stance benefits">
+        <span class="stance-summary-label"><i class="fas fa-shield-alt"></i> Stance:</span>
+        <span class="stance-summary-text">{{system.stanceSummary}}</span>
+    </div>
+    {{/if}}
+
+    {{!-- Aggregate condition effects summary (only visible when any condition is active) --}}
+    {{#if system.conditionSummary}}
+    <div class="condition-summary" title="Combined passive effects from all active conditions">
+        <span class="condition-summary-label"><i class="fas fa-bolt"></i> Active Effects:</span>
+        <span class="condition-summary-text">{{system.conditionSummary}}</span>
+    </div>
+    {{/if}}
+
     {{!-- Conditions grid --}}
     <div class="conditions-grid">
 

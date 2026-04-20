@@ -1,5 +1,7 @@
 // TheFadeActor document class (extracted from thefade.js).
 import { BODY_PARTS, FALLBACK_ACTOR_DATA } from './constants.js';
+import { aggregateConditionState, computeRollModifiers, summarizeConditionState } from './conditions.js';
+import { applyBaseDefenseStances, applyPassiveStances, summarizeStance, getDamageMitigation } from './stances.js';
 
 /**
 * Base Actor class for The Fade system
@@ -221,6 +223,9 @@ export class TheFadeActor extends Actor {
             // Apply facing modifiers
             this._applyFacingModifiers(data);
 
+            // Apply active-condition modifiers (defenses, speed, action economy)
+            this._applyConditionState(data);
+
             // Calculate carrying capacity
             this._calculateCarryingCapacity(data);
 
@@ -441,6 +446,10 @@ export class TheFadeActor extends Actor {
         data.totalAvoid = Math.max(1, data.defenses.avoid + Number(data.defenses.avoidBonus || 0));
         data.totalGrit = Math.max(1, data.defenses.grit + Number(data.defenses.gritBonus || 0));
 
+        // Stance-level defense overrides (Tough it Out / Resolute Will replace
+        // the half-attribute formula with full-attribute for Resilience/Grit).
+        applyBaseDefenseStances(data);
+
         // Calculate Passive Dodge based on Acrobatics skill and Finesse
         let acrobonaticsDodge = 0;
         let finesseDodge = Math.floor(data.attributes.finesse.value / 4);
@@ -459,6 +468,8 @@ export class TheFadeActor extends Actor {
 
         data.defenses.basePassiveDodge = Math.max(acrobonaticsDodge, finesseDodge);
         data.defenses.passiveDodge = data.defenses.basePassiveDodge;
+        // Stash Acrobatics rank dice so stance code can add them to Avoid in Dodge Stance.
+        data.defenses.acrobaticsDodgeDice = acrobonaticsDodge;
 
         // Calculate Passive Parry based on highest weapon skill
         let highestParry = 0;
@@ -536,6 +547,61 @@ export class TheFadeActor extends Actor {
 
         // Ensure total avoid doesn't go below 0
         data.totalAvoid = Math.max(0, data.totalAvoid);
+
+        // Apply stance effects that depend on facing-corrected passive values
+        // (Dodge Stance bonus to Avoid; Parrying Stance restores Parry on Back Flank).
+        applyPassiveStances(data, data.defenses.acrobaticsDodgeDice || 0);
+
+        // Re-clamp in case a stance pushed totalAvoid back up from 0.
+        data.totalAvoid = Math.max(0, data.totalAvoid);
+
+        // Stance summary string for the sheet.
+        data.stanceSummary = summarizeStance(data);
+
+        // Expose damage-mitigation flags for attack resolution (Brace for Impact).
+        data.damageMitigation = getDamageMitigation(data.activeStance);
+    }
+
+    /**
+     * Apply passive state deltas from active conditions: defenses, speed,
+     * action economy flags, and prone/helpless/immobile states. Must run
+     * after facing so the facing avoid penalty is already baked in.
+     */
+    _applyConditionState(data) {
+        const state = aggregateConditionState(data.conditions);
+        data.conditionState = state;
+        data.conditionSummary = summarizeConditionState(state);
+
+        if (state.avoidDelta) {
+            data.totalAvoid = Math.max(0, (data.totalAvoid || 0) + state.avoidDelta);
+        }
+        if (state.gritDelta) {
+            data.totalGrit = Math.max(0, (data.totalGrit || 0) + state.gritDelta);
+        }
+        if (state.resilienceDelta) {
+            data.totalResilience = Math.max(0, (data.totalResilience || 0) + state.resilienceDelta);
+        }
+
+        // Compute effective movement from the base movement values, leaving
+        // data.movement as the canonical un-penalized source of truth.
+        const mult = state.immobile ? 0 : state.speedMultiplier;
+        data.effectiveMovement = {
+            land: Math.floor((data.movement?.land || 0) * mult),
+            fly: Math.floor((data.movement?.fly || 0) * mult),
+            swim: Math.floor((data.movement?.swim || 0) * mult),
+            climb: Math.floor((data.movement?.climb || 0) * mult),
+            burrow: Math.floor((data.movement?.burrow || 0) * mult)
+        };
+    }
+
+    /**
+     * Compute per-roll dice modifiers from the actor's active conditions.
+     * Roll handlers call this after assembling the base pool and before
+     * constructing the Roll formula. Returns { bonusDice, penaltyDice,
+     * notes[], autoFail }.
+     */
+    getConditionRollModifiers(context) {
+        return computeRollModifiers(this.system?.conditions, context || { kind: "generic" });
     }
 
     /**
