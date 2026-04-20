@@ -119,6 +119,9 @@ function computeHpStateConditions(newHp, maxHp) {
  * @param {string} [opts.location] - Body location hit (default "body")
  * @param {string} [opts.sourceName] - For chat log; e.g. attacker name
  * @param {boolean} [opts.applyBleed=true] - Whether S/P damage auto-applies Bleed
+ * @param {boolean} [opts.calledShot=false] - True when the attack was declared
+ *   as a called shot. Only called shots apply location-tied status effects
+ *   (e.g. Bleed on S/P). Random and Default hits deal damage only.
  * @returns {Promise<{absorbed, hpBefore, hpAfter, hpDamage, bleedApplied,
  *                   knockedOut, summary}>}
  */
@@ -130,6 +133,7 @@ export async function applyDamage(actor, opts) {
     const location = DAMAGE_LOCATIONS.includes(opts?.location) ? opts.location : "body";
     const sourceName = opts?.sourceName || "damage";
     const applyBleed = opts?.applyBleed !== false;
+    const calledShot = !!opts?.calledShot;
 
     const hpBefore = Number(actor.system.hp?.value ?? 0);
     const hpMax = Number(actor.system.hp?.max ?? 1);
@@ -150,9 +154,10 @@ export async function applyDamage(actor, opts) {
     const hpUpdates = {};
     if (toHp !== 0) hpUpdates["system.hp.value"] = hpAfter;
 
-    // 5) Bleed on slashing/piercing if damage reached HP.
+    // 5) Bleed on slashing/piercing if damage reached HP — ONLY on called shots.
+    // Random and Default hits deal damage without location-tied status effects.
     let bleedApplied = false;
-    if (applyBleed && toHp > 0 && BLEED_TYPES.has(type)) {
+    if (applyBleed && calledShot && toHp > 0 && BLEED_TYPES.has(type)) {
         // Existing Bleed doesn't stack (higher wins) — we set trivial if off,
         // otherwise leave alone so GM can escalate manually on crits.
         const existing = actor.system.conditions?.bleed;

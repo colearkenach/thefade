@@ -188,7 +188,11 @@ function bindApplyDamage(html) {
             return;
         }
 
-        const location = html.find('.damage-location').val() || "body";
+        // Location is resolved at attack-roll time (random/default/called shot)
+        // and baked into the card. Fallback to body only if the card predates
+        // this change.
+        const location = card.dataset.hitLocation || "body";
+        const calledShot = card.dataset.calledShot === "1";
         // Read current damage including any rolled crit bonus
         const displayed = parseInt(card.querySelector('.base-damage-value')?.textContent || "0") || 0;
         const damageType = card.dataset.damageType || "Ut";
@@ -201,6 +205,7 @@ function bindApplyDamage(html) {
             amount: displayed,
             type: damageType,
             location,
+            calledShot,
             sourceName: `${sourceName} (${weaponName})`
         });
 

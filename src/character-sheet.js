@@ -10,6 +10,7 @@ import {
 import { renderModifierHtml } from './conditions.js';
 import { handleDarkCast } from './dark-magic.js';
 import { openOpposedRollDialog, openAidAnotherDialog } from './opposed.js';
+import { rollHitLocation, locationLabel } from './hit-location.js';
 
 /**
 * Character Sheet class for The Fade system
@@ -2223,6 +2224,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
             if (!isRanged) defaultDT += tempParry;
         }
 
+        // Hit location inputs (from target dialog). Called Shot = −2D to the
+        // attack pool, and only called shots apply status effects on hit.
+        const hitLocationMode = targetInfo?.hitLocationMode || "random";
+        const calledShot = hitLocationMode === "called";
+        const calledShotLocation = targetInfo?.calledShotLocation || "body";
+
         // Get final DT from user
         const dt = await this._getDifficultyThreshold("Attack Difficulty", defaultDT);
         if (dt === null) return; // User cancelled the dialog
@@ -2275,6 +2282,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
             dicePool += condModsUntrained.bonusDice - condModsUntrained.penaltyDice;
 
+            // Called Shot: rulebook −2D to the attack roll.
+            if (calledShot) dicePool -= 2;
+
             // Ensure minimum of 1 die
             dicePool = Math.max(1, dicePool);
 
@@ -2303,6 +2313,25 @@ export class TheFadeCharacterSheet extends ActorSheet {
             // Check against DT
             const attackSucceeds = successes >= dt;
 
+            // Resolve hit location on a hit: Called = chosen + status effects;
+            // Default = body, no status effects; Random = 1d12 on attacker
+            // facing column, no status effects.
+            let resolvedLocation = null;
+            let locationRollDetail = null;
+            if (attackSucceeds) {
+                if (calledShot) {
+                    resolvedLocation = calledShotLocation;
+                } else if (hitLocationMode === "default") {
+                    resolvedLocation = "body";
+                } else {
+                    const r = await rollHitLocation(targetInfo?.facing || "front");
+                    resolvedLocation = r.location;
+                    locationRollDetail = r.sideRoll
+                        ? `1d12=${r.roll} (${r.column}), 1d2=${r.sideRoll}`
+                        : `1d12=${r.roll} (${r.column})`;
+                }
+            }
+
             const templateData = {
                 actor: this.actor.name,
                 weaponName: weapon.name,
@@ -2321,6 +2350,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 target: targetName,
                 targetUuid: targetActor?.uuid || "",
                 attackerUuid: this.actor.uuid,
+                hitLocation: resolvedLocation,
+                hitLocationLabel: resolvedLocation ? locationLabel(resolvedLocation) : null,
+                hitLocationRollDetail: locationRollDetail,
+                calledShot: calledShot,
                 bonusDice: weaponData.miscBonus ? `Includes +${weaponData.miscBonus} bonus dice` : null
             };
 
@@ -2403,6 +2436,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
         }
         dicePool += condMods.bonusDice - condMods.penaltyDice;
 
+        // Called Shot: rulebook −2D to the attack roll.
+        if (calledShot) dicePool -= 2;
+
         // Ensure minimum of 1 die
         dicePool = Math.max(1, dicePool);
 
@@ -2464,6 +2500,25 @@ export class TheFadeCharacterSheet extends ActorSheet {
             totalDamage = weaponData.totalDamage;
         }
 
+        // Resolve hit location on a hit: Called = chosen + status effects;
+        // Default = body, no status effects; Random = 1d12 on attacker
+        // facing column, no status effects.
+        let resolvedLocation = null;
+        let locationRollDetail = null;
+        if (attackSucceeds) {
+            if (calledShot) {
+                resolvedLocation = calledShotLocation;
+            } else if (hitLocationMode === "default") {
+                resolvedLocation = "body";
+            } else {
+                const r = await rollHitLocation(targetInfo?.facing || "front");
+                resolvedLocation = r.location;
+                locationRollDetail = r.sideRoll
+                    ? `1d12=${r.roll} (${r.column}), 1d2=${r.sideRoll}`
+                    : `1d12=${r.roll} (${r.column})`;
+            }
+        }
+
         const templateData = {
             actor: this.actor.name,
             weaponName: weapon.name,
@@ -2485,6 +2540,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
             target: targetName,
             targetUuid: targetActor?.uuid || "",
             attackerUuid: this.actor.uuid,
+            hitLocation: resolvedLocation,
+            hitLocationLabel: resolvedLocation ? locationLabel(resolvedLocation) : null,
+            hitLocationRollDetail: locationRollDetail,
+            calledShot: calledShot,
             bonusDice: (skillData.miscBonus || weaponData.miscBonus) ?
                 `Includes bonus dice: ${[
                     skillData.miscBonus ? `+${skillData.miscBonus} from skill` : '',
@@ -3053,6 +3112,26 @@ export class TheFadeCharacterSheet extends ActorSheet {
                         </select>
                         <p class="hint" id="facing-hint">Auto-detected from token positions and target rotation when possible.</p>
                     </div>
+                    <div class="form-group">
+                        <label>Hit Location:</label>
+                        <select id="hit-location-mode" name="hitLocationMode">
+                            <option value="random" selected>Random (1d12 on hit)</option>
+                            <option value="default">Default (Body)</option>
+                            <option value="called">Called Shot (&minus;2D)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="called-shot-row" style="display:none;">
+                        <label>Called Shot Location:</label>
+                        <select id="called-shot-location" name="calledShotLocation">
+                            <option value="head">Head</option>
+                            <option value="body">Body</option>
+                            <option value="leftarm">Left Arm</option>
+                            <option value="rightarm">Right Arm</option>
+                            <option value="leftleg">Left Leg</option>
+                            <option value="rightleg">Right Leg</option>
+                        </select>
+                        <p class="hint">Called shots apply status effects on hit but cost 2 dice from the attack pool.</p>
+                    </div>
                 </form>
             `,
                 buttons: {
@@ -3062,7 +3141,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
                         callback: html => {
                             const targetId = html.find('#target-select').val();
                             const facing = html.find('#facing-select').val();
-                            resolve({ targetId, facing });
+                            const hitLocationMode = html.find('#hit-location-mode').val() || "random";
+                            const calledShotLocation = html.find('#called-shot-location').val() || "body";
+                            resolve({ targetId, facing, hitLocationMode, calledShotLocation });
                         }
                     },
                     cancel: {
@@ -3099,6 +3180,15 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
                     applyAutoFacing(targetSelect.val() || "");
                     targetSelect.on('change', ev => applyAutoFacing(ev.currentTarget.value));
+
+                    const modeSelect = html.find('#hit-location-mode');
+                    const calledRow = html.find('#called-shot-row');
+                    const toggleCalledRow = () => {
+                        if (modeSelect.val() === "called") calledRow.show();
+                        else calledRow.hide();
+                    };
+                    toggleCalledRow();
+                    modeSelect.on('change', toggleCalledRow);
                 }
             });
             dialog.render(true);
