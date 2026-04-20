@@ -42,6 +42,17 @@ Hooks.on("renderChatMessage", (message, html, data) => {
     applyBonusHandlers(html);
 });
 
+/**
+* Apply system theme class to dialog apps rendered from this system so that
+* CSS in styles/thefade.css can style them. Keeps each new Dialog() call clean.
+*/
+Hooks.on("renderDialog", (app, html, data) => {
+    const el = html?.[0] ?? html;
+    if (el && el.classList && !el.classList.contains("thefade")) {
+        el.classList.add("thefade");
+    }
+});
+
 
 
 

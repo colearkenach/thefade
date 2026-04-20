@@ -1,0 +1,208 @@
+{{!--
+    Combat state panel — active conditions and defense stance.
+    Schema: system.conditions.<key>.active + optional .intensity; system.activeStance
+    Conditions with Trivial/Moderate/Severe tiers: bleed, dazed, fatigue, fear, illness,
+      pain, paralysis, staggered, stunned
+    Binary conditions: blindness, confusion, deafness, flatFooted, sleep
+--}}
+<div class="combat-state panel">
+    <div class="combat-state-header">
+        <h2>Combat State</h2>
+        <button type="button" class="combat-state-clear" title="Clear all conditions and stance">
+            <i class="fas fa-eraser"></i> Clear
+        </button>
+    </div>
+
+    {{!-- Stance selector --}}
+    <div class="stance-row">
+        <label class="stance-label">Active Stance</label>
+        <div class="stance-options">
+            <label class="stance-opt" title="No stance — your default Passive Dodge/Parry apply">
+                <input type="radio" name="system.activeStance" value="none" {{#if (eq system.activeStance "none")}}checked{{/if}} />
+                <span>None</span>
+            </label>
+            <label class="stance-opt stance-dodge" title="Dodge Stance: add half Finesse OR full dice from Acrobatics to Avoid. Costs both Minor Actions.">
+                <input type="radio" name="system.activeStance" value="dodgeStance" {{#if (eq system.activeStance "dodgeStance")}}checked{{/if}} />
+                <span>Dodge</span>
+            </label>
+            <label class="stance-opt stance-parry" title="Parrying Stance: apply Passive Parry to Back Flanks; on a failed attack, Riposte as a Reaction.">
+                <input type="radio" name="system.activeStance" value="parryingStance" {{#if (eq system.activeStance "parryingStance")}}checked{{/if}} />
+                <span>Parry</span>
+            </label>
+            <label class="stance-opt stance-brace" title="Brace for Impact: excess damage past AP/Deflection doesn't carry to HP, and HP damage is halved (min 1).">
+                <input type="radio" name="system.activeStance" value="brace" {{#if (eq system.activeStance "brace")}}checked{{/if}} />
+                <span>Brace</span>
+            </label>
+            <label class="stance-opt stance-tough" title="Tough it Out: add full Physique to Resilience instead of half.">
+                <input type="radio" name="system.activeStance" value="toughItOut" {{#if (eq system.activeStance "toughItOut")}}checked{{/if}} />
+                <span>Tough</span>
+            </label>
+            <label class="stance-opt stance-resolute" title="Resolute Will: add full Mind to Grit instead of half.">
+                <input type="radio" name="system.activeStance" value="resoluteWill" {{#if (eq system.activeStance "resoluteWill")}}checked{{/if}} />
+                <span>Resolute</span>
+            </label>
+        </div>
+    </div>
+
+    {{!-- Conditions grid --}}
+    <div class="conditions-grid">
+
+        {{!-- Severity-tier conditions: Bleed --}}
+        <div class="condition-card {{#if system.conditions.bleed.active}}is-active{{/if}}" data-condition="bleed">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.bleed.active" {{#if system.conditions.bleed.active}}checked{{/if}} />
+                <span class="condition-name">Bleed</span>
+            </label>
+            <div class="condition-intensity" data-for="bleed">
+                <label class="int-opt" title="1 bleed damage per round"><input type="radio" name="system.conditions.bleed.intensity" value="trivial" {{#if (eq system.conditions.bleed.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="3 bleed damage per round"><input type="radio" name="system.conditions.bleed.intensity" value="moderate" {{#if (eq system.conditions.bleed.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="5 bleed damage per round"><input type="radio" name="system.conditions.bleed.intensity" value="severe" {{#if (eq system.conditions.bleed.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Dazed --}}
+        <div class="condition-card {{#if system.conditions.dazed.active}}is-active{{/if}}" data-condition="dazed">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.dazed.active" {{#if system.conditions.dazed.active}}checked{{/if}} />
+                <span class="condition-name">Dazed</span>
+            </label>
+            <div class="condition-intensity" data-for="dazed">
+                <label class="int-opt" title="-1 Avoid"><input type="radio" name="system.conditions.dazed.intensity" value="trivial" {{#if (eq system.conditions.dazed.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="Lose one Minor Action"><input type="radio" name="system.conditions.dazed.intensity" value="moderate" {{#if (eq system.conditions.dazed.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="Lose your Major Action"><input type="radio" name="system.conditions.dazed.intensity" value="severe" {{#if (eq system.conditions.dazed.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Fatigue --}}
+        <div class="condition-card {{#if system.conditions.fatigue.active}}is-active{{/if}}" data-condition="fatigue">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.fatigue.active" {{#if system.conditions.fatigue.active}}checked{{/if}} />
+                <span class="condition-name">Fatigue</span>
+            </label>
+            <div class="condition-intensity" data-for="fatigue">
+                <label class="int-opt" title="Move at 3/4 speed"><input type="radio" name="system.conditions.fatigue.intensity" value="trivial" {{#if (eq system.conditions.fatigue.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="Move at 1/2 speed"><input type="radio" name="system.conditions.fatigue.intensity" value="moderate" {{#if (eq system.conditions.fatigue.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="Move at 1/4 speed, -3D Physical"><input type="radio" name="system.conditions.fatigue.intensity" value="severe" {{#if (eq system.conditions.fatigue.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Fear --}}
+        <div class="condition-card {{#if system.conditions.fear.active}}is-active{{/if}}" data-condition="fear">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.fear.active" {{#if system.conditions.fear.active}}checked{{/if}} />
+                <span class="condition-name">Fear</span>
+            </label>
+            <div class="condition-intensity" data-for="fear">
+                <label class="int-opt" title="-1 Avoid, +1D attack rolls"><input type="radio" name="system.conditions.fear.intensity" value="trivial" {{#if (eq system.conditions.fear.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="Run from fear (fights if cornered)"><input type="radio" name="system.conditions.fear.intensity" value="moderate" {{#if (eq system.conditions.fear.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="Drop everything and cower"><input type="radio" name="system.conditions.fear.intensity" value="severe" {{#if (eq system.conditions.fear.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Illness --}}
+        <div class="condition-card {{#if system.conditions.illness.active}}is-active{{/if}}" data-condition="illness">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.illness.active" {{#if system.conditions.illness.active}}checked{{/if}} />
+                <span class="condition-name">Illness</span>
+            </label>
+            <div class="condition-intensity" data-for="illness">
+                <label class="int-opt" title="-1 Resilience"><input type="radio" name="system.conditions.illness.intensity" value="trivial" {{#if (eq system.conditions.illness.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="-3 Resilience"><input type="radio" name="system.conditions.illness.intensity" value="moderate" {{#if (eq system.conditions.illness.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="-6 Resilience, no Minor Actions"><input type="radio" name="system.conditions.illness.intensity" value="severe" {{#if (eq system.conditions.illness.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Pain --}}
+        <div class="condition-card {{#if system.conditions.pain.active}}is-active{{/if}}" data-condition="pain">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.pain.active" {{#if system.conditions.pain.active}}checked{{/if}} />
+                <span class="condition-name">Pain</span>
+            </label>
+            <div class="condition-intensity" data-for="pain">
+                <label class="int-opt" title="-1 Avoid and Grit"><input type="radio" name="system.conditions.pain.intensity" value="trivial" {{#if (eq system.conditions.pain.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="-3 Avoid and Grit"><input type="radio" name="system.conditions.pain.intensity" value="moderate" {{#if (eq system.conditions.pain.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="Prone, -6 Avoid and Grit"><input type="radio" name="system.conditions.pain.intensity" value="severe" {{#if (eq system.conditions.pain.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Paralysis --}}
+        <div class="condition-card {{#if system.conditions.paralysis.active}}is-active{{/if}}" data-condition="paralysis">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.paralysis.active" {{#if system.conditions.paralysis.active}}checked{{/if}} />
+                <span class="condition-name">Paralysis</span>
+            </label>
+            <div class="condition-intensity" data-for="paralysis">
+                <label class="int-opt" title="-2 Avoid"><input type="radio" name="system.conditions.paralysis.intensity" value="trivial" {{#if (eq system.conditions.paralysis.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="-4 Avoid, half speed"><input type="radio" name="system.conditions.paralysis.intensity" value="moderate" {{#if (eq system.conditions.paralysis.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="Completely helpless"><input type="radio" name="system.conditions.paralysis.intensity" value="severe" {{#if (eq system.conditions.paralysis.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Staggered --}}
+        <div class="condition-card {{#if system.conditions.staggered.active}}is-active{{/if}}" data-condition="staggered">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.staggered.active" {{#if system.conditions.staggered.active}}checked{{/if}} />
+                <span class="condition-name">Staggered</span>
+            </label>
+            <div class="condition-intensity" data-for="staggered">
+                <label class="int-opt" title="Only one reaction"><input type="radio" name="system.conditions.staggered.intensity" value="trivial" {{#if (eq system.conditions.staggered.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="No reactions"><input type="radio" name="system.conditions.staggered.intensity" value="moderate" {{#if (eq system.conditions.staggered.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="No reactions or Minor Actions"><input type="radio" name="system.conditions.staggered.intensity" value="severe" {{#if (eq system.conditions.staggered.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Stunned --}}
+        <div class="condition-card {{#if system.conditions.stunned.active}}is-active{{/if}}" data-condition="stunned">
+            <label class="condition-toggle">
+                <input type="checkbox" name="system.conditions.stunned.active" {{#if system.conditions.stunned.active}}checked{{/if}} />
+                <span class="condition-name">Stunned</span>
+            </label>
+            <div class="condition-intensity" data-for="stunned">
+                <label class="int-opt" title="-1 Avoid"><input type="radio" name="system.conditions.stunned.intensity" value="trivial" {{#if (eq system.conditions.stunned.intensity "trivial")}}checked{{/if}} /><span>T</span></label>
+                <label class="int-opt" title="-3 Avoid, half speed"><input type="radio" name="system.conditions.stunned.intensity" value="moderate" {{#if (eq system.conditions.stunned.intensity "moderate")}}checked{{/if}} /><span>M</span></label>
+                <label class="int-opt" title="Unable to move or act"><input type="radio" name="system.conditions.stunned.intensity" value="severe" {{#if (eq system.conditions.stunned.intensity "severe")}}checked{{/if}} /><span>S</span></label>
+            </div>
+        </div>
+
+        {{!-- Binary conditions: Blindness --}}
+        <div class="condition-card condition-binary {{#if system.conditions.blindness.active}}is-active{{/if}}" data-condition="blindness">
+            <label class="condition-toggle" title="No sight checks, -5 Avoid, -4D attack rolls">
+                <input type="checkbox" name="system.conditions.blindness.active" {{#if system.conditions.blindness.active}}checked{{/if}} />
+                <span class="condition-name">Blindness</span>
+            </label>
+        </div>
+
+        {{!-- Confusion --}}
+        <div class="condition-card condition-binary {{#if system.conditions.confusion.active}}is-active{{/if}}" data-condition="confusion">
+            <label class="condition-toggle" title="On a failed attack, hit yourself or an ally within reach/range">
+                <input type="checkbox" name="system.conditions.confusion.active" {{#if system.conditions.confusion.active}}checked{{/if}} />
+                <span class="condition-name">Confusion</span>
+            </label>
+        </div>
+
+        {{!-- Deafness --}}
+        <div class="condition-card condition-binary {{#if system.conditions.deafness.active}}is-active{{/if}}" data-condition="deafness">
+            <label class="condition-toggle" title="No hearing checks, -2 Avoid">
+                <input type="checkbox" name="system.conditions.deafness.active" {{#if system.conditions.deafness.active}}checked{{/if}} />
+                <span class="condition-name">Deafness</span>
+            </label>
+        </div>
+
+        {{!-- Flat-Footed --}}
+        <div class="condition-card condition-binary {{#if system.conditions.flatFooted.active}}is-active{{/if}}" data-condition="flatFooted">
+            <label class="condition-toggle" title="-2 Avoid, unable to act. Typically 1 round.">
+                <input type="checkbox" name="system.conditions.flatFooted.active" {{#if system.conditions.flatFooted.active}}checked{{/if}} />
+                <span class="condition-name">Flat-Footed</span>
+            </label>
+        </div>
+
+        {{!-- Sleep --}}
+        <div class="condition-card condition-binary {{#if system.conditions.sleep.active}}is-active{{/if}}" data-condition="sleep">
+            <label class="condition-toggle" title="Asleep, prone, helpless. Minor Action to wake an ally.">
+                <input type="checkbox" name="system.conditions.sleep.active" {{#if system.conditions.sleep.active}}checked{{/if}} />
+                <span class="condition-name">Sleep</span>
+            </label>
+        </div>
+
+    </div>
+</div>

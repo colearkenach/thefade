@@ -81,6 +81,23 @@
         "passiveParry": 0,
         "facing": "front"
       },
+      "conditions": {
+        "bleed":      { "active": false, "intensity": "trivial" },
+        "blindness":  { "active": false },
+        "confusion":  { "active": false },
+        "dazed":      { "active": false, "intensity": "trivial" },
+        "deafness":   { "active": false },
+        "fatigue":    { "active": false, "intensity": "trivial" },
+        "fear":       { "active": false, "intensity": "trivial" },
+        "flatFooted": { "active": false },
+        "illness":    { "active": false, "intensity": "trivial" },
+        "pain":       { "active": false, "intensity": "trivial" },
+        "paralysis":  { "active": false, "intensity": "trivial" },
+        "sleep":      { "active": false },
+        "staggered":  { "active": false, "intensity": "trivial" },
+        "stunned":    { "active": false, "intensity": "trivial" }
+      },
+      "activeStance": "none",
       "magicItems": {
         "head": null,
         "neck": null,
