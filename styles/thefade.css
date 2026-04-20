@@ -8303,3 +8303,36 @@ select[name="system.aura.color"] option[value="white"] {
     font-size: 0.95em;
     line-height: 1.4;
 }
+
+/* Ability effects panels */
+.thefade .ability-effects-group {
+    margin-top: 8px;
+}
+.thefade .ability-effects-group label {
+    font-weight: bold;
+    color: #4a6a4a;
+}
+.thefade .ability-effects-group.ability-effects-unmatched label {
+    color: #777;
+}
+.thefade .ability-effects-group ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 2px 0;
+    font-size: 0.9em;
+}
+.thefade .ability-effects-group li {
+    padding: 2px 0;
+    border-bottom: 1px dotted #ddd;
+}
+.thefade .ability-effects-group .ability-source {
+    color: #888;
+    font-size: 0.85em;
+    font-style: italic;
+}
+.thefade .ability-effects-group .hint {
+    color: #888;
+    font-weight: normal;
+    font-size: 0.85em;
+    font-style: italic;
+}
