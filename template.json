@@ -1,6 +1,6 @@
 {
   "Actor": {
-    "types": [ "character" ],
+    "types": [ "character", "npc", "party" ],
     "templates": {
       "base": {
         "hp": {
@@ -163,6 +163,43 @@
         "reputation": "",
         "fightingStyle": ""
       }
+    },
+    "npc": {
+      "templates": ["base"],
+      "hp": { "value": 10, "max": 10 },
+      "defenses": {
+        "resilience": 0, "avoid": 0, "grit": 0,
+        "resilienceBonus": 0, "avoidBonus": 0, "gritBonus": 0,
+        "passiveDodge": 0, "passiveParry": 0, "facing": "front"
+      },
+      "movement": { "land": 4, "fly": 0, "swim": 0, "climb": 0, "burrow": 0 },
+      "conditions": {
+        "bleed":      { "active": false, "intensity": "trivial" },
+        "blindness":  { "active": false },
+        "confusion":  { "active": false },
+        "dazed":      { "active": false, "intensity": "trivial" },
+        "deafness":   { "active": false },
+        "fatigue":    { "active": false, "intensity": "trivial" },
+        "fear":       { "active": false, "intensity": "trivial" },
+        "flatFooted": { "active": false },
+        "illness":    { "active": false, "intensity": "trivial" },
+        "pain":       { "active": false, "intensity": "trivial" },
+        "paralysis":  { "active": false, "intensity": "trivial" },
+        "sleep":      { "active": false },
+        "staggered":  { "active": false, "intensity": "trivial" },
+        "stunned":    { "active": false, "intensity": "trivial" }
+      },
+      "activeStance": "none",
+      "creatureType": "humanoid",
+      "creatureSubtype": "",
+      "size": "medium",
+      "initiativeBonus": 0,
+      "notes": ""
+    },
+    "party": {
+      "currency": { "serpents": 0 },
+      "members": [],
+      "notes": ""
     }
   },
   "Item": {

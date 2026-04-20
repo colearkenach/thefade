@@ -8336,3 +8336,268 @@ select[name="system.aura.color"] option[value="white"] {
     font-size: 0.85em;
     font-style: italic;
 }
+
+
+/* ===== NPC SHEET ===== */
+.thefade.npc .npc-meta input,
+.thefade.npc .npc-meta select {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-faint);
+  color: var(--text-muted);
+  font-size: 0.85em;
+  padding: 1px 4px;
+}
+.thefade.npc .npc-meta input:focus,
+.thefade.npc .npc-meta select:focus {
+  border-bottom-color: var(--accent-crimson);
+  outline: none;
+  color: var(--text-primary);
+}
+
+.thefade.npc .npc-defenses-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.thefade.npc .npc-defense {
+  flex: 1;
+  min-width: 100px;
+  text-align: center;
+  padding: 8px;
+}
+.thefade.npc .npc-defense label {
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 2px;
+}
+.thefade.npc .npc-defense-total {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: var(--accent-gold);
+  line-height: 1;
+}
+.thefade.npc .npc-defense-detail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 4px;
+  font-size: 0.75em;
+  color: var(--text-muted);
+}
+.thefade.npc .npc-defense-detail .small-input {
+  width: 36px;
+  text-align: center;
+  font-size: 1em;
+  padding: 1px 2px;
+}
+.thefade.npc .npc-defense select {
+  width: 100%;
+  font-size: 0.8em;
+  margin-top: 4px;
+}
+
+.thefade.npc .npc-movement {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.thefade.npc .move-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.thefade.npc .move-entry label {
+  font-size: 0.72em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.thefade.npc .move-entry input {
+  width: 44px;
+  text-align: center;
+}
+
+.thefade.npc .npc-item-section {
+  margin-bottom: 16px;
+}
+.thefade.npc .npc-item-header,
+.thefade.party .npc-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-faint);
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+}
+.thefade.npc .npc-item-header h2,
+.thefade.party .npc-item-header h2 {
+  margin: 0;
+  font-size: 1em;
+}
+.thefade.npc .npc-weapon-table,
+.thefade.npc .npc-armor-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85em;
+}
+.thefade.npc .npc-weapon-table th,
+.thefade.npc .npc-armor-table th {
+  text-align: left;
+  font-size: 0.72em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 2px 4px;
+  border-bottom: 1px solid var(--border-faint);
+}
+.thefade.npc .npc-weapon-table td,
+.thefade.npc .npc-armor-table td {
+  padding: 3px 4px;
+  border-bottom: 1px solid var(--border-faint);
+  vertical-align: middle;
+}
+.thefade.npc .npc-weapon-table .item-controls,
+.thefade.npc .npc-armor-table .item-controls {
+  white-space: nowrap;
+  text-align: right;
+}
+.thefade.npc .npc-weapon-table .item-icon,
+.thefade.npc .npc-armor-table .item-icon {
+  width: 20px;
+  height: 20px;
+  border: none;
+}
+
+/* ===== PARTY SHEET ===== */
+.thefade.party .party-members-section {
+  padding: 4px 0;
+}
+.thefade.party .party-member-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.thefade.party .party-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+}
+.thefade.party .member-portrait {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border-faint);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.thefade.party .member-info {
+  flex: 1;
+}
+.thefade.party .member-name {
+  font-weight: bold;
+  font-size: 1em;
+  display: block;
+  margin-bottom: 2px;
+}
+.thefade.party .member-stats {
+  display: flex;
+  gap: 12px;
+  font-size: 0.8em;
+  color: var(--text-muted);
+}
+.thefade.party .member-stat i {
+  margin-right: 3px;
+  color: var(--accent-gold);
+}
+.thefade.party .member-remove {
+  background: transparent;
+  border: 1px solid var(--border-faint);
+  color: var(--text-muted);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 0.8em;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.thefade.party .member-remove:hover {
+  border-color: var(--accent-crimson);
+  color: var(--accent-hot);
+}
+.thefade.party .add-member {
+  margin-top: 10px;
+  width: 100%;
+}
+.thefade.party .party-resource-section {
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.thefade.party .party-resource-section h2 {
+  font-size: 1em;
+  margin: 0 0 8px 0;
+  border-bottom: 1px solid var(--border-faint);
+  padding-bottom: 4px;
+}
+.thefade.party .party-currency-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.9em;
+}
+.thefade.party .party-currency-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.thefade.party .party-currency-actions button,
+.thefade.party .give-xp {
+  flex: 1;
+  min-width: 140px;
+  font-size: 0.85em;
+}
+.thefade.party .resource-hint {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  margin: 0 0 8px 0;
+  font-style: italic;
+}
+
+/* Shared empty-list style */
+.thefade .empty-list {
+  font-size: 0.82em;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 6px 4px;
+}
+.thefade .notes-section textarea {
+  width: 100%;
+  background: var(--bg-surface-alt);
+  color: var(--text-primary);
+  border: 1px solid var(--border-faint);
+  border-radius: 4px;
+  padding: 8px;
+  font-family: inherit;
+  font-size: 0.88em;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.thefade .muted {
+  color: var(--text-muted);
+  font-size: 0.82em;
+}

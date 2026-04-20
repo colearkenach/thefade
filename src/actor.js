@@ -40,6 +40,8 @@ export class TheFadeActor extends Actor {
         // Make separate methods for each Actor type (character, npc, etc.)
         if (actorData.type === 'character') {
             this._prepareCharacterData(actorData);
+        } else if (actorData.type === 'npc') {
+            this._prepareNPCData(actorData);
         }
     }
 
@@ -669,6 +671,80 @@ export class TheFadeActor extends Actor {
         data['overland-movement'].swimOverland = swim * 6;
         data['overland-movement'].climbOverland = climb * 6;
         data['overland-movement'].burrowOverland = burrow * 6;
+    }
+
+    /**
+     * Prepare NPC-specific data: auto-calculate defenses from attributes,
+     * apply stances, facing, and condition state. HP max is stored directly.
+     */
+    _prepareNPCData(actorData) {
+        const data = actorData.system;
+
+        // Ensure attributes exist
+        if (!data.attributes) {
+            data.attributes = {
+                physique: { value: 1 }, finesse: { value: 1 }, mind: { value: 1 },
+                presence: { value: 1 }, soul: { value: 1 }
+            };
+        }
+
+        // Ensure defenses exist
+        if (!data.defenses) {
+            data.defenses = {
+                resilience: 0, avoid: 0, grit: 0,
+                resilienceBonus: 0, avoidBonus: 0, gritBonus: 0,
+                passiveDodge: 0, passiveParry: 0, facing: "front", avoidPenalty: 0
+            };
+        }
+        if (data.defenses.avoidPenalty === undefined) data.defenses.avoidPenalty = 0;
+
+        // Ensure conditions are initialized
+        const SEVERITY_CONDITIONS = ["bleed", "dazed", "fatigue", "fear", "illness", "pain", "paralysis", "staggered", "stunned"];
+        const BINARY_CONDITIONS = ["blindness", "confusion", "deafness", "flatFooted", "sleep"];
+        if (!data.conditions) data.conditions = {};
+        for (const key of SEVERITY_CONDITIONS) {
+            if (!data.conditions[key]) data.conditions[key] = { active: false, intensity: "trivial" };
+        }
+        for (const key of BINARY_CONDITIONS) {
+            if (!data.conditions[key]) data.conditions[key] = { active: false };
+        }
+
+        if (!["none","dodgeStance","parryingStance","brace","toughItOut","resoluteWill"].includes(data.activeStance)) {
+            data.activeStance = "none";
+        }
+
+        // Calculate defenses from attributes
+        const phy = data.attributes.physique?.value || 1;
+        const fin = data.attributes.finesse?.value || 1;
+        const mnd = data.attributes.mind?.value || 1;
+        data.defenses.resilience = Math.max(1, Math.floor(phy / 2));
+        data.defenses.avoid = Math.max(1, Math.floor(fin / 2));
+        data.defenses.grit = Math.max(1, Math.floor(mnd / 2));
+        data.totalResilience = Math.max(1, data.defenses.resilience + (Number(data.defenses.resilienceBonus) || 0));
+        data.totalAvoid = Math.max(1, data.defenses.avoid + (Number(data.defenses.avoidBonus) || 0));
+        data.totalGrit = Math.max(1, data.defenses.grit + (Number(data.defenses.gritBonus) || 0));
+
+        // No Acrobatics/weapon skill lookup for NPCs
+        data.defenses.basePassiveDodge = 0;
+        data.defenses.passiveDodge = 0;
+        data.defenses.basePassiveParry = 0;
+        data.defenses.passiveParry = 0;
+        data.defenses.acrobaticsDodgeDice = 0;
+
+        applyBaseDefenseStances(data);
+        this._applyFacingModifiers(data);
+        this._applyConditionState(data);
+
+        // HP state label (max is stored directly, not calculated)
+        if (!data.hp) data.hp = { value: 10, max: 10 };
+        const hp = data.hp.value ?? 0;
+        const max = Math.max(1, data.hp.max ?? 10);
+        if (hp >= max)          { data.hp.state = "healthy";     data.hp.stateLabel = "Healthy"; }
+        else if (hp > max / 2)  { data.hp.state = "bloodied";    data.hp.stateLabel = "Bloodied"; }
+        else if (hp > 0)        { data.hp.state = "wounded";     data.hp.stateLabel = "Wounded"; }
+        else if (hp === 0)      { data.hp.state = "unconscious"; data.hp.stateLabel = "Unconscious"; }
+        else if (hp > -max * 2) { data.hp.state = "dying";       data.hp.stateLabel = "Dying"; }
+        else                    { data.hp.state = "dead";        data.hp.stateLabel = "Dead"; }
     }
 
     /**

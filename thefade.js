@@ -10,6 +10,8 @@ import { TheFadeActor } from './src/actor.js';
 import { TheFadeItem } from './src/item.js';
 import { TheFadeItemSheet } from './src/item-sheet.js';
 import { TheFadeCharacterSheet } from './src/character-sheet.js';
+import { TheFadeNPCSheet } from './src/npc-sheet.js';
+import { TheFadePartySheet } from './src/party-sheet.js';
 import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
 import './src/token-facing.js';
 
@@ -66,7 +68,7 @@ Hooks.on("combatTurn", async (combat, updateData, updateOptions) => {
         const nextTurnIndex = updateData?.turn ?? combat?.turn;
         const combatant = combat?.turns?.[nextTurnIndex];
         const actor = combatant?.actor;
-        if (!actor || actor.type !== "character") return;
+        if (!actor || !["character","npc"].includes(actor.type)) return;
 
         const ticks = computePerRoundDamage(actor.system?.conditions);
         if (!ticks.length) return;
@@ -183,6 +185,18 @@ Hooks.once('init', async function () {
         makeDefault: true
     });
 
+    // Register NPC sheet
+    Actors.registerSheet("thefade", TheFadeNPCSheet, {
+        types: ["npc"],
+        makeDefault: true
+    });
+
+    // Register Party sheet
+    Actors.registerSheet("thefade", TheFadePartySheet, {
+        types: ["party"],
+        makeDefault: true
+    });
+
     // Register The Fade item sheet
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
@@ -200,6 +214,8 @@ Hooks.once('init', async function () {
 
     await loadTemplates([
         "systems/thefade/templates/actor/character-sheet.html",
+        "systems/thefade/templates/actor/npc-sheet.html",
+        "systems/thefade/templates/actor/party-sheet.html",
         "systems/thefade/templates/actor/parts/attributes.html",
         "systems/thefade/templates/actor/parts/skills.html",
         "systems/thefade/templates/actor/parts/inventory.html",
@@ -247,10 +263,11 @@ Hooks.once('init', async function () {
         const actor = combatant.actor;
         if (!actor) return "1d12";
 
-        if (actor.type === "character") {
-            const finesse = actor.system.attributes.finesse?.value || 0;
-            const mind = actor.system.attributes.mind?.value || 0;
-            const modifier = Math.floor((finesse + mind) / 2);
+        if (["character", "npc"].includes(actor.type)) {
+            const finesse = actor.system.attributes?.finesse?.value || 0;
+            const mind = actor.system.attributes?.mind?.value || 0;
+            const bonus = (actor.system.initiativeBonus || 0);
+            const modifier = Math.floor((finesse + mind) / 2) + bonus;
             return `1d12 + ${modifier}`;
         }
 
