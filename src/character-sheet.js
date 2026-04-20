@@ -549,6 +549,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 }
 
                 dicePool += (skill.system.miscBonus || 0);
+                // Apply bonuses from equipped Items of Power
+                const eb = actorData.system?.equippedBonuses;
+                if (eb) {
+                    dicePool += (eb.skills?.[skill.name] || 0) + (eb.skills?.all || 0);
+                    if (skill.system.category === "Magical") dicePool += (eb.spell || 0);
+                }
                 skill.calculatedDice = Math.max(1, dicePool);
             } catch (error) {
                 console.warn(`Error calculating dice pool for skill ${skill.name}:`, error);
@@ -584,18 +590,24 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 };
                 weapon.attributeAbbr = attrAbbreviations[weapon.system.attribute] || "N/A";
 
+                const weaponSkillNameLower = (weapon.system.skill || "").toLowerCase();
+                const eb2 = actorData?.system?.equippedBonuses;
+                const itemAttackBonus = eb2
+                    ? (eb2.attack || 0) + (eb2[`attack_${weaponSkillNameLower}`] || 0)
+                    : 0;
+
                 if (skill && skill.calculatedDice !== undefined) {
-                    weapon.calculatedDice = skill.calculatedDice + (weapon.system.miscBonus || 0);
+                    weapon.calculatedDice = skill.calculatedDice + (weapon.system.miscBonus || 0) + itemAttackBonus;
                 } else {
                     // Untrained calculation
                     const attributeName = weapon.system.attribute || "physique";
                     if (attributeName !== "none" && actorData?.system?.attributes) {
                         let attrValue = actorData.system.attributes[attributeName]?.value || 0;
                         let dicePool = Math.floor(attrValue / 2);
-                        dicePool += (weapon.system.miscBonus || 0);
+                        dicePool += (weapon.system.miscBonus || 0) + itemAttackBonus;
                         weapon.calculatedDice = Math.max(1, dicePool);
                     } else {
-                        weapon.calculatedDice = Math.max(1, weapon.system.miscBonus || 0);
+                        weapon.calculatedDice = Math.max(1, (weapon.system.miscBonus || 0) + itemAttackBonus);
                     }
                 }
             } catch (error) {
@@ -2033,6 +2045,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Add misc bonus dice
         dicePool += (skillData.miscBonus || 0);
 
+        // Add bonuses from equipped Items of Power
+        const rollEb = this.actor.system?.equippedBonuses;
+        if (rollEb) {
+            dicePool += (rollEb.skills?.[skill.name] || 0) + (rollEb.skills?.all || 0);
+            if (skillData.category === "Magical") dicePool += (rollEb.spell || 0);
+        }
+
         // Apply active-condition modifiers before min-1 clamp
         const condMods = this.actor.getConditionRollModifiers({
             kind: "skill",
@@ -2269,6 +2288,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
             // Add weapon's misc bonus
             dicePool += (weaponData.miscBonus || 0);
 
+            // Add bonuses from equipped Items of Power
+            const untrEb = this.actor.system?.equippedBonuses;
+            if (untrEb) {
+                dicePool += (untrEb.attack || 0)
+                    + (untrEb[`attack_${(skillName || "").toLowerCase()}`] || 0);
+            }
+
             // Apply active-condition modifiers
             const condModsUntrained = this.actor.getConditionRollModifiers({
                 kind: "attack",
@@ -2421,6 +2447,15 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Add weapon misc bonus
         dicePool += (weaponData.miscBonus || 0);
+
+        // Add bonuses from equipped Items of Power
+        const atkEb = this.actor.system?.equippedBonuses;
+        if (atkEb) {
+            dicePool += (atkEb.attack || 0)
+                + (atkEb[`attack_${(skill.name || "").toLowerCase()}`] || 0)
+                + (atkEb.skills?.[skill.name] || 0)
+                + (atkEb.skills?.all || 0);
+        }
 
         // Apply active-condition modifiers
         const condMods = this.actor.getConditionRollModifiers({

@@ -284,6 +284,7 @@ export class TheFadeItem extends Item {
         if (typeof data.conflictsArmor === "undefined") data.conflictsArmor = false;
         if (!data.radiationEffect) data.radiationEffect = "";
         if (!data.creationRequirements) data.creationRequirements = "";
+        if (!Array.isArray(data.bonuses)) data.bonuses = [];
     }
     /**
     * Prepare fleshcraft-specific data

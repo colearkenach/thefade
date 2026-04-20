@@ -876,6 +876,63 @@ export class TheFadeItemSheet extends ItemSheet {
                     ui.notifications.info(`${this.item.name} is no longer attuned to anyone.`);
                 }
             });
+
+            // Hide target input for bonus types that don't need one
+            const NO_TARGET_TYPES = new Set(["avoid", "resilience", "grit", "hp"]);
+            const updateTargetVisibility = (row) => {
+                const type = row.find('.bonus-type').val();
+                const targetInput = row.find('.bonus-target');
+                if (NO_TARGET_TYPES.has(type)) {
+                    targetInput.val("").prop('disabled', true).css('visibility', 'hidden');
+                } else {
+                    targetInput.prop('disabled', false).css('visibility', 'visible');
+                }
+            };
+
+            // Initialize visibility for existing bonus rows
+            html.find('.bonus-row').each((i, el) => updateTargetVisibility($(el)));
+
+            // Collect all bonus rows from the DOM and save
+            const saveBonuses = () => {
+                const bonuses = [];
+                html.find('.bonus-row').each((i, el) => {
+                    const $row = $(el);
+                    const type = $row.find('.bonus-type').val();
+                    bonuses.push({
+                        id: $row.data('bonus-id'),
+                        type,
+                        target: NO_TARGET_TYPES.has(type) ? "" : ($row.find('.bonus-target').val() || ""),
+                        value: parseInt($row.find('.bonus-value').val()) || 0
+                    });
+                });
+                this.item.update({ "system.bonuses": bonuses });
+            };
+
+            // Add bonus
+            html.find('.bonus-add').click(ev => {
+                ev.preventDefault();
+                const bonuses = foundry.utils.deepClone(this.item.system.bonuses || []);
+                bonuses.push({ id: foundry.utils.randomID(16), type: "skill", target: "", value: 1 });
+                this.item.update({ "system.bonuses": bonuses }).then(() => this.render(false));
+            });
+
+            // Delete bonus
+            html.find('.bonus-delete').click(ev => {
+                ev.preventDefault();
+                const id = ev.currentTarget.dataset.bonusId;
+                const bonuses = (this.item.system.bonuses || []).filter(b => b.id !== id);
+                this.item.update({ "system.bonuses": bonuses }).then(() => this.render(false));
+            });
+
+            // Type change — update target visibility then save
+            html.find('.bonus-type').change(ev => {
+                const $row = $(ev.currentTarget).closest('.bonus-row');
+                updateTargetVisibility($row);
+                saveBonuses();
+            });
+
+            // Target / value changes
+            html.find('.bonus-target, .bonus-value').change(() => saveBonuses());
         }
 
         // Add general input change handler for all item sheets
