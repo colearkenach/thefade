@@ -17,6 +17,15 @@
   "THEFADE.DefensePassiveParry": "Passive Parry",
   "THEFADE.DefenseFacing": "Facing",
 
+  "THEFADE.SettingCreationMode": "Character Creation Mode",
+  "THEFADE.SettingCreationModeHint": "Choose how players generate attribute scores for new characters. Point Buy shows the 20-point budget tracker; Random Roll shows the 1d6 (exploding) roller.",
+  "THEFADE.SettingCreationModePointBuy": "Point Buy",
+  "THEFADE.SettingCreationModeRandom": "Random Roll",
+
+  "THEFADE.SetFacing": "Set Facing (to target, or click a point)",
+  "THEFADE.SetFacingTargeted": "{token} now faces {target}.",
+  "THEFADE.SetFacingClickPrompt": "Click a point on the canvas to set this token's facing.",
+
   "THEFADE.FacingFront": "Front",
   "THEFADE.FacingFlank": "Flank",
   "THEFADE.FacingBackFlank": "Back Flank",

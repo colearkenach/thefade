@@ -697,6 +697,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             capExceeded
         };
 
+        data.creationMode = game.settings.get("thefade", "characterCreationMode");
+
         // Initialize minimal defense data to prevent template errors
         if (!data.defenses) {
             data.defenses = {
