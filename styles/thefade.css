@@ -8303,3 +8303,33 @@ select[name="system.aura.color"] option[value="white"] {
     font-size: 0.95em;
     line-height: 1.4;
 }
+
+/* Point-buy panel (creation wizard) */
+.thefade .attribute-pointbuy-panel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95em;
+    flex-wrap: wrap;
+}
+.thefade .attribute-pointbuy-panel .pointbuy-label { color: #555; }
+.thefade .attribute-pointbuy-panel .pointbuy-remaining { color: #777; font-style: italic; }
+.thefade .attribute-pointbuy-panel .pointbuy-warning {
+    color: #aa4444; font-weight: bold;
+}
+.thefade .attribute-pointbuy-panel.over-budget,
+.thefade .attribute-pointbuy-panel.cap-exceeded {
+    border-color: #aa4444;
+    background: #fff2f2;
+}
+.thefade .attribute-pointbuy-panel .roll-attributes {
+    margin-left: auto;
+    padding: 2px 10px;
+    font-size: 0.9em;
+    cursor: pointer;
+}

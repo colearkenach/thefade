@@ -469,10 +469,9 @@ Hooks.on("createItem", async (item, options, userId) => {
 
 
             // Show results
-            let message = [];
-            if (skillsModified > 0) message.push(`${skillsModified} skills improved`);
-            if (customSkillsCreated > 0) message.push(`${customSkillsCreated} custom skills added`);
-            if (choicesMade > 0) message.push(`${choicesMade} skill choices made`);
+            const message = [];
+            if (skillsToAdd.length > 0) message.push(`${skillsToAdd.length} skills added`);
+            if (skillsUpgraded > 0) message.push(`${skillsUpgraded} skills upgraded`);
 
             if (message.length > 0) {
                 ui.notifications.info(`${path.name} applied to ${actor.name}: ${message.join(', ')}`);
@@ -562,6 +561,25 @@ Hooks.on("createItem", async (item, options, userId) => {
         });
 
         ui.notifications.info(`Applied ${species.name} species to ${actor.name}.`);
+    }
+
+    // Talent prereq acknowledgement: we can't parse free-text, but we
+    // can surface the prerequisites and require the player/GM to
+    // confirm eligibility. Declining deletes the just-added talent.
+    if (item.type === 'talent' && item.parent && item.parent.type === 'character' && game.user.id === userId) {
+        const prereqs = (item.system.prerequisites || "").trim();
+        if (!prereqs) return;
+        const keep = await Dialog.confirm({
+            title: `Talent Prerequisites: ${item.name}`,
+            content: `<p><strong>${item.name}</strong> lists prerequisites:</p><blockquote>${prereqs}</blockquote><p>Does <strong>${item.parent.name}</strong> meet them?</p>`,
+            yes: () => true,
+            no: () => false,
+            defaultYes: true
+        });
+        if (!keep) {
+            await item.delete();
+            ui.notifications.warn(`${item.name} removed: prerequisites not met.`);
+        }
     }
 });
 
