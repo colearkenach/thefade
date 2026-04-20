@@ -1,4 +1,14 @@
 <h2>Ability Scores</h2>
+
+<div class="attribute-pointbuy-panel {{#if pointBuy.over}}over-budget{{/if}} {{#if pointBuy.capExceeded}}cap-exceeded{{/if}}">
+    <span class="pointbuy-label">Point buy:</span>
+    <strong>{{pointBuy.spent}}</strong> / {{pointBuy.budget}} spent
+    <span class="pointbuy-remaining">({{pointBuy.remaining}} remaining)</span>
+    {{#if pointBuy.over}}<span class="pointbuy-warning">Over budget!</span>{{/if}}
+    {{#if pointBuy.capExceeded}}<span class="pointbuy-warning">Attribute above 10!</span>{{/if}}
+    <button class="roll-attributes" type="button" title="Roll 1d6 per attribute (explodes on 6)">Roll 1d6 (exploding) &times; 5</button>
+</div>
+
 <div class="grid grid-5col">
 
     <div class="attribute panel">
