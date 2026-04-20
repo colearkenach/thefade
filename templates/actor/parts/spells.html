@@ -63,8 +63,12 @@
 
             <div class="form-group">
                 <button class="roll-addiction" type="button">Roll for Dark Magic Addiction</button>
+                <button class="rest-daily" type="button" title="Scrub accumulated Sin for the day (stages persist)">Rest (Clear Sin)</button>
             </div>
         </div>
+        {{#if system.darkMagic.stageSummary}}
+        <p class="addiction-stage-summary"><em>Addiction: {{system.darkMagic.stageSummary}}</em></p>
+        {{/if}}
     </div>
 
     <hr />
