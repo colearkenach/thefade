@@ -16,6 +16,10 @@
     <section class="sheet-body">
         <div class="tab" data-group="primary" data-tab="description">
             <textarea name="system.description">{{system.description}}</textarea>
+            <div class="item-use-section">
+                {{#if system.quantity}}<span class="qty-display">Qty: {{system.quantity}}</span>{{/if}}
+                <a class="item-action-btn consume-item"><i class="fas fa-flask"></i> Consume Potion</a>
+            </div>
         </div>
 
         <div class="tab" data-group="primary" data-tab="details">

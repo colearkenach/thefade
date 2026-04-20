@@ -42,6 +42,10 @@
                 <label>Activation:</label>
                 <input type="text" name="system.activation" value="{{system.activation}}" />
             </div>
+            <div class="item-use-section">
+                <span class="qty-display">Charges: {{system.charges}}{{#if system.maxCharges}} / {{system.maxCharges}}{{/if}}</span>
+                <a class="item-action-btn charge-use"><i class="fas fa-magic"></i> Use Wand</a>
+            </div>
         </div>
 
         <div class="tab" data-group="primary" data-tab="attributes">

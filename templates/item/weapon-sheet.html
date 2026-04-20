@@ -22,6 +22,13 @@
 
       {{!-- Attributes Tab --}}
       <div class="tab" data-group="primary" data-tab="attributes">
+        {{#if calculatedDice}}
+        <div class="item-calc-bar">
+          <span class="calc-label">Dice Pool:</span>
+          <span class="calc-value">{{calculatedDice}}d10</span>
+          <a class="item-action-btn roll-weapon-attack"><i class="fas fa-dice-d10"></i> Roll Attack</a>
+        </div>
+        {{/if}}
         <div class="item-attr-grid">
 
           <div class="form-group">

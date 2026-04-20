@@ -2526,9 +2526,9 @@ input[readonly] {
 .spells-learned-counter {
   margin: 16px 0;
   padding: 12px;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border-faint);
   border-radius: 6px;
-  background: #fafafa;
+  background: var(--bg-surface);
 }
 
 .paths-info h3,
@@ -2537,7 +2537,7 @@ input[readonly] {
   margin: 0 0 12px 0;
   font-size: 0.875rem;
   font-weight: bold;
-  color: var(--gray-800);
+  color: var(--text-primary);
 }
 
 .paths-progression,
@@ -3202,8 +3202,16 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 /* ===== ITEM SHEETS ===== */
+
+/* Dark base */
+.thefade.sheet.item {
+  background: var(--bg-ink);
+  color: var(--text-primary);
+}
+
 .thefade.sheet.item .sheet-header {
-  border-bottom: 2px solid var(--primary-color);
+  background: var(--bg-surface);
+  border-bottom: 2px solid var(--accent-crimson);
 }
 
 .sheet.item .sheet-header {
@@ -3231,9 +3239,14 @@ select[name="system.aura.color"] option[value="white"] {
   min-width: auto;
   font-size: 1.2em;
   font-weight: bold;
-  border: 1px solid var(--gray-300);
   padding: 4px 8px;
   border-radius: 3px;
+}
+
+.thefade.sheet.item .item-name-dynamic input {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-faint);
 }
 
 .sheet.item .item-type-badge {
@@ -3246,6 +3259,147 @@ select[name="system.aura.color"] option[value="white"] {
   color: white;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   width: 100%;
+  text-align: center;
+}
+
+/* Tab nav */
+.thefade.sheet.item .sheet-tabs {
+  background: var(--bg-surface-deep);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.thefade.sheet.item .sheet-tabs .item {
+  color: var(--text-muted);
+}
+
+.thefade.sheet.item .sheet-tabs .item.active {
+  color: var(--accent-hot);
+  border-bottom: 2px solid var(--accent-crimson);
+}
+
+/* Sheet body */
+.thefade.sheet.item .sheet-body {
+  background: var(--bg-ink);
+  padding: 10px;
+}
+
+/* Form inputs */
+.thefade.sheet.item input[type="text"],
+.thefade.sheet.item input[type="number"],
+.thefade.sheet.item select,
+.thefade.sheet.item textarea {
+  background: var(--bg-surface-alt);
+  color: var(--text-primary);
+  border: 1px solid var(--border-faint);
+  border-radius: 3px;
+}
+
+.thefade.sheet.item label {
+  color: var(--text-muted);
+}
+
+/* Action buttons */
+.thefade.sheet.item .item-action-btn {
+  display: block;
+  background: var(--accent-crimson);
+  color: var(--text-primary);
+  border: 1px solid var(--accent-hot);
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 0.9em;
+  transition: background var(--transition-speed);
+}
+
+.thefade.sheet.item .item-action-btn:hover {
+  background: var(--accent-hot);
+  color: var(--text-primary);
+}
+
+/* Calculated dice bar */
+.thefade.sheet.item .item-calc-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-faint);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin-bottom: 10px;
+}
+
+.thefade.sheet.item .item-calc-bar .calc-label {
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+.thefade.sheet.item .item-calc-bar .calc-value {
+  color: var(--accent-gold);
+  font-weight: bold;
+  font-size: 1em;
+}
+
+.thefade.sheet.item .item-calc-bar .roll-weapon-attack {
+  margin-left: auto;
+  margin-top: 0;
+  width: auto;
+  padding: 3px 10px;
+}
+
+/* AP controls */
+.thefade.sheet.item .item-ap-controls {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-faint);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.thefade.sheet.item .item-ap-controls span {
+  color: var(--text-primary);
+  font-size: 0.95em;
+}
+
+.thefade.sheet.item .item-ap-controls input.ap-current {
+  width: 48px;
+  display: inline;
+  text-align: center;
+  padding: 2px 4px;
+}
+
+/* Consume/use section */
+.thefade.sheet.item .item-use-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-faint);
+  border-radius: 4px;
+  padding: 8px 10px;
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.thefade.sheet.item .item-use-section .qty-display {
+  color: var(--text-muted);
+  font-size: 0.85em;
+}
+
+/* Uses tracker */
+.thefade.sheet.item .uses-tracker .uses-pip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-primary);
+}
+
+.thefade.sheet.item .uses-tracker .uses-pip-row input {
+  width: 48px;
   text-align: center;
 }
 
@@ -3267,7 +3421,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade.sheet.item .hint {
   font-size: 0.8em;
-  color: var(--secondary-color);
+  color: var(--text-dim);
   margin-top: 2px;
 }
 
