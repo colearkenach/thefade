@@ -6604,6 +6604,52 @@ select[name="system.aura.color"] option[value="white"] {
     background: var(--bg-surface);
 }
 
+/* Native dropdown: force dark palette on the select chrome AND its options.
+   Without option styling, Chrome/Edge render the menu with OS colors, which
+   often ends up white-on-white once the theme touches the select. */
+.thefade select {
+    color: var(--text-primary) !important;
+    background-color: var(--bg-surface-deep) !important;
+    background-image: linear-gradient(45deg, transparent 50%, var(--accent-gold) 50%),
+                      linear-gradient(-45deg, transparent 50%, var(--accent-gold) 50%);
+    background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 22px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.thefade select option,
+.thefade select optgroup {
+    background-color: var(--bg-surface-deep);
+    color: var(--text-primary);
+}
+
+.thefade select option:checked,
+.thefade select option:hover {
+    background-color: var(--accent-ghost);
+    color: var(--accent-gold);
+}
+
+.thefade select:disabled {
+    opacity: 0.55;
+    color: var(--text-muted) !important;
+    background-color: var(--bg-surface) !important;
+}
+
+/* Dialog dropdowns inherit the same rules via the .thefade class on the app */
+.dialog.thefade select {
+    color: var(--text-primary) !important;
+    background-color: var(--bg-surface-deep) !important;
+}
+
+.dialog.thefade select option {
+    background-color: var(--bg-surface-deep);
+    color: var(--text-primary);
+}
+
 .thefade input[disabled],
 .thefade input:disabled {
     color: var(--text-muted);
@@ -6969,4 +7015,1020 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-crimson);
+}
+
+/* ============================================================
+   REDESIGN v2 — inventory / paths / spells / item sheets
+   ============================================================ */
+
+/* ----- Inventory sub-tabs ----- */
+.thefade .inventory-tabs {
+    margin-top: 0;
+}
+
+.thefade .inventory-tabs .tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    background: transparent;
+    border-bottom: 1px solid var(--border-faint);
+    margin-bottom: 12px;
+    padding-bottom: 0;
+}
+
+.thefade .inventory-tabs .tab-button {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-bottom: none;
+    color: var(--text-muted);
+    padding: 7px 14px;
+    font-size: 0.85em;
+    letter-spacing: 0.4px;
+    font-weight: 500;
+    border-radius: 3px 3px 0 0;
+    transition: all var(--transition-speed) ease;
+}
+
+.thefade .inventory-tabs .tab-button:hover {
+    background: var(--bg-surface-alt);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+.thefade .inventory-tabs .tab-button.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--accent-crimson);
+    border-bottom: 1px solid var(--bg-surface);
+    margin-bottom: -1px;
+    position: relative;
+}
+
+/* Subtabs */
+.thefade .subtab-nav {
+    background: var(--bg-surface-deep);
+    border-bottom: 1px solid var(--border-faint);
+}
+
+.thefade .subtab-button {
+    color: var(--text-muted);
+}
+
+.thefade .subtab-button:hover,
+.thefade .subtab-button.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--accent-crimson);
+}
+
+/* ----- Inventory headers (weapon/armor/etc columns) ----- */
+.thefade .weapon-header,
+.thefade .armor-header,
+.thefade .consumables-header,
+.thefade .gear-header,
+.thefade .items-of-power-header,
+.thefade .magic-gear-header,
+.thefade .companions-header {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px 3px 0 0;
+    color: var(--text-muted);
+    font-size: 0.76em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    padding: 8px 10px;
+    margin-bottom: 0;
+}
+
+.thefade .weapon-header a,
+.thefade .armor-header a,
+.thefade .items-of-power-header a,
+.thefade .magic-gear-header a,
+.thefade .consumables-header a,
+.thefade .gear-header a,
+.thefade .companions-header a {
+    color: var(--text-muted);
+    transition: color var(--transition-speed) ease;
+}
+
+.thefade .weapon-header a:hover,
+.thefade .armor-header a:hover,
+.thefade .items-of-power-header a:hover,
+.thefade .magic-gear-header a:hover,
+.thefade .consumables-header a:hover,
+.thefade .gear-header a:hover,
+.thefade .companions-header a:hover {
+    color: var(--accent-hot);
+}
+
+/* Item list rows in inventory */
+.thefade .inventory-section .items-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.thefade .inventory-section .items-list .item {
+    background: var(--bg-surface);
+    border-left: 1px solid var(--border-faint);
+    border-right: 1px solid var(--border-faint);
+    border-bottom: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    transition: background var(--transition-speed) ease;
+}
+
+.thefade .inventory-section .items-list .item:nth-child(even) {
+    background: var(--bg-surface-alt);
+}
+
+.thefade .inventory-section .items-list .item:hover {
+    background: var(--bg-surface-alt);
+    border-left-color: var(--accent-crimson);
+}
+
+.thefade .inventory-section .items-list .item:last-child {
+    border-radius: 0 0 3px 3px;
+}
+
+.thefade .inventory-section .item-icon,
+.thefade .inventory-section .item-img {
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+}
+
+.thefade .inventory-section a.item-edit,
+.thefade .inventory-section a.item-delete,
+.thefade .inventory-section a.attack-roll,
+.thefade .inventory-section a.item-create,
+.thefade .inventory-section a.weapon-browse,
+.thefade .inventory-section a.armor-browse {
+    color: var(--text-muted);
+    transition: color var(--transition-speed) ease;
+    margin: 0 2px;
+}
+
+.thefade .inventory-section a.item-edit:hover,
+.thefade .inventory-section a.attack-roll:hover { color: var(--accent-gold); }
+
+.thefade .inventory-section a.item-delete:hover { color: var(--accent-hot); }
+
+.thefade .inventory-section a.item-create:hover,
+.thefade .inventory-section a.weapon-browse:hover,
+.thefade .inventory-section a.armor-browse:hover { color: var(--accent-hot); }
+
+/* ----- Currency card ----- */
+.thefade .inventory-section .currency {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-gold);
+    border-radius: 3px;
+    margin-bottom: 14px;
+}
+
+.thefade .inventory-section .currency h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 0.85em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-gold);
+}
+
+.thefade .inventory-section .currency h2::before { display: none; }
+
+.thefade .inventory-section .currency-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.thefade .inventory-section .currency-item label {
+    font-size: 0.85em;
+    color: var(--text-muted);
+}
+
+.thefade .inventory-section .currency-item input {
+    width: 80px;
+    text-align: right;
+}
+
+/* ----- Armor slot panels ----- */
+.thefade .armor-slots-grid .armor-slot-container.panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.thefade .armor-slots-grid .slot-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-faint);
+    margin-bottom: 8px;
+}
+
+.thefade .armor-slots-grid .slot-header h4 {
+    margin: 0;
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--accent-gold);
+}
+
+.thefade .armor-slots-grid .total-ap {
+    font-size: 0.8em;
+    color: var(--text-muted);
+}
+
+.thefade .armor-slots-grid .current-total-ap,
+.thefade .armor-slots-grid .max-total-ap {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* ----- Paths tab ----- */
+.thefade .character-progression {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+}
+
+.thefade .character-progression h3,
+.thefade .character-progression h4 {
+    margin-top: 0 !important;
+    color: var(--accent-gold) !important;
+    font-size: 0.8em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thefade .progression-core,
+.thefade .progression-paths,
+.thefade .progression-tiers {
+    padding: 8px 0;
+}
+
+.thefade .progression-core + .progression-paths,
+.thefade .progression-paths + .progression-tiers {
+    border-top: 1px dashed var(--border-faint);
+}
+
+.thefade .core-stats,
+.thefade .path-stats,
+.thefade .tier-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+}
+
+.thefade .core-stats .form-group,
+.thefade .path-stats .form-group,
+.thefade .tier-grid .tier-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.thefade .core-stats label,
+.thefade .path-stats label,
+.thefade .tier-grid label {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.thefade .paths-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thefade .path-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    padding: 0;
+    overflow: hidden;
+    transition: border-color var(--transition-speed) ease;
+}
+
+.thefade .path-item:hover {
+    border-color: var(--accent-crimson);
+}
+
+.thefade .path-item .path-header {
+    display: flex;
+    padding: 10px 12px;
+    background: var(--bg-surface);
+    gap: 8px;
+    cursor: pointer;
+}
+
+.thefade .path-item .path-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.thefade .path-item .path-tier {
+    font-size: 0.85em;
+    color: var(--accent-gold);
+    font-weight: 500;
+    margin-left: 6px;
+}
+
+.thefade .path-item .path-toggle-icon {
+    color: var(--text-muted);
+    transition: transform var(--transition-speed) ease;
+}
+
+.thefade .path-item .path-checkbox:checked + .path-header .path-toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* ----- Spells tab ----- */
+.thefade .spells-learned-counter {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-gold);
+    border-radius: 3px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.thefade .spells-learned-counter h3 {
+    margin: 0 0 8px !important;
+    color: var(--accent-gold) !important;
+    font-size: 0.8em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thefade .spells-learned-counter .spell-numbers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.thefade .spells-learned-counter .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.thefade .spells-learned-counter label {
+    font-size: 0.72em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.thefade .sin-dark-magic-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-crimson);
+    border-radius: 3px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+}
+
+.thefade .sin-dark-magic-section .dark-magic-spells {
+    margin-bottom: 12px;
+}
+
+.thefade .sin-dark-magic-section .dark-magic-spells > label {
+    display: block;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 6px;
+}
+
+.thefade .dark-magic-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.thefade .dark-magic-checkboxes .checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+.thefade .dark-magic-checkboxes .checkbox-label:hover {
+    border-color: var(--accent-crimson);
+}
+
+.thefade .sin-management {
+    gap: 10px;
+}
+
+.thefade .spell-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    margin-bottom: 12px;
+}
+
+.thefade .spell-filters select,
+.thefade .spell-filters input[type="text"] {
+    flex: 1 1 140px;
+}
+
+/* ----- Item sheet popup — generic dark theme ----- */
+.thefade.sheet.item {
+    background: var(--bg-ink);
+    color: var(--text-primary);
+}
+
+.thefade.sheet.item .window-content {
+    background: var(--bg-ink);
+    color: var(--text-primary);
+}
+
+.thefade.sheet.item .sheet-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
+    border: 1px solid var(--border-faint);
+    border-bottom: 2px solid var(--accent-crimson);
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.thefade.sheet.item .profile-img {
+    width: 64px !important;
+    height: 64px !important;
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    flex-shrink: 0;
+    object-fit: cover;
+}
+
+.thefade.sheet.item .item-name-dynamic,
+.thefade.sheet.item h1.charname {
+    margin: 0;
+    border: none;
+}
+
+.thefade.sheet.item .item-name-dynamic input,
+.thefade.sheet.item h1.charname input {
+    width: 100%;
+    font-family: "EideticNeo-Omni", serif;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-faint);
+    padding: 2px 0;
+}
+
+.thefade.sheet.item .item-type-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-top: 4px;
+    background: var(--accent-ghost);
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+    font-size: 0.7em;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--accent-gold);
+}
+
+.thefade.sheet.item .header-fields {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Form groups in item sheets */
+.thefade.sheet.item .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.thefade.sheet.item .form-group label {
+    font-size: 0.78em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+}
+
+.thefade.sheet.item .form-group.flexrow {
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.thefade.sheet.item .form-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85em;
+    color: var(--text-primary);
+}
+
+.thefade.sheet.item .hint {
+    font-size: 0.78em;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 4px 0 0;
+}
+
+.thefade.sheet.item textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+/* ----- Checkboxes (generic) ----- */
+.thefade input[type="checkbox"] {
+    accent-color: var(--accent-crimson);
+    cursor: pointer;
+}
+
+/* ----- Fix rogue white/light leftovers ----- */
+.thefade .form-group label {
+    color: var(--text-primary);
+}
+
+.thefade .detail-row {
+    color: var(--text-primary);
+}
+
+.thefade .detail-row span {
+    color: var(--text-muted);
+}
+
+.thefade .dynamic-family-list .family-member {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+}
+
+/* ----- Background tab portrait sidebar ----- */
+.thefade .background-layout {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 14px;
+}
+
+@media (max-width: 720px) {
+    .thefade .background-layout {
+        grid-template-columns: 1fr;
+    }
+    .thefade .character-portrait-sidebar {
+        order: -1;
+    }
+}
+
+.thefade .character-portrait-sidebar {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.thefade .character-portrait-sidebar .character-image {
+    width: 100%;
+    height: auto;
+    max-height: 240px;
+    object-fit: cover;
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+}
+
+.thefade .character-details-section {
+    border-top: 1px solid var(--border-faint);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.thefade .character-details-section h3 {
+    margin-top: 0 !important;
+    color: var(--accent-gold) !important;
+    font-size: 0.75em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.thefade .background-section,
+.thefade .appearance-section,
+.thefade .notes-section {
+    margin-bottom: 14px;
+}
+
+.thefade .family-row .family-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.thefade .alive-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* =====================================================================
+   REDESIGN v3 — CHAT CARD POLISH
+   Roll/spell/attack result cards rendered via templates/chat/*.html
+   ===================================================================== */
+
+.thefade.chat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    font-family: inherit;
+}
+
+.thefade.chat-card .card-header {
+    background: linear-gradient(135deg, var(--bg-surface-deep), var(--bg-surface-alt));
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-strong);
+    padding: 6px 10px;
+}
+
+.thefade.chat-card .card-header h3 {
+    color: var(--accent-gold);
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.thefade.chat-card .card-content {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    padding: 10px 12px;
+}
+
+.thefade.chat-card .card-content p {
+    margin: 4px 0;
+    color: var(--text-primary);
+}
+
+.thefade.chat-card .card-content em {
+    color: var(--text-muted);
+}
+
+.thefade.chat-card h4 {
+    color: var(--accent-gold) !important;
+    border-bottom: 1px solid var(--border-faint) !important;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin: 8px 0 6px;
+    padding-bottom: 3px !important;
+}
+
+.thefade.chat-card .spell-casting-section,
+.thefade.chat-card .spell-attack-section,
+.thefade.chat-card .damage-section,
+.thefade.chat-card .spell-description-section {
+    border-bottom: 1px dashed var(--border-faint);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+/* ----- Die result chips ----- */
+.thefade.chat-card .die-result {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-family: "Courier New", monospace;
+    font-weight: 700;
+    margin: 0 2px;
+}
+
+.thefade.chat-card .die-result.success {
+    background: rgba(168, 138, 76, 0.18);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.thefade.chat-card .die-result.critical {
+    background: rgba(168, 40, 40, 0.22);
+    border-color: var(--accent-hot);
+    color: #f2c879;
+    box-shadow: 0 0 6px rgba(168, 40, 40, 0.35);
+}
+
+.thefade.chat-card .die-result.failure {
+    background: rgba(0, 0, 0, 0.45);
+    border-color: var(--border-faint);
+    color: var(--text-muted);
+}
+
+/* ----- Casting / attack result banner ----- */
+.thefade.chat-card .casting-result,
+.thefade.chat-card .attack-result,
+.thefade.chat-card p.success,
+.thefade.chat-card p.failure {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-size: 0.85em;
+    margin-top: 6px;
+    border: 1px solid transparent;
+}
+
+.thefade.chat-card .casting-result.success,
+.thefade.chat-card .attack-result.success,
+.thefade.chat-card p.success {
+    background: rgba(168, 138, 76, 0.15);
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.thefade.chat-card .casting-result.failure,
+.thefade.chat-card .attack-result.failure,
+.thefade.chat-card p.failure {
+    background: rgba(122, 27, 27, 0.22);
+    border-color: var(--accent-crimson);
+    color: #d89b9b;
+}
+
+/* ----- Mishap callout ----- */
+.thefade.chat-card .mishap-section {
+    background: rgba(122, 27, 27, 0.18);
+    border: 1px solid var(--accent-crimson);
+    border-left: 3px solid var(--accent-hot);
+    border-radius: 2px;
+    padding: 8px 10px;
+    margin-top: 8px;
+    color: var(--text-primary);
+    animation: none;
+}
+
+.thefade.chat-card .mishap-section p {
+    margin: 2px 0;
+    color: var(--text-primary);
+}
+
+.thefade.chat-card .mishap-section strong {
+    color: var(--accent-hot);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 0.85em;
+}
+
+/* ----- Damage block ----- */
+.thefade.chat-card .damage-section p {
+    font-size: 1em;
+    color: var(--text-primary);
+}
+
+.thefade.chat-card .damage-section strong {
+    color: var(--accent-hot);
+}
+
+/* ----- Bonus options (attack / spell buttons) ----- */
+.thefade.chat-card .bonus-options,
+.thefade.chat-card .attack-bonus-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 8px 0;
+}
+
+.thefade.chat-card .bonus-option {
+    background: var(--bg-surface-deep);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-left: 3px solid var(--accent-crimson);
+    border-radius: 2px;
+    padding: 6px 10px;
+    font-size: 0.85em;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.thefade.chat-card .bonus-option:hover {
+    background: var(--bg-surface-alt);
+    border-left-color: var(--accent-hot);
+    color: var(--text-primary);
+    transform: translateX(2px);
+    box-shadow: none;
+}
+
+.thefade.chat-card .bonus-option.spell-bonus,
+.thefade.chat-card .bonus-option.spell-custom-bonus {
+    border-left-color: var(--accent-gold);
+}
+
+.thefade.chat-card .bonus-option.spell-bonus:hover,
+.thefade.chat-card .bonus-option.spell-custom-bonus:hover {
+    border-left-color: #d4b070;
+}
+
+.thefade.chat-card .bonus-option.disabled,
+.thefade.chat-card .bonus-option:disabled {
+    background: var(--bg-surface);
+    border-color: var(--border-faint);
+    border-left-color: var(--border-faint);
+    color: var(--text-dim);
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.5;
+}
+
+.thefade.chat-card .remaining-successes,
+.thefade.chat-card .attack-remaining-successes {
+    display: inline-block;
+    min-width: 22px;
+    padding: 1px 8px;
+    background: var(--accent-ghost);
+    border: 1px solid var(--accent-gold);
+    border-radius: 2px;
+    color: var(--accent-gold);
+    font-weight: 700;
+    text-align: center;
+}
+
+/* ----- Applied effects list ----- */
+.thefade.chat-card .applied-effects,
+.thefade.chat-card .attack-applied-effects {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-faint);
+}
+
+.thefade.chat-card .applied-effects p,
+.thefade.chat-card .attack-applied-effects p {
+    background: var(--bg-surface-deep);
+    border-left: 3px solid var(--accent-gold);
+    padding: 6px 10px;
+    margin: 4px 0;
+    border-radius: 0 2px 2px 0;
+    color: var(--text-primary);
+    font-size: 0.9em;
+    animation: slideInLeft 0.25s ease-out;
+}
+
+.thefade.chat-card .applied-effects strong,
+.thefade.chat-card .attack-applied-effects strong {
+    color: var(--accent-gold);
+}
+
+/* =====================================================================
+   REDESIGN v3 — DIALOGS (Foundry Dialog app)
+   The renderDialog hook in thefade.js tags every dialog with `.thefade`
+   so we can style the whole wrapper without per-callsite edits.
+   ===================================================================== */
+
+.dialog.thefade .window-header {
+    background: linear-gradient(135deg, var(--bg-surface-deep), var(--bg-surface));
+    border-bottom: 1px solid var(--border-strong);
+    color: var(--text-primary);
+}
+
+.dialog.thefade .window-header .window-title {
+    color: var(--accent-gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9em;
+}
+
+.dialog.thefade .window-content {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+.dialog.thefade .dialog-content {
+    color: var(--text-primary);
+}
+
+.dialog.thefade .dialog-content p,
+.dialog.thefade .dialog-content label,
+.dialog.thefade .dialog-content span,
+.dialog.thefade .dialog-content li {
+    color: var(--text-primary);
+}
+
+.dialog.thefade .dialog-content a {
+    color: var(--accent-gold);
+}
+
+.dialog.thefade .dialog-content a:hover {
+    color: #d4b070;
+    text-shadow: 0 0 4px rgba(168, 138, 76, 0.5);
+}
+
+.dialog.thefade .dialog-content h1,
+.dialog.thefade .dialog-content h2,
+.dialog.thefade .dialog-content h3,
+.dialog.thefade .dialog-content h4 {
+    color: var(--accent-gold);
+    border-color: var(--border-faint);
+}
+
+.dialog.thefade .dialog-content input[type="text"],
+.dialog.thefade .dialog-content input[type="number"],
+.dialog.thefade .dialog-content input[type="search"],
+.dialog.thefade .dialog-content select,
+.dialog.thefade .dialog-content textarea {
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-strong);
+    color: var(--text-primary);
+    padding: 3px 6px;
+    border-radius: 2px;
+}
+
+.dialog.thefade .dialog-content input[type="text"]:focus,
+.dialog.thefade .dialog-content input[type="number"]:focus,
+.dialog.thefade .dialog-content input[type="search"]:focus,
+.dialog.thefade .dialog-content select:focus,
+.dialog.thefade .dialog-content textarea:focus {
+    border-color: var(--accent-gold);
+    outline: none;
+    box-shadow: 0 0 4px rgba(168, 138, 76, 0.4);
+}
+
+.dialog.thefade .dialog-content hr {
+    border: none;
+    border-top: 1px dashed var(--border-faint);
+    margin: 10px 0;
+}
+
+.dialog.thefade .dialog-buttons {
+    border-top: 1px solid var(--border-faint);
+    padding-top: 8px;
+    margin-top: 10px;
+    gap: 6px;
+    background: transparent;
+}
+
+.dialog.thefade .dialog-button {
+    background: var(--bg-surface-deep);
+    color: var(--text-primary);
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    padding: 5px 10px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    text-shadow: none;
+}
+
+.dialog.thefade .dialog-button:hover {
+    background: var(--accent-ghost);
+    border-color: var(--accent-crimson);
+    color: var(--text-primary);
+    box-shadow: none;
+}
+
+.dialog.thefade .dialog-button.default {
+    border-left: 3px solid var(--accent-gold);
+}
+
+.dialog.thefade .dialog-button.default:hover {
+    border-color: var(--accent-gold);
+    border-left-color: #d4b070;
+    color: var(--accent-gold);
+}
+
+/* Item/Compendium search-style dialogs often use a form */
+.dialog.thefade form.dialog-content,
+.dialog.thefade .dialog-content form {
+    background: transparent;
+    padding: 0;
 }
