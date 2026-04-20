@@ -2812,6 +2812,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
     */
     async _getTargetInfo(title = "Select Target") {
         return new Promise((resolve) => {
+            const attackerToken = this._getPrimaryTokenForActor(this.actor);
+
             // Generate list of visible tokens that can be targeted
             const tokens = canvas.tokens.placeables.filter(t =>
                 t.actor &&
@@ -2820,6 +2822,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             );
 
             let tokenOptions = '<option value="">No Target / Manual DT</option>';
+            let selectedTargetId = "";
 
             if (tokens.length > 0) {
                 tokens.forEach(token => {
@@ -2827,13 +2830,21 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 });
             }
 
-            // Selected tokens (works with single token too)
-            const controlledTokens = canvas.tokens.controlled;
-            if (controlledTokens.length === 1 && controlledTokens[0].actor.id !== this.actor.id) {
-                const controlled = controlledTokens[0];
+            // Prefer a single user-targeted token for quick attack flow.
+            const userTargets = [...game.user.targets].filter(t => t.actor && t.actor.id !== this.actor.id);
+            if (userTargets.length === 1) {
+                selectedTargetId = userTargets[0].id;
+            }
+            // Fallback to a single controlled token (legacy behavior).
+            else {
+                const controlledTokens = canvas.tokens.controlled.filter(t => t.actor && t.actor.id !== this.actor.id);
+                if (controlledTokens.length === 1) selectedTargetId = controlledTokens[0].id;
+            }
+
+            if (selectedTargetId) {
                 tokenOptions = tokenOptions.replace(
-                    `value="${controlled.id}"`,
-                    `value="${controlled.id}" selected`
+                    `value="${selectedTargetId}"`,
+                    `value="${selectedTargetId}" selected`
                 );
             }
 
@@ -2846,14 +2857,14 @@ export class TheFadeCharacterSheet extends ActorSheet {
                         <select id="target-select" name="targetId">${tokenOptions}</select>
                     </div>
                     <div class="form-group">
-                        <label>Target Facing (if known):</label>
+                        <label>Target Facing:</label>
                         <select id="facing-select" name="facing">
-                            <option value="front">Front (Default)</option>
+                            <option value="front">Front</option>
                             <option value="flank">Flank</option>
                             <option value="backflank">Back Flank</option>
                             <option value="back">Back</option>
                         </select>
-                        <p class="hint">Determines what passive defenses apply</p>
+                        <p class="hint" id="facing-hint">Auto-detected from token positions and target rotation when possible.</p>
                     </div>
                 </form>
             `,
@@ -2874,10 +2885,85 @@ export class TheFadeCharacterSheet extends ActorSheet {
                     }
                 },
                 default: "submit",
-                close: () => resolve(null)
+                close: () => resolve(null),
+                render: html => {
+                    const targetSelect = html.find('#target-select');
+                    const facingSelect = html.find('#facing-select');
+                    const facingHint = html.find('#facing-hint');
+
+                    const applyAutoFacing = (tokenId) => {
+                        if (!tokenId) {
+                            facingSelect.val("front");
+                            facingHint.text("No target selected; defaulting to Front.");
+                            return;
+                        }
+
+                        const targetToken = canvas.tokens.get(tokenId);
+                        const detectedFacing = this._calculateFacingFromTokens(attackerToken, targetToken);
+                        const isAutoDetected = !!(attackerToken && targetToken);
+
+                        facingSelect.val(detectedFacing);
+                        facingHint.text(
+                            isAutoDetected
+                                ? `Auto-detected facing: ${detectedFacing} (you can override manually).`
+                                : "Could not auto-detect facing (missing token on scene). Defaulting to Front."
+                        );
+                    };
+
+                    applyAutoFacing(targetSelect.val() || "");
+                    targetSelect.on('change', ev => applyAutoFacing(ev.currentTarget.value));
+                }
             });
             dialog.render(true);
         });
+    }
+
+    /**
+    * Get the most relevant on-scene token for an actor.
+    * Prefers controlled tokens to match active user context.
+    * @param {Actor} actor - Actor to find token for
+    * @returns {Token|null}
+    */
+    _getPrimaryTokenForActor(actor) {
+        if (!actor || !canvas?.ready || !canvas.tokens) return null;
+
+        const controlledToken = canvas.tokens.controlled.find(t => t.actor?.id === actor.id);
+        if (controlledToken) return controlledToken;
+
+        const activeTokens = actor.getActiveTokens(true, true);
+        if (activeTokens.length > 0) return activeTokens[0];
+
+        return null;
+    }
+
+    /**
+    * Calculate facing category based on attacker position and target token rotation.
+    * @param {Token|null} attackerToken - Token performing the attack
+    * @param {Token|null} targetToken - Target token receiving the attack
+    * @returns {string} one of front|flank|backflank|back
+    */
+    _calculateFacingFromTokens(attackerToken, targetToken) {
+        if (!attackerToken || !targetToken) return "front";
+
+        const attackerCenter = attackerToken.center;
+        const targetCenter = targetToken.center;
+        if (!attackerCenter || !targetCenter) return "front";
+
+        const dx = attackerCenter.x - targetCenter.x;
+        const dy = attackerCenter.y - targetCenter.y;
+
+        // Convert vector to degrees, normalized to 0-360.
+        const angleToAttacker = ((Math.atan2(dy, dx) * (180 / Math.PI)) + 360) % 360;
+        const targetRotation = ((targetToken.document?.rotation ?? targetToken.rotation ?? 0) + 360) % 360;
+
+        // Signed delta in range [-180, 180].
+        const delta = ((angleToAttacker - targetRotation + 540) % 360) - 180;
+        const absDelta = Math.abs(delta);
+
+        if (absDelta <= 45) return "front";
+        if (absDelta <= 135) return "flank";
+        if (absDelta <= 170) return "backflank";
+        return "back";
     }
 
     /**
