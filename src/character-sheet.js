@@ -9,6 +9,7 @@ import {
 } from './helpers.js';
 import { renderModifierHtml } from './conditions.js';
 import { handleDarkCast } from './dark-magic.js';
+import { openOpposedRollDialog, openAidAnotherDialog } from './opposed.js';
 
 /**
 * Character Sheet class for The Fade system
@@ -2659,6 +2660,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
         await this.actor.restDaily();
     }
 
+    async _onOpposedRoll(event) {
+        event.preventDefault();
+        await openOpposedRollDialog(this.actor);
+    }
+
+    async _onAidAnother(event) {
+        event.preventDefault();
+        await openAidAnotherDialog(this.actor);
+    }
+
     /**
     * Roll five exploding d6 and fill the five attributes. Confirms
     * first so the click doesn't wipe an existing character.
@@ -3595,6 +3606,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.cast-spell').click(this._onCastSpell.bind(this));
         html.find('.initiative-roll').click(this._onInitiativeRoll.bind(this));
         html.find('.roll-dice').click(this._onRollDice.bind(this));
+        html.find('.opposed-roll').click(this._onOpposedRoll.bind(this));
+        html.find('.aid-another').click(this._onAidAnother.bind(this));
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
         html.find('.rest-daily').click(this._onRestDaily.bind(this));
         html.find('.roll-attributes').click(this._onRollAttributes.bind(this));
