@@ -1,5 +1,1 @@
-2026/04/19-18:05:53.093 6590 Log #337: 0 ops saved to Table #338 OK
-2026/04/19-18:05:53.094 6590 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/000337.log: OK
-2026/04/19-18:05:53.095 6590 Table #255: 142 entries OK
-2026/04/19-18:05:53.095 6590 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/MANIFEST-000336: OK
-2026/04/19-18:05:53.097 6590 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells; recovered 1 files; 80647 bytes. Some data may have been lost. ****
+2026/04/19-18:05:53.101 6590 Delete type=3 #1

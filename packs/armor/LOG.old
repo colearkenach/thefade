@@ -1,5 +1,1 @@
-2026/04/19-18:05:53.045 6590 Log #337: 0 ops saved to Table #338 OK
-2026/04/19-18:05:53.047 6590 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/000337.log: OK
-2026/04/19-18:05:53.048 6590 Table #233: 31 entries OK
-2026/04/19-18:05:53.050 6590 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/MANIFEST-000336: OK
-2026/04/19-18:05:53.051 6590 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor; recovered 1 files; 6661 bytes. Some data may have been lost. ****
+2026/04/19-18:05:53.056 6590 Delete type=3 #1
