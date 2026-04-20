@@ -8,6 +8,7 @@ import {
     createCustomSkill, showCustomSkillDialog
 } from './helpers.js';
 import { renderModifierHtml } from './conditions.js';
+import { handleDarkCast } from './dark-magic.js';
 
 /**
 * Character Sheet class for The Fade system
@@ -2626,6 +2627,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
     }
 
     /**
+    * Handle a daily rest click: scrubs accumulated Sin. Stages persist.
+    * @param {Event} event
+    * @private
+    */
+    async _onRestDaily(event) {
+        event.preventDefault();
+        await this.actor.restDaily();
+    }
+
+    /**
     * Handle casting a spell
     * @param {Event} event   The originating click event
     * @private
@@ -2884,6 +2895,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
             flavor: `Casting ${spell.name}`,
             content: content
         });
+
+        // Dark Magic: every cast (success or not) accrues Sin and may
+        // trigger the addiction resistance roll.
+        if (spell.system.isDarkMagic) {
+            try {
+                await handleDarkCast(this.actor, spell);
+            } catch (err) {
+                console.error("handleDarkCast failed:", err);
+            }
+        }
     }
 
     // --------------------------------------------------------------------
@@ -3516,6 +3537,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.initiative-roll').click(this._onInitiativeRoll.bind(this));
         html.find('.roll-dice').click(this._onRollDice.bind(this));
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
+        html.find('.rest-daily').click(this._onRestDaily.bind(this));
 
         html.find('.level-up-btn').click(this._onLevelUp.bind(this));
         html.find('.experience-check-btn').click(this._onExperienceCheck.bind(this));

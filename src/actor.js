@@ -2,6 +2,7 @@
 import { BODY_PARTS, FALLBACK_ACTOR_DATA } from './constants.js';
 import { aggregateConditionState, computeRollModifiers, summarizeConditionState } from './conditions.js';
 import { applyBaseDefenseStances, applyPassiveStances, summarizeStance, getDamageMitigation } from './stances.js';
+import { applyAddictionPenalties, resetDailySin } from './dark-magic.js';
 
 /**
 * Base Actor class for The Fade system
@@ -234,6 +235,9 @@ export class TheFadeActor extends Actor {
 
             // Calculate Sin Threshold for dark magic
             this._calculateSinThreshold(data);
+
+            // Apply addiction-stage passive penalties (Grit/Sanity/Soul).
+            applyAddictionPenalties(data);
 
             this._calculateOverlandMovement(data);
 
@@ -659,6 +663,18 @@ export class TheFadeActor extends Actor {
         data['overland-movement'].swimOverland = swim * 6;
         data['overland-movement'].climbOverland = climb * 6;
         data['overland-movement'].burrowOverland = burrow * 6;
+    }
+
+    /**
+     * Daily rest: scrub transient accumulators (currently Sin).
+     * Addiction stages persist — rest does not reverse them.
+     */
+    async restDaily() {
+        await resetDailySin(this);
+        ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: this }),
+            content: `<p><strong>${this.name}</strong> rests — Sin cleared.</p>`
+        });
     }
 
 }
