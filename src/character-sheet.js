@@ -2821,18 +2821,20 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 t.visible
             );
 
-            let tokenOptions = '<option value="">No Target / Manual DT</option>';
             let selectedTargetId = "";
 
-            if (tokens.length > 0) {
-                tokens.forEach(token => {
-                    tokenOptions += `<option value="${token.id}">${token.name || token.actor.name}</option>`;
-                });
-            }
+            // Prefer any user-targeted token so "Toggle Target" works directly.
+            const userTargets = [...game.user.targets]
+                .map(t => canvas.tokens.get(t.id) ?? t)
+                .filter(t =>
+                    t?.id &&
+                    t.actor &&
+                    t.actor.id !== this.actor.id &&
+                    t.visible
+                );
 
-            // Prefer a single user-targeted token for quick attack flow.
-            const userTargets = [...game.user.targets].filter(t => t.actor && t.actor.id !== this.actor.id);
-            if (userTargets.length === 1) {
+            if (userTargets.length > 0) {
+                // Use the first targeted token deterministically.
                 selectedTargetId = userTargets[0].id;
             }
             // Fallback to a single controlled token (legacy behavior).
@@ -2841,11 +2843,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 if (controlledTokens.length === 1) selectedTargetId = controlledTokens[0].id;
             }
 
-            if (selectedTargetId) {
-                tokenOptions = tokenOptions.replace(
-                    `value="${selectedTargetId}"`,
-                    `value="${selectedTargetId}" selected`
-                );
+            let tokenOptions = '<option value="">No Target / Manual DT</option>';
+            if (tokens.length > 0) {
+                tokens.forEach(token => {
+                    const selectedAttr = token.id === selectedTargetId ? " selected" : "";
+                    tokenOptions += `<option value="${token.id}"${selectedAttr}>${token.name || token.actor.name}</option>`;
+                });
             }
 
             const dialog = new Dialog({
