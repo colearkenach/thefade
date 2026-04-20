@@ -309,6 +309,28 @@ export class TheFadeItemSheet extends ItemSheet {
                     "precept": "Precepts"
                 };
             }
+
+            // Calculated dice pool for weapons owned by an actor
+            if (this.item?.type === 'weapon' && this.item.parent) {
+                const actor = this.item.parent;
+                const sys = this.item.system;
+                const skillItem = actor.items.find(i => i.type === 'skill' && i.name === sys.skill);
+                const rank = skillItem ? getRankValue(skillItem.system.rank) : 0;
+                const miscBonus = sys.miscBonus ?? 0;
+                const total = rank + miscBonus;
+                if (total > 0) data.calculatedDice = total;
+            }
+
+            // Consume label per consumable type
+            const consumeLabels = {
+                potion: "Consume Potion",
+                drug: "Take Drug",
+                medical: "Use Medicine",
+                poison: "Apply Poison"
+            };
+            if (consumeLabels[this.item?.type]) {
+                data.consumeLabel = consumeLabels[this.item.type];
+            }
         } catch (error) {
             console.error("Error in special item type handling:", error);
         }
@@ -760,34 +782,93 @@ export class TheFadeItemSheet extends ItemSheet {
             }
         });
 
-        // Handle item charges and uses
-        if (this.item.type === 'wand') {
-            html.find('.charge-use').click(ev => {
+        // Weapon: roll attack from item sheet
+        if (this.item.type === 'weapon') {
+            html.find('.roll-weapon-attack').click(async ev => {
                 ev.preventDefault();
-                const charges = this.item.system.charges || 0;
-                if (charges > 0) {
-                    this.item.update({ "system.charges": charges - 1 });
-                } else {
-                    ui.notifications.warn("This wand has no charges remaining.");
-                }
+                const actor = this.item.parent;
+                if (!actor) return ui.notifications.warn("Equip this weapon to a character to roll.");
+                const sys = this.item.system;
+                const skillItem = actor.items.find(i => i.type === 'skill' && i.name === sys.skill);
+                const rank = skillItem ? getRankValue(skillItem.system.rank) : 0;
+                const miscBonus = sys.miscBonus ?? 0;
+                const dice = rank + miscBonus;
+                if (dice <= 0) return ui.notifications.warn("No dice to roll — assign a skill rank first.");
+                const roll = await new Roll(`${dice}d10`).evaluate();
+                ChatMessage.create({
+                    speaker: ChatMessage.getSpeaker({ actor }),
+                    flavor: `${this.item.name} — Attack (${sys.skill})`,
+                    content: `<div class="thefade chat-card">
+                        <h3>${this.item.name}</h3>
+                        <p><strong>Damage:</strong> ${sys.damage || "—"} (${sys.damageType || "—"})</p>
+                        ${sys.critical ? `<p><strong>Critical:</strong> ${sys.critical}</p>` : ""}
+                        ${await roll.render()}
+                    </div>`
+                });
             });
         }
 
+        // Armor: AP reduce/reset buttons
+        if (this.item.type === 'armor') {
+            html.find('.reduce-ap').click(async ev => {
+                ev.preventDefault();
+                const cur = this.item.system.currentAP ?? this.item.system.ap ?? 0;
+                if (cur <= 0) return ui.notifications.warn("AP is already depleted.");
+                await this.item.update({ "system.currentAP": cur - 1 });
+            });
+            html.find('.reset-ap').click(async ev => {
+                ev.preventDefault();
+                await this.item.update({ "system.currentAP": this.item.system.ap ?? 0 });
+            });
+        }
+
+        // Handle wand charges — with chat card
+        if (this.item.type === 'wand') {
+            html.find('.charge-use').click(async ev => {
+                ev.preventDefault();
+                const charges = this.item.system.charges || 0;
+                if (charges <= 0) return ui.notifications.warn("This wand has no charges remaining.");
+                const newCharges = charges - 1;
+                await this.item.update({ "system.charges": newCharges });
+                const actor = this.item.parent;
+                ChatMessage.create({
+                    speaker: actor ? ChatMessage.getSpeaker({ actor }) : undefined,
+                    content: `<div class="thefade chat-card">
+                        <h3>${this.item.name}</h3>
+                        <p class="item-type-label">Wand</p>
+                        ${this.item.system.spellName ? `<p><strong>Spell:</strong> ${this.item.system.spellName}</p>` : ""}
+                        ${this.item.system.spellDescription || this.item.system.spellEffect ? `<p>${this.item.system.spellDescription || this.item.system.spellEffect}</p>` : ""}
+                        <p class="qty-remaining">Charges remaining: ${newCharges}${this.item.system.maxCharges ? ` / ${this.item.system.maxCharges}` : ""}</p>
+                    </div>`
+                });
+            });
+        }
+
+        // Handle staff uses — with chat card
         if (this.item.type === 'staff') {
-            html.find('.use-per-day').click(ev => {
+            html.find('.use-per-day').click(async ev => {
                 ev.preventDefault();
                 const uses = this.item.system.uses || 0;
                 const maxUses = this.item.system.usesPerDay || 3;
-                if (uses < maxUses) {
-                    this.item.update({ "system.uses": uses + 1 });
-                } else {
-                    ui.notifications.warn("This staff has been used the maximum number of times today.");
-                }
+                if (uses >= maxUses) return ui.notifications.warn("This staff has been used the maximum number of times today.");
+                const newUses = uses + 1;
+                await this.item.update({ "system.uses": newUses });
+                const actor = this.item.parent;
+                ChatMessage.create({
+                    speaker: actor ? ChatMessage.getSpeaker({ actor }) : undefined,
+                    content: `<div class="thefade chat-card">
+                        <h3>${this.item.name}</h3>
+                        <p class="item-type-label">Staff</p>
+                        ${this.item.system.spellName ? `<p><strong>Spell:</strong> ${this.item.system.spellName}</p>` : ""}
+                        ${this.item.system.spellDescription || this.item.system.spellEffect ? `<p>${this.item.system.spellDescription || this.item.system.spellEffect}</p>` : ""}
+                        <p class="qty-remaining">Uses today: ${newUses} / ${maxUses}</p>
+                    </div>`
+                });
             });
 
-            html.find('.reset-uses').click(ev => {
+            html.find('.reset-uses').click(async ev => {
                 ev.preventDefault();
-                this.item.update({ "system.uses": 0 });
+                await this.item.update({ "system.uses": 0 });
                 ui.notifications.info("Staff uses have been reset for a new day.");
             });
         }
@@ -842,25 +923,70 @@ export class TheFadeItemSheet extends ItemSheet {
             });
         }
 
-        // Handle potion consumption
-        if (this.item.type === 'potion') {
-            html.find('.consume-potion').click(ev => {
+        // Generic consume/use handler for potions, drugs, medical supplies, poisons
+        if (['potion', 'drug', 'medical', 'poison'].includes(this.item.type)) {
+            html.find('.consume-item').click(async ev => {
                 ev.preventDefault();
-                // If this item is owned by an actor, we can apply its effects
-                if (this.item.parent) {
-                    ui.notifications.info(`${this.item.name} consumed by ${this.item.parent.name}!`);
-                    // Here we would apply the potion's effects to the actor
+                const item = this.item;
+                const actor = item.parent;
+                const qty = item.system.quantity ?? 1;
+                if (qty <= 0) return ui.notifications.warn(`No ${item.name} remaining.`);
+                await item.update({ "system.quantity": qty - 1 });
+                const effect = item.system.effect || item.system.healingAmount || "";
+                const duration = item.system.duration || "";
+                ChatMessage.create({
+                    speaker: actor ? ChatMessage.getSpeaker({ actor }) : undefined,
+                    content: `<div class="thefade chat-card">
+                        <h3>${item.name}</h3>
+                        <p class="item-type-label">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
+                        ${effect ? `<p><strong>Effect:</strong> ${effect}</p>` : ""}
+                        ${duration ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
+                        <p class="qty-remaining">Remaining: ${qty - 1}</p>
+                    </div>`
+                });
+            });
+        }
 
-                    // Remove the potion after use (or reduce quantity)
-                    const quantity = this.item.system.quantity || 1;
-                    if (quantity > 1) {
-                        this.item.update({ "system.quantity": quantity - 1 });
-                    } else {
-                        this.item.parent.deleteEmbeddedDocuments("Item", [this.item.id]);
-                    }
-                } else {
-                    ui.notifications.warn("This potion is not owned by a character and cannot be consumed.");
-                }
+        // Talent: Use button with uses-per-day tracking
+        if (this.item.type === 'talent') {
+            html.find('.use-talent').click(async ev => {
+                ev.preventDefault();
+                const item = this.item;
+                const cur = item.system.currentUses ?? 0;
+                const max = item.system.usesPerDay ?? 0;
+                if (max > 0 && cur >= max) return ui.notifications.warn(`${item.name}: No uses remaining today.`);
+                if (max > 0) await item.update({ "system.currentUses": cur + 1 });
+                ChatMessage.create({
+                    speaker: item.parent ? ChatMessage.getSpeaker({ actor: item.parent }) : undefined,
+                    content: `<div class="thefade chat-card">
+                        <h3>${item.name}</h3>
+                        <p class="item-type-label">Talent</p>
+                        ${item.system.description ? `<p>${item.system.description}</p>` : ""}
+                        ${max > 0 ? `<p class="qty-remaining">Uses: ${cur + 1} / ${max}</p>` : ""}
+                    </div>`
+                });
+            });
+        }
+
+        // Spell: Cast button — posts a chat card with spell details
+        if (this.item.type === 'spell') {
+            html.find('.cast-spell').click(async ev => {
+                ev.preventDefault();
+                const sys = this.item.system;
+                ChatMessage.create({
+                    speaker: this.item.parent ? ChatMessage.getSpeaker({ actor: this.item.parent }) : undefined,
+                    content: `<div class="thefade chat-card">
+                        <h3>${this.item.name}</h3>
+                        <p class="item-type-label">${sys.school || "Spell"}${sys.isDarkMagic ? " — Dark Magic" : ""}</p>
+                        ${sys.damage ? `<p><strong>Damage:</strong> ${sys.damage}${sys.damageType ? ` (${sys.damageType})` : ""}</p>` : ""}
+                        ${sys.attack ? `<p><strong>Attack:</strong> ${sys.attack}</p>` : ""}
+                        ${sys.range ? `<p><strong>Range:</strong> ${sys.range}</p>` : ""}
+                        ${sys.time ? `<p><strong>Casting Time:</strong> ${sys.time}</p>` : ""}
+                        ${sys.successes ? `<p><strong>Successes Needed:</strong> ${sys.successes}</p>` : ""}
+                        ${sys.bonusEffect ? `<p><strong>Bonus Effect:</strong> ${sys.bonusEffect}</p>` : ""}
+                        ${this.item.system.description ? `<p>${this.item.system.description}</p>` : ""}
+                    </div>`
+                });
             });
         }
 

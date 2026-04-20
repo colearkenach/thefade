@@ -310,6 +310,7 @@
       "templates": [ "base" ],
       "prerequisites": "",
       "usesPerDay": 0,
+      "currentUses": 0,
       "associatedPath": ""
     },
     "species": {

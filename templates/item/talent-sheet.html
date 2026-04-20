@@ -32,4 +32,16 @@
         <input type="number" name="system.usesPerDay" value="{{system.usesPerDay}}" data-dtype="Number" />
         <p class="hint">Leave at 0 for unlimited uses</p>
     </div>
+
+    {{#if system.usesPerDay}}
+    <div class="form-group uses-tracker">
+        <label>Uses Today</label>
+        <div class="uses-pip-row">
+            <input type="number" name="system.currentUses" value="{{system.currentUses}}" min="0" max="{{system.usesPerDay}}" data-dtype="Number" />
+            <span>/ {{system.usesPerDay}}</span>
+        </div>
+    </div>
+    {{/if}}
+
+    <a class="item-action-btn use-talent"><i class="fas fa-star"></i> Use Talent</a>
 </form>

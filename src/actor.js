@@ -855,9 +855,22 @@ export class TheFadeActor extends Actor {
      */
     async restDaily() {
         await resetDailySin(this);
+
+        // Reset talent uses-per-day
+        const talentsWithUses = this.items.filter(i => i.type === 'talent' && (i.system.usesPerDay ?? 0) > 0);
+        for (const talent of talentsWithUses) {
+            await talent.update({ "system.currentUses": 0 });
+        }
+
+        // Reset staff uses
+        const staves = this.items.filter(i => i.type === 'staff');
+        for (const staff of staves) {
+            await staff.update({ "system.uses": 0 });
+        }
+
         ChatMessage.create({
             speaker: ChatMessage.getSpeaker({ actor: this }),
-            content: `<p><strong>${this.name}</strong> rests — Sin cleared.</p>`
+            content: `<p><strong>${this.name}</strong> rests — Sin cleared, daily uses reset.</p>`
         });
     }
 
