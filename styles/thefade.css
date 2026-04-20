@@ -8247,3 +8247,59 @@ select[name="system.aura.color"] option[value="white"] {
 .condition-card.condition-binary {
     justify-content: center;
 }
+
+/* ==========================================================================
+   Attack chat card — Apply Damage control + damage summary
+   ========================================================================== */
+
+.thefade.chat-card.attack-card .damage-apply-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed rgba(184, 144, 44, 0.3);
+    flex-wrap: wrap;
+}
+
+.thefade.chat-card.attack-card .damage-apply-row label {
+    font-size: 0.9em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.thefade.chat-card.attack-card .damage-apply-row select.damage-location {
+    padding: 2px 6px;
+    font-size: 0.9em;
+}
+
+.thefade.chat-card.attack-card .apply-damage-btn {
+    padding: 4px 10px;
+    background: rgba(170, 60, 60, 0.35);
+    color: #fff;
+    border: 1px solid #aa4444;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.thefade.chat-card.attack-card .apply-damage-btn:hover {
+    background: rgba(200, 80, 80, 0.55);
+}
+
+.thefade.chat-card.attack-card .apply-damage-btn.disabled,
+.thefade.chat-card.attack-card .apply-damage-btn:disabled {
+    background: rgba(120, 60, 60, 0.2);
+    color: #888;
+    cursor: not-allowed;
+}
+
+.thefade-damage-summary {
+    padding: 6px 10px;
+    background: rgba(170, 60, 60, 0.15);
+    border-left: 3px solid #aa4444;
+    border-radius: 3px;
+    font-size: 0.95em;
+    line-height: 1.4;
+}

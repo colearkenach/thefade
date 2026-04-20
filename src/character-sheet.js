@@ -2296,6 +2296,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 qualities: weaponData.qualities,
                 rank: "untrained",
                 target: targetName,
+                targetUuid: targetActor?.uuid || "",
+                attackerUuid: this.actor.uuid,
                 bonusDice: weaponData.miscBonus ? `Includes +${weaponData.miscBonus} bonus dice` : null
             };
 
@@ -2458,6 +2460,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             qualities: weaponData.qualities,
             rank: skillData.rank,
             target: targetName,
+            targetUuid: targetActor?.uuid || "",
+            attackerUuid: this.actor.uuid,
             bonusDice: (skillData.miscBonus || weaponData.miscBonus) ?
                 `Includes bonus dice: ${[
                     skillData.miscBonus ? `+${skillData.miscBonus} from skill` : '',

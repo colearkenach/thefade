@@ -1,4 +1,10 @@
-<div class="thefade chat-card">
+<div class="thefade chat-card attack-card"
+     data-target-uuid="{{targetUuid}}"
+     data-attacker-uuid="{{attackerUuid}}"
+     data-base-damage="{{totalDamage}}"
+     data-damage-type="{{damageType}}"
+     data-weapon-name="{{weaponName}}"
+     data-critical-threshold="{{criticalThreshold}}">
     <header class="card-header">
         <h3>Attack with {{weaponName}}</h3>
     </header>
@@ -12,16 +18,16 @@
         <p>Successes: {{successes}} (DT: {{dt}} vs {{target}})</p>
 
         <div class="damage-section">
-            <p>Base Damage: {{damage}} {{damageType}}</p>
+            <p>Base Damage: <span class="base-damage-value">{{totalDamage}}</span> {{damageType}}</p>
 
             {{#if success}}
             {{#if bonusSuccesses}}
-            <p>Bonus Successes: <span class="remaining-successes">{{bonusSuccesses}}</span></p>
+            <p>Bonus Successes: <span class="remaining-successes" data-remaining="{{bonusSuccesses}}">{{bonusSuccesses}}</span></p>
 
             <div class="bonus-options">
                 {{#if canCritical}}
-                <button class="bonus-option" data-option="critical" data-cost="{{criticalThreshold}}" data-damage="{{damage}}">
-                    Critical Hit ({{criticalThreshold}} successes): +{{damage}} damage
+                <button class="bonus-option" data-option="critical" data-cost="{{criticalThreshold}}" data-damage="{{totalDamage}}">
+                    Critical Hit ({{criticalThreshold}} successes): roll +{{totalDamage}} damage
                 </button>
                 {{/if}}
 
@@ -68,48 +74,49 @@
                 {{/if}}
 
                 {{#if (eq damageType "Psi")}}
-            <button class="bonus-option" data-option="psychokinetic-damage" data-cost="2" data-damage="{{halfDamage}}">
-                Psychokinetic (2 successes): {{halfDamage}} to sanity
-            </button>
+                <button class="bonus-option" data-option="psychokinetic-damage" data-cost="2" data-damage="{{halfDamage}}">
+                    Psychokinetic (2 successes): {{halfDamage}} to sanity
+                </button>
                 <button class="bonus-option" data-option="psychokinetic-confusion" data-cost="3">
                     Psychokinetic (3 successes): Confusion for 1d6 rounds
                 </button>
                 {{/if}}
 
                 {{#if (eq damageType "Co")}}
-            <button class="bonus-option" data-option="corruption" data-cost="2" data-damage="{{halfDamage}}">
-                Corruption (2 successes): {{halfDamage}} unhealable for 24h
-            </button>
+                <button class="bonus-option" data-option="corruption" data-cost="2" data-damage="{{halfDamage}}">
+                    Corruption (2 successes): {{halfDamage}} unhealable for 24h
+                </button>
                 {{/if}}
             </div>
 
             <div class="applied-effects"></div>
             {{else}}
-            <p>Damage: {{damage}} {{damageType}}</p>
+            <p>Damage: <span class="base-damage-value">{{totalDamage}}</span> {{damageType}}</p>
             {{/if}}
+
+            {{#if targetUuid}}
+            <div class="damage-apply-row">
+                <label>Hit location:
+                    <select class="damage-location">
+                        <option value="head">Head</option>
+                        <option value="body" selected>Body</option>
+                        <option value="leftarm">Left Arm</option>
+                        <option value="rightarm">Right Arm</option>
+                        <option value="leftleg">Left Leg</option>
+                        <option value="rightleg">Right Leg</option>
+                    </select>
+                </label>
+                <button class="apply-damage-btn" type="button">
+                    <i class="fas fa-burst"></i> Apply Damage
+                </button>
+            </div>
+            {{/if}}
+
             {{else}}
             <p>No damage (attack missed)</p>
             {{/if}}
         </div>
 
-        <!--
-    <div class="damage-section">
-        {{#if criticalHits}}
-        <p>Base Damage: {{damage}} {{damageType}}</p>
-        <p>Critical Hits: {{criticalHits}}</p>
-        <p>Total Damage: {{totalDamage}} {{damageType}}</p>
-        {{else}}
-
-
-        <p>Damage: {{damage}} {{damageType}}</p>
-
-
-
-
-        {{#if critical}}<p>Critical: {{critical}}</p>{{/if}}
-        {{/if}}
-    </div>
-    -->
         <p class="{{#if success}}success{{else}}failure{{/if}}">
             {{#if success}}Success! The attack hits {{target}}.{{else}}Failure! The attack misses {{target}}.{{/if}}
         </p>
