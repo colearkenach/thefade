@@ -1,6 +1,7 @@
 // Utility helpers for chat message bonus option handling
 
 import { DEBUG } from './constants.js';
+import { applyDamage } from './damage.js';
 
 /**
  * Bind bonus option buttons in chat messages
@@ -62,8 +63,31 @@ export function bindBonusHandlers(html, { buttonSelector, remainingSelector, app
 // Handlers for general bonus options
 export const bonusOptionHandlers = {
     critical: async (button) => {
-        const critDamage = parseInt(button.dataset.damage);
-        return `<p><strong>Critical Hit:</strong> +${critDamage} damage - Additional damage from a powerful strike</p>`;
+        // Roll an additional damage die per point of base damage (Core Rulebook:
+        // "spend the critical threshold in successes to roll another full damage
+        // roll"). We treat "+{damage} damage" as a flat additional chunk equal
+        // to a fresh d12-pool of the base damage, rolled here so the card can
+        // show the actual number (not a flat maximum).
+        const baseDamage = parseInt(button.dataset.damage) || 0;
+        if (baseDamage <= 0) {
+            return `<p><strong>Critical Hit:</strong> no additional damage (base 0)</p>`;
+        }
+        // Flat additional damage equal to base damage (most common interpretation).
+        const critDamage = baseDamage;
+
+        // Push the crit damage into the card's running total so Apply Damage
+        // includes it. The card stores it in a dataset slot we can update.
+        const card = button.closest('.attack-card');
+        if (card) {
+            const prior = parseInt(card.dataset.critDamage || "0") || 0;
+            card.dataset.critDamage = String(prior + critDamage);
+            const totalEl = card.querySelector('.base-damage-value');
+            if (totalEl) {
+                const base = parseInt(card.dataset.baseDamage) || 0;
+                totalEl.textContent = String(base + prior + critDamage);
+            }
+        }
+        return `<p><strong>Critical Hit:</strong> +${critDamage} damage rolled into total</p>`;
     },
     fire: async (button, { cost }) => {
         const fireDuration = await new Roll("1d6").evaluate({ async: true });
@@ -132,6 +156,65 @@ export const spellBonusHandlers = {
 export const attackBonusHandlers = { ...bonusOptionHandlers };
 
 /**
+ * Wire the "Apply Damage" button on an attack chat card. Reads the target
+ * UUID, current base damage, hit location, and damage type from the card's
+ * data-* attributes, then routes through the damage cascade in damage.js.
+ * GM-only to avoid every player double-applying the same hit.
+ */
+function bindApplyDamage(html) {
+    const button = html.find('.apply-damage-btn');
+    if (!button.length) return;
+
+    button.on('click', async (event) => {
+        event.preventDefault();
+        if (!game.user?.isGM) {
+            ui.notifications?.warn("Only the GM can apply damage.");
+            return;
+        }
+
+        const card = button.closest('.attack-card')[0];
+        if (!card) return;
+
+        const targetUuid = card.dataset.targetUuid;
+        if (!targetUuid) {
+            ui.notifications?.warn("No target associated with this attack.");
+            return;
+        }
+
+        const target = await fromUuid(targetUuid);
+        const targetActor = target?.actor || target; // token doc -> actor
+        if (!targetActor?.update) {
+            ui.notifications?.error("Target actor not found.");
+            return;
+        }
+
+        const location = html.find('.damage-location').val() || "body";
+        // Read current damage including any rolled crit bonus
+        const displayed = parseInt(card.querySelector('.base-damage-value')?.textContent || "0") || 0;
+        const damageType = card.dataset.damageType || "Ut";
+        const weaponName = card.dataset.weaponName || "an attack";
+        const attackerUuid = card.dataset.attackerUuid;
+        const attacker = attackerUuid ? await fromUuid(attackerUuid) : null;
+        const sourceName = attacker?.name || weaponName;
+
+        const result = await applyDamage(targetActor, {
+            amount: displayed,
+            type: damageType,
+            location,
+            sourceName: `${sourceName} (${weaponName})`
+        });
+
+        await ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: targetActor }),
+            content: result.summary
+        });
+
+        // Grey out the button so a single card can't double-apply.
+        button.prop('disabled', true).addClass('disabled').text('Applied');
+    });
+}
+
+/**
  * Apply all chat bonus handlers to a rendered chat message
  * @param {JQuery} html
  */
@@ -156,5 +239,7 @@ export function applyBonusHandlers(html) {
         appliedSelector: '.attack-applied-effects',
         handlers: attackBonusHandlers
     });
+
+    bindApplyDamage(html);
 }
 
