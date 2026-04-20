@@ -162,6 +162,35 @@ export class TheFadeActor extends Actor {
                 selectedAttribute: ""
             };
         }
+
+        // Ensure status-effect conditions exist so the UI always has something to bind to.
+        // Conditions with severity store { active, intensity }; binary ones store { active }.
+        const SEVERITY_CONDITIONS = ["bleed", "dazed", "fatigue", "fear", "illness", "pain", "paralysis", "staggered", "stunned"];
+        const BINARY_CONDITIONS = ["blindness", "confusion", "deafness", "flatFooted", "sleep"];
+        if (!data.conditions || typeof data.conditions !== "object") {
+            data.conditions = {};
+        }
+        for (const key of SEVERITY_CONDITIONS) {
+            if (!data.conditions[key] || typeof data.conditions[key] !== "object") {
+                data.conditions[key] = { active: false, intensity: "trivial" };
+            }
+            if (typeof data.conditions[key].active !== "boolean") data.conditions[key].active = false;
+            if (!["trivial", "moderate", "severe"].includes(data.conditions[key].intensity)) {
+                data.conditions[key].intensity = "trivial";
+            }
+        }
+        for (const key of BINARY_CONDITIONS) {
+            if (!data.conditions[key] || typeof data.conditions[key] !== "object") {
+                data.conditions[key] = { active: false };
+            }
+            if (typeof data.conditions[key].active !== "boolean") data.conditions[key].active = false;
+        }
+
+        // Single active combat stance (Dodge / Parrying / Brace / Tough / Resolute / none).
+        const VALID_STANCES = ["none", "dodgeStance", "parryingStance", "brace", "toughItOut", "resoluteWill"];
+        if (!VALID_STANCES.includes(data.activeStance)) {
+            data.activeStance = "none";
+        }
     }
 
     /**
@@ -254,6 +283,20 @@ export class TheFadeActor extends Actor {
         // Ensure HP and Sanity values don't exceed max
         if (data.hp.value > data.hp.max) data.hp.value = data.hp.max;
         if (data.sanity.value > data.sanity.max) data.sanity.value = data.sanity.max;
+
+        // Derive an HP state label for the UI.
+        // Rulebook: unconscious at 0; die at -2 * maxHP. "Dying" is the negative band in between.
+        const hp = data.hp.value;
+        const max = Math.max(1, data.hp.max);
+        let state, label;
+        if (hp >= max)          { state = "healthy";     label = "Healthy"; }
+        else if (hp > max / 2)  { state = "bloodied";    label = "Bloodied"; }
+        else if (hp > 0)        { state = "wounded";     label = "Wounded"; }
+        else if (hp === 0)      { state = "unconscious"; label = "Unconscious"; }
+        else if (hp > -max * 2) { state = "dying";       label = "Dying"; }
+        else                    { state = "dead";        label = "Dead"; }
+        data.hp.state = state;
+        data.hp.stateLabel = label;
     }
 
     /**
