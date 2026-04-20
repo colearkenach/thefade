@@ -222,6 +222,7 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/actor/parts/paths.html",
         "systems/thefade/templates/actor/parts/spells.html",
         "systems/thefade/templates/actor/parts/combat-state.html",
+        "systems/thefade/templates/actor/parts/injuries.html",
         "systems/thefade/templates/chat/attack-roll.html",
         "systems/thefade/templates/chat/skill-roll.html",
         "systems/thefade/templates/chat/spell-cast.html",
