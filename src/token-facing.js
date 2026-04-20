@@ -1,8 +1,11 @@
 // Token facing visual indicator and Token HUD "Set Facing" control.
 // The front arc spans ±45° from the token's rotation, matching the
 // front/flank boundaries used in character-sheet.js _calculateFacingFromTokens.
+// Foundry's token.document.rotation uses 0° = north (up); atan2(dy, dx)
+// returns 0 for east. The +90° offset below bridges those conventions.
 
 const FRONT_ARC_HALF_DEG = 45;
+const FOUNDRY_ROTATION_OFFSET_DEG = 90;
 const ARC_COLOR = 0xF5C542;
 const ARC_FILL_ALPHA = 0.15;
 const ARC_LINE_ALPHA = 0.7;
@@ -35,7 +38,8 @@ function drawFacingIndicator(token) {
     g.endFill();
 
     g.position.set(width / 2, height / 2);
-    g.rotation = ((token.document?.rotation ?? 0) * Math.PI) / 180;
+    const rotationDeg = (token.document?.rotation ?? 0) - FOUNDRY_ROTATION_OFFSET_DEG;
+    g.rotation = (rotationDeg * Math.PI) / 180;
     g.zIndex = -1;
 
     token.addChild(g);
@@ -54,8 +58,9 @@ async function setTokenFacingToward(token, point) {
     if (!center) return;
     const dx = point.x - center.x;
     const dy = point.y - center.y;
-    const angle = ((Math.atan2(dy, dx) * 180) / Math.PI + 360) % 360;
-    await token.document.update({ rotation: angle });
+    const mathAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+    const rotation = (mathAngle + FOUNDRY_ROTATION_OFFSET_DEG + 360) % 360;
+    await token.document.update({ rotation });
 }
 
 Hooks.on("drawToken", drawFacingIndicator);

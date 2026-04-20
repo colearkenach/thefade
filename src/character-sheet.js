@@ -3139,8 +3139,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const dx = attackerCenter.x - targetCenter.x;
         const dy = attackerCenter.y - targetCenter.y;
 
-        // Convert vector to degrees, normalized to 0-360.
-        const angleToAttacker = ((Math.atan2(dy, dx) * (180 / Math.PI)) + 360) % 360;
+        // Foundry's token rotation uses 0° = north (up); atan2 returns 0 for
+        // east. Add 90° so both reference the same "rotation=0 ⇒ up" frame.
+        const angleToAttacker = ((Math.atan2(dy, dx) * (180 / Math.PI)) + 90 + 360) % 360;
         const targetRotation = ((targetToken.document?.rotation ?? targetToken.rotation ?? 0) + 360) % 360;
 
         // Signed delta in range [-180, 180].
