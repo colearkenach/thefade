@@ -8303,3 +8303,34 @@ select[name="system.aura.color"] option[value="white"] {
     font-size: 0.95em;
     line-height: 1.4;
 }
+
+/* Opposed roll / Aid Another controls in the header dice rollerator */
+.thefade .dice-tool-extras {
+    gap: 6px;
+    margin-top: 4px;
+}
+.thefade .dice-tool-extras button {
+    flex: 1;
+    font-size: 0.85em;
+    padding: 2px 6px;
+}
+.thefade-opposed-card .opposed-side {
+    padding: 6px 0;
+    border-bottom: 1px solid #ccc;
+}
+.thefade-opposed-card .opposed-side:last-child {
+    border-bottom: none;
+}
+.thefade-opposed-card .opposed-outcome {
+    font-weight: bold;
+    margin-top: 4px;
+}
+.thefade-opposed-card .opposed-outcome.attacker { color: #1b5e20; }
+.thefade-opposed-card .opposed-outcome.defender { color: #1565c0; }
+.thefade-opposed-card .opposed-outcome.tie-defender { color: #6a1b9a; }
+.thefade-aid-card .success { color: #1b5e20; font-weight: bold; }
+.thefade-aid-card .failure { color: #b71c1c; }
+.thefade-opposed-dialog .form-group,
+.thefade-aid-dialog .form-group {
+    margin-bottom: 6px;
+}
