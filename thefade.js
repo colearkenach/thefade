@@ -11,6 +11,7 @@ import { TheFadeItem } from './src/item.js';
 import { TheFadeItemSheet } from './src/item-sheet.js';
 import { TheFadeCharacterSheet } from './src/character-sheet.js';
 import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
+import './src/token-facing.js';
 
 
 /**
@@ -143,6 +144,30 @@ Hooks.once('init', async function () {
         magicitem: "TYPES.Item.magicitem",
         clothing: "TYPES.Item.clothing"
     };
+
+    // --------------------------------------------------------------------
+    // WORLD SETTINGS
+    // --------------------------------------------------------------------
+
+    game.settings.register("thefade", "characterCreationMode", {
+        name: "THEFADE.SettingCreationMode",
+        hint: "THEFADE.SettingCreationModeHint",
+        scope: "world",
+        config: true,
+        type: String,
+        choices: {
+            pointbuy: "THEFADE.SettingCreationModePointBuy",
+            random: "THEFADE.SettingCreationModeRandom"
+        },
+        default: "pointbuy",
+        onChange: () => {
+            for (const app of Object.values(ui.windows)) {
+                if (app?.actor?.type === "character" && typeof app.render === "function") {
+                    app.render(false);
+                }
+            }
+        }
+    });
 
     // --------------------------------------------------------------------
     // SHEET REGISTRATION
