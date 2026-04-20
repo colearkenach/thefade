@@ -3403,6 +3403,55 @@ export class TheFadeCharacterSheet extends ActorSheet {
             await this.actor.update(update);
         });
 
+        // Injuries: add mental disorder
+        html.find('.add-disorder-btn').on('click', async (ev) => {
+            ev.preventDefault();
+            const DISORDER_TYPES = ["anxiety", "psychotic", "mood", "dissociative"];
+            const typeOpts = DISORDER_TYPES.map(t =>
+                `<option value="${t}">${t.charAt(0).toUpperCase() + t.slice(1)}</option>`
+            ).join("");
+            const content = `
+                <div style="display:grid;gap:8px;padding:4px 0">
+                    <div>
+                        <label style="display:block;margin-bottom:3px;font-size:0.85em">Type</label>
+                        <select id="disorder-type" style="width:100%">${typeOpts}</select>
+                    </div>
+                    <div>
+                        <label style="display:block;margin-bottom:3px;font-size:0.85em">Name</label>
+                        <input id="disorder-name" type="text" style="width:100%" placeholder="e.g. Major Depressive" />
+                    </div>
+                </div>`;
+            new Dialog({
+                title: "Add Mental Disorder",
+                content,
+                buttons: {
+                    add: {
+                        icon: '<i class="fas fa-plus"></i>',
+                        label: "Add",
+                        callback: async (html) => {
+                            const type = html.find('#disorder-type').val();
+                            const name = html.find('#disorder-name').val().trim();
+                            if (!name) return;
+                            const existing = foundry.utils.deepClone(this.actor.system.mentalDisorders ?? []);
+                            existing.push({ type, name });
+                            await this.actor.update({ "system.mentalDisorders": existing });
+                        }
+                    },
+                    cancel: { label: "Cancel" }
+                },
+                default: "add"
+            }).render(true);
+        });
+
+        // Injuries: remove mental disorder
+        html.find('.remove-disorder-btn').on('click', async (ev) => {
+            ev.preventDefault();
+            const idx = parseInt(ev.currentTarget.dataset.index);
+            const existing = foundry.utils.deepClone(this.actor.system.mentalDisorders ?? []);
+            existing.splice(idx, 1);
+            await this.actor.update({ "system.mentalDisorders": existing });
+        });
+
         // Handle defense bonus changes
         html.find('input[name="system.defenses.resilienceBonus"], input[name="system.defenses.avoidBonus"], input[name="system.defenses.gritBonus"]').change(async (ev) => {
 

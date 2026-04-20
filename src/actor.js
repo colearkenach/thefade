@@ -197,6 +197,20 @@ export class TheFadeActor extends Actor {
         if (!VALID_STANCES.includes(data.activeStance)) {
             data.activeStance = "none";
         }
+
+        // Injuries — severed limbs. Self-heal to ensure all 6 limb slots exist.
+        if (!data.injuries || typeof data.injuries !== "object") data.injuries = {};
+        for (const limb of ["head", "body", "leftArm", "rightArm", "leftLeg", "rightLeg"]) {
+            if (!data.injuries[limb] || typeof data.injuries[limb] !== "object") {
+                data.injuries[limb] = { severed: false };
+            }
+            if (typeof data.injuries[limb].severed !== "boolean") {
+                data.injuries[limb].severed = false;
+            }
+        }
+
+        // Mental disorders — array of { type, name }. Self-heal to array.
+        if (!Array.isArray(data.mentalDisorders)) data.mentalDisorders = [];
     }
 
     /**

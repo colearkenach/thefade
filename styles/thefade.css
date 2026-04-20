@@ -8743,3 +8743,194 @@ select[name="system.aura.color"] option[value="white"] {
   color: var(--text-muted);
   font-size: 0.82em;
 }
+
+/* ==========================================================================
+   Injuries panel — severed limbs + mental disorders
+   ========================================================================== */
+
+.injuries-panel.panel {
+    border: 1px solid var(--accent-crimson);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 10px 0;
+    background: rgba(0,0,0,0.18);
+}
+
+.injuries-panel h2 {
+    margin: 0 0 10px;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-hot);
+    border-bottom: 1px solid rgba(168,40,40,0.35);
+    padding-bottom: 5px;
+}
+
+.injuries-panel h3 {
+    margin: 8px 0 6px;
+    font-size: 0.82em;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+}
+
+/* Limbs grid — 3×2 */
+.limbs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.limb-card {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 6px 8px;
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    background: var(--bg-surface-deep);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.limb-card.is-severed {
+    border-color: var(--accent-hot);
+    background: rgba(168,40,40,0.18);
+}
+
+.limb-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 0.88em;
+}
+
+.limb-icon {
+    color: var(--text-muted);
+    width: 14px;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.limb-card.is-severed .limb-icon { color: var(--accent-hot); }
+
+.limb-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.limb-card.is-severed .limb-name {
+    color: var(--accent-hot);
+    text-decoration: line-through;
+    text-decoration-color: rgba(168,40,40,0.5);
+}
+
+.limb-effect {
+    font-size: 0.72em;
+    color: var(--text-dim);
+    font-style: italic;
+    padding-left: 20px;
+    line-height: 1.3;
+}
+
+.limb-card.is-severed .limb-effect { color: #e07070; }
+
+/* Mental disorders */
+.disorders-section { margin-top: 4px; }
+
+.disorders-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.disorders-header h3 { margin: 0; }
+
+.add-disorder-btn {
+    font-size: 0.78em;
+    padding: 2px 8px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.add-disorder-btn:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+.disorders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.disorder-entry {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    column-gap: 8px;
+    row-gap: 1px;
+    padding: 5px 8px;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-crimson);
+    border-radius: 2px;
+    align-items: start;
+}
+
+.disorder-type {
+    font-size: 0.68em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 1px 5px;
+    border-radius: 2px;
+    white-space: nowrap;
+    align-self: center;
+}
+
+.disorder-type-anxiety     { background: rgba(168,138,40,0.2);  color: #d4aa50; border: 1px solid #a8882a; }
+.disorder-type-psychotic   { background: rgba(140,40,168,0.2);  color: #c078e0; border: 1px solid #8a2aaa; }
+.disorder-type-mood        { background: rgba(40,100,168,0.2);  color: #70a8e0; border: 1px solid #2a64a8; }
+.disorder-type-dissociative{ background: rgba(40,138,120,0.2);  color: #60c4b0; border: 1px solid #2a8a78; }
+
+.disorder-name {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--text-primary);
+    align-self: center;
+}
+
+.disorder-penalty {
+    grid-column: 1 / -1;
+    font-size: 0.72em;
+    color: var(--text-dim);
+    font-style: italic;
+    padding-top: 2px;
+}
+
+.remove-disorder-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0 2px;
+    font-size: 0.8em;
+    align-self: center;
+    transition: color 0.15s;
+}
+
+.remove-disorder-btn:hover { color: var(--accent-hot); }
+
+.disorders-empty {
+    font-size: 0.82em;
+    color: var(--text-dim);
+    font-style: italic;
+    margin: 4px 0;
+}

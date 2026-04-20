@@ -1,0 +1,110 @@
+{{!--
+    Permanent injury panel: severed limbs + mental disorders.
+    Schema:
+      system.injuries.<limb>.severed  (boolean)
+      system.mentalDisorders          (array of { type, name })
+    Rulebook penalties applied visually here; actor.js computes roll modifiers.
+--}}
+<div class="injuries-panel panel">
+    <h2>Permanent Injuries</h2>
+
+    {{!-- Severed Limbs --}}
+    <div class="limbs-section">
+        <h3>Severed Limbs</h3>
+        <div class="limbs-grid">
+
+            <div class="limb-card {{#if system.injuries.head.severed}}is-severed{{/if}}" data-limb="head">
+                <label class="limb-toggle" title="Instant death (unless multiple heads)">
+                    <input type="checkbox" name="system.injuries.head.severed"
+                        {{#if system.injuries.head.severed}}checked{{/if}} />
+                    <span class="limb-icon"><i class="fas fa-skull"></i></span>
+                    <span class="limb-name">Head</span>
+                </label>
+                <div class="limb-effect">Instant death</div>
+            </div>
+
+            <div class="limb-card {{#if system.injuries.body.severed}}is-severed{{/if}}" data-limb="body">
+                <label class="limb-toggle" title="Instant death">
+                    <input type="checkbox" name="system.injuries.body.severed"
+                        {{#if system.injuries.body.severed}}checked{{/if}} />
+                    <span class="limb-icon"><i class="fas fa-user"></i></span>
+                    <span class="limb-name">Body</span>
+                </label>
+                <div class="limb-effect">Instant death</div>
+            </div>
+
+            <div class="limb-card {{#if system.injuries.leftArm.severed}}is-severed{{/if}}" data-limb="leftArm">
+                <label class="limb-toggle" title="Can't two-hand weapons; -1D to Physique & Finesse checks">
+                    <input type="checkbox" name="system.injuries.leftArm.severed"
+                        {{#if system.injuries.leftArm.severed}}checked{{/if}} />
+                    <span class="limb-icon"><i class="fas fa-hand-paper"></i></span>
+                    <span class="limb-name">Left Arm</span>
+                </label>
+                <div class="limb-effect">No two-handing; -1D Phys/Fin</div>
+            </div>
+
+            <div class="limb-card {{#if system.injuries.rightArm.severed}}is-severed{{/if}}" data-limb="rightArm">
+                <label class="limb-toggle" title="Can't two-hand weapons; -1D to Physique & Finesse checks">
+                    <input type="checkbox" name="system.injuries.rightArm.severed"
+                        {{#if system.injuries.rightArm.severed}}checked{{/if}} />
+                    <span class="limb-icon"><i class="fas fa-hand-paper fa-flip-horizontal"></i></span>
+                    <span class="limb-name">Right Arm</span>
+                </label>
+                <div class="limb-effect">No two-handing; -1D Phys/Fin</div>
+            </div>
+
+            <div class="limb-card {{#if system.injuries.leftLeg.severed}}is-severed{{/if}}" data-limb="leftLeg">
+                <label class="limb-toggle" title="Prone, can't walk without support; support gives -1 hex speed">
+                    <input type="checkbox" name="system.injuries.leftLeg.severed"
+                        {{#if system.injuries.leftLeg.severed}}checked{{/if}} />
+                    <span class="limb-icon"><i class="fas fa-walking"></i></span>
+                    <span class="limb-name">Left Leg</span>
+                </label>
+                <div class="limb-effect">Prone; -1 hex (w/ support)</div>
+            </div>
+
+            <div class="limb-card {{#if system.injuries.rightLeg.severed}}is-severed{{/if}}" data-limb="rightLeg">
+                <label class="limb-toggle" title="Prone, can't walk without support; support gives -1 hex speed">
+                    <input type="checkbox" name="system.injuries.rightLeg.severed"
+                        {{#if system.injuries.rightLeg.severed}}checked{{/if}} />
+                    <span class="limb-icon"><i class="fas fa-walking fa-flip-horizontal"></i></span>
+                    <span class="limb-name">Right Leg</span>
+                </label>
+                <div class="limb-effect">Prone; -1 hex (w/ support)</div>
+            </div>
+
+        </div>
+    </div>
+
+    {{!-- Mental Disorders --}}
+    <div class="disorders-section">
+        <div class="disorders-header">
+            <h3>Mental Disorders</h3>
+            <button type="button" class="add-disorder-btn" title="Add a mental disorder">
+                <i class="fas fa-plus"></i> Add
+            </button>
+        </div>
+
+        {{#if system.mentalDisorders.length}}
+        <div class="disorders-list">
+            {{#each system.mentalDisorders}}
+            <div class="disorder-entry" data-index="{{@index}}">
+                <span class="disorder-type disorder-type-{{this.type}}">{{this.type}}</span>
+                <span class="disorder-name">{{this.name}}</span>
+                <div class="disorder-penalty">
+                    {{#if (eq this.type "anxiety")}}  −2 Grit · −3D Social · allies treated as strangers{{/if}}
+                    {{#if (eq this.type "psychotic")}} −2D Mind checks · −2D spells · −3D Sense{{/if}}
+                    {{#if (eq this.type "mood")}}      −2 Avoid & Grit · −2D Physical{{/if}}
+                    {{#if (eq this.type "dissociative")}} −2D all checks · +2 spell DT{{/if}}
+                </div>
+                <button type="button" class="remove-disorder-btn" data-index="{{@index}}" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            {{/each}}
+        </div>
+        {{else}}
+        <p class="disorders-empty">No mental disorders.</p>
+        {{/if}}
+    </div>
+</div>

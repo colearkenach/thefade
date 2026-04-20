@@ -98,6 +98,15 @@
         "stunned":    { "active": false, "intensity": "trivial" }
       },
       "activeStance": "none",
+      "injuries": {
+        "head":     { "severed": false },
+        "body":     { "severed": false },
+        "leftArm":  { "severed": false },
+        "rightArm": { "severed": false },
+        "leftLeg":  { "severed": false },
+        "rightLeg": { "severed": false }
+      },
+      "mentalDisorders": [],
       "magicItems": {
         "head": null,
         "neck": null,
