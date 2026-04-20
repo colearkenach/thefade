@@ -1003,12 +1003,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 armorTotals[location].max += armor.system.ap || 0;
             });
 
-            // Add derived AP from arms/legs armor
+            // Add derived AP from arms/legs armor. `|| armor.system.ap` was a
+            // bug: derivedLeftAP=0 (drained) is falsy and fell back to max,
+            // hiding damage. Use an explicit typeof check instead.
             if (location === 'leftarm' || location === 'rightarm') {
                 const armsArmor = equippedArmor.arms || [];
                 armsArmor.forEach(armor => {
                     const derivedProp = location === 'leftarm' ? 'derivedLeftAP' : 'derivedRightAP';
-                    armorTotals[location].current += armor.system[derivedProp] || armor.system.ap || 0;
+                    const derived = armor.system[derivedProp];
+                    const pool = (typeof derived === 'number') ? derived : (armor.system.ap || 0);
+                    armorTotals[location].current += pool;
                     armorTotals[location].max += armor.system.ap || 0;
                 });
             }
@@ -1017,7 +1021,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 const legsArmor = equippedArmor.legs || [];
                 legsArmor.forEach(armor => {
                     const derivedProp = location === 'leftleg' ? 'derivedLeftAP' : 'derivedRightAP';
-                    armorTotals[location].current += armor.system[derivedProp] || armor.system.ap || 0;
+                    const derived = armor.system[derivedProp];
+                    const pool = (typeof derived === 'number') ? derived : (armor.system.ap || 0);
+                    armorTotals[location].current += pool;
                     armorTotals[location].max += armor.system.ap || 0;
                 });
             }

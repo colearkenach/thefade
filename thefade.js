@@ -332,6 +332,13 @@ Hooks.once('init', async function () {
         }
         return outStr;
     });
+
+    // Return `value` if it's a number (including 0), otherwise `fallback`.
+    // Used for armor/ND pools where 0 means "drained" but {{#if}} would
+    // wrongly treat it as unset and show max instead of 0.
+    Handlebars.registerHelper('numberOr', function (value, fallback) {
+        return (typeof value === 'number') ? value : fallback;
+    });
 });
 
 /**

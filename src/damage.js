@@ -58,28 +58,31 @@ function computeArmorAbsorption(actor, location, damage) {
         absorbed += take;
     }
 
-    // Derived limb armor (arms/legs base cover their children).
-    if (remaining > 0 && (location === "leftarm" || location === "rightarm")) {
-        for (const armor of actor.equippedArmor?.arms || []) {
+    // Derived limb armor (parent arms/legs armor covers both children, with
+    // side-specific pools tracked as derivedLeftAP / derivedRightAP). The
+    // sheet displays these fields directly — writing the generic currentAP
+    // here would absorb damage invisibly.
+    const decrementDerived = (armorList, derivedProp) => {
+        for (const armor of armorList) {
             if (remaining <= 0) break;
-            const currentAP = Number(armor.system.currentAP) || 0;
-            if (currentAP <= 0) continue;
-            const take = Math.min(currentAP, remaining);
-            itemUpdates.push({ _id: armor._id, "system.currentAP": currentAP - take });
+            const raw = armor.system[derivedProp];
+            const startPool = (raw === undefined || raw === null)
+                ? Number(armor.system.ap) || 0
+                : Number(raw) || 0;
+            if (startPool <= 0) continue;
+            const take = Math.min(startPool, remaining);
+            itemUpdates.push({ _id: armor._id, [`system.${derivedProp}`]: startPool - take });
             remaining -= take;
             absorbed += take;
         }
+    };
+    if (remaining > 0 && (location === "leftarm" || location === "rightarm")) {
+        const prop = location === "leftarm" ? "derivedLeftAP" : "derivedRightAP";
+        decrementDerived(actor.equippedArmor?.arms || [], prop);
     }
     if (remaining > 0 && (location === "leftleg" || location === "rightleg")) {
-        for (const armor of actor.equippedArmor?.legs || []) {
-            if (remaining <= 0) break;
-            const currentAP = Number(armor.system.currentAP) || 0;
-            if (currentAP <= 0) continue;
-            const take = Math.min(currentAP, remaining);
-            itemUpdates.push({ _id: armor._id, "system.currentAP": currentAP - take });
-            remaining -= take;
-            absorbed += take;
-        }
+        const prop = location === "leftleg" ? "derivedLeftAP" : "derivedRightAP";
+        decrementDerived(actor.equippedArmor?.legs || [], prop);
     }
 
     // Non-stacking Natural Deflection: acts as a floor — contributes after

@@ -210,7 +210,7 @@
                                     <div class="armor-info">
                                         <div class="armor-name">{{armor.name}} (Left)</div>
                                         <div class="armor-ap-display">
-                                            <span class="derived-current">{{#if armor.system.derivedLeftAP}}{{armor.system.derivedLeftAP}}{{else}}{{armor.system.ap}}{{/if}}</span>
+                                            <span class="derived-current">{{numberOr armor.system.derivedLeftAP armor.system.ap}}</span>
                                             <span class="ap-separator">/</span>
                                             <span class="derived-max">{{armor.system.ap}}</span>
                                         </div>
@@ -282,7 +282,7 @@
                                     <div class="armor-info">
                                         <div class="armor-name">{{armor.name}} (Right)</div>
                                         <div class="armor-ap-display">
-                                            <span class="derived-current">{{#if armor.system.derivedRightAP}}{{armor.system.derivedRightAP}}{{else}}{{armor.system.ap}}{{/if}}</span>
+                                            <span class="derived-current">{{numberOr armor.system.derivedRightAP armor.system.ap}}</span>
                                             <span class="ap-separator">/</span>
                                             <span class="derived-max">{{armor.system.ap}}</span>
                                         </div>
@@ -357,7 +357,7 @@
                                     <div class="armor-info">
                                         <div class="armor-name">{{armor.name}} (Left)</div>
                                         <div class="armor-ap-display">
-                                            <span class="derived-current">{{#if armor.system.derivedLeftAP}}{{armor.system.derivedLeftAP}}{{else}}{{armor.system.ap}}{{/if}}</span>
+                                            <span class="derived-current">{{numberOr armor.system.derivedLeftAP armor.system.ap}}</span>
                                             <span class="ap-separator">/</span>
                                             <span class="derived-max">{{armor.system.ap}}</span>
                                         </div>
@@ -429,7 +429,7 @@
                                     <div class="armor-info">
                                         <div class="armor-name">{{armor.name}} (Right)</div>
                                         <div class="armor-ap-display">
-                                            <span class="derived-current">{{#if armor.system.derivedRightAP}}{{armor.system.derivedRightAP}}{{else}}{{armor.system.ap}}{{/if}}</span>
+                                            <span class="derived-current">{{numberOr armor.system.derivedRightAP armor.system.ap}}</span>
                                             <span class="ap-separator">/</span>
                                             <span class="derived-max">{{armor.system.ap}}</span>
                                         </div>
