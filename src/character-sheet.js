@@ -23,7 +23,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
             template: "systems/thefade/templates/actor/character-sheet.html",
             width: 800,
             height: 950,
-            tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "main" }]
+            tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "main" }],
+            // Preserve scroll position across re-renders so editing a field
+            // doesn't yank the user back to the top of the sheet.
+            scrollY: [".sheet-body", ".tab[data-group='primary']"]
         });
     }
 
