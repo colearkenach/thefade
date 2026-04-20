@@ -677,6 +677,25 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
         }
 
+        // Point-buy status: budget is 20 points above baseline 1-in-each
+        // (rules: attributes start at 1, max 10, spend 20 to raise).
+        const attrNames = ["physique", "finesse", "mind", "presence", "soul"];
+        const pointBuyBudget = 20;
+        let spent = 0;
+        let capExceeded = false;
+        for (const a of attrNames) {
+            const v = Number(data.attributes?.[a]?.value) || 0;
+            spent += Math.max(0, v - 1);
+            if (v > 10) capExceeded = true;
+        }
+        data.pointBuy = {
+            spent,
+            budget: pointBuyBudget,
+            remaining: pointBuyBudget - spent,
+            over: spent > pointBuyBudget,
+            capExceeded
+        };
+
         // Initialize minimal defense data to prevent template errors
         if (!data.defenses) {
             data.defenses = {
@@ -2641,6 +2660,42 @@ export class TheFadeCharacterSheet extends ActorSheet {
     }
 
     /**
+    * Roll five exploding d6 and fill the five attributes. Confirms
+    * first so the click doesn't wipe an existing character.
+    * @param {Event} event
+    * @private
+    */
+    async _onRollAttributes(event) {
+        event.preventDefault();
+        const confirmed = await Dialog.confirm({
+            title: "Roll Attributes",
+            content: "<p>Replace the five attribute values with random rolls (1d6 exploding on 6)? This cannot be undone.</p>",
+            yes: () => true,
+            no: () => false,
+            defaultYes: false
+        });
+        if (!confirmed) return;
+
+        const attrNames = ["physique", "finesse", "mind", "presence", "soul"];
+        const results = {};
+        const chatRows = [];
+        for (const a of attrNames) {
+            const roll = await new Roll("1d6x6").evaluate({ async: true });
+            // Clamp at the 10 cap.
+            const total = Math.min(10, roll.total);
+            results[`system.attributes.${a}.value`] = total;
+            const dice = roll.dice[0]?.results?.map(r => r.result).join(", ") || roll.total;
+            chatRows.push(`<li><strong>${a[0].toUpperCase()}${a.slice(1)}:</strong> ${total} <em>(${dice})</em></li>`);
+        }
+        await this.actor.update(results);
+
+        ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+            content: `<div class="thefade-attr-roll"><p><strong>${this.actor.name}</strong> rolls attributes (1d6! × 5):</p><ul>${chatRows.join("")}</ul></div>`
+        });
+    }
+
+    /**
     * Handle casting a spell
     * @param {Event} event   The originating click event
     * @private
@@ -3542,6 +3597,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.roll-dice').click(this._onRollDice.bind(this));
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
         html.find('.rest-daily').click(this._onRestDaily.bind(this));
+        html.find('.roll-attributes').click(this._onRollAttributes.bind(this));
 
         html.find('.level-up-btn').click(this._onLevelUp.bind(this));
         html.find('.experience-check-btn').click(this._onExperienceCheck.bind(this));
