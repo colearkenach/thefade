@@ -265,7 +265,13 @@
       "skill": "Sword",
       "attribute": "physique",
       "material": "iron",
-      "miscBonus": 0
+      "miscBonus": 0,
+      "isEnchanted": false,
+      "enchantmentPrice": 0,
+      "damageIncrease": 0,
+      "strengtheningPrice": 0,
+      "enchantmentPowers": [],
+      "modifications": []
     },
     "armor": {
       "templates": [ "base", "physical" ],
@@ -274,7 +280,13 @@
       "isHeavy": false,
       "location": "Body",
       "autoBlock": "",
-      "material": "iron"
+      "material": "iron",
+      "isEnchanted": false,
+      "enchantmentPrice": 0,
+      "apIncrease": 0,
+      "strengtheningPrice": 0,
+      "enchantmentPowers": [],
+      "modifications": []
     },
     "skill": {
       "templates": [ "base" ],

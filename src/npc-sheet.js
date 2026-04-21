@@ -109,12 +109,13 @@ export class TheFadeNPCSheet extends ActorSheet {
             }).render(true);
         });
 
-        // Armor reset (current AP back to max)
+        // Armor reset (current AP back to max, including strengthening bonus)
         html.find(".armor-reset").click(async ev => {
             const li = $(ev.currentTarget).closest("[data-item-id]");
             const item = this.actor.items.get(li.data("item-id"));
             if (!item) return;
-            await item.update({ "system.currentAP": item.system.ap });
+            const maxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
+            await item.update({ "system.currentAP": maxAP });
         });
     }
 }

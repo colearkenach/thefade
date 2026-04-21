@@ -92,7 +92,13 @@ export const DEFAULT_WEAPON = {
     qualities: "",
     skill: "Sword",
     attribute: "physique",
-    miscBonus: 0
+    miscBonus: 0,
+    isEnchanted: false,
+    enchantmentPrice: 0,
+    damageIncrease: 0,
+    strengtheningPrice: 0,
+    enchantmentPowers: [],
+    modifications: []
 };
 
 export const DEFAULT_ARMOR = {
@@ -103,7 +109,60 @@ export const DEFAULT_ARMOR = {
     weight: 1,
     autoBlock: "",
     equipped: false,
-    otherLimbAP: 0
+    otherLimbAP: 0,
+    isEnchanted: false,
+    enchantmentPrice: 0,
+    apIncrease: 0,
+    strengtheningPrice: 0,
+    enchantmentPowers: [],
+    modifications: []
+};
+
+// Enchantment base prices (silver pieces) keyed by weapon skill or armor type
+export const WEAPON_ENCHANT_BASE_PRICES = {
+    "Bow": 4000,
+    "Firearm": 6000,
+    "Heavy Weaponry": 6000,
+    "default": 2500
+};
+
+export const ARMOR_ENCHANT_BASE_PRICE = 2000;
+
+// Weapon strengthening: price = (damage increase)^2 * 1000
+// Armor strengthening: price = AP increase * 500
+export const WEAPON_STRENGTHENING_OPTIONS = {
+    0: "None",
+    2: "+2 Damage (4,000 sp.)",
+    4: "+4 Damage (16,000 sp.)",
+    6: "+6 Damage (36,000 sp.)",
+    8: "+8 Damage (64,000 sp.)"
+};
+
+export const ARMOR_STRENGTHENING_OPTIONS = {
+    0: "None",
+    10: "+10 AP (5,000 sp.)",
+    30: "+30 AP (15,000 sp.)",
+    60: "+60 AP (30,000 sp.)",
+    90: "+90 AP (45,000 sp.)"
+};
+
+// Modification slot counts
+export const WEAPON_MOD_SLOTS = {
+    "Light": 1,
+    "One-Handed": 2,
+    "Two-Handed": 3
+};
+
+export const ARMOR_MOD_SLOTS = {
+    "Head": 1,
+    "Head+": 1,
+    "Arms": 1,
+    "Arms+": 1,
+    "Legs": 2,
+    "Legs+": 2,
+    "Shield": 2,
+    "Body": 3,
+    "Body+": 3
 };
 
 export const DEFAULT_SKILL = {

@@ -369,13 +369,15 @@ Hooks.on("preCreateItem", (item, data, options, userId) => {
     if (item.type !== "armor") return;
     const system = data.system || {};
     const ap = Number(system.ap) || 0;
+    const apInc = Number(system.apIncrease) || 0;
+    const effectiveMax = ap + apInc;
     const updates = {};
     if (system.currentAP === undefined || system.currentAP === null || system.currentAP === 0) {
-        updates["system.currentAP"] = ap;
+        updates["system.currentAP"] = effectiveMax;
     }
     const isLimb = ["Arms", "Legs", "Arms+", "Legs+"].includes(system.location);
     if (isLimb && (system.otherLimbAP === undefined || system.otherLimbAP === null || system.otherLimbAP === 0)) {
-        updates["system.otherLimbAP"] = ap;
+        updates["system.otherLimbAP"] = effectiveMax;
     }
     if (Object.keys(updates).length) item.updateSource(updates);
 });
