@@ -97,6 +97,11 @@
             <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
           </div>
 
+          <div class="form-group">
+            <label>Price (sp.)</label>
+            <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+          </div>
+
           <div class="form-group full-width">
             <label>Material</label>
             <select name="system.material">
@@ -125,7 +130,7 @@
           <p class="hint">Enchanted weapons deal normal damage to magic armor, double their Integrity, and take half damage from non-magical weapons.{{#if weaponImmuneToRadiation}} Bows and firearms become immune to magical radiation when enchanted.{{/if}}</p>
         </div>
 
-        <div class="item-attr-grid">
+        <div class="item-attr-grid item-single-col">
           <div class="form-group">
             <label>Enchantment Price (sp.)</label>
             <input type="number" name="system.enchantmentPrice" value="{{system.enchantmentPrice}}" data-dtype="Number" />

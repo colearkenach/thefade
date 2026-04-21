@@ -56,6 +56,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label>Price (sp.)</label>
+                    <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group">
                     <label>Material</label>
                     <select name="system.material">
                         {{selectOptions materialOptions selected=system.material}}
@@ -100,7 +105,7 @@
                 <p class="hint">Magic armor only suffers half damage from non-magical weapons.</p>
             </div>
 
-            <div class="item-attr-grid">
+            <div class="item-attr-grid item-single-col">
                 <div class="form-group">
                     <label>Enchantment Price (sp.)</label>
                     <input type="number" name="system.enchantmentPrice" value="{{system.enchantmentPrice}}" data-dtype="Number" />
