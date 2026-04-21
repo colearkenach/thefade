@@ -1,5 +1,15 @@
 // TheFadeItemSheet class (extracted from thefade.js).
-import { SIZE_OPTIONS, PATH_SKILL_TYPES, DEFAULT_SKILLS } from './constants.js';
+import {
+    SIZE_OPTIONS,
+    PATH_SKILL_TYPES,
+    DEFAULT_SKILLS,
+    WEAPON_ENCHANT_BASE_PRICES,
+    ARMOR_ENCHANT_BASE_PRICE,
+    WEAPON_STRENGTHENING_OPTIONS,
+    ARMOR_STRENGTHENING_OPTIONS,
+    WEAPON_MOD_SLOTS,
+    ARMOR_MOD_SLOTS
+} from './constants.js';
 import { getRankValue, openCompendiumBrowser } from './helpers.js';
 
 /**
@@ -319,6 +329,41 @@ export class TheFadeItemSheet extends ItemSheet {
                 const miscBonus = sys.miscBonus ?? 0;
                 const total = rank + miscBonus;
                 if (total > 0) data.calculatedDice = total;
+            }
+
+            // Magic + modification data for weapons
+            if (this.item?.type === 'weapon') {
+                const sys = this.item.system;
+                const baseDamage = Number(sys.damage) || 0;
+                const dmgInc = Number(sys.damageIncrease) || 0;
+                data.effectiveDamage = baseDamage + dmgInc;
+                data.weaponEnchantBasePrice = WEAPON_ENCHANT_BASE_PRICES[sys.skill] ?? WEAPON_ENCHANT_BASE_PRICES.default;
+                data.weaponImmuneToRadiation = sys.skill === "Bow" || sys.skill === "Firearm" || sys.skill === "Heavy Weaponry";
+                data.weaponStrengtheningOptions = WEAPON_STRENGTHENING_OPTIONS;
+                data.totalMagicCost = (Number(sys.enchantmentPrice) || 0) + (Number(sys.strengtheningPrice) || 0);
+
+                const slotsMax = WEAPON_MOD_SLOTS[sys.handedness] ?? 0;
+                const slotsUsed = Array.isArray(sys.modifications) ? sys.modifications.length : 0;
+                data.modSlotsMax = slotsMax;
+                data.modSlotsUsed = slotsUsed;
+                data.modSlotsOverCapacity = slotsUsed > slotsMax;
+            }
+
+            // Magic + modification data for armor
+            if (this.item?.type === 'armor') {
+                const sys = this.item.system;
+                const baseAP = Number(sys.ap) || 0;
+                const apInc = Number(sys.apIncrease) || 0;
+                data.effectiveAP = baseAP + apInc;
+                data.armorEnchantBasePrice = ARMOR_ENCHANT_BASE_PRICE;
+                data.armorStrengtheningOptions = ARMOR_STRENGTHENING_OPTIONS;
+                data.totalMagicCost = (Number(sys.enchantmentPrice) || 0) + (Number(sys.strengtheningPrice) || 0);
+
+                const slotsMax = ARMOR_MOD_SLOTS[sys.location] ?? 0;
+                const slotsUsed = Array.isArray(sys.modifications) ? sys.modifications.length : 0;
+                data.modSlotsMax = slotsMax;
+                data.modSlotsUsed = slotsUsed;
+                data.modSlotsOverCapacity = slotsUsed > slotsMax;
             }
 
             // Consume label per consumable type
@@ -795,12 +840,17 @@ export class TheFadeItemSheet extends ItemSheet {
                 const dice = rank + miscBonus;
                 if (dice <= 0) return ui.notifications.warn("No dice to roll — assign a skill rank first.");
                 const roll = await new Roll(`${dice}d10`).evaluate();
+                const baseDmg = Number(sys.damage) || 0;
+                const dmgInc = Number(sys.damageIncrease) || 0;
+                const effDmg = baseDmg + dmgInc;
+                const dmgDisplay = dmgInc > 0 ? `${effDmg} (${baseDmg} + ${dmgInc})` : (baseDmg || "—");
+                const enchantLabel = sys.isEnchanted ? ` <em class="enchanted-tag">Enchanted</em>` : "";
                 ChatMessage.create({
                     speaker: ChatMessage.getSpeaker({ actor }),
                     flavor: `${this.item.name} — Attack (${sys.skill})`,
                     content: `<div class="thefade chat-card">
-                        <h3>${this.item.name}</h3>
-                        <p><strong>Damage:</strong> ${sys.damage || "—"} (${sys.damageType || "—"})</p>
+                        <h3>${this.item.name}${enchantLabel}</h3>
+                        <p><strong>Damage:</strong> ${dmgDisplay} (${sys.damageType || "—"})</p>
                         ${sys.critical ? `<p><strong>Critical:</strong> ${sys.critical}</p>` : ""}
                         ${await roll.render()}
                     </div>`
@@ -818,7 +868,9 @@ export class TheFadeItemSheet extends ItemSheet {
             });
             html.find('.reset-ap').click(async ev => {
                 ev.preventDefault();
-                await this.item.update({ "system.currentAP": this.item.system.ap ?? 0 });
+                const baseAP = Number(this.item.system.ap) || 0;
+                const apInc = Number(this.item.system.apIncrease) || 0;
+                await this.item.update({ "system.currentAP": baseAP + apInc });
             });
         }
 
@@ -1061,6 +1113,115 @@ export class TheFadeItemSheet extends ItemSheet {
             html.find('.bonus-target, .bonus-value').change(() => saveBonuses());
         }
 
+        // Enchantment powers + modifications (weapons and armor)
+        if (this.item.type === 'weapon' || this.item.type === 'armor') {
+            // Auto-fill enchantment price when toggling enchanted on (in addition to the
+            // standard form update that sets isEnchanted itself).
+            html.find('input[name="system.isEnchanted"]').on('change', ev => {
+                const isEnchanted = ev.currentTarget.checked;
+                if (!isEnchanted) return;
+                if (this.item.system.enchantmentPrice) return;
+                let suggested = 0;
+                if (this.item.type === 'weapon') {
+                    const skill = this.item.system.skill;
+                    suggested = WEAPON_ENCHANT_BASE_PRICES[skill] ?? WEAPON_ENCHANT_BASE_PRICES.default;
+                } else {
+                    suggested = ARMOR_ENCHANT_BASE_PRICE;
+                }
+                this.item.update({ "system.enchantmentPrice": suggested });
+            });
+
+            // Auto-fill strengthening price when damage/AP increase changes
+            if (this.item.type === 'weapon') {
+                html.find('select[name="system.damageIncrease"]').on('change', ev => {
+                    const inc = Number(ev.currentTarget.value) || 0;
+                    this.item.update({ "system.strengtheningPrice": inc * inc * 1000 });
+                });
+            } else {
+                html.find('select[name="system.apIncrease"]').on('change', ev => {
+                    const inc = Number(ev.currentTarget.value) || 0;
+                    const baseAP = Number(this.item.system.ap) || 0;
+                    this.item.update({
+                        "system.strengtheningPrice": inc * 500,
+                        "system.currentAP": baseAP + inc
+                    });
+                });
+            }
+
+            // Save enchantment powers from DOM
+            const saveEnchantmentPowers = () => {
+                const powers = [];
+                html.find('.ench-power-row').each((i, el) => {
+                    const $row = $(el);
+                    powers.push({
+                        id: $row.data('ench-id'),
+                        name: $row.find('.ench-power-name').val() || "",
+                        description: $row.find('.ench-power-description').val() || "",
+                        isDarkMagic: $row.find('.ench-power-dark-toggle').is(':checked')
+                    });
+                });
+                this.item.update({ "system.enchantmentPowers": powers });
+            };
+
+            // Add enchantment power
+            html.find('.ench-power-add').on('click', ev => {
+                ev.preventDefault();
+                const powers = foundry.utils.deepClone(this.item.system.enchantmentPowers || []);
+                powers.push({ id: foundry.utils.randomID(16), name: "", description: "", isDarkMagic: false });
+                this.item.update({ "system.enchantmentPowers": powers }).then(() => this.render(false));
+            });
+
+            // Delete enchantment power
+            html.find('.ench-power-delete').on('click', ev => {
+                ev.preventDefault();
+                const id = ev.currentTarget.dataset.enchId;
+                const powers = (this.item.system.enchantmentPowers || []).filter(p => p.id !== id);
+                this.item.update({ "system.enchantmentPowers": powers }).then(() => this.render(false));
+            });
+
+            // Save enchantment power fields on change (inputs have no name attr, so
+            // Foundry's form auto-submit will not catch them)
+            html.find('.ench-power-name, .ench-power-description, .ench-power-dark-toggle').on('change', () => {
+                saveEnchantmentPowers();
+            });
+
+            // Save modifications from DOM
+            const saveModifications = () => {
+                const mods = [];
+                html.find('.mod-row').each((i, el) => {
+                    const $row = $(el);
+                    mods.push({
+                        id: $row.data('mod-id'),
+                        name: $row.find('.mod-name').val() || "",
+                        description: $row.find('.mod-description').val() || "",
+                        price: Number($row.find('.mod-price').val()) || 0
+                    });
+                });
+                this.item.update({ "system.modifications": mods });
+            };
+
+            // Add modification
+            html.find('.mod-add').on('click', ev => {
+                ev.preventDefault();
+                const mods = foundry.utils.deepClone(this.item.system.modifications || []);
+                mods.push({ id: foundry.utils.randomID(16), name: "", description: "", price: 0 });
+                this.item.update({ "system.modifications": mods }).then(() => this.render(false));
+            });
+
+            // Delete modification
+            html.find('.mod-delete').on('click', ev => {
+                ev.preventDefault();
+                const id = ev.currentTarget.dataset.modId;
+                const mods = (this.item.system.modifications || []).filter(m => m.id !== id);
+                this.item.update({ "system.modifications": mods }).then(() => this.render(false));
+            });
+
+            // Save modification fields on change
+            html.find('.mod-name, .mod-description, .mod-price').on('change', () => {
+                saveModifications();
+            });
+        }
+
         // Add general input change handler for all item sheets
         html.find('input[name], select[name], textarea[name]').change(ev => {
             const input = ev.currentTarget;
@@ -1101,8 +1262,8 @@ export class TheFadeItemSheet extends ItemSheet {
             const item = this.actor.items.get(itemId);
             if (!item || item.type !== "armor") return;
 
-            // Convert to number to ensure consistent types
-            const maxAP = Number(item.system.ap);
+            // Convert to number to ensure consistent types; include strengthening bonus
+            const maxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
 
             try {
                 // Reset current AP to max AP
@@ -1127,7 +1288,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
             try {
                 for (const armor of armorItems) {
-                    const maxAP = Number(armor.system.ap);
+                    const maxAP = (Number(armor.system.ap) || 0) + (Number(armor.system.apIncrease) || 0);
                     await armor.update({
                         "system.currentAP": maxAP
                     });

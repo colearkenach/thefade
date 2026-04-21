@@ -67,7 +67,7 @@ function computeArmorAbsorption(actor, location, damage) {
             if (remaining <= 0) break;
             const raw = armor.system[derivedProp];
             const startPool = (raw === undefined || raw === null)
-                ? Number(armor.system.ap) || 0
+                ? (Number(armor.system.ap) || 0) + (Number(armor.system.apIncrease) || 0)
                 : Number(raw) || 0;
             if (startPool <= 0) continue;
             const take = Math.min(startPool, remaining);

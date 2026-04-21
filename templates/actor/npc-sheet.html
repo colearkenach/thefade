@@ -214,7 +214,7 @@
                             <td><img src="{{a.img}}" class="item-icon" alt="{{a.name}}" /></td>
                             <td>{{a.name}}</td>
                             <td>{{a.system.location}}</td>
-                            <td>{{numberOr a.system.currentAP 0}}/{{a.system.ap}}</td>
+                            <td>{{numberOr a.system.currentAP 0}}/{{numberOr a.system.effectiveAP a.system.ap}}</td>
                             <td class="item-controls">
                                 <a class="armor-reset" title="Reset AP"><i class="fas fa-sync-alt"></i></a>
                                 <a class="item-edit" title="Edit"><i class="fas fa-edit"></i></a>

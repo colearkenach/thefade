@@ -3,7 +3,7 @@
         <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
         <div class="header-fields">
             <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
-            <div class="item-type-badge {{item.type}}">{{item.type}}</div>
+            <div class="item-type-badge {{item.type}}">{{item.type}}{{#if system.isEnchanted}} · Enchanted{{/if}}</div>
         </div>
     </header>
 
@@ -11,6 +11,8 @@
     <nav class="sheet-tabs tabs" data-group="primary">
         <a class="item" data-tab="description">Description</a>
         <a class="item" data-tab="attributes">Attributes</a>
+        <a class="item" data-tab="enchantment">Enchantment</a>
+        <a class="item" data-tab="modifications">Modifications</a>
     </nav>
 
     {{!-- Sheet Body --}}
@@ -22,6 +24,12 @@
 
         {{!-- Attributes Tab --}}
         <div class="tab" data-group="primary" data-tab="attributes">
+            {{#if effectiveAP}}
+            <div class="item-calc-bar">
+              <span class="calc-label">Effective AP:</span>
+              <span class="calc-value">{{effectiveAP}}{{#if system.apIncrease}} ({{system.ap}} + {{system.apIncrease}}){{/if}}</span>
+            </div>
+            {{/if}}
             <div class="item-attr-grid">
 
                 <div class="form-group">
@@ -73,9 +81,105 @@
             {{/if}}
 
             <div class="item-ap-controls">
-                <span>AP: <input type="number" name="system.currentAP" value="{{system.currentAP}}" class="ap-current" data-dtype="Number" /> / {{system.ap}}</span>
+                <span>AP: <input type="number" name="system.currentAP" value="{{system.currentAP}}" class="ap-current" data-dtype="Number" /> / {{effectiveAP}}</span>
                 <a class="item-action-btn reduce-ap"><i class="fas fa-shield-alt"></i> Take Hit (−1 AP)</a>
                 <a class="item-action-btn reset-ap"><i class="fas fa-redo"></i> Repair (Reset AP)</a>
+            </div>
+        </div>
+
+        {{!-- Enchantment Tab --}}
+        <div class="tab" data-group="primary" data-tab="enchantment">
+            <div class="magic-section">
+                <div class="magic-section-header">
+                    <label class="form-field">
+                        <input type="checkbox" name="system.isEnchanted" {{checked system.isEnchanted}} />
+                        <span>Enchanted</span>
+                    </label>
+                    <span class="hint-inline">Base enchantment price: {{armorEnchantBasePrice}} sp. / piece</span>
+                </div>
+                <p class="hint">Magic armor only suffers half damage from non-magical weapons.</p>
+            </div>
+
+            <div class="item-attr-grid">
+                <div class="form-group">
+                    <label>Enchantment Price (sp.)</label>
+                    <input type="number" name="system.enchantmentPrice" value="{{system.enchantmentPrice}}" data-dtype="Number" />
+                    <p class="hint">Auto-suggested (2,000 sp. per piece)</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Strengthening</label>
+                    <select name="system.apIncrease" data-dtype="Number">
+                        {{selectOptions armorStrengtheningOptions selected=system.apIncrease}}
+                    </select>
+                    <p class="hint">Requires the armor to be enchanted</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Strengthening Price (sp.)</label>
+                    <input type="number" name="system.strengtheningPrice" value="{{system.strengtheningPrice}}" data-dtype="Number" />
+                    <p class="hint">AP Increase × 500</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Magical Cost</label>
+                    <div class="readonly-value">{{totalMagicCost}} sp.</div>
+                </div>
+            </div>
+
+            {{!-- Enchantment Powers Section --}}
+            <div class="bonus-section">
+                <div class="bonus-section-header">
+                    <span>Enchantment Powers</span>
+                    <button type="button" class="ench-power-add"><i class="fas fa-plus"></i> Add</button>
+                </div>
+                {{#if system.enchantmentPowers.length}}
+                    {{#each system.enchantmentPowers}}
+                    <div class="ench-power-row" data-ench-id="{{this.id}}">
+                        <div class="ench-power-row-top">
+                            <input type="text" class="ench-power-name" placeholder="Power name" value="{{this.name}}" data-ench-id="{{this.id}}" />
+                            <label class="ench-power-dark" title="Dark Magic enchantment (triggers addiction rules)">
+                                <input type="checkbox" class="ench-power-dark-toggle" {{#if this.isDarkMagic}}checked{{/if}} data-ench-id="{{this.id}}" />
+                                Dark
+                            </label>
+                            <button type="button" class="ench-power-delete" data-ench-id="{{this.id}}"><i class="fas fa-times"></i></button>
+                        </div>
+                        <textarea class="ench-power-description" placeholder="Describe the enchantment effect..." rows="2" data-ench-id="{{this.id}}">{{this.description}}</textarea>
+                    </div>
+                    {{/each}}
+                {{else}}
+                    <div class="bonus-empty">No enchantment powers — click <strong>+ Add</strong> to create one.</div>
+                {{/if}}
+            </div>
+        </div>
+
+        {{!-- Modifications Tab --}}
+        <div class="tab" data-group="primary" data-tab="modifications">
+            <div class="mod-slots-bar">
+                <span class="mod-slots-label">Modification Slots</span>
+                <span class="mod-slots-value {{#if modSlotsOverCapacity}}over-capacity{{/if}}">{{modSlotsUsed}} / {{modSlotsMax}}</span>
+                <p class="hint">Head / Arm: 1 slot · Legs / Shield: 2 slots · Body: 3 slots</p>
+            </div>
+
+            <div class="bonus-section">
+                <div class="bonus-section-header">
+                    <span>Armor Modifications</span>
+                    <button type="button" class="mod-add"><i class="fas fa-plus"></i> Add</button>
+                </div>
+                {{#if system.modifications.length}}
+                    {{#each system.modifications}}
+                    <div class="mod-row" data-mod-id="{{this.id}}">
+                        <div class="mod-row-top">
+                            <input type="text" class="mod-name" placeholder="Modification name" value="{{this.name}}" data-mod-id="{{this.id}}" />
+                            <input type="number" class="mod-price" placeholder="Price" value="{{this.price}}" data-mod-id="{{this.id}}" data-dtype="Number" />
+                            <button type="button" class="mod-delete" data-mod-id="{{this.id}}"><i class="fas fa-times"></i></button>
+                        </div>
+                        <textarea class="mod-description" placeholder="Describe the modification's effect..." rows="2" data-mod-id="{{this.id}}">{{this.description}}</textarea>
+                    </div>
+                    {{/each}}
+                {{else}}
+                    <div class="bonus-empty">No modifications — click <strong>+ Add</strong> to create one.</div>
+                {{/if}}
             </div>
         </div>
     </section>

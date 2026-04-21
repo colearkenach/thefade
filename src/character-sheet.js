@@ -1008,11 +1008,14 @@ export class TheFadeCharacterSheet extends ActorSheet {
         locations.forEach(location => {
             armorTotals[location] = { current: 0, max: 0 };
 
+            // Effective max AP includes magical strengthening bonus
+            const effectiveMaxAP = (a) => (Number(a.system.ap) || 0) + (Number(a.system.apIncrease) || 0);
+
             // Add individual armor pieces for this location
             const locationArmor = equippedArmor[location] || [];
             locationArmor.forEach(armor => {
                 armorTotals[location].current += armor.system.currentAP || 0;
-                armorTotals[location].max += armor.system.ap || 0;
+                armorTotals[location].max += effectiveMaxAP(armor);
             });
 
             // Add derived AP from arms/legs armor. `|| armor.system.ap` was a
@@ -1023,9 +1026,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 armsArmor.forEach(armor => {
                     const derivedProp = location === 'leftarm' ? 'derivedLeftAP' : 'derivedRightAP';
                     const derived = armor.system[derivedProp];
-                    const pool = (typeof derived === 'number') ? derived : (armor.system.ap || 0);
+                    const pool = (typeof derived === 'number') ? derived : effectiveMaxAP(armor);
                     armorTotals[location].current += pool;
-                    armorTotals[location].max += armor.system.ap || 0;
+                    armorTotals[location].max += effectiveMaxAP(armor);
                 });
             }
 
@@ -1034,9 +1037,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 legsArmor.forEach(armor => {
                     const derivedProp = location === 'leftleg' ? 'derivedLeftAP' : 'derivedRightAP';
                     const derived = armor.system[derivedProp];
-                    const pool = (typeof derived === 'number') ? derived : (armor.system.ap || 0);
+                    const pool = (typeof derived === 'number') ? derived : effectiveMaxAP(armor);
                     armorTotals[location].current += pool;
-                    armorTotals[location].max += armor.system.ap || 0;
+                    armorTotals[location].max += effectiveMaxAP(armor);
                 });
             }
 
@@ -1258,8 +1261,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
 
             try {
-                // Convert to numbers to ensure type consistency
-                const maxAP = Number(item.system.ap);
+                // Effective max AP includes strengthening bonus
+                const maxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
 
                 await item.update({
                     "system.currentAP": maxAP
@@ -1287,7 +1290,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
             try {
                 for (const armor of armorItems) {
-                    const maxAP = Number(armor.system.ap);
+                    const maxAP = (Number(armor.system.ap) || 0) + (Number(armor.system.apIncrease) || 0);
 
                     await armor.update({
                         "system.currentAP": maxAP
@@ -4374,10 +4377,11 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 return;
             }
 
-            // Create reduction dialog
+            // Create reduction dialog (display effective max including strengthening)
+            const effMaxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
             const amount = await this._getReductionAmount(
                 `Reduce ${item.name} AP`,
-                `Current AP: ${currentAP}/${item.system.ap}`,
+                `Current AP: ${currentAP}/${effMaxAP}`,
                 currentAP
             );
 
@@ -4401,13 +4405,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 return;
             }
 
-            const maxAP = item.system.ap || 0;
+            const maxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
             await item.update({ 'system.currentAP': maxAP });
             ui.notifications.info(`${item.name} AP reset to ${maxAP}`);
             this.render(false);
         });
 
-        // Reset Derived AP 
+        // Reset Derived AP
         html.find('.reset-derived-ap').click(async (event) => {
             event.preventDefault();
             const button = $(event.currentTarget);
@@ -4427,7 +4431,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
             // Determine which derived AP to reset based on location
             const derivedAPProperty = location.includes('left') ? 'derivedLeftAP' : 'derivedRightAP';
-            const maxAP = item.system.ap || 0;
+            const maxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
 
             await item.update({
                 [`system.${derivedAPProperty}`]: maxAP
@@ -4518,10 +4522,11 @@ export class TheFadeCharacterSheet extends ActorSheet {
             // Determine which derived AP to use based on location
             const derivedAPProperty = location.includes('left') ? 'derivedLeftAP' : 'derivedRightAP';
 
-            // Initialize derived AP if it doesn't exist
+            // Initialize derived AP if it doesn't exist (include strengthening bonus)
+            const effMaxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
             let currentDerived = item.system[derivedAPProperty];
             if (currentDerived === undefined || currentDerived === null) {
-                currentDerived = item.system.ap || 0;
+                currentDerived = effMaxAP;
                 // Initialize the property
                 await item.update({
                     [`system.${derivedAPProperty}`]: currentDerived
@@ -4535,7 +4540,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
             const amount = await this._getReductionAmount(
                 `Reduce ${item.name} Derived AP (${location})`,
-                `Current Derived AP: ${currentDerived}/${item.system.ap}`,
+                `Current Derived AP: ${currentDerived}/${effMaxAP}`,
                 currentDerived
             );
 

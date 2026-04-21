@@ -7952,6 +7952,199 @@ select[name="system.aura.color"] option[value="white"] {
     padding: 8px 0;
 }
 
+/* ----- Enchantment + Modification sections (weapons & armor) ----- */
+.thefade.sheet.item .magic-section {
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    background: var(--bg-surface-alt, rgba(0,0,0,0.15));
+    border: 1px solid var(--border-faint);
+    border-left: 3px solid var(--accent-gold);
+    border-radius: 3px;
+}
+
+.thefade.sheet.item .magic-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+}
+
+.thefade.sheet.item .magic-section-header .form-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95em;
+}
+
+.thefade.sheet.item .hint-inline {
+    font-size: 0.78em;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.thefade.sheet.item .readonly-value {
+    height: 26px;
+    padding: 2px 6px;
+    font-size: 0.88em;
+    background: var(--bg-surface-deep, rgba(0,0,0,0.25));
+    border: 1px solid var(--border-faint);
+    color: var(--accent-gold);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+.thefade.sheet.item .mod-slots-bar {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    background: var(--bg-surface-alt, rgba(0,0,0,0.15));
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+}
+
+.thefade.sheet.item .mod-slots-label {
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.thefade.sheet.item .mod-slots-value {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--accent-gold);
+}
+
+.thefade.sheet.item .mod-slots-value.over-capacity {
+    color: var(--accent-crimson);
+}
+
+.thefade.sheet.item .mod-slots-bar .hint {
+    flex-basis: 100%;
+    margin: 0;
+}
+
+/* Enchantment power rows */
+.thefade.sheet.item .ench-power-row,
+.thefade.sheet.item .mod-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px;
+    margin-bottom: 6px;
+    background: var(--bg-surface-alt, rgba(0,0,0,0.12));
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+}
+
+.thefade.sheet.item .ench-power-row-top,
+.thefade.sheet.item .mod-row-top {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.thefade.sheet.item .ench-power-name,
+.thefade.sheet.item .mod-name {
+    flex: 1;
+    height: 26px;
+    padding: 2px 6px;
+    font-size: 0.88em;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.thefade.sheet.item .mod-price {
+    width: 90px;
+    height: 26px;
+    padding: 2px 6px;
+    font-size: 0.82em;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    border-radius: 2px;
+    text-align: right;
+    box-sizing: border-box;
+}
+
+.thefade.sheet.item .ench-power-dark {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.78em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.thefade.sheet.item .ench-power-description,
+.thefade.sheet.item .mod-description {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 0.84em;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    border-radius: 2px;
+    resize: vertical;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.thefade.sheet.item .ench-power-delete,
+.thefade.sheet.item .mod-delete,
+.thefade.sheet.item .ench-power-add,
+.thefade.sheet.item .mod-add {
+    background: none;
+    border: 1px solid var(--border-faint);
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    font-size: 0.8em;
+    flex-shrink: 0;
+}
+
+.thefade.sheet.item .ench-power-add,
+.thefade.sheet.item .mod-add {
+    width: auto;
+    padding: 2px 8px;
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+    font-size: 0.75em;
+    line-height: 1.6;
+}
+
+.thefade.sheet.item .ench-power-add:hover,
+.thefade.sheet.item .mod-add:hover {
+    background: var(--accent-ghost, rgba(168, 138, 76, 0.15));
+}
+
+.thefade.sheet.item .ench-power-delete:hover,
+.thefade.sheet.item .mod-delete:hover {
+    border-color: var(--accent-crimson);
+    color: var(--accent-crimson);
+}
+
 /* ----- Checkboxes (generic) ----- */
 .thefade input[type="checkbox"] {
     accent-color: var(--accent-crimson);

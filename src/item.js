@@ -57,6 +57,12 @@ export class TheFadeItem extends Item {
             insertKeys: true,
             overwrite: false
         });
+
+        if (!Array.isArray(data.enchantmentPowers)) data.enchantmentPowers = [];
+        if (!Array.isArray(data.modifications)) data.modifications = [];
+
+        // Derived: total damage including magical strengthening
+        data.effectiveDamage = (Number(data.damage) || 0) + (Number(data.damageIncrease) || 0);
     }
 
     /**
@@ -71,6 +77,12 @@ export class TheFadeItem extends Item {
             insertKeys: true,
             overwrite: false
         });
+
+        if (!Array.isArray(data.enchantmentPowers)) data.enchantmentPowers = [];
+        if (!Array.isArray(data.modifications)) data.modifications = [];
+
+        // Derived: total AP including magical strengthening
+        data.effectiveAP = (Number(data.ap) || 0) + (Number(data.apIncrease) || 0);
 
         // Initialize only when the field has never been set (null/undefined).
         // Once damage drops currentAP to 0 it MUST stay at 0 until repaired —
