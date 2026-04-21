@@ -24,8 +24,8 @@ export class TheFadeItemSheet extends ItemSheet {
     static get defaultOptions() {
         return foundry.utils.mergeObject(super.defaultOptions, {
             classes: ["thefade", "sheet", "item", "species"],
-            width: 520,
-            height: 480,
+            width: 600,
+            height: 540,
             tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "description" }],
             scrollY: [".sheet-body", ".tab"]
         });
