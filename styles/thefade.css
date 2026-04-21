@@ -7842,11 +7842,24 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade.sheet.item .item-attr-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0 14px;
+    gap: 8px 14px;
+}
+
+/* Grid items default to min-width: auto which lets long hints/inputs push the
+   column wider than 1fr and overlap neighboring cells. Clamp to the track. */
+.thefade.sheet.item .item-attr-grid > .form-group {
+    min-width: 0;
 }
 
 .thefade.sheet.item .item-attr-grid .form-group.full-width {
     grid-column: 1 / -1;
+}
+
+/* Hints should wrap inside their cell no matter how narrow the sheet is. */
+.thefade.sheet.item .hint {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    max-width: 100%;
 }
 
 /* Align checkbox groups to the bottom of their grid cell */
