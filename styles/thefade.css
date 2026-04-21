@@ -7851,6 +7851,10 @@ select[name="system.aura.color"] option[value="white"] {
     min-width: 0;
 }
 
+.thefade.sheet.item .item-attr-grid.item-single-col {
+    grid-template-columns: 1fr;
+}
+
 .thefade.sheet.item .item-attr-grid .form-group.full-width {
     grid-column: 1 / -1;
 }
