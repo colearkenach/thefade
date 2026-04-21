@@ -84,6 +84,27 @@
       "system": "thefade",
       "path": "./packs/talents.db",
       "type": "Item"
+    },
+	{
+      "name": "lore",
+      "label": "Lore Entries",
+      "system": "thefade",
+      "path": "./packs/lore.db",
+      "type": "JournalEntry"
+    },
+	{
+      "name": "gamemechanics",
+      "label": "Game Mechanics",
+      "system": "thefade",
+      "path": "./packs/gamemechanics.db",
+      "type": "JournalEntry"
+    },
+	{
+      "name": "npcs",
+      "label": "NPCs",
+      "system": "thefade",
+      "path": "./packs/npcs.db",
+      "type": "Actor"
     }
   ],
   "languages": [
