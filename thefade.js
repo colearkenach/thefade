@@ -12,6 +12,7 @@ import { TheFadeItemSheet } from './src/item-sheet.js';
 import { TheFadeCharacterSheet } from './src/character-sheet.js';
 import { TheFadeNPCSheet } from './src/npc-sheet.js';
 import { TheFadePartySheet } from './src/party-sheet.js';
+import { TheFadeShopSheet } from './src/shop-sheet.js';
 import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
 import './src/token-facing.js';
 
@@ -197,6 +198,12 @@ Hooks.once('init', async function () {
         makeDefault: true
     });
 
+    // Register Shop sheet
+    Actors.registerSheet("thefade", TheFadeShopSheet, {
+        types: ["shop"],
+        makeDefault: true
+    });
+
     // Register The Fade item sheet
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
@@ -216,6 +223,7 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/actor/character-sheet.html",
         "systems/thefade/templates/actor/npc-sheet.html",
         "systems/thefade/templates/actor/party-sheet.html",
+        "systems/thefade/templates/actor/shop-sheet.html",
         "systems/thefade/templates/actor/parts/attributes.html",
         "systems/thefade/templates/actor/parts/skills.html",
         "systems/thefade/templates/actor/parts/inventory.html",

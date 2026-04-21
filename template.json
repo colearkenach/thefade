@@ -1,6 +1,6 @@
 {
   "Actor": {
-    "types": [ "character", "npc", "party" ],
+    "types": [ "character", "npc", "party", "shop" ],
     "templates": {
       "base": {
         "hp": {
@@ -209,6 +209,11 @@
     "party": {
       "currency": { "serpents": 0 },
       "members": [],
+      "notes": ""
+    },
+    "shop": {
+      "currency": { "serpents": 0 },
+      "description": "",
       "notes": ""
     }
   },

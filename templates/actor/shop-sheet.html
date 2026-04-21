@@ -1,0 +1,110 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+    <!-- ===================== HEADER ===================== -->
+    <header class="sheet-header redesigned-header">
+        <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" />
+        <div class="header-fields">
+            <div class="char-identity">
+                <h1 class="charname">
+                    <input name="name" type="text" value="{{actor.name}}" placeholder="Shop Name" />
+                </h1>
+                <div class="char-subtitle">
+                    <span>{{stock.length}} item(s) in stock</span>
+                    <span class="sep">·</span>
+                    <span>{{system.currency.serpents}} sp in treasury</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================== TABS ===================== -->
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="stock">Stock</a>
+        <a class="item" data-tab="notes">Notes</a>
+    </nav>
+
+    <!-- ===================== BODY ===================== -->
+    <section class="sheet-body">
+
+        <!-- ===== STOCK TAB ===== -->
+        <div class="tab" data-group="primary" data-tab="stock">
+            <div class="shop-stock-section">
+
+                <!-- Shop treasury -->
+                <div class="party-resource-section panel" style="margin-bottom:8px">
+                    <div class="party-currency-row">
+                        <label><i class="fas fa-coins"></i> Treasury (sp):</label>
+                        <input type="text" name="system.currency.serpents"
+                               value="{{system.currency.serpents}}" data-dtype="Number"
+                               style="width:100px" />
+                    </div>
+                    <p class="resource-hint" style="margin:4px 0 0">
+                        Funds available to pay players when they sell items to this shop.
+                    </p>
+                </div>
+
+                <!-- Stock header -->
+                <header class="npc-item-header">
+                    <h2>Inventory for Sale</h2>
+                    <div style="display:flex;gap:6px;align-items:center">
+                        <button type="button" class="sell-to-shop"
+                                title="A party member sells an item to this shop">
+                            <i class="fas fa-hand-holding-usd"></i> Sell to Shop
+                        </button>
+                        <a class="item-create" data-type="item" title="Add a new item to stock">
+                            <i class="fas fa-plus"></i>
+                        </a>
+                    </div>
+                </header>
+
+                {{#if stock.length}}
+                <ol class="items-list">
+                    {{#each stock as |item|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <img src="{{item.img}}" class="item-icon" alt="{{item.name}}" />
+                        <div class="item-name" style="flex:1;min-width:0">
+                            <span>{{item.name}}</span>
+                            <span class="item-type muted" style="margin-left:4px">{{item.type}}</span>
+                        </div>
+                        <span class="item-price" style="white-space:nowrap;margin-right:6px">
+                            {{item.system.price}} sp
+                        </span>
+                        {{#if item.system.quantity}}
+                        <span class="item-qty muted" style="margin-right:6px">×{{item.system.quantity}}</span>
+                        {{/if}}
+                        <div class="item-controls">
+                            <a class="item-buy" title="Buy this item">
+                                <i class="fas fa-shopping-cart"></i>
+                            </a>
+                            <a class="item-edit" title="Edit item">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a class="item-delete" title="Remove from shop">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+                {{else}}
+                <p class="empty-list">
+                    No items in stock. Drag items here or click <i class="fas fa-plus"></i> to add.
+                </p>
+                {{/if}}
+
+            </div>
+        </div><!-- /stock tab -->
+
+        <!-- ===== NOTES TAB ===== -->
+        <div class="tab" data-group="primary" data-tab="notes">
+            <div class="notes-section">
+                <h2>Shop Description</h2>
+                <textarea name="system.description" rows="6"
+                          placeholder="Describe this shop, its location, and its proprietor…">{{system.description}}</textarea>
+                <h2 style="margin-top:12px">GM Notes</h2>
+                <textarea name="system.notes" rows="12"
+                          placeholder="Restock schedule, NPC details, secret prices, quest hooks…">{{system.notes}}</textarea>
+            </div>
+        </div><!-- /notes tab -->
+
+    </section><!-- /sheet-body -->
+</form>
