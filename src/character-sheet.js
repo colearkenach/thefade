@@ -3774,6 +3774,49 @@ export class TheFadeCharacterSheet extends ActorSheet {
             this._onSpeciesAbilityEdit(abilityId);
         });
 
+        // Inline define edit handler so we don't need a separate method binding
+        this._onSpeciesAbilityEdit = async (abilityId) => {
+            const abilities = foundry.utils.deepClone(this.actor.system.species?.speciesAbilities || {});
+            const ability = abilities[abilityId];
+            if (!ability) return;
+
+            const escapeHtml = (s) => String(s ?? "")
+                .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+            const content = `
+                <form>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" value="${escapeHtml(ability.name)}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" rows="6">${escapeHtml(ability.description)}</textarea>
+                    </div>
+                </form>
+            `;
+
+            new Dialog({
+                title: "Edit Species Ability",
+                content,
+                buttons: {
+                    save: {
+                        label: "Save",
+                        callback: async (html) => {
+                            const name = html.find('[name="name"]').val()?.trim() || "Unnamed";
+                            const description = html.find('[name="description"]').val() || "";
+                            await this.actor.update({
+                                [`system.species.speciesAbilities.${abilityId}`]: { name, description }
+                            });
+                        }
+                    },
+                    cancel: { label: "Cancel" }
+                },
+                default: "save"
+            }).render(true);
+        };
+
         html.find('.species-ability-delete').click(async (event) => {
             event.preventDefault();
 
