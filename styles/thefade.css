@@ -6099,7 +6099,7 @@ select[name="system.aura.color"] option[value="white"] {
 /* ----- Vitals strip (HP / Sanity / Initiative) ----- */
 .thefade .vitals-strip {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
     gap: 10px;
 }
 
@@ -6108,6 +6108,8 @@ select[name="system.aura.color"] option[value="white"] {
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
+    min-width: 0;
+    overflow: hidden;
     background: var(--bg-surface-deep);
     border: 1px solid var(--border-faint);
     border-left: 3px solid var(--accent-crimson);
@@ -6164,7 +6166,8 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .vital-pill .vital-values input {
-    width: 42px;
+    width: 38px;
+    min-width: 0;
     text-align: center;
     padding: 3px;
     font-size: 1.05em;
