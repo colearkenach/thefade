@@ -15,6 +15,9 @@ import { TheFadePartySheet } from './src/party-sheet.js';
 import { TheFadeShopSheet } from './src/shop-sheet.js';
 import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
 import './src/token-facing.js';
+import { registerTokenActionHud } from './src/integrations/token-action-hud/index.js';
+
+registerTokenActionHud();
 
 
 /**
