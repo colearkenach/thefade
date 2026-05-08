@@ -1,7 +1,7 @@
-<form class="{{classes}} flexcol" autocomplete="off">
-    <header class="sheet-header flexrow">
-        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" height="64" width="64" />
-        <div class="header-fields flexcol">
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
             <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
             <div class="item-type-badge {{item.type}}">{{item.type}}</div>
         </div>
@@ -9,58 +9,78 @@
 
     <nav class="sheet-tabs tabs" data-group="primary">
         <a class="item" data-tab="description">Description</a>
-        <a class="item" data-tab="details">Details</a>
         <a class="item" data-tab="attributes">Attributes</a>
     </nav>
 
     <section class="sheet-body">
         <div class="tab" data-group="primary" data-tab="description">
-            <div class="form-group">
-                <label>Description:</label>
-                <textarea name="system.description" rows="10">{{system.description}}</textarea>
-            </div>
-        </div>
-
-        <div class="tab" data-group="primary" data-tab="details">
-            <div class="form-group">
-                <label>Poison Type:</label>
-                <input type="text" name="system.poisonType" value="{{system.poisonType}}" />
-            </div>
-            <div class="form-group">
-                <label>Save Difficulty:</label>
-                <input type="number" name="system.saveDifficulty" value="{{system.saveDifficulty}}" />
-            </div>
-            <div class="form-group">
-                <label>Damage:</label>
-                <input type="text" name="system.damage" value="{{system.damage}}" />
-            </div>
-            <div class="form-group">
-                <label>Duration:</label>
-                <input type="text" name="system.duration" value="{{system.duration}}" />
-            </div>
-            <div class="form-group">
-                <label>Effect:</label>
-                <textarea name="system.effect" rows="3">{{system.effect}}</textarea>
-            </div>
-            <div class="item-use-section">
-                {{#if system.quantity}}<span class="qty-display">Qty: {{system.quantity}}</span>{{/if}}
-                <a class="item-action-btn consume-item"><i class="fas fa-skull-crossbones"></i> Apply Poison</a>
-            </div>
+            <textarea name="system.description">{{system.description}}</textarea>
         </div>
 
         <div class="tab" data-group="primary" data-tab="attributes">
-            <div class="form-group">
-                <label>Price (sp)</label>
-                <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+            {{#if system.toxicity}}
+            <div class="item-calc-bar">
+                <span class="calc-label">Toxicity:</span>
+                <span class="calc-value">{{system.toxicity}}D</span>
+                <a class="item-action-btn roll-toxicity"><i class="fas fa-dice-d10"></i> Roll Toxicity</a>
             </div>
-            <div class="form-group">
-                <label>Weight</label>
-                <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
-                <span>lbs.</span>
+            {{/if}}
+
+            <div class="item-attr-grid">
+
+                <div class="form-group">
+                    <label>Toxicity (Dice)</label>
+                    <input type="number" name="system.toxicity" value="{{system.toxicity}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group">
+                    <label>Administering</label>
+                    <select name="system.poisonType">
+                        {{selectOptions poisonAdminOptions selected=system.poisonType}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Onset</label>
+                    <select name="system.onset">
+                        {{selectOptions poisonOnsetOptions selected=system.onset}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select name="system.category">
+                        {{selectOptions poisonCategoryOptions selected=system.category}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Price (sp.)</label>
+                    <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group">
+                    <label>Weight (lbs.)</label>
+                    <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group">
+                    <label>Quantity</label>
+                    <input type="text" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Effect</label>
+                    <textarea name="system.effect" rows="3">{{system.effect}}</textarea>
+                </div>
+
             </div>
-            <div class="form-group">
-                <label>Quantity</label>
-                <input type="text" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
+
+            <p class="hint">Toxicity attacks the target's Resilience. +4D vs targets at half HP or less. +1D per repeat exposure within 24 hours. Failing to hit Resilience by 4+ successes grants 24h immunity.</p>
+
+            <div class="item-use-section">
+                {{#if system.quantity}}<span class="qty-display">Qty: {{system.quantity}}</span>{{/if}}
+                <a class="item-action-btn consume-item"><i class="fas fa-skull-crossbones"></i> Apply Poison</a>
             </div>
         </div>
 

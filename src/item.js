@@ -25,6 +25,7 @@ export class TheFadeItem extends Item {
             species: this._prepareSpeciesData,
             drug: this._prepareDrugData,
             poison: this._preparePoisonData,
+            disease: this._prepareDiseaseData,
             biological: this._prepareBiologicalData,
             mount: this._prepareMountData,
             vehicle: this._prepareVehicleData,
@@ -214,10 +215,38 @@ export class TheFadeItem extends Item {
         const data = itemData.system;
 
         // Initialize poison properties if undefined
-        if (!data.toxicity) data.toxicity = "";
+        if (data.toxicity === undefined || data.toxicity === null) data.toxicity = 0;
         if (!data.poisonType) data.poisonType = "injury";
+        if (!data.onset) data.onset = "immediate";
+        if (!data.category) data.category = "neurotoxin";
         if (!data.effect) data.effect = "";
         if (!data.weight) data.weight = 0;
+    }
+
+    /**
+    * Prepare disease-specific data
+    * @param {Object} itemData - Item data object
+    */
+    _prepareDiseaseData(itemData) {
+        const data = itemData.system;
+
+        if (!data.transmission) data.transmission = "airborne";
+        if (!data.incubation) data.incubation = "";
+        if (!data.duration) data.duration = "";
+        if (!data.durationType) data.durationType = "temporary";
+        if (data.virality === undefined || data.virality === null) data.virality = 0;
+        if (data.treatmentDT === undefined || data.treatmentDT === null) data.treatmentDT = 0;
+        if (data.requiresVector === undefined) data.requiresVector = false;
+        if (data.requiresCure === undefined) data.requiresCure = false;
+        if (!data.effect) data.effect = "";
+        if (!data.weight) data.weight = 0;
+
+        // Derived: Virality band (Low 4-7D, Moderate 8-11D, High 12D+).
+        const v = Number(data.virality) || 0;
+        if (v >= 12) data.viralityBand = "High";
+        else if (v >= 8) data.viralityBand = "Moderate";
+        else if (v >= 4) data.viralityBand = "Low";
+        else data.viralityBand = null;
     }
 
     /**

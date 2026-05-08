@@ -90,6 +90,7 @@ export class TheFadeItemSheet extends ItemSheet {
                 "magicitem": "Item of Power",
                 "drug": "Drug",
                 "poison": "Poison",
+                "disease": "Disease",
                 "biological": "Biological",
                 "medical": "Medical",
                 "travel": "Travel & Survival",
@@ -134,6 +135,46 @@ export class TheFadeItemSheet extends ItemSheet {
             data.communicationComplexityOptions = {
                 "audio": "Audio Only",
                 "audiovisual": "Audio & Visual"
+            };
+
+            data.poisonAdminOptions = {
+                "injury": "Injury",
+                "ingested": "Ingested",
+                "inhaled": "Inhaled",
+                "contact": "Contact"
+            };
+
+            data.poisonOnsetOptions = {
+                "immediate": "Immediate (on hit)",
+                "fast": "Fast (1 round)",
+                "moderate": "Moderate (10 minutes)",
+                "slow": "Slow (3 hours)",
+                "insidious": "Insidious (5 days)"
+            };
+
+            data.poisonCategoryOptions = {
+                "neurotoxin": "Neurotoxin",
+                "hemotoxin": "Hemotoxin",
+                "cytotoxin": "Cytotoxin",
+                "psychotoxin": "Psychotoxin",
+                "thaumatoxin": "Thaumatoxin",
+                "aetherotoxin": "Aetherotoxin",
+                "pathotoxin": "Pathotoxin",
+                "aisthetoxin": "Aisthetoxin"
+            };
+
+            data.diseaseTransmissionOptions = {
+                "airborne": "Airborne",
+                "contact": "Contact",
+                "fluid": "Fluid",
+                "ingested": "Ingested",
+                "injury": "Injury"
+            };
+
+            data.diseaseDurationTypeOptions = {
+                "temporary": "Temporary (T)",
+                "chronic": "Chronic",
+                "permanent": "Permanent"
             };
 
             data.materialOptions = {
@@ -1037,6 +1078,70 @@ export class TheFadeItemSheet extends ItemSheet {
                 } else {
                     ui.notifications.warn("Please enter a target relay code.");
                 }
+            });
+        }
+
+        // Poison: Roll Toxicity (NdT vs target Resilience).
+        if (this.item.type === 'poison') {
+            html.find('.roll-toxicity').click(async ev => {
+                ev.preventDefault();
+                const sys = this.item.system;
+                const dice = Number(sys.toxicity) || 0;
+                if (dice <= 0) return ui.notifications.warn("Set a Toxicity dice value first.");
+                const roll = await new Roll(`${dice}d12`).evaluate();
+                let successes = 0;
+                roll.terms[0].results.forEach(d => {
+                    if (d.result >= 12) successes += 2;
+                    else if (d.result >= 8) successes += 1;
+                });
+                const adminLabel = html.find(`select[name="system.poisonType"] option[value="${sys.poisonType}"]`).text() || sys.poisonType;
+                const onsetLabel = html.find(`select[name="system.onset"] option[value="${sys.onset}"]`).text() || sys.onset;
+                const categoryLabel = html.find(`select[name="system.category"] option[value="${sys.category}"]`).text() || sys.category;
+                ChatMessage.create({
+                    speaker: this.item.parent ? ChatMessage.getSpeaker({ actor: this.item.parent }) : undefined,
+                    flavor: `${this.item.name} — Toxicity vs Resilience`,
+                    content: `<div class="thefade chat-card">
+                        <h3>${this.item.name}</h3>
+                        <p class="item-type-label">Poison · ${categoryLabel}</p>
+                        <p><strong>Administering:</strong> ${adminLabel}</p>
+                        <p><strong>Onset:</strong> ${onsetLabel}</p>
+                        <p><strong>Successes:</strong> ${successes}</p>
+                        ${sys.effect ? `<p><strong>Effect:</strong> ${sys.effect}</p>` : ""}
+                        ${await roll.render()}
+                    </div>`
+                });
+            });
+        }
+
+        // Disease: Roll Virality (NdT exposure check).
+        if (this.item.type === 'disease') {
+            html.find('.roll-virality').click(async ev => {
+                ev.preventDefault();
+                const sys = this.item.system;
+                const dice = Number(sys.virality) || 0;
+                if (dice <= 0) return ui.notifications.warn("Set a Virality dice value first.");
+                const roll = await new Roll(`${dice}d12`).evaluate();
+                let successes = 0;
+                roll.terms[0].results.forEach(d => {
+                    if (d.result >= 12) successes += 2;
+                    else if (d.result >= 8) successes += 1;
+                });
+                const transmissionLabel = html.find(`select[name="system.transmission"] option[value="${sys.transmission}"]`).text() || sys.transmission;
+                const durationTypeLabel = html.find(`select[name="system.durationType"] option[value="${sys.durationType}"]`).text() || sys.durationType;
+                ChatMessage.create({
+                    speaker: this.item.parent ? ChatMessage.getSpeaker({ actor: this.item.parent }) : undefined,
+                    flavor: `${this.item.name} — Virality (${sys.viralityBand || ""})`,
+                    content: `<div class="thefade chat-card">
+                        <h3>${this.item.name}</h3>
+                        <p class="item-type-label">Disease · ${transmissionLabel}</p>
+                        <p><strong>Successes:</strong> ${successes}</p>
+                        ${sys.incubation ? `<p><strong>Incubation:</strong> ${sys.incubation}</p>` : ""}
+                        ${sys.duration ? `<p><strong>Duration:</strong> ${sys.duration} (${durationTypeLabel})</p>` : ""}
+                        ${sys.treatmentDT ? `<p><strong>Treatment DT:</strong> ${sys.treatmentDT}</p>` : ""}
+                        ${sys.effect ? `<p><strong>Effect:</strong> ${sys.effect}</p>` : ""}
+                        ${await roll.render()}
+                    </div>`
+                });
             });
         }
 

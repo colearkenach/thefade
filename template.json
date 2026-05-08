@@ -245,7 +245,8 @@
       "fleshcraft",
       "magicitem",
       "trait",
-      "precept"
+      "precept",
+      "disease"
     ],
     "templates": {
       "base": {
@@ -412,8 +413,22 @@
     },
     "poison": {
       "templates": [ "base", "physical" ],
-      "toxicity": "",
+      "toxicity": 0,
       "poisonType": "injury",
+      "onset": "immediate",
+      "category": "neurotoxin",
+      "effect": ""
+    },
+    "disease": {
+      "templates": [ "base", "physical" ],
+      "transmission": "airborne",
+      "incubation": "",
+      "duration": "",
+      "durationType": "temporary",
+      "virality": 0,
+      "treatmentDT": 0,
+      "requiresVector": false,
+      "requiresCure": false,
       "effect": ""
     },
     "biological": {
