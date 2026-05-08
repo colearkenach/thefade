@@ -230,7 +230,16 @@ export class TheFadeItem extends Item {
     _prepareDiseaseData(itemData) {
         const data = itemData.system;
 
-        if (!data.transmission) data.transmission = "airborne";
+        const transmissionKeys = ["airborne", "contact", "fluid", "ingested", "injury"];
+        if (!data.transmission || typeof data.transmission !== "object" || Array.isArray(data.transmission)) {
+            const prev = data.transmission;
+            data.transmission = {};
+            for (const k of transmissionKeys) data.transmission[k] = false;
+            if (typeof prev === "string" && transmissionKeys.includes(prev)) data.transmission[prev] = true;
+            else if (Array.isArray(prev)) for (const k of prev) if (transmissionKeys.includes(k)) data.transmission[k] = true;
+        } else {
+            for (const k of transmissionKeys) if (data.transmission[k] === undefined) data.transmission[k] = false;
+        }
         if (!data.incubation) data.incubation = "";
         if (!data.duration) data.duration = "";
         if (!data.durationType) data.durationType = "temporary";

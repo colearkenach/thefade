@@ -421,7 +421,13 @@
     },
     "disease": {
       "templates": [ "base", "physical" ],
-      "transmission": "airborne",
+      "transmission": {
+        "airborne": false,
+        "contact": false,
+        "fluid": false,
+        "ingested": false,
+        "injury": false
+      },
       "incubation": "",
       "duration": "",
       "durationType": "temporary",
