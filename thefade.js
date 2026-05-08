@@ -212,7 +212,7 @@ Hooks.once('init', async function () {
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
             "weapon", "armor", "skill", "path", "spell", "talent", "trait", "precept",
-            "species", "drug", "poison", "biological", "medical", "travel", "item",
+            "species", "drug", "poison", "disease", "biological", "medical", "travel", "item",
             "mount", "vehicle", "musical", "potion", "staff", "wand", "gate",
             "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing"
         ],
