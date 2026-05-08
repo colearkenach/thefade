@@ -8,7 +8,8 @@ import {
     WEAPON_STRENGTHENING_OPTIONS,
     ARMOR_STRENGTHENING_OPTIONS,
     WEAPON_MOD_SLOTS,
-    ARMOR_MOD_SLOTS
+    ARMOR_MOD_SLOTS,
+    DAMAGE_TYPE_LABELS
 } from './constants.js';
 import { getRankValue, openCompendiumBrowser } from './helpers.js';
 
@@ -334,9 +335,73 @@ export class TheFadeItemSheet extends ItemSheet {
             // Magic + modification data for weapons
             if (this.item?.type === 'weapon') {
                 const sys = this.item.system;
-                const baseDamage = Number(sys.damage) || 0;
                 const dmgInc = Number(sys.damageIncrease) || 0;
-                data.effectiveDamage = baseDamage + dmgInc;
+
+                // Lazy persistent migration: if a legacy weapon has damage/damageType
+                // but no damageComponents, persist a single component on first sheet
+                // open. prepareData has already hydrated the in-memory array, so we
+                // just check whether the persisted source still lacks it.
+                const sourceComponents = this.item._source?.system?.damageComponents;
+                const sourceDamage = Number(this.item._source?.system?.damage) || 0;
+                if (
+                    !this._migratedDamageComponents &&
+                    Array.isArray(sourceComponents) &&
+                    sourceComponents.length === 0 &&
+                    sourceDamage > 0
+                ) {
+                    this._migratedDamageComponents = true;
+                    const migrated = [{
+                        id: foundry.utils.randomID(16),
+                        amount: sourceDamage,
+                        type: this.item._source.system.damageType || "Ut"
+                    }];
+                    this.item.update({ "system.damageComponents": migrated });
+                }
+
+                const components = Array.isArray(sys.damageComponents) ? sys.damageComponents : [];
+                data.weaponDamageComponents = components.map(c => ({
+                    id: c.id,
+                    amount: c.amount,
+                    type: c.type
+                }));
+
+                // Damage attribute bonus from the parent actor, mirroring the
+                // logic in character-sheet.js attack rolls (Agile/Brutish/attribute).
+                let attrBonus = 0;
+                let attrLabel = "";
+                if (this.item.parent?.system?.attributes) {
+                    const attrs = this.item.parent.system.attributes;
+                    const qualities = sys.qualities || "";
+                    if (qualities.includes("Agile") && attrs.finesse) {
+                        attrBonus = Math.floor((attrs.finesse.value || 0) / 2);
+                        attrLabel = "Finesse";
+                    } else if (qualities.includes("Brutish") && attrs.physique) {
+                        attrBonus = Math.floor((attrs.physique.value || 0) / 2);
+                        attrLabel = "Physique";
+                    } else if (sys.attribute && sys.attribute !== "none" && attrs[sys.attribute]) {
+                        attrBonus = Math.floor((attrs[sys.attribute].value || 0) / 2);
+                        attrLabel = sys.attribute.charAt(0).toUpperCase() + sys.attribute.slice(1);
+                    }
+                }
+
+                // Build the typed breakdown: "3 Fire + 3 Bludgeoning + 2 + 4"
+                const parts = [];
+                let typedTotal = 0;
+                for (const c of components) {
+                    const amt = Number(c.amount) || 0;
+                    if (amt <= 0) continue;
+                    typedTotal += amt;
+                    const label = DAMAGE_TYPE_LABELS[c.type] || c.type || "Untyped";
+                    parts.push(`${amt} ${label}`);
+                }
+                if (dmgInc > 0) parts.push(`${dmgInc}`);
+                if (attrBonus > 0) parts.push(`${attrBonus}`);
+
+                data.effectiveDamage = typedTotal + dmgInc + attrBonus;
+                data.effectiveDamageBreakdown = parts.length > 1 ? parts.join(" + ") : null;
+                data.weaponAttrBonus = attrBonus;
+                data.weaponAttrLabel = attrLabel;
+
                 data.weaponEnchantBasePrice = WEAPON_ENCHANT_BASE_PRICES[sys.skill] ?? WEAPON_ENCHANT_BASE_PRICES.default;
                 data.weaponImmuneToRadiation = sys.skill === "Bow" || sys.skill === "Firearm" || sys.skill === "Heavy Weaponry";
                 data.weaponStrengtheningOptions = WEAPON_STRENGTHENING_OPTIONS;
@@ -1111,6 +1176,38 @@ export class TheFadeItemSheet extends ItemSheet {
 
             // Target / value changes
             html.find('.bonus-target, .bonus-value').change(() => saveBonuses());
+        }
+
+        // Damage components (weapons only)
+        if (this.item.type === 'weapon') {
+            const saveDamageComponents = () => {
+                const comps = [];
+                html.find('.dmg-comp-row').each((i, el) => {
+                    const $row = $(el);
+                    comps.push({
+                        id: $row.data('dmg-id'),
+                        amount: Number($row.find('.dmg-comp-amount').val()) || 0,
+                        type: $row.find('.dmg-comp-type').val() || "Ut"
+                    });
+                });
+                this.item.update({ "system.damageComponents": comps });
+            };
+
+            html.find('.dmg-comp-add').on('click', ev => {
+                ev.preventDefault();
+                const comps = foundry.utils.deepClone(this.item.system.damageComponents || []);
+                comps.push({ id: foundry.utils.randomID(16), amount: 0, type: "B" });
+                this.item.update({ "system.damageComponents": comps });
+            });
+
+            html.find('.dmg-comp-delete').on('click', ev => {
+                ev.preventDefault();
+                const id = ev.currentTarget.dataset.dmgId;
+                const comps = (this.item.system.damageComponents || []).filter(c => c.id !== id);
+                this.item.update({ "system.damageComponents": comps });
+            });
+
+            html.find('.dmg-comp-amount, .dmg-comp-type').on('change', () => saveDamageComponents());
         }
 
         // Enchantment powers + modifications (weapons and armor)

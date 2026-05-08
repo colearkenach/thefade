@@ -8054,6 +8054,90 @@ select[name="system.aura.color"] option[value="white"] {
     margin: 0;
 }
 
+/* Damage component rows (weapon sheet) */
+.thefade.sheet.item .dmg-comp-section {
+    margin-bottom: 8px;
+}
+
+.thefade.sheet.item .dmg-comp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    margin-bottom: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-faint);
+}
+
+.thefade.sheet.item .dmg-comp-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    background: var(--bg-surface-alt, rgba(0,0,0,0.12));
+    border: 1px solid var(--border-faint);
+    border-radius: 2px;
+}
+
+.thefade.sheet.item .dmg-comp-amount {
+    width: 70px;
+    height: 26px;
+    padding: 2px 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    border-radius: 2px;
+    text-align: right;
+    box-sizing: border-box;
+}
+
+.thefade.sheet.item .dmg-comp-type {
+    flex: 1;
+    height: 26px;
+    padding: 2px 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    border-radius: 2px;
+    box-sizing: border-box;
+}
+
+.thefade.sheet.item .dmg-comp-delete,
+.thefade.sheet.item .dmg-comp-add {
+    background: none;
+    border: 1px solid var(--border-faint);
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    font-size: 0.8em;
+    flex-shrink: 0;
+}
+
+.thefade.sheet.item .dmg-comp-add {
+    width: auto;
+    padding: 0 8px;
+    gap: 4px;
+}
+
+.thefade.sheet.item .dmg-comp-empty {
+    padding: 8px;
+    color: var(--text-muted);
+    font-style: italic;
+    text-align: center;
+    font-size: 0.85em;
+}
+
 /* Enchantment power rows */
 .thefade.sheet.item .ench-power-row,
 .thefade.sheet.item .mod-row {

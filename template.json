@@ -262,6 +262,7 @@
       "templates": [ "base", "physical" ],
       "damage": 0,
       "damageType": "B",
+      "damageComponents": [],
       "critical": 4,
       "handedness": "One-Handed",
       "range": "Melee",
