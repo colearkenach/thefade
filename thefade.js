@@ -251,6 +251,7 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/item/mount-sheet.html",
         "systems/thefade/templates/item/musical-sheet.html",
         "systems/thefade/templates/item/poison-sheet.html",
+        "systems/thefade/templates/item/disease-sheet.html",
         "systems/thefade/templates/item/potion-sheet.html",
         "systems/thefade/templates/item/staff-sheet.html",
         "systems/thefade/templates/item/travel-sheet.html",
