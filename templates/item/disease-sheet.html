@@ -1,0 +1,100 @@
+<form class="{{cssClass}}" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge {{item.type}}">{{item.type}}</div>
+        </div>
+    </header>
+
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="attributes">Attributes</a>
+    </nav>
+
+    <section class="sheet-body">
+        <div class="tab" data-group="primary" data-tab="description">
+            <textarea name="system.description">{{system.description}}</textarea>
+        </div>
+
+        <div class="tab" data-group="primary" data-tab="attributes">
+            {{#if system.virality}}
+            <div class="item-calc-bar">
+                <span class="calc-label">Virality:</span>
+                <span class="calc-value">{{system.virality}}D{{#if system.viralityBand}} ({{system.viralityBand}}){{/if}}</span>
+                <a class="item-action-btn roll-virality"><i class="fas fa-dice-d10"></i> Roll Virality</a>
+            </div>
+            {{/if}}
+
+            <div class="item-attr-grid">
+
+                <div class="form-group">
+                    <label>Virality (Dice)</label>
+                    <input type="number" name="system.virality" value="{{system.virality}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group">
+                    <label>Treatment DT</label>
+                    <input type="number" name="system.treatmentDT" value="{{system.treatmentDT}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group">
+                    <label>Transmission</label>
+                    <select name="system.transmission">
+                        {{selectOptions diseaseTransmissionOptions selected=system.transmission}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Duration Type</label>
+                    <select name="system.durationType">
+                        {{selectOptions diseaseDurationTypeOptions selected=system.durationType}}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Incubation</label>
+                    <input type="text" name="system.incubation" value="{{system.incubation}}" placeholder="e.g. 2-5 days" />
+                </div>
+
+                <div class="form-group">
+                    <label>Duration</label>
+                    <input type="text" name="system.duration" value="{{system.duration}}" placeholder="e.g. 10 days" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-field">
+                        <input type="checkbox" name="system.requiresVector" {{checked system.requiresVector}} />
+                        <span>Requires a certain vector</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-field">
+                        <input type="checkbox" name="system.requiresCure" {{checked system.requiresCure}} />
+                        <span>Requires a certain cure</span>
+                    </label>
+                </div>
+
+                <div class="form-group">
+                    <label>Cost (sp.)</label>
+                    <input type="text" name="system.price" value="{{system.price}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group">
+                    <label>Weight (lbs.)</label>
+                    <input type="text" name="system.weight" value="{{system.weight}}" data-dtype="Number" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Effect</label>
+                    <textarea name="system.effect" rows="3">{{system.effect}}</textarea>
+                </div>
+
+            </div>
+
+            <p class="hint">Virality bands: Low (4D-7D), Moderate (8D-11D), High (12D+). +1D per repeat exposure. Treatment DT is the Medicine check to suppress symptoms.</p>
+        </div>
+
+    </section>
+</form>

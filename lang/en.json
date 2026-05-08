@@ -248,6 +248,7 @@
   "TYPES.Item.species": "Species",
   "TYPES.Item.drug": "Drug",
   "TYPES.Item.poison": "Poison",
+  "TYPES.Item.disease": "Disease",
   "TYPES.Item.biological": "Biological",
   "TYPES.Item.medical": "Medical",
   "TYPES.Item.travel": "Travel & Survival",

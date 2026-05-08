@@ -27,7 +27,7 @@ function registerItemSheets() {
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
             "weapon", "armor", "skill", "path", "spell", "talent", "trait", "precept",
-            "species", "drug", "poison", "biological", "medical", "travel",
+            "species", "drug", "poison", "disease", "biological", "medical", "travel",
             "mount", "vehicle", "musical", "potion", "staff", "wand", "gate",
             "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing"
         ],
@@ -115,7 +115,7 @@ Hooks.once('init', async function () {
     // Define all available item types (must match template.json)
     CONFIG.Item.types = [
         "weapon", "armor", "skill", "path", "spell", "talent", "species",
-        "drug", "poison", "biological", "medical", "travel", "mount", "vehicle",
+        "drug", "poison", "disease", "biological", "medical", "travel", "mount", "vehicle",
         "musical", "potion", "staff", "wand", "gate", "communication",
         "containment", "dream", "fleshcraft", "magicitem", "clothing", "trait", "precept"
     ];
@@ -133,6 +133,7 @@ Hooks.once('init', async function () {
         species: "TYPES.Item.species",
         drug: "TYPES.Item.drug",
         poison: "TYPES.Item.poison",
+        disease: "TYPES.Item.disease",
         biological: "TYPES.Item.biological",
         medical: "TYPES.Item.medical",
         travel: "TYPES.Item.travel",
