@@ -40,10 +40,10 @@
 
                 <div class="form-group full-width">
                     <label>Transmission</label>
-                    <div class="checkbox-grid">
+                    <div class="transmission-checkboxes" style="display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;">
                         {{#each diseaseTransmissionOptions as |label key|}}
-                        <label class="form-field">
-                            <input type="checkbox" name="system.transmission.{{key}}" {{checked (lookup ../system.transmission key)}} />
+                        <label style="display:inline-flex;align-items:center;gap:4px;white-space:nowrap;font-weight:normal;">
+                            <input type="checkbox" name="system.transmission.{{key}}" {{checked (lookup ../system.transmission key)}} style="margin:0;" />
                             <span>{{label}}</span>
                         </label>
                         {{/each}}
