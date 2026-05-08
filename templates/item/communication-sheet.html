@@ -26,14 +26,13 @@
                 <label>Complexity</label>
                 <select name="system.complexity">
                     <option value="audio" {{#ifEquals system.complexity "audio"}} selected{{/ifEquals}}>Audio Only</option>
-                    <option value="video" {{#ifEquals system.complexity "video"}} selected{{/ifEquals}}>Video Only</option>
-                    <option value="both" {{#ifEquals system.complexity "both"}} selected{{/ifEquals}}>Audio & Visual</option>
+                    <option value="audiovisual" {{#ifEquals system.complexity "audiovisual"}} selected{{/ifEquals}}>Audio & Visual</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Distance</label>
-                <input type="text" name="system.range" value="{{system.range}}" placeholder="e.g., 1 mile, Same plane, Unlimited" />
+                <input type="text" name="system.range" value="{{system.range}}" placeholder="e.g., 100 miles, Same country, Across Morta IV" />
             </div>
 
             <div class="form-group">
