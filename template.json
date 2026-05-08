@@ -441,7 +441,11 @@
       "templates": [ "base", "physical" ],
       "creatureType": "",
       "specialAbilities": "",
-      "effect": ""
+      "effect": "",
+      "hp": 0,
+      "maxHp": 0,
+      "energy": 0,
+      "maxEnergy": 0
     },
     "medical": {
       "templates": [ "base", "physical" ],
@@ -509,6 +513,7 @@
     },
     "containment": {
       "templates": [ "base", "physical" ],
+      "creaturesAffected": "",
       "effect": ""
     },
     "dream": {
@@ -526,7 +531,29 @@
       "hp": 0,
       "type": "",
       "sanityCost": 0,
-      "active": false
+      "active": false,
+      "el": 1,
+      "size": "medium",
+      "movement": "",
+      "skills": "",
+      "attributes": {
+        "physique": 0,
+        "finesse": 0,
+        "mind": 0,
+        "presence": 0,
+        "soul": 0
+      },
+      "defenses": {
+        "avoid": 0,
+        "resilience": 0,
+        "grit": 0
+      },
+      "nd": {
+        "head": 0,
+        "body": 0,
+        "arms": 0,
+        "legs": 0
+      }
     },
     "clothing": {
       "templates": [ "base", "physical" ],

@@ -24,7 +24,25 @@
         <div class="tab" data-group="primary" data-tab="details">
             <div class="form-group">
                 <label>Creature Type:</label>
-                <input type="text" name="system.creatureType" value="{{system.creatureType}}" placeholder="e.g., Beast, Aberration" />
+                <input type="text" name="system.creatureType" value="{{system.creatureType}}" placeholder="e.g., Symbiotic, Plant-like" />
+            </div>
+
+            <div class="form-group">
+                <label>HP (current / max):</label>
+                <input type="number" name="system.hp" value="{{system.hp}}" data-dtype="Number" />
+                <span>/</span>
+                <input type="number" name="system.maxHp" value="{{system.maxHp}}" data-dtype="Number" />
+            </div>
+
+            <div class="form-group">
+                <label>Energy (current / max):</label>
+                <input type="number" name="system.energy" value="{{system.energy}}" data-dtype="Number" />
+                <span>/</span>
+                <input type="number" name="system.maxEnergy" value="{{system.maxEnergy}}" data-dtype="Number" />
+            </div>
+
+            <div class="item-use-section">
+                <a class="item-action-btn use-energy"><i class="fas fa-bolt"></i> Spend Energy</a>
             </div>
 
             <div class="form-group">
@@ -36,18 +54,6 @@
                 <label>Special Abilities:</label>
                 <textarea name="system.specialAbilities" rows="5">{{system.specialAbilities}}</textarea>
             </div>
-
-            {{#if system.energy}}
-            <div class="item-use-section">
-                <span class="qty-display">Energy: {{system.energy}}</span>
-                <a class="item-action-btn use-energy"><i class="fas fa-bolt"></i> Use Energy</a>
-            </div>
-            {{else}}
-            <div class="form-group">
-                <label>Energy:</label>
-                <input type="number" name="system.energy" value="{{system.energy}}" data-dtype="Number" />
-            </div>
-            {{/if}}
         </div>
 
         <div class="tab" data-group="primary" data-tab="attributes">
