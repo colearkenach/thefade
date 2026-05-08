@@ -1126,7 +1126,10 @@ export class TheFadeItemSheet extends ItemSheet {
                     if (d.result >= 12) successes += 2;
                     else if (d.result >= 8) successes += 1;
                 });
-                const transmissionLabel = html.find(`select[name="system.transmission"] option[value="${sys.transmission}"]`).text() || sys.transmission;
+                const transmissionOptionMap = { airborne: "Airborne", contact: "Contact", fluid: "Fluid", ingested: "Ingested", injury: "Injury" };
+                const transmissionLabel = (sys.transmission && typeof sys.transmission === "object")
+                    ? Object.entries(sys.transmission).filter(([, v]) => v).map(([k]) => transmissionOptionMap[k] || k).join(" or ") || "—"
+                    : (transmissionOptionMap[sys.transmission] || sys.transmission || "—");
                 const durationTypeLabel = html.find(`select[name="system.durationType"] option[value="${sys.durationType}"]`).text() || sys.durationType;
                 ChatMessage.create({
                     speaker: this.item.parent ? ChatMessage.getSpeaker({ actor: this.item.parent }) : undefined,
