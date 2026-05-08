@@ -60,6 +60,27 @@ export class TheFadeItem extends Item {
 
         if (!Array.isArray(data.enchantmentPowers)) data.enchantmentPowers = [];
         if (!Array.isArray(data.modifications)) data.modifications = [];
+        if (!Array.isArray(data.damageComponents)) data.damageComponents = [];
+
+        // In-memory hydration from legacy single damage/damageType. The persisted
+        // migration (so user edits write components) happens lazily in the item
+        // sheet getData; here we just make sure prepareData/templates always see
+        // a usable components array.
+        if (data.damageComponents.length === 0 && (Number(data.damage) || 0) > 0) {
+            data.damageComponents = [{
+                id: "_legacy",
+                amount: Number(data.damage) || 0,
+                type: data.damageType || "Ut"
+            }];
+        }
+
+        // Sync legacy damage/damageType from components so existing roll, chat,
+        // and TAH paths (which read sys.damage / sys.damageType) keep working
+        // unchanged. Total = sum of component amounts; primary type = first.
+        if (data.damageComponents.length > 0) {
+            data.damage = data.damageComponents.reduce((sum, c) => sum + (Number(c.amount) || 0), 0);
+            data.damageType = data.damageComponents[0].type || "Ut";
+        }
 
         // Derived: total damage including magical strengthening
         data.effectiveDamage = (Number(data.damage) || 0) + (Number(data.damageIncrease) || 0);

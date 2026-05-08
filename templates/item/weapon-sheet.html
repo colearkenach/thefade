@@ -34,22 +34,31 @@
         {{#if effectiveDamage}}
         <div class="item-calc-bar">
           <span class="calc-label">Effective Damage:</span>
-          <span class="calc-value">{{effectiveDamage}}{{#if system.damageIncrease}} ({{system.damage}} + {{system.damageIncrease}}){{/if}}</span>
+          <span class="calc-value">{{effectiveDamage}}{{#if effectiveDamageBreakdown}} ({{effectiveDamageBreakdown}}){{/if}}</span>
         </div>
         {{/if}}
+
+        <div class="dmg-comp-section">
+          <div class="dmg-comp-header">
+            <span>Damage</span>
+            <button type="button" class="dmg-comp-add"><i class="fas fa-plus"></i> Add</button>
+          </div>
+          {{#if weaponDamageComponents.length}}
+            {{#each weaponDamageComponents}}
+            <div class="dmg-comp-row" data-dmg-id="{{this.id}}">
+              <input type="number" class="dmg-comp-amount" value="{{this.amount}}" data-dmg-id="{{this.id}}" data-dtype="Number" />
+              <select class="dmg-comp-type" data-dmg-id="{{this.id}}">
+                {{selectOptions ../weaponDamageTypeOptions selected=this.type}}
+              </select>
+              <button type="button" class="dmg-comp-delete" data-dmg-id="{{this.id}}"><i class="fas fa-times"></i></button>
+            </div>
+            {{/each}}
+          {{else}}
+            <div class="dmg-comp-empty">No damage components — click <strong>+ Add</strong> to create one.</div>
+          {{/if}}
+        </div>
+
         <div class="item-attr-grid">
-
-          <div class="form-group">
-            <label>Damage</label>
-            <input type="text" name="system.damage" value="{{system.damage}}" data-dtype="Number" />
-          </div>
-
-          <div class="form-group">
-            <label>Damage Type</label>
-            <select name="system.damageType">
-              {{selectOptions weaponDamageTypeOptions selected=system.damageType}}
-            </select>
-          </div>
 
           <div class="form-group">
             <label>Skill</label>

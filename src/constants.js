@@ -81,9 +81,36 @@ export const SKILL_RANK_OPTIONS = {
 
 export const BODY_PARTS = ["head", "body", "leftarm", "rightarm", "leftleg", "rightleg"];
 
+/**
+ * Pretty-print labels for weapon damage type codes. Used by the item sheet
+ * to render the typed Effective Damage breakdown (e.g. "3 Fire + 3 Bludgeoning").
+ * Keep in sync with weaponDamageTypeOptions in item-sheet.js.
+ */
+export const DAMAGE_TYPE_LABELS = {
+    "B": "Bludgeoning",
+    "S": "Slashing",
+    "P": "Piercing",
+    "BoP": "Bludgeoning or Piercing",
+    "BP": "Bludgeoning & Piercing",
+    "SP": "Slashing & Piercing",
+    "SoP": "Slashing or Piercing",
+    "SoB": "Slashing or Bludgeoning",
+    "F": "Fire",
+    "C": "Cold",
+    "A": "Acid",
+    "E": "Electricity",
+    "So": "Sonic",
+    "Sm": "Smiting",
+    "Ex": "Expel",
+    "Psi": "Psychokinetic",
+    "Co": "Corruption",
+    "Ut": "Untyped"
+};
+
 export const DEFAULT_WEAPON = {
     damage: 0,
     damageType: "S",
+    damageComponents: [],
     critical: 4,
     handedness: "One-Handed",
     range: "Melee",
