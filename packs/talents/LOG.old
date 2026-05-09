@@ -1,7 +1,8 @@
-2026/05/05-17:27:04.068 54e4 Recovering log #348
-2026/05/05-17:27:04.071 54e4 Delete type=0 #348
-2026/05/05-17:27:04.071 54e4 Delete type=3 #346
-2026/05/05-17:41:28.619 6aa4 Level-0 table #353: started
-2026/05/05-17:41:28.619 6aa4 Level-0 table #353: 0 bytes OK
-2026/05/05-17:41:28.620 6aa4 Delete type=0 #351
-2026/05/05-17:41:28.620 6aa4 Manual compaction at level-0 from '!folders!1tib82n3eZ9o2X6z' @ 72057594037927935 : 1 .. '!items!zlFNdexiTq5M7CYC' @ 0 : 0; will stop at (end)
+2026/05/08-15:55:30.428 76b0 Log #355: 0 ops saved to Table #370 OK
+2026/05/08-15:55:30.429 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents/000355.log: OK
+2026/05/08-15:55:30.429 76b0 Log #369: 0 ops saved to Table #371 OK
+2026/05/08-15:55:30.429 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents/000369.log: OK
+2026/05/08-15:55:30.429 76b0 Table #333: 289 entries OK
+2026/05/08-15:55:30.430 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents/MANIFEST-000354: OK
+2026/05/08-15:55:30.431 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents/MANIFEST-000368: OK
+2026/05/08-15:55:30.432 76b0 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\talents; recovered 1 files; 130318 bytes. Some data may have been lost. ****
