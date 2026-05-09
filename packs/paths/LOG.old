@@ -1,8 +1,7 @@
-2026/05/08-15:55:30.343 76b0 Log #402: 0 ops saved to Table #417 OK
-2026/05/08-15:55:30.343 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths/000402.log: OK
-2026/05/08-15:55:30.343 76b0 Log #416: 0 ops saved to Table #418 OK
-2026/05/08-15:55:30.344 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths/000416.log: OK
-2026/05/08-15:55:30.344 76b0 Table #380: 70 entries OK
-2026/05/08-15:55:30.345 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths/MANIFEST-000401: OK
-2026/05/08-15:55:30.346 76b0 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths/MANIFEST-000415: OK
-2026/05/08-15:55:30.347 76b0 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths; recovered 1 files; 121389 bytes. Some data may have been lost. ****
+2026/05/05-17:27:04.037 7280 Recovering log #395
+2026/05/05-17:27:04.039 7280 Delete type=0 #395
+2026/05/05-17:27:04.039 7280 Delete type=3 #393
+2026/05/05-17:41:28.609 6aa4 Level-0 table #400: started
+2026/05/05-17:41:28.609 6aa4 Level-0 table #400: 0 bytes OK
+2026/05/05-17:41:28.609 6aa4 Delete type=0 #398
+2026/05/05-17:41:28.610 6aa4 Manual compaction at level-0 from '!folders!CCq3VLQTqB27OVAa' @ 72057594037927935 : 1 .. '!items!zxsB6n5dgdZXM5p0' @ 0 : 0; will stop at (end)
