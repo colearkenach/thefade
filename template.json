@@ -77,6 +77,7 @@
         "resilienceBonus": 0,
         "avoidBonus": 0,
         "gritBonus": 0,
+        "avoidOverride": null,
         "passiveDodge": 0,
         "passiveParry": 0,
         "facing": "front"
@@ -180,6 +181,7 @@
       "defenses": {
         "resilience": 0, "avoid": 0, "grit": 0,
         "resilienceBonus": 0, "avoidBonus": 0, "gritBonus": 0,
+        "avoidOverride": null,
         "passiveDodge": 0, "passiveParry": 0, "facing": "front"
       },
       "movement": { "land": 4, "fly": 0, "swim": 0, "climb": 0, "burrow": 0 },

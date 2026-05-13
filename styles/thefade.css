@@ -9473,3 +9473,41 @@ select[name="system.aura.color"] option[value="white"] {
     font-style: italic;
     margin: 4px 0;
 }
+
+/* ---------- Pencil-icon adjustable values (Avoid prototype) ---------- */
+.defense-compact .defense-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.defense-compact .tf-edit-adjustable {
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+    font-size: 0.85em;
+    line-height: 1;
+}
+.defense-compact .tf-edit-adjustable:hover {
+    opacity: 1;
+    color: var(--accent, #b88846);
+}
+
+.dialog.tf-edit-adjustable .form-group { margin-bottom: 8px; }
+.dialog.tf-edit-adjustable .form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+.dialog.tf-edit-adjustable .form-group input { width: 100%; }
+.dialog.tf-edit-adjustable .form-group .hint {
+    font-size: 11px;
+    color: #666;
+    margin: 2px 0 0;
+    font-style: italic;
+}
+.dialog.tf-edit-adjustable .tf-muted {
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 8px;
+}
