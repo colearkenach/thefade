@@ -268,7 +268,7 @@ Hooks.once('init', async function () {
     // --------------------------------------------------------------------
 
     CONFIG.Combat.initiative = {
-        formula: "1d12 + @system.attributes.finesse.value",
+        formula: "1d12 + @system.attributes.finesse.total",
         decimals: 0
     };
 

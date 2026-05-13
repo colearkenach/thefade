@@ -20,7 +20,9 @@
 <div class="grid grid-5col">
 
     <div class="attribute panel">
-        <label>Physique</label>
+        <label>Physique
+            <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="physique" data-label="Physique" title="Edit Physique (bonus / override)"><i class="fas fa-pencil"></i></a>
+        </label>
         <div class="attribute-value">
             <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.value}}" data-dtype="Number" />
             {{#if system.attributes.physique.speciesBonus}}
@@ -29,6 +31,9 @@
             {{#if system.attributes.physique.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.physique.flexibleBonus}}</span>
             {{/if}}
+            {{#unless (eq system.attributes.physique.total system.attributes.physique.value)}}
+            <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.physique.total}}</span>
+            {{/unless}}
         </div>
         <div class="attribute-desc">
             <p>Strength, toughness, and stamina</p>
@@ -36,7 +41,9 @@
     </div>
 
     <div class="attribute panel">
-        <label>Finesse</label>
+        <label>Finesse
+            <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="finesse" data-label="Finesse" title="Edit Finesse (bonus / override)"><i class="fas fa-pencil"></i></a>
+        </label>
         <div class="attribute-value">
             <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.value}}" data-dtype="Number" />
             {{#if system.attributes.finesse.speciesBonus}}
@@ -45,6 +52,9 @@
             {{#if system.attributes.finesse.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.finesse.flexibleBonus}}</span>
             {{/if}}
+            {{#unless (eq system.attributes.finesse.total system.attributes.finesse.value)}}
+            <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.finesse.total}}</span>
+            {{/unless}}
         </div>
         <div class="attribute-desc">
             <p>Agility, dexterity, and reflexes</p>
@@ -52,7 +62,9 @@
     </div>
 
     <div class="attribute panel">
-        <label>Mind</label>
+        <label>Mind
+            <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="mind" data-label="Mind" title="Edit Mind (bonus / override)"><i class="fas fa-pencil"></i></a>
+        </label>
         <div class="attribute-value">
             <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.value}}" data-dtype="Number" />
             {{#if system.attributes.mind.speciesBonus}}
@@ -61,6 +73,9 @@
             {{#if system.attributes.mind.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.mind.flexibleBonus}}</span>
             {{/if}}
+            {{#unless (eq system.attributes.mind.total system.attributes.mind.value)}}
+            <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.mind.total}}</span>
+            {{/unless}}
         </div>
         <div class="attribute-desc">
             <p>Intellect, problem-solving, and perception</p>
@@ -68,7 +83,9 @@
     </div>
 
     <div class="attribute panel">
-        <label>Presence</label>
+        <label>Presence
+            <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="presence" data-label="Presence" title="Edit Presence (bonus / override)"><i class="fas fa-pencil"></i></a>
+        </label>
         <div class="attribute-value">
             <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.value}}" data-dtype="Number" />
             {{#if system.attributes.presence.speciesBonus}}
@@ -77,6 +94,9 @@
             {{#if system.attributes.presence.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.presence.flexibleBonus}}</span>
             {{/if}}
+            {{#unless (eq system.attributes.presence.total system.attributes.presence.value)}}
+            <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.presence.total}}</span>
+            {{/unless}}
         </div>
         <div class="attribute-desc">
             <p>Charisma, leadership, and social skills</p>
@@ -84,7 +104,9 @@
     </div>
 
     <div class="attribute panel">
-        <label>Soul</label>
+        <label>Soul
+            <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="soul" data-label="Soul" title="Edit Soul (bonus / override)"><i class="fas fa-pencil"></i></a>
+        </label>
         <div class="attribute-value">
             <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.value}}" data-dtype="Number" />
             {{#if system.attributes.soul.speciesBonus}}
@@ -93,6 +115,9 @@
             {{#if system.attributes.soul.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.soul.flexibleBonus}}</span>
             {{/if}}
+            {{#unless (eq system.attributes.soul.total system.attributes.soul.value)}}
+            <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.soul.total}}</span>
+            {{/unless}}
         </div>
         <div class="attribute-desc">
             <p>Magical aptitude and willpower</p>
