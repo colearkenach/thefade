@@ -75,6 +75,22 @@ export class TheFadeActor extends Actor {
             if (typeof data.attributes[attr].speciesBonus !== 'number') {
                 data.attributes[attr].speciesBonus = 0;
             }
+
+            if (typeof data.attributes[attr].bonus !== 'number') {
+                data.attributes[attr].bonus = 0;
+            }
+
+            // override stays null when unset; only coerce explicit numbers
+            if (data.attributes[attr].override !== null
+                && data.attributes[attr].override !== undefined
+                && data.attributes[attr].override !== ""
+                && !Number.isFinite(Number(data.attributes[attr].override))) {
+                data.attributes[attr].override = null;
+            }
+
+            if (typeof data.attributes[attr].total !== 'number') {
+                data.attributes[attr].total = data.attributes[attr].value;
+            }
         });
 
         // Ensure defenses exist
@@ -234,6 +250,11 @@ export class TheFadeActor extends Actor {
         try {
             // Ensure data integrity before calculations
             this._ensureSystemDataIntegrity(data);
+
+            // Compute effective attribute totals (value + speciesBonus +
+            // flexibleBonus + manual bonus, or manual override). Must run
+            // before defenses or anything else reading attribute totals.
+            this._computeAttributeTotals(data);
 
             // Calculate defenses based on attributes and include bonuses
             this._calculateBaseDefenses(data, actorData);
@@ -528,10 +549,10 @@ export class TheFadeActor extends Actor {
         if (!data.defenses.gritBonus) data.defenses.gritBonus = 0;
         if (!data.defenses.avoidPenalty) data.defenses.avoidPenalty = 0;
 
-        // Calculate base defenses based on attributes
-        data.defenses.resilience = Math.floor(data.attributes.physique.value / 2);
-        data.defenses.avoid = Math.floor(data.attributes.finesse.value / 2);
-        data.defenses.grit = Math.floor(data.attributes.mind.value / 2);
+        // Calculate base defenses based on effective attribute totals
+        data.defenses.resilience = Math.floor(data.attributes.physique.total / 2);
+        data.defenses.avoid = Math.floor(data.attributes.finesse.total / 2);
+        data.defenses.grit = Math.floor(data.attributes.mind.total / 2);
 
         // Ensure minimum value of 1 for base defenses
         data.defenses.resilience = Math.max(1, data.defenses.resilience);
@@ -543,8 +564,8 @@ export class TheFadeActor extends Actor {
         data.totalAvoid = Math.max(1, data.defenses.avoid + Number(data.defenses.avoidBonus || 0));
         data.totalGrit = Math.max(1, data.defenses.grit + Number(data.defenses.gritBonus || 0));
 
-        // Tooltip formula strings
-        const phy = data.attributes.physique.value, fin = data.attributes.finesse.value, mnd = data.attributes.mind.value;
+        // Tooltip formula strings — show the effective attribute total
+        const phy = data.attributes.physique.total, fin = data.attributes.finesse.total, mnd = data.attributes.mind.total;
         data.defenses.resilienceFormula = `Physique ${phy} ÷ 2 = ${data.defenses.resilience}` + (data.defenses.resilienceBonus ? ` + ${data.defenses.resilienceBonus} bonus` : "");
         data.defenses.avoidFormula     = `Finesse ${fin} ÷ 2 = ${data.defenses.avoid}` + (data.defenses.avoidBonus ? ` + ${data.defenses.avoidBonus} bonus` : "");
         data.defenses.gritFormula      = `Mind ${mnd} ÷ 2 = ${data.defenses.grit}` + (data.defenses.gritBonus ? ` + ${data.defenses.gritBonus} bonus` : "");
@@ -555,7 +576,7 @@ export class TheFadeActor extends Actor {
 
         // Calculate Passive Dodge based on Acrobatics skill and Finesse
         let acrobonaticsDodge = 0;
-        let finesseDodge = Math.floor(data.attributes.finesse.value / 4);
+        let finesseDodge = Math.floor(data.attributes.finesse.total / 4);
 
         // Find Acrobatics skill
         const acrobaticsSkill = actor.items.find(i =>
@@ -703,13 +724,41 @@ export class TheFadeActor extends Actor {
      * bypassing base, bonus, facing, stance, and condition deltas. Runs
      * last so it wins against every other source.
      */
+    /**
+     * Compute effective attribute totals. For each of the five attributes
+     * sets `.total = override ?? (value + speciesBonus + flexibleBonus + bonus)`,
+     * clamped to a minimum of 1. All downstream consumers (defenses, dodge,
+     * damage bonus, soul checks, etc.) should read `.total` rather than
+     * `.value` so manual bonuses and overrides propagate through game math.
+     */
+    _computeAttributeTotals(data) {
+        if (!data.attributes) return;
+        const keys = ["physique", "finesse", "mind", "presence", "soul"];
+        for (const k of keys) {
+            const a = data.attributes[k];
+            if (!a) continue;
+            const value = Number(a.value ?? 1);
+            const species = Number(a.speciesBonus ?? 0);
+            const flex = Number(a.flexibleBonus ?? 0);
+            const bonus = Number(a.bonus ?? 0);
+            const o = a.override;
+            const overridden = o !== null && o !== undefined && o !== "" && Number.isFinite(Number(o));
+            a.total = Math.max(1, overridden ? Number(o) : value + species + flex + bonus);
+        }
+    }
+
     _applyDefenseOverrides(data) {
         if (!data.defenses) return;
-        const o = data.defenses.avoidOverride;
-        if (o !== null && o !== undefined && o !== "" && Number.isFinite(Number(o))) {
-            data.totalAvoid = Number(o);
-            data.defenses.avoidFormula = `Manual override: ${data.totalAvoid}`;
-        }
+        const apply = (overrideKey, totalKey, formulaKey) => {
+            const o = data.defenses[overrideKey];
+            if (o !== null && o !== undefined && o !== "" && Number.isFinite(Number(o))) {
+                data[totalKey] = Number(o);
+                data.defenses[formulaKey] = `Manual override: ${data[totalKey]}`;
+            }
+        };
+        apply("resilienceOverride", "totalResilience", "resilienceFormula");
+        apply("avoidOverride",      "totalAvoid",      "avoidFormula");
+        apply("gritOverride",       "totalGrit",       "gritFormula");
     }
 
     /**
@@ -742,7 +791,7 @@ export class TheFadeActor extends Actor {
             return;
         }
 
-        const physique = data.attributes.physique.value || 1;
+        const physique = data.attributes.physique.total || 1;
         const heavy = (5 + physique) * 30;
         data.carryingCapacity = {
             light:      (5 + physique) * 10,
@@ -809,6 +858,10 @@ export class TheFadeActor extends Actor {
             };
         }
 
+        // Compute effective attribute totals so downstream code reads
+        // `.total` consistently across characters and NPCs.
+        this._computeAttributeTotals(data);
+
         // Ensure defenses exist
         if (!data.defenses) {
             data.defenses = {
@@ -834,10 +887,10 @@ export class TheFadeActor extends Actor {
             data.activeStance = "none";
         }
 
-        // Calculate defenses from attributes
-        const phy = data.attributes.physique?.value || 1;
-        const fin = data.attributes.finesse?.value || 1;
-        const mnd = data.attributes.mind?.value || 1;
+        // Calculate defenses from effective attribute totals
+        const phy = data.attributes.physique?.total || 1;
+        const fin = data.attributes.finesse?.total || 1;
+        const mnd = data.attributes.mind?.total || 1;
         data.defenses.resilience = Math.max(1, Math.floor(phy / 2));
         data.defenses.avoid = Math.max(1, Math.floor(fin / 2));
         data.defenses.grit = Math.max(1, Math.floor(mnd / 2));

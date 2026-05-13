@@ -6345,6 +6345,29 @@ select[name="system.aura.color"] option[value="white"] {
     border-radius: 2px;
 }
 
+.thefade .attribute.panel .attribute-value .attribute-total {
+    font-size: 0.85em;
+    color: var(--accent-gold, #b88846);
+    font-weight: 700;
+    padding: 1px 6px;
+    background: rgba(168, 138, 76, 0.18);
+    border-radius: 3px;
+    margin-left: 4px;
+}
+
+.thefade .attribute.panel label .tf-edit-adjustable {
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 0.15s ease;
+    font-size: 0.75em;
+    margin-left: 4px;
+    line-height: 1;
+}
+.thefade .attribute.panel label .tf-edit-adjustable:hover {
+    opacity: 1;
+    color: var(--accent-gold, #b88846);
+}
+
 .thefade .attribute.panel .attribute-desc {
     order: 3;
     text-align: center;

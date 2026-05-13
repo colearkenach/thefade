@@ -1373,7 +1373,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             await actor.setFlag("thefade", "avoidPenalty", avoidPenalty);
 
             // Update the system data for display
-            const baseAvoid = Math.floor(actor.system.attributes.finesse.value / 2);
+            const baseAvoid = Math.floor((actor.system.attributes.finesse.total ?? actor.system.attributes.finesse.value) / 2);
             const avoidBonus = actor.system.defenses.avoidBonus || 0;
             const totalAvoid = Math.max(0, baseAvoid + avoidBonus + avoidPenalty);
 
@@ -1614,7 +1614,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Calculate Passive Dodge from Acrobatics or Finesse
         let acrobonaticsDodge = 0;
-        let finesseDodge = Math.floor(data.attributes.finesse.value / 4);
+        let finesseDodge = Math.floor((data.attributes.finesse.total ?? data.attributes.finesse.value) / 4);
 
         // Find Acrobatics skill
         const acrobaticsSkill = actor.items.find(i =>
@@ -1980,7 +1980,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
     */
     _getMaxAttunements() {
         const totalLevel = this.actor.system.level || 1;
-        const soulAttribute = this.actor.system.attributes.soul.value || 1;
+        const soulAttribute = (this.actor.system.attributes.soul.total ?? this.actor.system.attributes.soul.value) || 1;
         return Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
     }
 
@@ -2487,16 +2487,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
         dicePool = Math.max(1, dicePool);
 
         // Add weapon specific bonuses
+        const attrTotal = (k) => (this.actor.system.attributes[k]?.total ?? this.actor.system.attributes[k]?.value ?? 0);
         if (weaponData.qualities.includes("Agile")) {
-            const bonusDamage = Math.floor(this.actor.system.attributes.finesse.value / 2);
+            const bonusDamage = Math.floor(attrTotal("finesse") / 2);
             weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
         } else if (weaponData.qualities.includes("Brutish")) {
-            const bonusDamage = Math.floor(this.actor.system.attributes.physique.value / 2);
+            const bonusDamage = Math.floor(attrTotal("physique") / 2);
             weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
         } else if (weaponData.attribute && weaponData.attribute !== "none") {
             // Add half of the weapon's attribute to damage if not "none"
-            const weaponAttribute = weaponData.attribute;
-            const bonusDamage = Math.floor(this.actor.system.attributes[weaponAttribute].value / 2);
+            const bonusDamage = Math.floor(attrTotal(weaponData.attribute) / 2);
             weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
         } else {
             // No attribute bonus
@@ -3386,11 +3386,63 @@ export class TheFadeCharacterSheet extends ActorSheet {
      * read/write the right fields without each call-site repeating itself.
      */
     static ADJUSTABLE_STATS = {
+        resilience: {
+            basePath: "system.defenses.resilience",
+            bonusPath: "system.defenses.resilienceBonus",
+            overridePath: "system.defenses.resilienceOverride",
+            totalPath: "system.totalResilience"
+        },
         avoid: {
             basePath: "system.defenses.avoid",
             bonusPath: "system.defenses.avoidBonus",
             overridePath: "system.defenses.avoidOverride",
             totalPath: "system.totalAvoid"
+        },
+        grit: {
+            basePath: "system.defenses.grit",
+            bonusPath: "system.defenses.gritBonus",
+            overridePath: "system.defenses.gritOverride",
+            totalPath: "system.totalGrit"
+        },
+        physique: {
+            basePath: "system.attributes.physique.value",
+            bonusPath: "system.attributes.physique.bonus",
+            overridePath: "system.attributes.physique.override",
+            totalPath: "system.attributes.physique.total",
+            baseLabel: "Base Score",
+            baseHint: "The score you entered on the sheet. Species and flexible bonuses are added automatically."
+        },
+        finesse: {
+            basePath: "system.attributes.finesse.value",
+            bonusPath: "system.attributes.finesse.bonus",
+            overridePath: "system.attributes.finesse.override",
+            totalPath: "system.attributes.finesse.total",
+            baseLabel: "Base Score",
+            baseHint: "The score you entered on the sheet. Species and flexible bonuses are added automatically."
+        },
+        mind: {
+            basePath: "system.attributes.mind.value",
+            bonusPath: "system.attributes.mind.bonus",
+            overridePath: "system.attributes.mind.override",
+            totalPath: "system.attributes.mind.total",
+            baseLabel: "Base Score",
+            baseHint: "The score you entered on the sheet. Species and flexible bonuses are added automatically."
+        },
+        presence: {
+            basePath: "system.attributes.presence.value",
+            bonusPath: "system.attributes.presence.bonus",
+            overridePath: "system.attributes.presence.override",
+            totalPath: "system.attributes.presence.total",
+            baseLabel: "Base Score",
+            baseHint: "The score you entered on the sheet. Species and flexible bonuses are added automatically."
+        },
+        soul: {
+            basePath: "system.attributes.soul.value",
+            bonusPath: "system.attributes.soul.bonus",
+            overridePath: "system.attributes.soul.override",
+            totalPath: "system.attributes.soul.total",
+            baseLabel: "Base Score",
+            baseHint: "The score you entered on the sheet. Species and flexible bonuses are added automatically."
         }
     };
 
@@ -3414,13 +3466,15 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const overrideRaw = get(cfg.overridePath);
         const total = Number(get(cfg.totalPath) ?? 0);
 
+        const baseLabel = cfg.baseLabel || "Base";
+        const baseHint = cfg.baseHint || "Use Bonus or Override to adjust.";
         const content = `
             <form class="tf-edit-adjustable">
                 <p class="tf-muted">Editing <strong>${label}</strong>. Total = Base + Bonus, unless an Override is set (which replaces the total).</p>
                 <div class="form-group">
-                    <label>Computed Base</label>
+                    <label>${baseLabel}</label>
                     <input type="number" value="${base}" disabled />
-                    <p class="hint">Derived from attributes. Use Bonus or Override to adjust.</p>
+                    <p class="hint">${baseHint}</p>
                 </div>
                 <div class="form-group">
                     <label>Manual Bonus</label>

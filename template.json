@@ -7,21 +7,11 @@
           "value": 0
         },
         "attributes": {
-          "physique": {
-            "value": 1
-          },
-          "finesse": {
-            "value": 1
-          },
-          "mind": {
-            "value": 1
-          },
-          "presence": {
-            "value": 1
-          },
-          "soul": {
-            "value": 1
-          }
+          "physique": { "value": 1, "bonus": 0, "override": null, "total": 1 },
+          "finesse":  { "value": 1, "bonus": 0, "override": null, "total": 1 },
+          "mind":     { "value": 1, "bonus": 0, "override": null, "total": 1 },
+          "presence": { "value": 1, "bonus": 0, "override": null, "total": 1 },
+          "soul":     { "value": 1, "bonus": 0, "override": null, "total": 1 }
         }
       }
     },
@@ -77,7 +67,9 @@
         "resilienceBonus": 0,
         "avoidBonus": 0,
         "gritBonus": 0,
+        "resilienceOverride": null,
         "avoidOverride": null,
+        "gritOverride": null,
         "passiveDodge": 0,
         "passiveParry": 0,
         "facing": "front"
@@ -181,7 +173,7 @@
       "defenses": {
         "resilience": 0, "avoid": 0, "grit": 0,
         "resilienceBonus": 0, "avoidBonus": 0, "gritBonus": 0,
-        "avoidOverride": null,
+        "resilienceOverride": null, "avoidOverride": null, "gritOverride": null,
         "passiveDodge": 0, "passiveParry": 0, "facing": "front"
       },
       "movement": { "land": 4, "fly": 0, "swim": 0, "climb": 0, "burrow": 0 },

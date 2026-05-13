@@ -85,52 +85,35 @@
             {{!-- Defenses — unified 6-col band (active + passive together) --}}
             <h2>Defenses</h2>
             <div class="defenses-band">
-                <div class="defense" data-defense="resilience">
-                    <input type="checkbox" id="toggle-resilience" class="defense-checkbox">
-                    <label for="toggle-resilience" class="defense-label">Resilience <span class="toggle-icon">▼</span></label>
+                <div class="defense defense-compact" data-defense="resilience">
+                    <label class="defense-label">Resilience
+                        <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="resilience" data-label="Resilience" title="Edit Resilience (bonus / override)"><i class="fas fa-pencil"></i></a>
+                    </label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalResilience}}" disabled class="total-value" title="{{system.defenses.resilienceFormula}}" />
                         <span class="excess-penalty resilience-excess-penalty">+0D</span>
-                    </div>
-                    <div class="defense-details">
-                        <div class="detail-row">
-                            <span>Base:</span>
-                            <input type="text" value="{{system.defenses.resilience}}" disabled class="base-value" />
-                        </div>
-                        <div class="detail-row">
-                            <span>Bonus:</span>
-                            <input type="text" name="system.defenses.resilienceBonus" value="{{system.defenses.resilienceBonus}}" data-dtype="Number" class="small-input" />
-                        </div>
                     </div>
                     <div class="defense-desc">vs toxins, fatigue, disease</div>
                 </div>
 
                 <div class="defense defense-compact" data-defense="avoid">
-                    <label class="defense-label">Avoid</label>
+                    <label class="defense-label">Avoid
+                        <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="avoid" data-label="Avoid" title="Edit Avoid (bonus / override)"><i class="fas fa-pencil"></i></a>
+                    </label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" title="{{system.defenses.avoidFormula}}" />
                         <span class="excess-penalty avoid-excess-penalty">+0D</span>
-                        <a class="tf-edit-adjustable" data-action="edit-adjustable" data-stat="avoid" data-label="Avoid" title="Edit Avoid (bonus / override)"><i class="fas fa-pencil"></i></a>
                     </div>
                     <div class="defense-desc">vs physical</div>
                 </div>
 
-                <div class="defense" data-defense="grit">
-                    <input type="checkbox" id="toggle-grit" class="defense-checkbox">
-                    <label for="toggle-grit" class="defense-label">Grit <span class="toggle-icon">▼</span></label>
+                <div class="defense defense-compact" data-defense="grit">
+                    <label class="defense-label">Grit
+                        <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="grit" data-label="Grit" title="Edit Grit (bonus / override)"><i class="fas fa-pencil"></i></a>
+                    </label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalGrit}}" disabled class="total-value" title="{{system.defenses.gritFormula}}" />
                         <span class="excess-penalty grit-excess-penalty">+0D</span>
-                    </div>
-                    <div class="defense-details">
-                        <div class="detail-row">
-                            <span>Base:</span>
-                            <input type="text" value="{{system.defenses.grit}}" disabled class="base-value" />
-                        </div>
-                        <div class="detail-row">
-                            <span>Bonus:</span>
-                            <input type="text" name="system.defenses.gritBonus" value="{{system.defenses.gritBonus}}" data-dtype="Number" class="small-input" />
-                        </div>
                     </div>
                     <div class="defense-desc">vs mental/sanity</div>
                 </div>
