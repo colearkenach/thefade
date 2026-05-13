@@ -3381,6 +3381,100 @@ export class TheFadeCharacterSheet extends ActorSheet {
     // --------------------------------------------------------------------
 
     /**
+     * Stat key -> { basePath, bonusPath, overridePath, totalPath } locator.
+     * Adjustable computed values register here so the pencil-icon dialog can
+     * read/write the right fields without each call-site repeating itself.
+     */
+    static ADJUSTABLE_STATS = {
+        avoid: {
+            basePath: "system.defenses.avoid",
+            bonusPath: "system.defenses.avoidBonus",
+            overridePath: "system.defenses.avoidOverride",
+            totalPath: "system.totalAvoid"
+        }
+    };
+
+    /**
+     * Pencil-icon edit dialog for adjustable computed values. Reads/writes
+     * the bonus and override fields registered in ADJUSTABLE_STATS. Override
+     * (when non-blank) replaces the computed total outright in actor.js.
+     */
+    async _onEditAdjustable(ev) {
+        ev.preventDefault();
+        ev.stopPropagation();
+        const el = ev.currentTarget;
+        const stat = el.dataset.stat;
+        const label = el.dataset.label || stat;
+        const cfg = TheFadeCharacterSheet.ADJUSTABLE_STATS[stat];
+        if (!cfg) return ui.notifications?.warn(`Unknown adjustable stat: ${stat}`);
+
+        const get = (path) => path.split(".").reduce((o, k) => (o == null ? o : o[k]), this.actor);
+        const base = Number(get(cfg.basePath) ?? 0);
+        const bonus = Number(get(cfg.bonusPath) ?? 0);
+        const overrideRaw = get(cfg.overridePath);
+        const total = Number(get(cfg.totalPath) ?? 0);
+
+        const content = `
+            <form class="tf-edit-adjustable">
+                <p class="tf-muted">Editing <strong>${label}</strong>. Total = Base + Bonus, unless an Override is set (which replaces the total).</p>
+                <div class="form-group">
+                    <label>Computed Base</label>
+                    <input type="number" value="${base}" disabled />
+                    <p class="hint">Derived from attributes. Use Bonus or Override to adjust.</p>
+                </div>
+                <div class="form-group">
+                    <label>Manual Bonus</label>
+                    <input type="number" name="bonus" value="${bonus}" />
+                    <p class="hint">Adds on top of the base.</p>
+                </div>
+                <div class="form-group">
+                    <label>Override</label>
+                    <input type="number" name="override" value="${overrideRaw ?? ""}" placeholder="(blank = use computed total)" />
+                    <p class="hint">If set, replaces the computed total entirely — ignores facing, stance, and conditions.</p>
+                </div>
+                <div class="form-group">
+                    <label>Current Total</label>
+                    <input type="number" value="${total}" disabled />
+                </div>
+            </form>`;
+
+        return new Promise((resolve) => {
+            new Dialog({
+                title: `Edit ${label}`,
+                content,
+                buttons: {
+                    save: {
+                        label: "Save",
+                        callback: async (html) => {
+                            const form = html[0].querySelector("form");
+                            const bonusRaw = form.elements.bonus.value;
+                            const overrideStr = form.elements.override.value;
+                            await this.actor.update({
+                                [cfg.bonusPath]: bonusRaw === "" ? 0 : Number(bonusRaw),
+                                [cfg.overridePath]: overrideStr === "" ? null : Number(overrideStr)
+                            });
+                            resolve();
+                        }
+                    },
+                    reset: {
+                        label: "Reset",
+                        callback: async () => {
+                            await this.actor.update({
+                                [cfg.bonusPath]: 0,
+                                [cfg.overridePath]: null
+                            });
+                            resolve();
+                        }
+                    },
+                    cancel: { label: "Cancel", callback: () => resolve() }
+                },
+                default: "save",
+                close: () => resolve()
+            }, { classes: ["thefade", "dialog", "tf-edit-adjustable"], width: 460 }).render(true);
+        });
+    }
+
+    /**
     * Activate sheet event listeners
     * @param {HTMLElement} html - Sheet HTML element
     */
@@ -3399,6 +3493,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
         this._initializeExcessPenaltyTooltips(html);
 
         this._activateInventoryListeners(html);
+
+        // Pencil-icon edit dialog for adjustable computed values.
+        html.find('.tf-edit-adjustable').on('click', this._onEditAdjustable.bind(this));
 
         // Combat-state: clear all conditions + stance
         html.find('.combat-state-clear').on('click', async (ev) => {

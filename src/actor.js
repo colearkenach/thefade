@@ -247,6 +247,10 @@ export class TheFadeActor extends Actor {
             // Apply active-condition modifiers (defenses, speed, action economy)
             this._applyConditionState(data);
 
+            // Manual overrides win outright — applied last so they bypass
+            // base, bonus, facing, stance, and condition deltas.
+            this._applyDefenseOverrides(data);
+
             // Calculate carrying capacity
             this._calculateCarryingCapacity(data);
 
@@ -694,6 +698,21 @@ export class TheFadeActor extends Actor {
     }
 
     /**
+     * Apply manual user overrides for derived defense values. An override
+     * (non-null, finite number) replaces the computed total outright,
+     * bypassing base, bonus, facing, stance, and condition deltas. Runs
+     * last so it wins against every other source.
+     */
+    _applyDefenseOverrides(data) {
+        if (!data.defenses) return;
+        const o = data.defenses.avoidOverride;
+        if (o !== null && o !== undefined && o !== "" && Number.isFinite(Number(o))) {
+            data.totalAvoid = Number(o);
+            data.defenses.avoidFormula = `Manual override: ${data.totalAvoid}`;
+        }
+    }
+
+    /**
      * Compute per-roll dice modifiers from the actor's active conditions.
      * Roll handlers call this after assembling the base pool and before
      * constructing the Roll formula. Returns { bonusDice, penaltyDice,
@@ -836,6 +855,7 @@ export class TheFadeActor extends Actor {
         applyBaseDefenseStances(data);
         this._applyFacingModifiers(data);
         this._applyConditionState(data);
+        this._applyDefenseOverrides(data);
 
         // HP state label (max is stored directly, not calculated)
         if (!data.hp) data.hp = { value: 10, max: 10 };
