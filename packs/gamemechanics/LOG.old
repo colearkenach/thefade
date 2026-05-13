@@ -1,8 +1,11 @@
-2026/05/05-17:27:04.079 54e4 Recovering log #20
-2026/05/05-17:27:04.081 54e4 Delete type=0 #20
-2026/05/05-17:27:04.081 54e4 Delete type=3 #18
-2026/05/05-17:41:28.616 6aa4 Level-0 table #25: started
-2026/05/05-17:41:28.616 6aa4 Level-0 table #25: 0 bytes OK
-2026/05/05-17:41:28.617 6aa4 Delete type=0 #23
-2026/05/05-17:41:28.620 6aa4 Manual compaction at level-0 from '!folders!O4wTQ0RD5mSa4H4E' @ 72057594037927935 : 1 .. '!journal.pages!YU95NEruyhALmmD1.W4uHM1RMoJ8PreUU' @ 0 : 0; will stop at (end)
-2026/05/05-17:41:28.620 6aa4 Manual compaction at level-1 from '!folders!O4wTQ0RD5mSa4H4E' @ 72057594037927935 : 1 .. '!journal.pages!YU95NEruyhALmmD1.W4uHM1RMoJ8PreUU' @ 0 : 0; will stop at (end)
+2026/05/13-12:42:38.988 4268 Log #27: 0 ops saved to Table #50 OK
+2026/05/13-12:42:38.990 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/000027.log: OK
+2026/05/13-12:42:38.990 4268 Log #41: 0 ops saved to Table #51 OK
+2026/05/13-12:42:38.990 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/000041.log: OK
+2026/05/13-12:42:38.990 4268 Log #49: 0 ops saved to Table #52 OK
+2026/05/13-12:42:38.990 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/000049.log: OK
+2026/05/13-12:42:38.990 4268 Table #5: 13 entries OK
+2026/05/13-12:42:38.992 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/MANIFEST-000026: OK
+2026/05/13-12:42:38.993 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/MANIFEST-000040: OK
+2026/05/13-12:42:38.993 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/MANIFEST-000048: OK
+2026/05/13-12:42:38.994 4268 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics; recovered 1 files; 14429 bytes. Some data may have been lost. ****

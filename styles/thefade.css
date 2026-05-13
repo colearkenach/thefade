@@ -92,6 +92,7 @@
 .app.sheet.actor.thefade .sheet-header {
   margin-top: 0 !important;
   flex-shrink: 0 !important;
+  justify-content: center;
 }
 
 .app.sheet.actor.thefade .sheet-body {
@@ -2638,11 +2639,15 @@ input[readonly] {
 }
 
 .flexible-bonus-selector {
-  margin-bottom: 10px;
-  padding: 5px;
-  background: rgba(76, 175, 80, 0.1);
-  border: 1px solid #4caf50;
+  margin: 10px 0 0;
+  padding: 6px 6px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-faint);
   border-radius: 3px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-evenly;
 }
 
 /* ===== AURA SYSTEM ===== */
@@ -4595,9 +4600,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 /* ===== DICE ROLLER - COMPACT ===== */
 .thefade .header-tool {
-    border: 1px solid var(--sheet-border);
     padding: 4px 8px;
-    background: var(--field-bg);
     margin-top: 6px;
 }
 
@@ -5374,8 +5377,7 @@ select[name="system.aura.color"] option[value="white"] {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.85em;
-}
+  }
 
     .thefade .header-tool .tool-label {
         font-weight: bold;
@@ -5682,8 +5684,14 @@ select[name="system.aura.color"] option[value="white"] {
 /* ===== MOVEMENT TABLE ===== */
 .thefade .movement-table {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 4px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+    max-width: fit-content;
 }
 
     .thefade .movement-table td {
@@ -5942,16 +5950,16 @@ select[name="system.aura.color"] option[value="white"] {
 
 /* ----- Redesigned sheet header ----- */
 .thefade .sheet-header.redesigned-header {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-    padding: 14px 16px;
-    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
-    border: 1px solid var(--border-faint);
-    border-bottom: 2px solid var(--accent-crimson);
-    border-radius: 4px;
-    margin-bottom: 12px;
-    box-shadow: var(--box-shadow-card);
+  display: block;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-alt) 100%);
+  border: 1px solid var(--border-faint);
+  border-bottom: 2px solid var(--accent-crimson);
+  border-radius: 4px;
+  margin-bottom: 12px;
+  box-shadow: var(--box-shadow-card);
+  justify-items: center;
+  width: -webkit-fill-available;
 }
 
 .thefade .redesigned-header .profile-img {
@@ -5972,24 +5980,17 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .redesigned-header .header-fields {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    min-width: 0;
+  display: block;
+  width: -webkit-fill-available;
 }
 
 .thefade .redesigned-header .char-identity {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto;
-    column-gap: 12px;
-    align-items: start;
+    display: block;
+    justify-items: stretch;
+    max-width: -webkit-fill-available;
 }
 
 .thefade .redesigned-header .charname {
-    grid-column: 1;
-    grid-row: 1;
     margin: 0;
     border: none;
 }
@@ -5997,15 +5998,15 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade .redesigned-header .charname input {
     width: 100%;
     font-family: "EideticNeo-Omni", serif;
-    font-size: 1.9em;
+    font-size: 100%;
     font-weight: 600;
-    letter-spacing: 0.5px;
     color: var(--text-primary);
     background: transparent;
     border: none;
     border-bottom: 1px solid var(--border-faint);
     padding: 2px 0 4px 0;
     transition: border-color var(--transition-speed) ease;
+    max-width: 100%;
 }
 
 .thefade .redesigned-header .charname input:focus {
@@ -6015,8 +6016,6 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .redesigned-header .char-subtitle {
-    grid-column: 1;
-    grid-row: 2;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -6025,6 +6024,7 @@ select[name="system.aura.color"] option[value="white"] {
     letter-spacing: 0.4px;
     text-transform: uppercase;
     margin-top: 2px;
+    justify-content: space-around;
 }
 
 .thefade .redesigned-header .char-subtitle .sep {
@@ -6033,9 +6033,6 @@ select[name="system.aura.color"] option[value="white"] {
 
 /* Dice rollerator as a small tool in the top-right of the header */
 .thefade .redesigned-header .dice-section {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    align-self: start;
     position: relative;
 }
 
@@ -6049,7 +6046,6 @@ select[name="system.aura.color"] option[value="white"] {
     border-radius: 3px;
     cursor: pointer;
     color: var(--text-muted);
-    font-size: 0.85em;
     transition: all var(--transition-speed) ease;
 }
 
@@ -6098,27 +6094,26 @@ select[name="system.aura.color"] option[value="white"] {
 
 /* ----- Vitals strip (HP / Sanity / Initiative) ----- */
 .thefade .vitals-strip {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
-    gap: 10px;
+  display: flex;
+  align-items: stretch;
 }
 
 .thefade .vital-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    min-width: 0;
-    overflow: hidden;
-    background: var(--bg-surface-deep);
-    border: 1px solid var(--border-faint);
-    border-left: 3px solid var(--accent-crimson);
-    border-radius: 3px;
+  display: flex;
+  gap: 8px;
+  padding: 4px 8px;
+  overflow: hidden;
+  background: var(--bg-surface-deep);
+  border: 1px solid var(--border-faint);
+  border-left: 3px solid var(--accent-crimson);
+  border-radius: 3px;
+  align-items: center;
+  justify-content: center;
 }
 
-.thefade .vital-pill.vital-hp { border-left-color: var(--accent-hot); }
-.thefade .vital-pill.vital-sanity { border-left-color: var(--accent-gold); }
-.thefade .vital-pill.vital-init { border-left-color: var(--border-strong); }
+.thefade .vital-pill.vital-hp { border-left-color: darkred; }
+.thefade .vital-pill.vital-sanity { border-left-color: cyan; }
+.thefade .vital-pill.vital-init { border-left-color: white; }
 
 /* HP state: border color shifts with health level */
 .thefade .vital-pill.hp-state-healthy    { border-left-color: #4a8a4a; }
@@ -6141,12 +6136,12 @@ select[name="system.aura.color"] option[value="white"] {
     margin-top: 2px;
     align-self: flex-start;
 }
-.thefade .hp-state-badge.hp-state-healthy     { background: rgba(74,138,74,0.18);  border-color: #4a8a4a; color: #7aba7a; }
-.thefade .hp-state-badge.hp-state-bloodied    { background: rgba(168,136,42,0.18); border-color: #a8882a; color: #d4aa50; }
-.thefade .hp-state-badge.hp-state-wounded     { background: rgba(168,40,40,0.18);  border-color: var(--accent-hot); color: #e07070; }
-.thefade .hp-state-badge.hp-state-unconscious { background: rgba(106,58,138,0.2);  border-color: #6a3a8a; color: #b07ad0; }
-.thefade .hp-state-badge.hp-state-dying       { background: rgba(138,26,26,0.3);   border-color: #8a1a1a; color: #ff6060; }
-.thefade .hp-state-badge.hp-state-dead        { background: rgba(40,40,40,0.4);    border-color: #5a5a5a; color: #888; }
+.thefade .hp-state-badge.hp-state-healthy     { background: rgba(74,138,74,0.18);  border-color: #4a8a4a; color: #7aba7a; align-self: center; }
+.thefade .hp-state-badge.hp-state-bloodied    { background: rgba(168,136,42,0.18); border-color: #a8882a; color: #d4aa50; align-self: center; }
+.thefade .hp-state-badge.hp-state-wounded     { background: rgba(168,40,40,0.18);  border-color: var(--accent-hot); color: #e07070; align-self: center; }
+.thefade .hp-state-badge.hp-state-unconscious { background: rgba(106,58,138,0.2);  border-color: #6a3a8a; color: #b07ad0; align-self: center; }
+.thefade .hp-state-badge.hp-state-dying       { background: rgba(138,26,26,0.3);   border-color: #8a1a1a; color: #ff6060; align-self: center; }
+.thefade .hp-state-badge.hp-state-dead        { background: rgba(40,40,40,0.4);    border-color: #5a5a5a; color: #888; align-self: center; }
 
 .thefade .vital-pill label {
     font-size: 0.75em;
@@ -6158,11 +6153,10 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .vital-pill .vital-values {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
-    justify-content: center;
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-start;
 }
 
 .thefade .vital-pill .vital-values input {
@@ -6201,19 +6195,19 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .vital-pill .initiative-roll {
-    flex: 1;
+    flex: .25;
     padding: 5px 8px;
-    font-size: 0.9em;
+    font-size: 100%;
     background: var(--accent-crimson);
     color: var(--text-primary);
     border: 1px solid var(--accent-crimson);
     border-radius: 3px;
     cursor: pointer;
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    align-items: baseline;
     gap: 5px;
     transition: all var(--transition-speed) ease;
+    justify-content: center;
 }
 
 .thefade .vital-pill .initiative-roll:hover {
@@ -6433,7 +6427,7 @@ select[name="system.aura.color"] option[value="white"] {
 /* ----- Defenses — single 6-col band ----- */
 .thefade .defenses-band {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 8px;
     margin-bottom: 12px;
 }
@@ -6456,7 +6450,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .defenses-band .defense-label {
-    font-size: 0.72em;
+    font-size: 0.7em;
     text-transform: uppercase;
     letter-spacing: 1px;
     font-weight: 600;

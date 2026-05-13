@@ -1,7 +1,10 @@
-2026/05/05-17:27:04.084 7280 Recovering log #20
-2026/05/05-17:27:04.086 7280 Delete type=0 #20
-2026/05/05-17:27:04.086 7280 Delete type=3 #18
-2026/05/05-17:41:28.618 6aa4 Level-0 table #25: started
-2026/05/05-17:41:28.618 6aa4 Level-0 table #25: 0 bytes OK
-2026/05/05-17:41:28.619 6aa4 Delete type=0 #23
-2026/05/05-17:41:28.620 6aa4 Manual compaction at level-0 from 'undefined' @ 72057594037927935 : 1 .. 'undefined' @ 0 : 0; will stop at (end)
+2026/05/13-12:42:39.001 66bc Log #27: 0 ops saved to Table #50 OK
+2026/05/13-12:42:39.001 66bc Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/000027.log: OK
+2026/05/13-12:42:39.001 66bc Log #41: 0 ops saved to Table #51 OK
+2026/05/13-12:42:39.001 66bc Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/000041.log: OK
+2026/05/13-12:42:39.001 66bc Log #49: 0 ops saved to Table #52 OK
+2026/05/13-12:42:39.002 66bc Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/000049.log: OK
+2026/05/13-12:42:39.003 66bc Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/MANIFEST-000026: OK
+2026/05/13-12:42:39.003 66bc Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/MANIFEST-000040: OK
+2026/05/13-12:42:39.004 66bc Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/MANIFEST-000048: OK
+2026/05/13-12:42:39.005 66bc **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs; recovered 0 files; 0 bytes. Some data may have been lost. ****
