@@ -591,7 +591,9 @@ export class TheFadeActor extends Actor {
         }
 
         data.defenses.basePassiveDodge = Math.max(acrobonaticsDodge, finesseDodge);
-        data.defenses.passiveDodge = data.defenses.basePassiveDodge;
+        const pDodgeBonus = Number(data.defenses.passiveDodgeBonus || 0);
+        data.defenses.passiveDodge = data.defenses.basePassiveDodge + pDodgeBonus;
+        data.defenses.passiveDodgeFormula = `Base ${data.defenses.basePassiveDodge}` + (pDodgeBonus ? ` + ${pDodgeBonus} bonus` : "");
         // Stash Acrobatics rank dice so stance code can add them to Avoid in Dodge Stance.
         data.defenses.acrobaticsDodgeDice = acrobonaticsDodge;
 
@@ -614,7 +616,9 @@ export class TheFadeActor extends Actor {
         });
 
         data.defenses.basePassiveParry = highestParry;
-        data.defenses.passiveParry = data.defenses.basePassiveParry;
+        const pParryBonus = Number(data.defenses.passiveParryBonus || 0);
+        data.defenses.passiveParry = data.defenses.basePassiveParry + pParryBonus;
+        data.defenses.passiveParryFormula = `Base ${data.defenses.basePassiveParry}` + (pParryBonus ? ` + ${pParryBonus} bonus` : "");
     }
 
     /**
@@ -628,38 +632,13 @@ export class TheFadeActor extends Actor {
             return;
         }
 
-        // Apply facing modifications to defensive values
-        const facing = data.defenses.facing || 'front';
-
-        // Ensure base values exist
+        // Facing on the actor sheet was removed. Combat-side facing is
+        // determined at attack time from token positions in the attack dialog,
+        // so this hook only resets avoidPenalty and preserves passive values
+        // (base + manual bonus) computed earlier.
+        data.defenses.avoidPenalty = 0;
         if (data.defenses.basePassiveDodge === undefined) data.defenses.basePassiveDodge = 0;
         if (data.defenses.basePassiveParry === undefined) data.defenses.basePassiveParry = 0;
-
-        // Apply modifications based on facing
-        if (facing === 'flank') {
-            // Full passive defenses, but -1 to Avoid
-            data.defenses.avoidPenalty = -1;
-            data.defenses.passiveDodge = data.defenses.basePassiveDodge;
-            data.defenses.passiveParry = data.defenses.basePassiveParry;
-        }
-        else if (facing === 'backflank') {
-            // Half passive dodge, no parry, -2 Avoid
-            data.defenses.passiveDodge = Math.floor(data.defenses.basePassiveDodge / 2);
-            data.defenses.passiveParry = 0;
-            data.defenses.avoidPenalty = -2;
-        }
-        else if (facing === 'back') {
-            // Quarter passive dodge, no parry, -2 Avoid
-            data.defenses.passiveDodge = Math.floor(data.defenses.basePassiveDodge / 4);
-            data.defenses.passiveParry = 0;
-            data.defenses.avoidPenalty = -2;
-        }
-        else {
-            // Front facing - full benefits, no penalties
-            data.defenses.passiveDodge = data.defenses.basePassiveDodge;
-            data.defenses.passiveParry = data.defenses.basePassiveParry;
-            data.defenses.avoidPenalty = 0;
-        }
 
         // Ensure totalAvoid exists before modifying
         if (data.totalAvoid === undefined) {
@@ -756,9 +735,18 @@ export class TheFadeActor extends Actor {
                 data.defenses[formulaKey] = `Manual override: ${data[totalKey]}`;
             }
         };
+        const applyOnDefenses = (overrideKey, valueKey, formulaKey) => {
+            const o = data.defenses[overrideKey];
+            if (o !== null && o !== undefined && o !== "" && Number.isFinite(Number(o))) {
+                data.defenses[valueKey] = Number(o);
+                data.defenses[formulaKey] = `Manual override: ${data.defenses[valueKey]}`;
+            }
+        };
         apply("resilienceOverride", "totalResilience", "resilienceFormula");
         apply("avoidOverride",      "totalAvoid",      "avoidFormula");
         apply("gritOverride",       "totalGrit",       "gritFormula");
+        applyOnDefenses("passiveDodgeOverride", "passiveDodge", "passiveDodgeFormula");
+        applyOnDefenses("passiveParryOverride", "passiveParry", "passiveParryFormula");
     }
 
     /**

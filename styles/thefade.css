@@ -5955,16 +5955,16 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .redesigned-header .profile-img {
-    width: 250px !important;
-    height: 300px !important;
-    object-fit: contain;
+    width: 120px !important;
+    height: 120px !important;
+    object-fit: cover;
     border-radius: 4px;
     border: 2px solid var(--border-strong);
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5), 0 2px 6px rgba(0,0,0,0.6);
     flex-shrink: 0;
     cursor: pointer;
     transition: border-color var(--transition-speed) ease, transform var(--transition-speed) ease;
-  }
+}
 
 .thefade .redesigned-header .profile-img:hover {
     border-color: var(--accent-hot);
@@ -5977,7 +5977,6 @@ select[name="system.aura.color"] option[value="white"] {
     flex-direction: column;
     gap: 12px;
     min-width: 0;
-    align-items: center;
 }
 
 .thefade .redesigned-header .char-identity {
@@ -5996,16 +5995,17 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .redesigned-header .charname input {
-  width: fit-content;
-  font-family: "EideticNeo-Omni", serif;
-  font-size: unset;
-  font-weight: normal;
-  color: var(--text-primary);
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--border-faint);
-  padding: 2px 0 4px 0;
-  transition: border-color var(--transition-speed) ease;
+    width: 100%;
+    font-family: "EideticNeo-Omni", serif;
+    font-size: 1.9em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-faint);
+    padding: 2px 0 4px 0;
+    transition: border-color var(--transition-speed) ease;
 }
 
 .thefade .redesigned-header .charname input:focus {
@@ -6015,19 +6015,17 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .redesigned-header .char-subtitle {
-  grid-column: 1;
-  grid-row: 2;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 1em;
-  color: var(--text-muted);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-top: 2px;
-  justify-content: center;
-  flex-direction: row;
-  }
+    grid-column: 1;
+    grid-row: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.85em;
+    color: var(--text-muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-top: 2px;
+}
 
 .thefade .redesigned-header .char-subtitle .sep {
     color: var(--text-dim);
@@ -6035,9 +6033,11 @@ select[name="system.aura.color"] option[value="white"] {
 
 /* Dice rollerator as a small tool in the top-right of the header */
 .thefade .redesigned-header .dice-section {
-  align-self: center;
-  position: relative;
-  }
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    position: relative;
+}
 
 .thefade .redesigned-header .dice-section .tool-header {
     display: inline-flex;
@@ -6099,9 +6099,8 @@ select[name="system.aura.color"] option[value="white"] {
 /* ----- Vitals strip (HP / Sanity / Initiative) ----- */
 .thefade .vitals-strip {
     display: grid;
-    gap: 5px;
-    min-width: -webkit-fill-available;
-    justify-content: center;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 10px;
 }
 
 .thefade .vital-pill {

@@ -3404,6 +3404,22 @@ export class TheFadeCharacterSheet extends ActorSheet {
             overridePath: "system.defenses.gritOverride",
             totalPath: "system.totalGrit"
         },
+        passiveDodge: {
+            basePath: "system.defenses.basePassiveDodge",
+            bonusPath: "system.defenses.passiveDodgeBonus",
+            overridePath: "system.defenses.passiveDodgeOverride",
+            totalPath: "system.defenses.passiveDodge",
+            baseLabel: "Base",
+            baseHint: "Computed from Acrobatics rank or 1/4 Finesse (whichever is higher)."
+        },
+        passiveParry: {
+            basePath: "system.defenses.basePassiveParry",
+            bonusPath: "system.defenses.passiveParryBonus",
+            overridePath: "system.defenses.passiveParryOverride",
+            totalPath: "system.defenses.passiveParry",
+            baseLabel: "Base",
+            baseHint: "Computed from your highest weapon skill rank."
+        },
         physique: {
             basePath: "system.attributes.physique.value",
             bonusPath: "system.attributes.physique.bonus",

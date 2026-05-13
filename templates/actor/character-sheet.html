@@ -93,7 +93,6 @@
                         <input type="text" value="{{system.totalResilience}}" disabled class="total-value" title="{{system.defenses.resilienceFormula}}" />
                         <span class="excess-penalty resilience-excess-penalty">+0D</span>
                     </div>
-                    <div class="defense-desc">vs toxins, fatigue, disease</div>
                 </div>
 
                 <div class="defense defense-compact" data-defense="avoid">
@@ -104,7 +103,6 @@
                         <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" title="{{system.defenses.avoidFormula}}" />
                         <span class="excess-penalty avoid-excess-penalty">+0D</span>
                     </div>
-                    <div class="defense-desc">vs physical</div>
                 </div>
 
                 <div class="defense defense-compact" data-defense="grit">
@@ -115,67 +113,24 @@
                         <input type="text" value="{{system.totalGrit}}" disabled class="total-value" title="{{system.defenses.gritFormula}}" />
                         <span class="excess-penalty grit-excess-penalty">+0D</span>
                     </div>
-                    <div class="defense-desc">vs mental/sanity</div>
                 </div>
 
-                <div class="defense" data-defense="passive-dodge">
-                    <input type="checkbox" id="toggle-passive-dodge" class="defense-checkbox">
-                    <label for="toggle-passive-dodge" class="defense-label">P. Dodge <span class="toggle-icon">▼</span></label>
+                <div class="defense defense-compact" data-defense="passive-dodge">
+                    <label class="defense-label">P. Dodge
+                        <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="passiveDodge" data-label="Passive Dodge" title="Edit Passive Dodge (bonus / override)"><i class="fas fa-pencil"></i></a>
+                    </label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.defenses.passiveDodge}}" disabled class="total-value passive-dodge-value" />
+                        <input type="text" value="{{system.defenses.passiveDodge}}" disabled class="total-value passive-dodge-value" title="{{system.defenses.passiveDodgeFormula}}" />
                     </div>
-                    <div class="defense-details">
-                        <div class="detail-row">
-                            <span>From Acrobatics or Finesse</span>
-                        </div>
-                        <div class="detail-row">
-                            <span>Acrobatics: Adept +1, Expert +2, Mastered +3</span>
-                        </div>
-                        <div class="detail-row">
-                            <span>Finesse: 1/4 of attribute</span>
-                        </div>
-                    </div>
-                    <div class="defense-desc">passive vs melee &amp; ranged</div>
                 </div>
 
-                <div class="defense" data-defense="passive-parry">
-                    <input type="checkbox" id="toggle-passive-parry" class="defense-checkbox">
-                    <label for="toggle-passive-parry" class="defense-label">P. Parry <span class="toggle-icon">▼</span></label>
+                <div class="defense defense-compact" data-defense="passive-parry">
+                    <label class="defense-label">P. Parry
+                        <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="passiveParry" data-label="Passive Parry" title="Edit Passive Parry (bonus / override)"><i class="fas fa-pencil"></i></a>
+                    </label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.defenses.passiveParry}}" disabled class="total-value passive-parry-value" />
+                        <input type="text" value="{{system.defenses.passiveParry}}" disabled class="total-value passive-parry-value" title="{{system.defenses.passiveParryFormula}}" />
                     </div>
-                    <div class="defense-details">
-                        <div class="detail-row">
-                            <span>From highest weapon skill rank</span>
-                        </div>
-                        <div class="detail-row">
-                            <span>Practiced +1, Adept +2, Experienced +3</span>
-                        </div>
-                        <div class="detail-row">
-                            <span>Expert +4, Mastered +6</span>
-                        </div>
-                    </div>
-                    <div class="defense-desc">passive vs melee only</div>
-                </div>
-
-                <div class="defense" data-defense="facing">
-                    <input type="checkbox" id="toggle-facing" class="defense-checkbox">
-                    <label for="toggle-facing" class="defense-label">Facing <span class="toggle-icon">▼</span></label>
-                    <div class="defense-value">
-                        <select id="facing-select" class="facing-select" data-dtype="String">
-                            <option value="front" {{#if (eq (lookup actor.flags.thefade "facing") "front")}} selected{{/if}}>Front</option>
-                            <option value="flank" {{#if (eq (lookup actor.flags.thefade "facing") "flank")}} selected{{/if}}>Flank</option>
-                            <option value="backflank" {{#if (eq (lookup actor.flags.thefade "facing") "backflank")}} selected{{/if}}>Back Flank</option>
-                            <option value="back" {{#if (eq (lookup actor.flags.thefade "facing") "back")}} selected{{/if}}>Back</option>
-                        </select>
-                    </div>
-                    <div class="defense-details">
-                        <div class="detail-row"><span><strong>Front:</strong> full bonuses</span></div>
-                        <div class="detail-row"><span><strong>Flank:</strong> -1 Avoid</span></div>
-                        <div class="detail-row"><span><strong>Back Flank:</strong> 1/2 P.Dodge, no P.Parry, -2 Avoid</span></div>
-                        <div class="detail-row"><span><strong>Back:</strong> 1/4 P.Dodge, no P.Parry, -2 Avoid</span></div>
-                    </div>
-                    <div class="defense-desc">positional modifier</div>
                 </div>
             </div>
 

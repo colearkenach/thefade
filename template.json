@@ -72,6 +72,10 @@
         "gritOverride": null,
         "passiveDodge": 0,
         "passiveParry": 0,
+        "passiveDodgeBonus": 0,
+        "passiveParryBonus": 0,
+        "passiveDodgeOverride": null,
+        "passiveParryOverride": null,
         "facing": "front"
       },
       "conditions": {
