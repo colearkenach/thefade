@@ -1,0 +1,25 @@
+<div class="vitals-strip vitals-strip-inline">
+    <div class="vital-pill vital-hp hp-state-{{system.hp.state}}">
+        <label>HP</label>
+        <div class="vital-values">
+            <input type="text" name="system.hp.value" value="{{system.hp.value}}" data-dtype="Number" />
+            <span class="sep">/</span>
+            <input type="text" name="system.hp.max" value="{{system.hp.max}}" data-dtype="Number" disabled title="{{system.hp.formula}}" />
+        </div>
+        <input type="text" name="system.hpMiscBonus" value="{{system.hpMiscBonus}}" data-dtype="Number" title="HP Misc Bonus" class="vital-bonus" placeholder="+0" />
+        {{#if system.hp.stateLabel}}
+        <span class="hp-state-badge hp-state-{{system.hp.state}}" title="HP State">{{system.hp.stateLabel}}</span>
+        {{/if}}
+        <button type="button" class="take-rest-btn" title="Take a rest: roll 1d12 + Physique and restore that much HP"><i class="fas fa-bed"></i></button>
+    </div>
+
+    <div class="vital-pill vital-sanity">
+        <label>Sanity</label>
+        <div class="vital-values">
+            <input type="text" name="system.sanity.value" value="{{system.sanity.value}}" data-dtype="Number" />
+            <span class="sep">/</span>
+            <input type="text" name="system.sanity.max" value="{{system.sanity.max}}" data-dtype="Number" disabled title="{{system.sanity.formula}}" />
+        </div>
+        <input type="text" name="system.sanity.miscBonus" value="{{system.sanity.miscBonus}}" data-dtype="Number" title="Sanity Misc Bonus" class="vital-bonus" placeholder="+0" />
+    </div>
+</div>
