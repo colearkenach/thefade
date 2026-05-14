@@ -1082,49 +1082,71 @@ input[readonly] {
 }
 
 .thefade .weapon-name {
-  flex: 2 1 120px;
-  min-width: 120px;
+  flex: 2 1 140px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.thefade .items-list .weapon-name {
+  cursor: pointer;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+
+.thefade .items-list .weapon-name:hover {
+  color: var(--accent-gold, #d4af37);
+  text-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
+}
+
+.thefade .items-list .weapon-name .item-icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+}
+
+.thefade .items-list .weapon-name .weapon-name-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .thefade .weapon-skill {
-  flex: 1 1 80px;
-  min-width: 80px;
+  flex: 1 1 60px;
+  min-width: 0;
   text-align: center;
 }
 
 .thefade .weapon-dice {
-  flex: 0 0 60px;
-  min-width: 60px;
-  text-align: center;
-}
-
-.thefade .weapon-dmg-attr {
-  flex: 0 0 50px;
-  min-width: 50px;
+  flex: 0 0 44px;
+  min-width: 0;
   text-align: center;
 }
 
 .thefade .weapon-damage {
-  flex: 1 1 80px;
-  min-width: 80px;
+  flex: 1 1 64px;
+  min-width: 0;
   text-align: center;
 }
 
 .thefade .weapon-crit {
-  flex: 0 0 50px;
-  min-width: 50px;
+  flex: 0 0 36px;
+  min-width: 0;
   text-align: center;
 }
 
 .thefade .weapon-range {
-  flex: 1 1 70px;
-  min-width: 70px;
+  flex: 1 1 60px;
+  min-width: 0;
   text-align: center;
 }
 
 .thefade .weapon-qualities {
-  flex: 2 1 100px;
-  min-width: 100px;
+  flex: 2 1 80px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .thefade .weapon-controls {

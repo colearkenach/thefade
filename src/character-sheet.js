@@ -3973,6 +3973,29 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.skill-roll').click(this._onSkillRoll.bind(this));
         html.find('.attribute-roll').click(this._onAttributeRoll.bind(this));
         html.find('.attack-roll').click(this._onAttackRoll.bind(this));
+
+        // Right-click context menu on weapon rows: Edit / Delete
+        new ContextMenu(html, '.weapons .weapon-row', [
+            {
+                name: 'Edit',
+                icon: '<i class="fas fa-edit"></i>',
+                callback: li => {
+                    const itemId = li.data('itemId') || li.attr('data-item-id');
+                    const item = this.actor.items.get(itemId);
+                    if (item) item.sheet.render(true);
+                }
+            },
+            {
+                name: 'Delete',
+                icon: '<i class="fas fa-trash"></i>',
+                callback: li => {
+                    const itemId = li.data('itemId') || li.attr('data-item-id');
+                    if (!itemId) return;
+                    this.actor.deleteEmbeddedDocuments('Item', [itemId]);
+                    li.slideUp(200, () => this.render(false));
+                }
+            }
+        ]);
         html.find('.cast-spell').click(this._onCastSpell.bind(this));
         html.find('.initiative-roll').click(this._onInitiativeRoll.bind(this));
         html.find('.roll-dice').click(this._onRollDice.bind(this));
