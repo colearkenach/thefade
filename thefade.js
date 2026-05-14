@@ -232,6 +232,7 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/actor/shop-sheet.html",
         "systems/thefade/templates/actor/parts/attributes.html",
         "systems/thefade/templates/actor/parts/skills.html",
+        "systems/thefade/templates/actor/parts/skill-row.html",
         "systems/thefade/templates/actor/parts/inventory.html",
         "systems/thefade/templates/actor/parts/paths.html",
         "systems/thefade/templates/actor/parts/spells.html",
