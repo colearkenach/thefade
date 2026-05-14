@@ -1,10 +1,15 @@
 ﻿<section class="inventory-section">
     <!-- Currency -->
-    <div class="currency">
-        <h2>Currency</h2>
-        <div class="currency-item">
-            <label>Serpents (sp)</label>
-            <input type="text" name="system.currency.serpents" value="{{system.currency.serpents}}" data-dtype="Number" />
+    <div class="currency inv-block">
+        <h2 class="inv-heading">
+            <i class="fas fa-coins"></i>
+            <span class="inv-title">Currency</span>
+        </h2>
+        <div class="inv-block-body currency-body">
+            <div class="currency-item">
+                <label>Serpents (sp)</label>
+                <input type="text" name="system.currency.serpents" value="{{system.currency.serpents}}" data-dtype="Number" />
+            </div>
         </div>
     </div>
 
@@ -21,9 +26,17 @@
         </div>
 
         <div class="tab-content active" id="weapons-tab">
-            <div class="weapons">
-                <h2>Weapons</h2>
-                <header class="weapon-header flexrow">
+            <div class="weapons inv-block">
+                <h2 class="inv-heading">
+                    <i class="fas fa-gavel"></i>
+                    <span class="inv-title">Weapons</span>
+                    <span class="inv-count">{{actor.weapons.length}}</span>
+                    <span class="inv-actions">
+                        <a class="item-create" title="Add Weapon" data-type="weapon"><i class="fas fa-plus"></i></a>
+                        <a class="weapon-browse" title="Browse Weapons"><i class="fas fa-search"></i></a>
+                    </span>
+                </h2>
+                <header class="weapon-header flexrow gear-header">
                     <div class="weapon-icon">Icon</div>
                     <div class="weapon-name">Name</div>
                     <div class="weapon-skill">Skill</div>
@@ -33,10 +46,7 @@
                     <div class="weapon-crit">Crit</div>
                     <div class="weapon-range">Range</div>
                     <div class="weapon-qualities">Qualities</div>
-                    <div class="weapon-controls">
-                        <a class="item-create" title="Add Weapon" data-type="weapon"><i class="fas fa-plus"></i></a>
-                        <a class="weapon-browse" title="Browse Weapons"><i class="fas fa-search"></i></a>
-                    </div>
+                    <div class="weapon-controls"></div>
                 </header>
 
                 <ol class="items-list">
@@ -65,10 +75,13 @@
         </div>
 
         <div class="tab-content" id="armor-tab">
-            <div class="armor-section">
-                <h2>
-                    Armor
-                    <a class="reset-all-armor" title="Reset All Armor"><i class="fas fa-sync-alt"></i></a>
+            <div class="armor-section inv-block">
+                <h2 class="inv-heading">
+                    <i class="fas fa-shield-halved"></i>
+                    <span class="inv-title">Armor</span>
+                    <span class="inv-actions">
+                        <a class="reset-all-armor" title="Reset All Armor"><i class="fas fa-sync-alt"></i></a>
+                    </span>
                 </h2>
 
                 <!-- Armor Slots Grid -->
@@ -76,12 +89,15 @@
                     <!-- Row 1: Head and Body -->
                     <div class="slot-row">
                         <div class="armor-slot-container panel" data-slot="head">
-                            <div class="slot-header">
+                            <input type="checkbox" id="armor-slot-head" class="armor-slot-checkbox" checked>
+                            <label class="slot-header" for="armor-slot-head">
+                                <i class="fas fa-user-helmet-safety slot-icon"></i>
                                 <h4>Head</h4>
                                 <div class="total-ap">
                                     Total AP: <span class="current-total-ap">{{actor.armorTotals.head.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.head.max}}</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-down armor-slot-toggle"></i>
+                            </label>
 
                             <div class="natural-deflection-row">
                                 <div class="nd-input" title="Natural Deflection (Head)">
@@ -125,12 +141,15 @@
                         </div>
 
                         <div class="armor-slot-container panel" data-slot="body">
-                            <div class="slot-header">
+                            <input type="checkbox" id="armor-slot-body" class="armor-slot-checkbox" checked>
+                            <label class="slot-header" for="armor-slot-body">
+                                <i class="fas fa-shirt slot-icon"></i>
                                 <h4>Body</h4>
                                 <div class="total-ap">
                                     Total AP: <span class="current-total-ap">{{actor.armorTotals.body.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.body.max}}</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-down armor-slot-toggle"></i>
+                            </label>
 
                             <div class="natural-deflection-row">
                                 <div class="nd-input" title="Natural Deflection (Body)">
@@ -177,12 +196,15 @@
                     <!-- Row 2: Left Arm and Right Arm -->
                     <div class="slot-row">
                         <div class="armor-slot-container panel" data-slot="leftarm">
-                            <div class="slot-header">
+                            <input type="checkbox" id="armor-slot-leftarm" class="armor-slot-checkbox" checked>
+                            <label class="slot-header" for="armor-slot-leftarm">
+                                <i class="fas fa-hand-fist slot-icon"></i>
                                 <h4>Left Arm</h4>
                                 <div class="total-ap">
                                     Total AP: <span class="current-total-ap">{{actor.armorTotals.leftarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftarm.max}}</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-down armor-slot-toggle"></i>
+                            </label>
 
                             <div class="natural-deflection-row">
                                 <div class="nd-input" title="Natural Deflection (Left Arm)">
@@ -249,12 +271,15 @@
                         </div>
 
                         <div class="armor-slot-container panel" data-slot="rightarm">
-                            <div class="slot-header">
+                            <input type="checkbox" id="armor-slot-rightarm" class="armor-slot-checkbox" checked>
+                            <label class="slot-header" for="armor-slot-rightarm">
+                                <i class="fas fa-hand-fist slot-icon fa-flip-horizontal"></i>
                                 <h4>Right Arm</h4>
                                 <div class="total-ap">
                                     Total AP: <span class="current-total-ap">{{actor.armorTotals.rightarm.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightarm.max}}</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-down armor-slot-toggle"></i>
+                            </label>
 
                             <div class="natural-deflection-row">
                                 <div class="nd-input" title="Natural Deflection (Right Arm)">
@@ -324,12 +349,15 @@
                     <!-- Row 3: Left Leg and Right Leg -->
                     <div class="slot-row">
                         <div class="armor-slot-container panel" data-slot="leftleg">
-                            <div class="slot-header">
+                            <input type="checkbox" id="armor-slot-leftleg" class="armor-slot-checkbox" checked>
+                            <label class="slot-header" for="armor-slot-leftleg">
+                                <i class="fas fa-shoe-prints slot-icon"></i>
                                 <h4>Left Leg</h4>
                                 <div class="total-ap">
                                     Total AP: <span class="current-total-ap">{{actor.armorTotals.leftleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.leftleg.max}}</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-down armor-slot-toggle"></i>
+                            </label>
 
                             <div class="natural-deflection-row">
                                 <div class="nd-input" title="Natural Deflection (Left Leg)">
@@ -396,12 +424,15 @@
                         </div>
 
                         <div class="armor-slot-container panel" data-slot="rightleg">
-                            <div class="slot-header">
+                            <input type="checkbox" id="armor-slot-rightleg" class="armor-slot-checkbox" checked>
+                            <label class="slot-header" for="armor-slot-rightleg">
+                                <i class="fas fa-shoe-prints slot-icon fa-flip-horizontal"></i>
                                 <h4>Right Leg</h4>
                                 <div class="total-ap">
                                     Total AP: <span class="current-total-ap">{{actor.armorTotals.rightleg.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.rightleg.max}}</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-down armor-slot-toggle"></i>
+                            </label>
 
                             <div class="natural-deflection-row">
                                 <div class="nd-input" title="Natural Deflection (Right Leg)">
@@ -471,12 +502,15 @@
                     <!-- Shield Section -->
                     <div class="slot-row">
                         <div class="armor-slot-container panel shield-section" data-slot="shield">
-                            <div class="slot-header">
+                            <input type="checkbox" id="armor-slot-shield" class="armor-slot-checkbox" checked>
+                            <label class="slot-header" for="armor-slot-shield">
+                                <i class="fas fa-shield slot-icon"></i>
                                 <h4>Shield</h4>
                                 <div class="total-ap">
                                     Total AP: <span class="current-total-ap">{{actor.armorTotals.shield.current}}</span> / <span class="max-total-ap">{{actor.armorTotals.shield.max}}</span>
                                 </div>
-                            </div>
+                                <i class="fas fa-chevron-down armor-slot-toggle"></i>
+                            </label>
 
                             <div class="equipped-armor-list">
                                 {{#each actor.equippedArmor.shield as |armor|}}
@@ -504,17 +538,22 @@
                 </div>
 
                 <!-- Unequipped Armor -->
-                <div class="unequipped-armor">
-                    <h3>Unequipped Armor</h3>
+                <div class="unequipped-armor inv-subblock">
+                    <h3 class="inv-subheading">
+                        <i class="fas fa-box-archive"></i>
+                        <span class="inv-title">Unequipped Armor</span>
+                        <span class="inv-count">{{actor.unequippedArmor.length}}</span>
+                        <span class="inv-actions">
+                            <a class="item-create" title="Add Armor" data-type="armor"><i class="fas fa-plus"></i></a>
+                            <a class="armor-browse" title="Browse Armor"><i class="fas fa-search"></i></a>
+                        </span>
+                    </h3>
 
                     <header class="gear-header flexrow">
                         <div class="armor-name">Name</div>
                         <div class="armor-location">Location</div>
                         <div class="armor-ap">AP</div>
-                        <div class="armor-controls">
-                            <a class="item-create" title="Add Armor" data-type="armor"><i class="fas fa-plus"></i></a>
-                            <a class="armor-browse" title="Browse Armor"><i class="fas fa-search"></i></a>
-                        </div>
+                        <div class="armor-controls"></div>
                     </header>
 
                     <div class="items-list armor-items-list">
@@ -537,11 +576,14 @@
 
         <div class="tab-content" id="items-of-power-tab">
             <!-- Items of Power -->
-            <div class="magical-items">
-                <h2>
-                    Items of Power
-                    <span class="attunement-limit">
-                        Attuned: <span class="current-attunements">{{actor.currentAttunements}}</span> /
+            <div class="magical-items inv-block">
+                <h2 class="inv-heading">
+                    <i class="fas fa-gem"></i>
+                    <span class="inv-title">Items of Power</span>
+                    <span class="attunement-limit" title="Attuned / Max">
+                        <i class="fas fa-link"></i>
+                        <span class="current-attunements">{{actor.currentAttunements}}</span>
+                        <span class="attunement-sep">/</span>
                         <span class="max-attunements">{{actor.maxAttunements}}</span>
                     </span>
                 </h2>
@@ -798,16 +840,21 @@
                 </div>
 
                 <!-- Unequipped Items of Power -->
-                <div class="unequipped-magic-items">
-                    <h3>Unequipped Items of Power</h3>
+                <div class="unequipped-magic-items inv-subblock">
+                    <h3 class="inv-subheading">
+                        <i class="fas fa-box-archive"></i>
+                        <span class="inv-title">Unequipped Items of Power</span>
+                        <span class="inv-count">{{actor.unequippedItemsOfPower.length}}</span>
+                        <span class="inv-actions">
+                            <a class="item-create" title="Add Item of Power" data-type="magicitem"><i class="fas fa-plus"></i></a>
+                            <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
+                        </span>
+                    </h3>
                     <header class="gear-header flexrow">
                         <div class="item-name">Name</div>
                         <div class="item-slot">Slot</div>
                         <div class="item-attunement">Attuned</div>
-                        <div class="item-controls">
-                            <a class="item-create" title="Add Item of Power" data-type="magicitem"><i class="fas fa-plus"></i></a>
-                            <a class="item-browse" title="Browse Items"><i class="fas fa-search"></i></a>
-                        </div>
+                        <div class="item-controls"></div>
                     </header>
 
                     <div class="items-list magic-items-list">
@@ -833,8 +880,11 @@
 
         <!-- Consumables Tab -->
         <div class="tab-content" id="consumables-tab">
-            <div class="consumables-section">
-                <h2>Consumables</h2>
+            <div class="consumables-section inv-block">
+                <h2 class="inv-heading">
+                    <i class="fas fa-flask"></i>
+                    <span class="inv-title">Consumables</span>
+                </h2>
 
                 <!-- Consumables Subtabs -->
                 <div class="subtab-nav">
@@ -845,18 +895,23 @@
 
                 <!-- Potions Subtab -->
                 <div class="subtab-content active" id="potions-subtab">
-                    <div class="potions">
-                        <h3>Potions</h3>
+                    <div class="potions inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-prescription-bottle"></i>
+                            <span class="inv-title">Potions</span>
+                            <span class="inv-count">{{actor.potion.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Potion" data-type="potion"><i class="fas fa-plus"></i></a>
+                                <a class="potion-browse" title="Browse Potions"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="potion-name">Name</div>
                             <div class="potion-quantity">Quantity</div>
                             <div class="potion-effect">Effect</div>
                             <div class="potion-duration">Duration</div>
                             <div class="potion-rarity">Rarity</div>
-                            <div class="potion-controls">
-                                <a class="item-create" title="Add Potion" data-type="potion"><i class="fas fa-plus"></i></a>
-                                <a class="potion-browse" title="Browse Potions"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="potion-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -885,18 +940,23 @@
 
                 <!-- Drugs Subtab -->
                 <div class="subtab-content" id="drugs-subtab">
-                    <div class="drugs">
-                        <h3>Drugs</h3>
+                    <div class="drugs inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-pills"></i>
+                            <span class="inv-title">Drugs</span>
+                            <span class="inv-count">{{actor.drugs.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Drug" data-type="drug"><i class="fas fa-plus"></i></a>
+                                <a class="drug-browse" title="Browse Drugs"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="drug-name">Name</div>
                             <div class="drug-quantity">Quantity</div>
                             <div class="drug-effect">Effect</div>
                             <div class="drug-addiction">Addiction Risk</div>
                             <div class="drug-tolerance">Tolerance</div>
-                            <div class="drug-controls">
-                                <a class="item-create" title="Add Drug" data-type="drug"><i class="fas fa-plus"></i></a>
-                                <a class="drug-browse" title="Browse Drugs"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="drug-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -927,18 +987,23 @@
 
                 <!-- Poisons Subtab -->
                 <div class="subtab-content" id="poisons-subtab">
-                    <div class="poisons">
-                        <h3>Poisons</h3>
+                    <div class="poisons inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-vial-virus"></i>
+                            <span class="inv-title">Poisons</span>
+                            <span class="inv-count">{{actor.poisons.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Poison" data-type="poison"><i class="fas fa-plus"></i></a>
+                                <a class="poison-browse" title="Browse Poisons"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="poison-name">Name</div>
                             <div class="poison-quantity">Quantity</div>
                             <div class="poison-type">Type</div>
                             <div class="poison-potency">Potency</div>
                             <div class="poison-delivery">Delivery</div>
-                            <div class="poison-controls">
-                                <a class="item-create" title="Add Poison" data-type="poison"><i class="fas fa-plus"></i></a>
-                                <a class="poison-browse" title="Browse Poisons"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="poison-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -969,8 +1034,11 @@
 
         <!-- Magic Gear Tab -->
         <div class="tab-content" id="magic-gear-tab">
-            <div class="magic-gear-section">
-                <h2>Magic Gear</h2>
+            <div class="magic-gear-section inv-block">
+                <h2 class="inv-heading">
+                    <i class="fas fa-hat-wizard"></i>
+                    <span class="inv-title">Magic Gear</span>
+                </h2>
 
                 <!-- Magic Gear Subtabs -->
                 <div class="subtab-nav">
@@ -984,16 +1052,21 @@
 
                 <!-- Staffs Subtab -->
                 <div class="subtab-content active" id="staffs-subtab">
-                    <div class="staffs">
-                        <h3>Staffs</h3>
+                    <div class="staffs inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-staff-snake"></i>
+                            <span class="inv-title">Staffs</span>
+                            <span class="inv-count">{{actor.staff.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Staff" data-type="staff"><i class="fas fa-plus"></i></a>
+                                <a class="staff-browse" title="Browse Staffs"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="staff-name">Name</div>
                             <div class="staff-charges">Uses Per Day</div>
                             <div class="staff-spells">Spell Level</div>
-                            <div class="staff-controls">
-                                <a class="item-create" title="Add Staff" data-type="staff"><i class="fas fa-plus"></i></a>
-                                <a class="staff-browse" title="Browse Staffs"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="staff-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1021,17 +1094,22 @@
 
                 <!-- Wands Subtab -->
                 <div class="subtab-content" id="wands-subtab">
-                    <div class="wands">
-                        <h3>Wands</h3>
+                    <div class="wands inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-wand-sparkles"></i>
+                            <span class="inv-title">Wands</span>
+                            <span class="inv-count">{{actor.wand.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Wand" data-type="wand"><i class="fas fa-plus"></i></a>
+                                <a class="wand-browse" title="Browse Wands"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="wand-name">Name</div>
                             <div class="wand-charges">Charges</div>
                             <div class="wand-spell">Spell</div>
                             <div class="wand-level">Spell Level</div>
-                            <div class="wand-controls">
-                                <a class="item-create" title="Add Wand" data-type="wand"><i class="fas fa-plus"></i></a>
-                                <a class="wand-browse" title="Browse Wands"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="wand-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1061,17 +1139,22 @@
 
                 <!-- Communication Subtab -->
                 <div class="subtab-content" id="communication-subtab">
-                    <div class="communication">
-                        <h3>Communication</h3>
+                    <div class="communication inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-tower-broadcast"></i>
+                            <span class="inv-title">Communication</span>
+                            <span class="inv-count">{{actor.communication.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Communication Device" data-type="communication"><i class="fas fa-plus"></i></a>
+                                <a class="comm-browse" title="Browse Communication"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="comm-name">Name</div>
                             <div class="comm-range">Range</div>
                             <div class="comm-type">Type</div>
                             <div class="comm-active">Active</div>
-                            <div class="comm-controls">
-                                <a class="item-create" title="Add Communication Device" data-type="communication"><i class="fas fa-plus"></i></a>
-                                <a class="comm-browse" title="Browse Communication"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="comm-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1099,17 +1182,22 @@
 
                 <!-- Containment Subtab -->
                 <div class="subtab-content" id="containment-subtab">
-                    <div class="containment">
-                        <h3>Containment</h3>
+                    <div class="containment inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-box"></i>
+                            <span class="inv-title">Containment</span>
+                            <span class="inv-count">{{actor.containment.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Container" data-type="containment"><i class="fas fa-plus"></i></a>
+                                <a class="container-browse" title="Browse Containers"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="container-name">Name</div>
                             <div class="container-capacity">Capacity</div>
                             <div class="container-contents">Contents</div>
                             <div class="container-security">Security</div>
-                            <div class="container-controls">
-                                <a class="item-create" title="Add Container" data-type="containment"><i class="fas fa-plus"></i></a>
-                                <a class="container-browse" title="Browse Containers"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="container-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1135,17 +1223,22 @@
 
                 <!-- Dimensional Gates Subtab -->
                 <div class="subtab-content" id="gates-subtab">
-                    <div class="gates">
-                        <h3>Dimensional Gates</h3>
+                    <div class="gates inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-dharmachakra"></i>
+                            <span class="inv-title">Dimensional Gates</span>
+                            <span class="inv-count">{{actor.gate.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Gate" data-type="gate"><i class="fas fa-plus"></i></a>
+                                <a class="gate-browse" title="Browse Gates"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="gate-name">Name</div>
                             <div class="gate-destination">Destination</div>
                             <div class="gate-stability">Stability</div>
                             <div class="gate-uses">Uses</div>
-                            <div class="gate-controls">
-                                <a class="item-create" title="Add Gate" data-type="gate"><i class="fas fa-plus"></i></a>
-                                <a class="gate-browse" title="Browse Gates"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="gate-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1175,17 +1268,22 @@
 
                 <!-- Dream Harvesting Subtab -->
                 <div class="subtab-content" id="dream-subtab">
-                    <div class="dream-harvesting">
-                        <h3>Dream Harvesting</h3>
+                    <div class="dream-harvesting inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-moon"></i>
+                            <span class="inv-title">Dream Harvesting</span>
+                            <span class="inv-count">{{actor.dream.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Dream Device" data-type="dream"><i class="fas fa-plus"></i></a>
+                                <a class="dream-browse" title="Browse Dream Devices"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="dream-name">Name</div>
                             <div class="dream-capacity">Capacity</div>
                             <div class="dream-stored">Stored Dreams</div>
                             <div class="dream-quality">Quality</div>
-                            <div class="dream-controls">
-                                <a class="item-create" title="Add Dream Device" data-type="dream"><i class="fas fa-plus"></i></a>
-                                <a class="dream-browse" title="Browse Dream Devices"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="dream-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1213,8 +1311,11 @@
 
         <!-- Mundane Gear Tab -->
         <div class="tab-content" id="mundane-gear-tab">
-            <div class="mundane-gear-section">
-                <h2>Mundane Gear</h2>
+            <div class="mundane-gear-section inv-block">
+                <h2 class="inv-heading">
+                    <i class="fas fa-screwdriver-wrench"></i>
+                    <span class="inv-title">Mundane Gear</span>
+                </h2>
 
                 <!-- Mundane Gear Subtabs -->
                 <div class="subtab-nav">
@@ -1227,18 +1328,23 @@
 
                 <!-- Medical Subtab -->
                 <div class="subtab-content active" id="medical-subtab">
-                    <div class="medical">
-                        <h3>Medical Gear</h3>
+                    <div class="medical inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-kit-medical"></i>
+                            <span class="inv-title">Medical Gear</span>
+                            <span class="inv-count">{{actor.medical.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Medical Item" data-type="medical"><i class="fas fa-plus"></i></a>
+                                <a class="medical-browse" title="Browse Medical"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="medical-name">Name</div>
                             <div class="medical-quantity">Quantity</div>
                             <div class="medical-type">Type</div>
                             <div class="medical-bonus">Bonus</div>
                             <div class="medical-uses">Uses</div>
-                            <div class="medical-controls">
-                                <a class="item-create" title="Add Medical Item" data-type="medical"><i class="fas fa-plus"></i></a>
-                                <a class="medical-browse" title="Browse Medical"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="medical-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1271,18 +1377,23 @@
 
                 <!-- Biological Subtab -->
                 <div class="subtab-content" id="biological-subtab">
-                    <div class="biological">
-                        <h3>Biological</h3>
+                    <div class="biological inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-dna"></i>
+                            <span class="inv-title">Biological</span>
+                            <span class="inv-count">{{actor.biological.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Biological Item" data-type="biological"><i class="fas fa-plus"></i></a>
+                                <a class="bio-browse" title="Browse Biological"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="bio-name">Name</div>
                             <div class="bio-quantity">Quantity</div>
                             <div class="bio-type">Type</div>
                             <div class="bio-condition">Condition</div>
                             <div class="bio-value">Value</div>
-                            <div class="bio-controls">
-                                <a class="item-create" title="Add Biological Item" data-type="biological"><i class="fas fa-plus"></i></a>
-                                <a class="bio-browse" title="Browse Biological"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="bio-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1311,17 +1422,22 @@
 
                 <!-- Travel Subtab -->
                 <div class="subtab-content" id="travel-subtab">
-                    <div class="travel">
-                        <h3>Travel Gear</h3>
+                    <div class="travel inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-person-hiking"></i>
+                            <span class="inv-title">Travel Gear</span>
+                            <span class="inv-count">{{actor.travel.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Travel Item" data-type="travel"><i class="fas fa-plus"></i></a>
+                                <a class="travel-browse" title="Browse Travel Gear"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="travel-name">Name</div>
                             <div class="travel-quantity">Quantity</div>
                             <div class="travel-weight">Weight</div>
                             <div class="travel-durability">Durability</div>
-                            <div class="travel-controls">
-                                <a class="item-create" title="Add Travel Item" data-type="travel"><i class="fas fa-plus"></i></a>
-                                <a class="travel-browse" title="Browse Travel Gear"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="travel-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1349,17 +1465,22 @@
 
                 <!-- Musical Subtab -->
                 <div class="subtab-content" id="musical-subtab">
-                    <div class="musical">
-                        <h3>Musical Instruments</h3>
+                    <div class="musical inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-music"></i>
+                            <span class="inv-title">Musical Instruments</span>
+                            <span class="inv-count">{{actor.musical.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Instrument" data-type="musical"><i class="fas fa-plus"></i></a>
+                                <a class="musical-browse" title="Browse Instruments"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="musical-name">Name</div>
                             <div class="musical-type">Type</div>
                             <div class="musical-quality">Quality</div>
                             <div class="musical-condition">Condition</div>
-                            <div class="musical-controls">
-                                <a class="item-create" title="Add Instrument" data-type="musical"><i class="fas fa-plus"></i></a>
-                                <a class="musical-browse" title="Browse Instruments"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="musical-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1384,8 +1505,16 @@
                 </div>
 
                 <div class="subtab-content" id="clothing-subtab">
-                    <div class="clothing">
-                        <h3>Clothing & Accessories</h3>
+                    <div class="clothing inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-shirt"></i>
+                            <span class="inv-title">Clothing & Accessories</span>
+                            <span class="inv-count">{{actor.clothing.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Clothing" data-type="clothing"><i class="fas fa-plus"></i></a>
+                                <a class="clothing-browse" title="Browse Clothing"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="clothing-name">Name</div>
                             <div class="clothing-type">Type</div>
@@ -1393,10 +1522,7 @@
                             <div class="clothing-material">Material</div>
                             <div class="clothing-quality">Quality</div>
                             <div class="clothing-protection">Protection</div>
-                            <div class="clothing-controls">
-                                <a class="item-create" title="Add Clothing" data-type="clothing"><i class="fas fa-plus"></i></a>
-                                <a class="clothing-browse" title="Browse Clothing"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="clothing-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1428,8 +1554,11 @@
 
         <!-- Companions & Ridden Tab -->
         <div class="tab-content" id="companions-tab">
-            <div class="companions-section">
-                <h2>Companions & Ridden</h2>
+            <div class="companions-section inv-block">
+                <h2 class="inv-heading">
+                    <i class="fas fa-horse"></i>
+                    <span class="inv-title">Companions & Ridden</span>
+                </h2>
 
                 <!-- Companions Subtabs -->
                 <div class="subtab-nav">
@@ -1440,18 +1569,23 @@
 
                 <!-- Mounts Subtab -->
                 <div class="subtab-content active" id="mounts-subtab">
-                    <div class="mounts">
-                        <h3>Mounts</h3>
+                    <div class="mounts inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-horse"></i>
+                            <span class="inv-title">Mounts</span>
+                            <span class="inv-count">{{actor.mount.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Mount" data-type="mount"><i class="fas fa-plus"></i></a>
+                                <a class="mount-browse" title="Browse Mounts"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="mount-name">Name</div>
                             <div class="mount-type">Type</div>
                             <div class="mount-hp">HP</div>
                             <div class="mount-speed">Speed</div>
                             <div class="mount-loyalty">Loyalty</div>
-                            <div class="mount-controls">
-                                <a class="item-create" title="Add Mount" data-type="mount"><i class="fas fa-plus"></i></a>
-                                <a class="mount-browse" title="Browse Mounts"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="mount-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1484,18 +1618,23 @@
 
                 <!-- Fleshcraft Subtab -->
                 <div class="subtab-content" id="fleshcraft-subtab">
-                    <div class="fleshcraft">
-                        <h3>Fleshcraft</h3>
+                    <div class="fleshcraft inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-spaghetti-monster-flying"></i>
+                            <span class="inv-title">Fleshcraft</span>
+                            <span class="inv-count">{{actor.fleshcraft.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Fleshcraft" data-type="fleshcraft"><i class="fas fa-plus"></i></a>
+                                <a class="fleshcraft-browse" title="Browse Fleshcraft"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="fleshcraft-name">Name</div>
                             <div class="fleshcraft-type">Type</div>
                             <div class="fleshcraft-hp">HP</div>
                             <div class="fleshcraft-sanity">Sanity Cost</div>
                             <div class="fleshcraft-active">Active</div>
-                            <div class="fleshcraft-controls">
-                                <a class="item-create" title="Add Fleshcraft" data-type="fleshcraft"><i class="fas fa-plus"></i></a>
-                                <a class="fleshcraft-browse" title="Browse Fleshcraft"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="fleshcraft-controls"></div>
                         </header>
 
                         <ol class="items-list">
@@ -1557,18 +1696,23 @@
 
                 <!-- Vehicles Subtab -->
                 <div class="subtab-content" id="vehicles-subtab">
-                    <div class="vehicles">
-                        <h3>Vehicles</h3>
+                    <div class="vehicles inv-subblock">
+                        <h3 class="inv-subheading">
+                            <i class="fas fa-truck-pickup"></i>
+                            <span class="inv-title">Vehicles</span>
+                            <span class="inv-count">{{actor.vehicle.length}}</span>
+                            <span class="inv-actions">
+                                <a class="item-create" title="Add Vehicle" data-type="vehicle"><i class="fas fa-plus"></i></a>
+                                <a class="vehicle-browse" title="Browse Vehicles"><i class="fas fa-search"></i></a>
+                            </span>
+                        </h3>
                         <header class="gear-header flexrow">
                             <div class="vehicle-name">Name</div>
                             <div class="vehicle-type">Type</div>
                             <div class="vehicle-size">Size</div>
                             <div class="vehicle-speed">Speed</div>
                             <div class="vehicle-condition">Condition</div>
-                            <div class="vehicle-controls">
-                                <a class="item-create" title="Add Vehicle" data-type="vehicle"><i class="fas fa-plus"></i></a>
-                                <a class="vehicle-browse" title="Browse Vehicles"><i class="fas fa-search"></i></a>
-                            </div>
+                            <div class="vehicle-controls"></div>
                         </header>
 
                         <ol class="items-list">

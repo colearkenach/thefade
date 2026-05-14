@@ -1,246 +1,265 @@
 <section class="spells-section">
     <!-- Aura -->
-    <div class="aura-card">
-        <h2>Aura</h2>
-        <div class="aura-fields">
-            <div class="form-group">
-                <label>Color</label>
-                <select name="system.aura.color">
-                    {{selectOptions auraColorOptions selected=system.aura.color}}
-                </select>
+    <div class="aura-card inv-block">
+        <h2 class="inv-heading">
+            <i class="fas fa-eye"></i>
+            <span class="inv-title">Aura</span>
+        </h2>
+        <div class="inv-block-body">
+            <div class="aura-fields">
+                <div class="form-group">
+                    <label>Color</label>
+                    <select name="system.aura.color">
+                        {{selectOptions auraColorOptions selected=system.aura.color}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Shape</label>
+                    <select name="system.aura.shape">
+                        {{selectOptions auraShapeOptions selected=system.aura.shape}}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Intensity</label>
+                    <select name="system.aura.intensity">
+                        {{selectOptions auraIntensityOptions selected=system.aura.intensity}}
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Shape</label>
-                <select name="system.aura.shape">
-                    {{selectOptions auraShapeOptions selected=system.aura.shape}}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Intensity</label>
-                <select name="system.aura.intensity">
-                    {{selectOptions auraIntensityOptions selected=system.aura.intensity}}
-                </select>
-            </div>
-        </div>
 
-        <div class="aura-info">
-            {{#if system.aura.color}}
-            <div class="aura-property">
-                <strong>Color:</strong> {{titleCase system.aura.color}}
-                <span class="aura-bonus">
-                    {{#if (eq system.aura.color "red")}}Athletics{{/if}}
-                    {{#if (eq system.aura.color "blue")}}Medicine{{/if}}
-                    {{#if (eq system.aura.color "green")}}Herbalism{{/if}}
-                    {{#if (eq system.aura.color "yellow")}}Research{{/if}}
-                    {{#if (eq system.aura.color "purple")}}Arcana{{/if}}
-                    {{#if (eq system.aura.color "orange")}}Etiquette{{/if}}
-                    {{#if (eq system.aura.color "pink")}}Seduction{{/if}}
-                    {{#if (eq system.aura.color "gold")}}Gambling{{/if}}
-                    {{#if (eq system.aura.color "silver")}}Symbology{{/if}}
-                    {{#if (eq system.aura.color "turquoise")}}Sight{{/if}}
-                    {{#if (eq system.aura.color "indigo")}}Ritual{{/if}}
-                    {{#if (eq system.aura.color "brown")}}Linguistics{{/if}}
-                    {{#if (eq system.aura.color "violet")}}Insight{{/if}}
-                    {{#if (eq system.aura.color "gray")}}Intimidate{{/if}}
-                    {{#if (eq system.aura.color "black")}}Toxicology{{/if}}
-                    {{#if (eq system.aura.color "white")}}Lore (Religion){{/if}}
-                </span>
-            </div>
-            {{/if}}
+            <div class="aura-info">
+                {{#if system.aura.color}}
+                <div class="aura-property">
+                    <strong>Color:</strong> {{titleCase system.aura.color}}
+                    <span class="aura-bonus">
+                        {{#if (eq system.aura.color "red")}}Athletics{{/if}}
+                        {{#if (eq system.aura.color "blue")}}Medicine{{/if}}
+                        {{#if (eq system.aura.color "green")}}Herbalism{{/if}}
+                        {{#if (eq system.aura.color "yellow")}}Research{{/if}}
+                        {{#if (eq system.aura.color "purple")}}Arcana{{/if}}
+                        {{#if (eq system.aura.color "orange")}}Etiquette{{/if}}
+                        {{#if (eq system.aura.color "pink")}}Seduction{{/if}}
+                        {{#if (eq system.aura.color "gold")}}Gambling{{/if}}
+                        {{#if (eq system.aura.color "silver")}}Symbology{{/if}}
+                        {{#if (eq system.aura.color "turquoise")}}Sight{{/if}}
+                        {{#if (eq system.aura.color "indigo")}}Ritual{{/if}}
+                        {{#if (eq system.aura.color "brown")}}Linguistics{{/if}}
+                        {{#if (eq system.aura.color "violet")}}Insight{{/if}}
+                        {{#if (eq system.aura.color "gray")}}Intimidate{{/if}}
+                        {{#if (eq system.aura.color "black")}}Toxicology{{/if}}
+                        {{#if (eq system.aura.color "white")}}Lore (Religion){{/if}}
+                    </span>
+                </div>
+                {{/if}}
 
-            {{#if system.aura.shape}}
-            <div class="aura-property">
-                <strong>Shape:</strong> {{titleCase system.aura.shape}}
-                <span class="aura-bonus">
-                    {{#if (eq system.aura.shape "circular")}}Etiquette{{/if}}
-                    {{#if (eq system.aura.shape "jagged")}}Trickery{{/if}}
-                    {{#if (eq system.aura.shape "flowing")}}Persuasion{{/if}}
-                    {{#if (eq system.aura.shape "spiky")}}Lockpicking{{/if}}
-                    {{#if (eq system.aura.shape "radiant")}}Deception{{/if}}
-                    {{#if (eq system.aura.shape "dense")}}Medicine{{/if}}
-                    {{#if (eq system.aura.shape "wispy")}}Sneaking{{/if}}
-                    {{#if (eq system.aura.shape "geometric")}}Research{{/if}}
-                </span>
-            </div>
-            {{/if}}
+                {{#if system.aura.shape}}
+                <div class="aura-property">
+                    <strong>Shape:</strong> {{titleCase system.aura.shape}}
+                    <span class="aura-bonus">
+                        {{#if (eq system.aura.shape "circular")}}Etiquette{{/if}}
+                        {{#if (eq system.aura.shape "jagged")}}Trickery{{/if}}
+                        {{#if (eq system.aura.shape "flowing")}}Persuasion{{/if}}
+                        {{#if (eq system.aura.shape "spiky")}}Lockpicking{{/if}}
+                        {{#if (eq system.aura.shape "radiant")}}Deception{{/if}}
+                        {{#if (eq system.aura.shape "dense")}}Medicine{{/if}}
+                        {{#if (eq system.aura.shape "wispy")}}Sneaking{{/if}}
+                        {{#if (eq system.aura.shape "geometric")}}Research{{/if}}
+                    </span>
+                </div>
+                {{/if}}
 
-            {{#if system.aura.intensity}}
-            <div class="aura-property">
-                <strong>Intensity:</strong> {{titleCase system.aura.intensity}}
-                <span class="aura-bonus">
-                    {{#if (eq system.aura.intensity "faint")}}+1D, 3 hex{{/if}}
-                    {{#if (eq system.aura.intensity "moderate")}}+2D, 2 hex{{/if}}
-                    {{#if (eq system.aura.intensity "intense")}}+3D, 1 hex{{/if}}
-                </span>
+                {{#if system.aura.intensity}}
+                <div class="aura-property">
+                    <strong>Intensity:</strong> {{titleCase system.aura.intensity}}
+                    <span class="aura-bonus">
+                        {{#if (eq system.aura.intensity "faint")}}+1D, 3 hex{{/if}}
+                        {{#if (eq system.aura.intensity "moderate")}}+2D, 2 hex{{/if}}
+                        {{#if (eq system.aura.intensity "intense")}}+3D, 1 hex{{/if}}
+                    </span>
+                </div>
+                {{/if}}
             </div>
-            {{/if}}
         </div>
     </div>
 
     <!-- Spells Learned Counter -->
-    <div class="spells-learned-counter">
-        <h3>Spells Learned</h3>
-        <div class="spell-numbers">
-            <div class="form-group">
-                <label>Base</label>
-                <input type="number" name="system.spellsLearnedBase" value="{{system.spellsLearnedBase}}" data-dtype="Number" />
-            </div>
-            <div class="form-group">
-                <label>From Level</label>
-                <input type="number" name="system.spellsLearnedFromLevel" value="{{system.spellsLearnedFromLevel}}" data-dtype="Number" readonly />
-            </div>
-            <div class="form-group">
-                <label>Total</label>
-                <input type="number" name="system.spellsLearnedTotal" value="{{system.spellsLearnedTotal}}" data-dtype="Number" readonly />
-            </div>
-        </div>
-    </div>
-
-    <hr />
-
-    <h2>Sin and Dark Magic</h2>
-
-    <div class="sin-dark-magic-section">
-        <!-- Dark Magic Spells Learned -->
-        <div class="dark-magic-spells">
-            <label>Dark Magic Spells Learned:</label>
-            <div class="dark-magic-checkboxes">
-                {{#times 10}}
-                <label class="checkbox-label">
-                    <input type="checkbox" name="system.darkMagic.spellsLearned.spell{{this}}"
-                           {{#if (lookup ../system.darkMagic.spellsLearned (concat "spell" this))}} checked{{/if}} />
-                    <span>{{this}}</span>
-                </label>
-                {{/times}}
-            </div>
-        </div>
-
-        <!-- Sin Management -->
-        <div class="sin-management grid grid-4col">
-            <div class="form-group">
-                <label>Current Sin</label>
-                <input type="number" name="system.darkMagic.currentSin" value="{{system.darkMagic.currentSin}}" data-dtype="Number" />
-            </div>
-
-            <div class="form-group">
-                <label>Sin Threshold</label>
-                <div class="flexrow">
-                    <input type="number" value="{{system.darkMagic.sinThreshold}}" disabled class="sin-threshold-value" />
-                    <span>+</span>
-                    <input type="number" name="system.darkMagic.sinThresholdBonus" value="{{system.darkMagic.sinThresholdBonus}}"
-                           data-dtype="Number" title="Bonus" class="small-input" />
+    <div class="spells-learned-counter inv-block">
+        <h2 class="inv-heading">
+            <i class="fas fa-book-sparkles"></i>
+            <span class="inv-title">Spells Learned</span>
+            <span class="inv-count">{{system.spellsLearnedTotal}}</span>
+        </h2>
+        <div class="inv-block-body">
+            <div class="spell-numbers">
+                <div class="form-group">
+                    <label>Base</label>
+                    <input type="number" name="system.spellsLearnedBase" value="{{system.spellsLearnedBase}}" data-dtype="Number" />
+                </div>
+                <div class="form-group">
+                    <label>From Level</label>
+                    <input type="number" name="system.spellsLearnedFromLevel" value="{{system.spellsLearnedFromLevel}}" data-dtype="Number" readonly />
+                </div>
+                <div class="form-group">
+                    <label>Total</label>
+                    <input type="number" name="system.spellsLearnedTotal" value="{{system.spellsLearnedTotal}}" data-dtype="Number" readonly />
                 </div>
             </div>
-
-            <div class="form-group">
-                <label>Addiction Level</label>
-                <select name="system.darkMagic.addictionLevel">
-                    {{selectOptions addictionLevelOptions selected=system.darkMagic.addictionLevel}}
-                </select>
-            </div>
-
-            <div class="form-group">
-                <button class="roll-addiction" type="button">Roll for Dark Magic Addiction</button>
-                <button class="rest-daily" type="button" title="Scrub accumulated Sin for the day (stages persist)">Rest (Clear Sin)</button>
-            </div>
         </div>
-        {{#if system.darkMagic.stageSummary}}
-        <p class="addiction-stage-summary"><em>Addiction: {{system.darkMagic.stageSummary}}</em></p>
-        {{/if}}
     </div>
 
-    <hr />
-
-    <h2>
-        Spells
-        <a class="item-create" title="Add Spell" data-type="spell"><i class="fas fa-plus"></i></a>
-        <a class="spell-browse" title="Browse Spells"><i class="fas fa-search"></i></a>
-    </h2>
-
-    <!-- Filter Controls -->
-    <div class="spell-filters">
-        <select class="spell-school-filter">
-            <option value="all">All Schools</option>
-            <option value="General">General</option>
-            <option value="Alchemy">Alchemy</option>
-            <option value="Divine">Divine</option>
-            <option value="Elementalism">Elementalism</option>
-            <option value="Malevolent">Malevolent</option>
-            <option value="Martial">Martial</option>
-            <option value="Naturalism">Naturalism</option>
-            <option value="Preternaturalism">Preternaturalism</option>
-            <option value="Rituals">Rituals</option>
-            <option value="Runes">Runes</option>
-            <option value="Spiritualism">Spiritualism</option>
-        </select>
-        <input type="text" class="spell-search" placeholder="Search spells..." />
-    </div>
-
-    <!-- Spell List -->
-    <div class="spell-header">
-        <div class="spell-name">Name</div>
-        <div class="spell-school">School</div>
-        <div class="spell-damage">Damage</div>
-        <div class="spell-time">Time</div>
-        <div class="spell-successes">Successes</div>
-        <div class="spell-attack">Attack</div>
-        <div class="spell-controls"></div>
-    </div>
-
-    <div class="spells-list">
-        {{#each actor.spells as |spell id|}}
-        <div class="spell-wrapper">
-            <input type="checkbox" id="toggle-spell-{{spell._id}}" class="spell-checkbox">
-            <div class="spell-item" data-item-id="{{spell._id}}" data-school="{{spell.system.school}}">
-                <div class="spell-name">
-                    <label for="toggle-spell-{{spell._id}}" class="spell-name-container">
-                        {{spell.name}}
-                        <i class="fas fa-chevron-down spell-toggle-icon"></i>
+    <!-- Sin and Dark Magic -->
+    <div class="sin-dark-magic-section inv-block inv-block--crimson">
+        <h2 class="inv-heading">
+            <i class="fas fa-skull"></i>
+            <span class="inv-title">Sin and Dark Magic</span>
+        </h2>
+        <div class="inv-block-body">
+            <!-- Dark Magic Spells Learned -->
+            <div class="dark-magic-spells">
+                <label>Dark Magic Spells Learned:</label>
+                <div class="dark-magic-checkboxes">
+                    {{#times 10}}
+                    <label class="checkbox-label">
+                        <input type="checkbox" name="system.darkMagic.spellsLearned.spell{{this}}"
+                               {{#if (lookup ../system.darkMagic.spellsLearned (concat "spell" this))}} checked{{/if}} />
+                        <span>{{this}}</span>
                     </label>
-                </div>
-                <div class="spell-school {{lowercase spell.system.school}}">{{spell.system.school}}</div>
-                <div class="spell-damage">{{#if spell.system.damage}}{{spell.system.damage}} {{spell.system.damageType}}{{else}}-{{/if}}</div>
-                <div class="spell-time">{{spell.system.time}}</div>
-                <div class="spell-successes">{{spell.system.successes}}</div>
-                <div class="spell-attack">{{#if spell.system.attack}}vs. {{spell.system.attack}}{{else}}-{{/if}}</div>
-                <div class="spell-controls">
-                    <a class="cast-spell" title="Cast Spell"><i class="fas fa-magic"></i></a>
-                    <a class="item-edit" title="Edit Spell"><i class="fas fa-edit"></i></a>
-                    <a class="item-delete" title="Delete Spell"><i class="fas fa-trash"></i></a>
+                    {{/times}}
                 </div>
             </div>
-            <div class="spell-description">
-                <div class="spell-description-content">
-                    {{spell.system.description}}
+
+            <!-- Sin Management -->
+            <div class="sin-management grid grid-4col">
+                <div class="form-group">
+                    <label>Current Sin</label>
+                    <input type="number" name="system.darkMagic.currentSin" value="{{system.darkMagic.currentSin}}" data-dtype="Number" />
                 </div>
-                <div class="spell-details">
-                    {{#if spell.system.range}}
-                    <div class="spell-detail-item">
-                        <div class="spell-detail-label">Range:</div>
-                        <div class="spell-detail-value">{{spell.system.range}}</div>
+
+                <div class="form-group">
+                    <label>Sin Threshold</label>
+                    <div class="flexrow">
+                        <input type="number" value="{{system.darkMagic.sinThreshold}}" disabled class="sin-threshold-value" />
+                        <span>+</span>
+                        <input type="number" name="system.darkMagic.sinThresholdBonus" value="{{system.darkMagic.sinThresholdBonus}}"
+                               data-dtype="Number" title="Bonus" class="small-input" />
                     </div>
-                    {{/if}}
-                    {{#if spell.system.bonusEffect}}
-                    <div class="spell-detail-item">
-                        <div class="spell-detail-label">Bonus Effect:</div>
-                        <div class="spell-detail-value">{{spell.system.bonusEffect}}</div>
-                    </div>
-                    {{/if}}
-                    {{#if spell.system.mishapModifier}}
-                    <div class="spell-detail-item">
-                        <div class="spell-detail-label">Mishap Modifier:</div>
-                        <div class="spell-detail-value">{{spell.system.mishapModifier}}</div>
-                    </div>
-                    {{/if}}
-                    {{#if spell.system.isDarkMagic}}
-                    <div class="spell-detail-item">
-                        <div class="spell-detail-label">Dark Magic:</div>
-                        <div class="spell-detail-value">Yes</div>
-                    </div>
-                    {{/if}}
+                </div>
+
+                <div class="form-group">
+                    <label>Addiction Level</label>
+                    <select name="system.darkMagic.addictionLevel">
+                        {{selectOptions addictionLevelOptions selected=system.darkMagic.addictionLevel}}
+                    </select>
+                </div>
+
+                <div class="form-group sin-actions">
+                    <button class="roll-addiction" type="button">Roll for Dark Magic Addiction</button>
+                    <button class="rest-daily" type="button" title="Scrub accumulated Sin for the day (stages persist)">Rest (Clear Sin)</button>
                 </div>
             </div>
+            {{#if system.darkMagic.stageSummary}}
+            <p class="addiction-stage-summary"><em>Addiction: {{system.darkMagic.stageSummary}}</em></p>
+            {{/if}}
         </div>
-        {{/each}}
+    </div>
+
+    <!-- Spells -->
+    <div class="spells-block inv-block">
+        <h2 class="inv-heading">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            <span class="inv-title">Spells</span>
+            <span class="inv-count">{{actor.spells.length}}</span>
+            <span class="inv-actions">
+                <a class="item-create" title="Add Spell" data-type="spell"><i class="fas fa-plus"></i></a>
+                <a class="spell-browse" title="Browse Spells"><i class="fas fa-search"></i></a>
+            </span>
+        </h2>
+
+        <!-- Filter Controls -->
+        <div class="spell-filters">
+            <select class="spell-school-filter">
+                <option value="all">All Schools</option>
+                <option value="General">General</option>
+                <option value="Alchemy">Alchemy</option>
+                <option value="Divine">Divine</option>
+                <option value="Elementalism">Elementalism</option>
+                <option value="Malevolent">Malevolent</option>
+                <option value="Martial">Martial</option>
+                <option value="Naturalism">Naturalism</option>
+                <option value="Preternaturalism">Preternaturalism</option>
+                <option value="Rituals">Rituals</option>
+                <option value="Runes">Runes</option>
+                <option value="Spiritualism">Spiritualism</option>
+            </select>
+            <input type="text" class="spell-search" placeholder="Search spells..." />
+        </div>
+
+        <!-- Spell List -->
+        <div class="spell-header">
+            <div class="spell-name">Name</div>
+            <div class="spell-school">School</div>
+            <div class="spell-damage">Damage</div>
+            <div class="spell-time">Time</div>
+            <div class="spell-successes">Successes</div>
+            <div class="spell-attack">Attack</div>
+            <div class="spell-controls"></div>
+        </div>
+
+        <div class="spells-list">
+            {{#each actor.spells as |spell id|}}
+            <div class="spell-wrapper">
+                <input type="checkbox" id="toggle-spell-{{spell._id}}" class="spell-checkbox">
+                <div class="spell-item" data-item-id="{{spell._id}}" data-school="{{spell.system.school}}">
+                    <div class="spell-name">
+                        <label for="toggle-spell-{{spell._id}}" class="spell-name-container">
+                            {{spell.name}}
+                            <i class="fas fa-chevron-down spell-toggle-icon"></i>
+                        </label>
+                    </div>
+                    <div class="spell-school {{lowercase spell.system.school}}">{{spell.system.school}}</div>
+                    <div class="spell-damage">{{#if spell.system.damage}}{{spell.system.damage}} {{spell.system.damageType}}{{else}}-{{/if}}</div>
+                    <div class="spell-time">{{spell.system.time}}</div>
+                    <div class="spell-successes">{{spell.system.successes}}</div>
+                    <div class="spell-attack">{{#if spell.system.attack}}vs. {{spell.system.attack}}{{else}}-{{/if}}</div>
+                    <div class="spell-controls">
+                        <a class="cast-spell" title="Cast Spell"><i class="fas fa-magic"></i></a>
+                        <a class="item-edit" title="Edit Spell"><i class="fas fa-edit"></i></a>
+                        <a class="item-delete" title="Delete Spell"><i class="fas fa-trash"></i></a>
+                    </div>
+                </div>
+                <div class="spell-description">
+                    <div class="spell-description-content">
+                        {{spell.system.description}}
+                    </div>
+                    <div class="spell-details">
+                        {{#if spell.system.range}}
+                        <div class="spell-detail-item">
+                            <div class="spell-detail-label">Range:</div>
+                            <div class="spell-detail-value">{{spell.system.range}}</div>
+                        </div>
+                        {{/if}}
+                        {{#if spell.system.bonusEffect}}
+                        <div class="spell-detail-item">
+                            <div class="spell-detail-label">Bonus Effect:</div>
+                            <div class="spell-detail-value">{{spell.system.bonusEffect}}</div>
+                        </div>
+                        {{/if}}
+                        {{#if spell.system.mishapModifier}}
+                        <div class="spell-detail-item">
+                            <div class="spell-detail-label">Mishap Modifier:</div>
+                            <div class="spell-detail-value">{{spell.system.mishapModifier}}</div>
+                        </div>
+                        {{/if}}
+                        {{#if spell.system.isDarkMagic}}
+                        <div class="spell-detail-item">
+                            <div class="spell-detail-label">Dark Magic:</div>
+                            <div class="spell-detail-value">Yes</div>
+                        </div>
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+            {{/each}}
+        </div>
     </div>
 </section>
