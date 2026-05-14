@@ -333,18 +333,23 @@ export async function applyPathSkillModifications(actor, path) {
     let choicesMade = 0;
 
     for (const pathSkill of path.system.pathSkills) {
-        const entryType = pathSkill.system.entryType;
+        // Older pathSkills entries (e.g. those dropped from the legacy skill
+        // compendium) may lack entryType. Treat those as plain core-skill
+        // grants so the rank still applies.
+        const entryType = pathSkill.system?.entryType || PATH_SKILL_TYPES.SPECIFIC_SKILL;
 
         switch (entryType) {
             case PATH_SKILL_TYPES.SPECIFIC_SKILL: {
                 const skill = getSkill(actor, pathSkill.name);
-                if (skill) {
-                    const currentRankValue = getRankValue(skill.rank);
-                    const pathRankValue = getRankValue(pathSkill.system.rank);
-                    if (pathRankValue > currentRankValue) {
-                        await setSkillRank(actor, skill.key, pathSkill.system.rank);
-                        skillsModified++;
-                    }
+                if (!skill) {
+                    console.warn(`thefade | path "${path.name}" references unknown skill "${pathSkill.name}"`);
+                    break;
+                }
+                const currentRankValue = getRankValue(skill.rank);
+                const pathRankValue = getRankValue(pathSkill.system?.rank);
+                if (pathRankValue > currentRankValue) {
+                    await setSkillRank(actor, skill.key, pathSkill.system.rank);
+                    skillsModified++;
                 }
                 break;
             }
