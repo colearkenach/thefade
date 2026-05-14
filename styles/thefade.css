@@ -2545,8 +2545,7 @@ input[readonly] {
 }
 
 .paths-info,
-.talents-counter,
-.spells-learned-counter {
+.talents-counter {
   margin: 16px 0;
   padding: 12px;
   border: 1px solid var(--border-faint);
@@ -2555,8 +2554,7 @@ input[readonly] {
 }
 
 .paths-info h3,
-.talents-counter h3,
-.spells-learned-counter h3 {
+.talents-counter h3 {
   margin: 0 0 12px 0;
   font-size: 0.875rem;
   font-weight: bold;
@@ -2564,8 +2562,7 @@ input[readonly] {
 }
 
 .paths-progression,
-.talent-numbers,
-.spell-numbers {
+.talent-numbers {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
@@ -2766,13 +2763,6 @@ select[name="system.aura.color"] option[value="white"] {
   background: rgba(128, 0, 128, 0.05);
   border: 1px solid rgba(128, 0, 128, 0.2);
   border-radius: 5px;
-}
-
-.thefade .dark-magic-checkboxes {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 5px;
 }
 
 .thefade .sin-management {
@@ -4010,8 +4000,7 @@ select[name="system.aura.color"] option[value="white"] {
   }
 
   .paths-progression,
-  .talent-numbers,
-  .spell-numbers {
+  .talent-numbers {
     grid-template-columns: 1fr;
   }
 }
@@ -7797,41 +7786,6 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 /* ----- Spells tab ----- */
-.thefade .spells-learned-counter {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-faint);
-    border-left: 3px solid var(--accent-gold);
-    border-radius: 3px;
-    padding: 10px 14px;
-    margin-bottom: 14px;
-}
-
-.thefade .spells-learned-counter h3 {
-    margin: 0 0 8px !important;
-    color: var(--accent-gold) !important;
-    font-size: 0.8em !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.thefade .spells-learned-counter .spell-numbers {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.thefade .spells-learned-counter .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.thefade .spells-learned-counter label {
-    font-size: 0.72em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
 .thefade .sin-dark-magic-section {
     background: var(--bg-surface);
     border: 1px solid var(--border-faint);
@@ -7839,41 +7793,6 @@ select[name="system.aura.color"] option[value="white"] {
     border-radius: 3px;
     padding: 12px 14px;
     margin-bottom: 14px;
-}
-
-.thefade .sin-dark-magic-section .dark-magic-spells {
-    margin-bottom: 12px;
-}
-
-.thefade .sin-dark-magic-section .dark-magic-spells > label {
-    display: block;
-    font-size: 0.78em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin-bottom: 6px;
-}
-
-.thefade .dark-magic-checkboxes {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-}
-
-.thefade .dark-magic-checkboxes .checkbox-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 3px 8px;
-    background: var(--bg-surface-deep);
-    border: 1px solid var(--border-faint);
-    border-radius: 2px;
-    font-size: 0.8em;
-    cursor: pointer;
-}
-
-.thefade .dark-magic-checkboxes .checkbox-label:hover {
-    border-color: var(--accent-crimson);
 }
 
 .thefade .sin-management {
@@ -10516,9 +10435,8 @@ select[name="system.aura.color"] option[value="white"] {
     border-color: var(--accent-gold);
 }
 
-/* ----- Aura / Spells-Learned / Sin cards — drop legacy left-border, rely on inv-block ----- */
+/* ----- Aura / Sin cards — drop legacy left-border, rely on inv-block ----- */
 .thefade .aura-card.inv-block,
-.thefade .spells-learned-counter.inv-block,
 .thefade .sin-dark-magic-section.inv-block {
     border-left: 1px solid var(--border-faint);
     padding: 0;
@@ -10526,11 +10444,9 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .aura-card.inv-block { border-left: 3px solid var(--accent-gold); }
-.thefade .spells-learned-counter.inv-block { border-left: 3px solid var(--accent-gold); }
 .thefade .sin-dark-magic-section.inv-block { border-left: 3px solid var(--accent-crimson); }
 
 .thefade .aura-card.inv-block > h2.inv-heading,
-.thefade .spells-learned-counter.inv-block > h2.inv-heading,
 .thefade .sin-dark-magic-section.inv-block > h2.inv-heading {
     margin: 0 !important;
     padding: 10px 14px !important;
@@ -10567,12 +10483,6 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade .aura-card .aura-property strong { color: var(--accent-gold); min-width: 80px; }
 .thefade .aura-card .aura-bonus { color: var(--text-muted); margin-left: auto; }
-
-.thefade .spells-learned-counter .spell-numbers {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-}
 
 .thefade .sin-dark-magic-section .sin-management {
     margin-top: 8px;

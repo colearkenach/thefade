@@ -25,7 +25,6 @@
         "miscBonus": 0
       },
       "darkMagic": {
-        "spellsLearned": {},
         "currentSin": 0,
         "sinThresholdBonus": 0,
         "addictionLevel": "none"

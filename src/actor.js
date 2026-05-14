@@ -398,23 +398,17 @@ export class TheFadeActor extends Actor {
         // Initialize dark magic data if needed
         if (!data.darkMagic || typeof data.darkMagic !== 'object') {
             data.darkMagic = {
-                spellsLearned: {},
                 currentSin: 0,
                 sinThresholdBonus: 0,
                 addictionLevel: "none"
             };
         }
 
-        // Count dark magic spells learned - safer processing
-        let darkMagicCount = 0;
-        if (data.darkMagic.spellsLearned && typeof data.darkMagic.spellsLearned === 'object') {
-            try {
-                darkMagicCount = Object.values(data.darkMagic.spellsLearned).filter(Boolean).length;
-            } catch (error) {
-                console.error("Error counting dark magic spells:", error);
-                darkMagicCount = 0;
-            }
-        }
+        // Count dark magic spells the actor actually owns.
+        const darkMagicCount = this.items?.filter(i =>
+            i.type === "spell" && i.system?.isDarkMagic
+        ).length ?? 0;
+        data.darkMagic.spellsLearnedCount = darkMagicCount;
 
         // Calculate sin threshold: Soul - 1 per dark magic spell + bonus
         const soulValue = data.attributes?.soul?.value || 1;

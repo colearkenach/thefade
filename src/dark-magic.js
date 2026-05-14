@@ -59,7 +59,7 @@ export function applyAddictionPenalties(data) {
     // Terminal halves the Soul input to sin-threshold recomputation.
     if (effects.soulDivisor > 1) {
         const soul = data.attributes?.soul?.value || 1;
-        const spells = Object.values(data.darkMagic.spellsLearned || {}).filter(Boolean).length;
+        const spells = Number(data.darkMagic.spellsLearnedCount) || 0;
         const bonus = Number(data.darkMagic.sinThresholdBonus) || 0;
         data.darkMagic.sinThreshold = Math.max(0,
             Math.floor(soul / effects.soulDivisor) - spells + bonus);

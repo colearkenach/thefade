@@ -82,52 +82,14 @@
         </div>
     </div>
 
-    <!-- Spells Learned Counter -->
-    <div class="spells-learned-counter inv-block">
-        <h2 class="inv-heading">
-            <i class="fas fa-book-sparkles"></i>
-            <span class="inv-title">Spells Learned</span>
-            <span class="inv-count">{{system.spellsLearnedTotal}}</span>
-        </h2>
-        <div class="inv-block-body">
-            <div class="spell-numbers">
-                <div class="form-group">
-                    <label>Base</label>
-                    <input type="number" name="system.spellsLearnedBase" value="{{system.spellsLearnedBase}}" data-dtype="Number" />
-                </div>
-                <div class="form-group">
-                    <label>From Level</label>
-                    <input type="number" name="system.spellsLearnedFromLevel" value="{{system.spellsLearnedFromLevel}}" data-dtype="Number" readonly />
-                </div>
-                <div class="form-group">
-                    <label>Total</label>
-                    <input type="number" name="system.spellsLearnedTotal" value="{{system.spellsLearnedTotal}}" data-dtype="Number" readonly />
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Sin and Dark Magic -->
     <div class="sin-dark-magic-section inv-block inv-block--crimson">
         <h2 class="inv-heading">
             <i class="fas fa-skull"></i>
             <span class="inv-title">Sin and Dark Magic</span>
+            <span class="inv-count" title="Dark Magic spells known">{{system.darkMagic.spellsLearnedCount}}</span>
         </h2>
         <div class="inv-block-body">
-            <!-- Dark Magic Spells Learned -->
-            <div class="dark-magic-spells">
-                <label>Dark Magic Spells Learned:</label>
-                <div class="dark-magic-checkboxes">
-                    {{#times 10}}
-                    <label class="checkbox-label">
-                        <input type="checkbox" name="system.darkMagic.spellsLearned.spell{{this}}"
-                               {{#if (lookup ../system.darkMagic.spellsLearned (concat "spell" this))}} checked{{/if}} />
-                        <span>{{this}}</span>
-                    </label>
-                    {{/times}}
-                </div>
-            </div>
-
             <!-- Sin Management -->
             <div class="sin-management grid grid-4col">
                 <div class="form-group">
