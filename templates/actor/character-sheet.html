@@ -81,7 +81,7 @@
     <section class="sheet-body">
         {{!-- Main Tab --}}
         <div class="tab" data-group="primary" data-tab="main">
-            {{!-- Identity: Species + Talents summary --}}
+            {{!-- Identity: Species + Paths summary --}}
             <div class="identity-row identity-row-top">
                 <div class="species-card{{#if system.species.manualEntry}} species-card-manual{{/if}}" data-item-id="{{actor.speciesItem._id}}">
                     <h2>
@@ -129,16 +129,25 @@
                     {{/if}}
                 </div>
 
-                <div class="talents-summary-card">
-                    <h2>Talents</h2>
-                    {{#if actor.talents.length}}
-                    <ul class="talents-summary-list">
-                        {{#each actor.talents as |talent|}}
-                        <li class="talent-summary-item" data-item-id="{{talent._id}}" title="Right-click to open talent">{{talent.name}}</li>
+                <div class="paths-summary-card">
+                    <div class="paths-summary-header">
+                        <label class="level-inline">
+                            <span>Level</span>
+                            <input type="number" name="system.level" value="{{system.level}}" data-dtype="Number" min="0" />
+                        </label>
+                        <h2>Paths</h2>
+                    </div>
+                    {{#if actor.paths.length}}
+                    <ul class="paths-summary-list">
+                        {{#each actor.paths as |path|}}
+                        <li class="path-summary-item" data-item-id="{{path._id}}" title="Right-click to open path">
+                            <span class="path-summary-name">{{path.name}}</span>
+                            {{#if path.system.tier}}<span class="path-summary-tier">Tier {{path.system.tier}}</span>{{/if}}
+                        </li>
                         {{/each}}
                     </ul>
                     {{else}}
-                    <p class="talents-summary-empty"><em>No talents yet</em></p>
+                    <p class="paths-summary-empty"><em>No paths yet</em></p>
                     {{/if}}
                 </div>
             </div>

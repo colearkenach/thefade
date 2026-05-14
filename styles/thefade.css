@@ -6647,7 +6647,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade .identity-row .species-item,
 .thefade .identity-row .species-card,
-.thefade .identity-row .talents-summary-card,
+.thefade .identity-row .paths-summary-card,
 .thefade .identity-row .aura-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-faint);
@@ -6789,7 +6789,36 @@ select[name="system.aura.color"] option[value="white"] {
     font-style: italic;
 }
 
-.thefade .talents-summary-list {
+.thefade .paths-summary-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.thefade .paths-summary-header h2 {
+    margin: 0 !important;
+}
+
+.thefade .level-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75em;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-left: auto;
+    order: 2;
+}
+
+.thefade .level-inline input {
+    width: 48px;
+    text-align: center;
+}
+
+.thefade .paths-summary-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -6798,7 +6827,11 @@ select[name="system.aura.color"] option[value="white"] {
     gap: 4px;
 }
 
-.thefade .talent-summary-item {
+.thefade .path-summary-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     padding: 6px 10px;
     background: var(--bg-surface-deep);
     border: 1px solid var(--border-faint);
@@ -6807,7 +6840,14 @@ select[name="system.aura.color"] option[value="white"] {
     cursor: context-menu;
 }
 
-.thefade .talents-summary-empty {
+.thefade .path-summary-tier {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.thefade .paths-summary-empty {
     margin: 0;
     color: var(--text-muted);
     font-size: 0.9em;
