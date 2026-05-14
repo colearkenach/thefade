@@ -158,6 +158,25 @@ Hooks.once('init', async function () {
     // WORLD SETTINGS
     // --------------------------------------------------------------------
 
+    game.settings.register("thefade", "moreHPScaling", {
+        name: "THEFADE.SettingMoreHP",
+        hint: "THEFADE.SettingMoreHPHint",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false,
+        onChange: () => {
+            for (const actor of game.actors ?? []) {
+                if (actor?.type === "character") actor.prepareData();
+            }
+            for (const app of Object.values(ui.windows)) {
+                if (app?.actor?.type === "character" && typeof app.render === "function") {
+                    app.render(false);
+                }
+            }
+        }
+    });
+
     game.settings.register("thefade", "characterCreationMode", {
         name: "THEFADE.SettingCreationMode",
         hint: "THEFADE.SettingCreationModeHint",

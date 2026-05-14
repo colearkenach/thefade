@@ -22,6 +22,9 @@
   "THEFADE.SettingCreationModePointBuy": "Point Buy",
   "THEFADE.SettingCreationModeRandom": "Random Roll",
 
+  "THEFADE.SettingMoreHP": "More HP (Alt Rule)",
+  "THEFADE.SettingMoreHPHint": "Optional scaling HP rule. Once a Tier 2 path is taken, the character gains +1 HP per character level (starting at level 5). Once a Tier 3 path is taken, levels 10+ instead grant +2 HP per level.",
+
   "THEFADE.SetFacing": "Set Facing (to target, or click a point)",
   "THEFADE.SetFacingTargeted": "{token} now faces {target}.",
   "THEFADE.SetFacingClickPrompt": "Click a point on the canvas to set this token's facing.",
