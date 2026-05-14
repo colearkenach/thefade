@@ -605,7 +605,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
         if (data.experience === undefined) data.experience = 0;
         if (data.isMonster === undefined) data.isMonster = false;
         if (data.talentsBonus === undefined) data.talentsBonus = 0;
-        if (data.spellsLearnedBase === undefined) data.spellsLearnedBase = 0;
 
         const level = data.level || 1;
 
@@ -643,10 +642,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Calculate current traits separately
         const currentTraits = sheetData.actor.traits ? sheetData.actor.traits.length : 0;
         data.currentTraits = currentTraits;
-
-        // Calculate spells learned from level
-        data.spellsLearnedFromLevel = this._calculateSpellsLearnedFromLevel(level);
-        data.spellsLearnedTotal = data.spellsLearnedFromLevel + data.spellsLearnedBase;
 
         // Ensure actor exists for the methods that need it
         if (!sheetData.actor) {
@@ -720,17 +715,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
         }
         return talents;
-    }
-
-    // Calculate spells learned from level (even levels if has spellcasting)
-    _calculateSpellsLearnedFromLevel(level) {
-        const spellcasting = getSkill(this.actor, "Spellcasting");
-        const trained = ['learned', 'practiced', 'adept', 'experienced', 'expert', 'mastered'];
-        if (!spellcasting || !trained.includes(spellcasting.rank)) return 0;
-
-        let spells = 0;
-        for (let i = 2; i <= level; i += 2) spells++;
-        return spells;
     }
 
     // Experience check - auto level up if experience >= 10
