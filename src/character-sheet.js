@@ -4045,8 +4045,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             else ui.notifications.info("No Species item attached. Drop a Species, browse one, or enable Manual entry.");
         });
 
-        // Right-click a talent name in the Stats-tab summary to open its sheet.
-        html.find('.talent-summary-item').on('contextmenu', ev => {
+        // Right-click a path name in the Stats-tab summary to open its sheet.
+        html.find('.path-summary-item').on('contextmenu', ev => {
             ev.preventDefault();
             const itemId = ev.currentTarget.dataset.itemId;
             const item = itemId ? this.actor.items.get(itemId) : null;
