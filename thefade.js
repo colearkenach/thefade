@@ -526,6 +526,37 @@ Hooks.on("createActor", async (actor, options, userId) => {
 });
 
 /**
+ * One-shot cleanup: clear the legacy "converted from talent" source string
+ * left on trait items by an older conversion routine.
+ */
+async function clearLegacyTraitSource() {
+    const LEGACY = "converted from talent";
+    let cleared = 0;
+
+    for (const item of game.items ?? []) {
+        if (item.type === "trait" && item.system?.source === LEGACY) {
+            await item.update({ "system.source": "" });
+            cleared++;
+        }
+    }
+
+    for (const actor of game.actors ?? []) {
+        const updates = [];
+        for (const item of actor.items) {
+            if (item.type === "trait" && item.system?.source === LEGACY) {
+                updates.push({ _id: item.id, "system.source": "" });
+            }
+        }
+        if (updates.length) {
+            await actor.updateEmbeddedDocuments("Item", updates);
+            cleared += updates.length;
+        }
+    }
+
+    if (cleared > 0) console.log(`thefade | cleared legacy trait source on ${cleared} item(s).`);
+}
+
+/**
  * System ready hook - final setup after all systems loaded
  */
 Hooks.once('ready', async function () {
@@ -533,6 +564,9 @@ Hooks.once('ready', async function () {
     if (game.user.isGM) {
         try { await migrateAllActorSkills(); }
         catch (err) { console.warn("thefade | skill migration error:", err); }
+
+        try { await clearLegacyTraitSource(); }
+        catch (err) { console.warn("thefade | trait source cleanup error:", err); }
     }
 
     if (game.user.isGM) {
