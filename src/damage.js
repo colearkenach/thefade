@@ -22,6 +22,37 @@ export const DAMAGE_LOCATIONS = [...BODY_PARTS];
 const BLEED_TYPES = new Set(["S", "P", "SP", "SoP", "BP", "BoP"]);
 
 /**
+ * Damage-type codes that ignore armor and Natural Deflection entirely,
+ * routing the full amount straight to HP.
+ */
+export const ARMOR_BYPASS_TYPES = new Set(["So", "Psi", "Ex"]);
+
+/**
+ * Build a presence-set + per-type booleans for a primary damage type plus
+ * any per-component types (weapons can carry multiple typed components).
+ * Used by chat templates to surface damage-type bonus options whenever a
+ * type is present, not just when it's the primary.
+ */
+export function damageTypeFlags(primary, components) {
+    const present = new Set();
+    if (Array.isArray(components)) {
+        for (const c of components) if (c?.type) present.add(c.type);
+    }
+    if (primary) present.add(primary);
+    return {
+        isFire: present.has("F"),
+        isCold: present.has("C"),
+        isAcid: present.has("A"),
+        isElectricity: present.has("E"),
+        isSonic: present.has("So"),
+        isSmiting: present.has("Sm"),
+        isExpel: present.has("Ex"),
+        isPsychokinetic: present.has("Psi"),
+        isCorruption: present.has("Co")
+    };
+}
+
+/**
  * Split armor absorption between Natural Deflection and equipped armor.
  * Mirrors the rules: ND stacks (if flagged) or takes the higher of the two;
  * the attacker reduces whichever applies first (we reduce ND first if
@@ -142,8 +173,12 @@ export async function applyDamage(actor, opts) {
     const hpMax = Number(actor.system.hp?.max ?? 1);
     const mitigation = actor.system.damageMitigation || { noExcessToHp: false, halveHp: false };
 
-    // 1) Armor/ND absorbs the front of the damage.
-    const armor = computeArmorAbsorption(actor, location, amount);
+    // 1) Armor/ND absorbs the front of the damage — unless the type bypasses
+    //    armor (Sonic, Psychokinetic, Expel route straight to HP).
+    const bypassArmor = ARMOR_BYPASS_TYPES.has(type);
+    const armor = bypassArmor
+        ? { absorbed: 0, carryToHp: amount, actorUpdates: {}, itemUpdates: [] }
+        : computeArmorAbsorption(actor, location, amount);
 
     // 2) Brace for Impact: excess past armor never reaches HP.
     let toHp = armor.carryToHp;
@@ -188,7 +223,7 @@ export async function applyDamage(actor, opts) {
     const summary = buildSummary({
         target: actor.name, sourceName, location, amount, type,
         absorbed: armor.absorbed, toHp, hpBefore, hpAfter,
-        mitigation, bleedApplied, knockedOut
+        mitigation, bleedApplied, knockedOut, bypassArmor
     });
 
     return { absorbed: armor.absorbed, hpBefore, hpAfter, hpDamage: toHp, bleedApplied, knockedOut, summary };
@@ -200,6 +235,7 @@ export async function applyDamage(actor, opts) {
 function buildSummary(o) {
     const parts = [];
     parts.push(`<strong>${o.target}</strong> takes <strong>${o.amount}</strong> ${o.type} damage to ${o.location} from ${o.sourceName}.`);
+    if (o.bypassArmor) parts.push(`<em>${o.type} damage bypasses armor.</em>`);
     if (o.absorbed > 0) parts.push(`Armor/ND absorbed ${o.absorbed}.`);
     if (o.mitigation.noExcessToHp && o.amount > o.absorbed) {
         parts.push(`<em>Brace for Impact:</em> excess blocked from HP.`);

@@ -84,49 +84,49 @@
             </button>
             {{/if}}
             
-            {{#if (eq damageType "F")}}
+            {{#if isFire}}
             <button class="bonus-option attack-bonus" data-option="fire" data-cost="2">
                 Fire (2 successes): Target catches fire for 1d6 rounds
             </button>
             {{/if}}
 
-            {{#if (eq damageType "C")}}
+            {{#if isCold}}
             <button class="bonus-option attack-bonus" data-option="cold" data-cost="2">
                 Cold (2 successes): Fatigue (Low Intensity) for 1 round
             </button>
             {{/if}}
 
-            {{#if (eq damageType "A")}}
+            {{#if isAcid}}
             <button class="bonus-option attack-bonus" data-option="acid" data-cost="2">
                 Acid (2 successes): Pain (Low Intensity) for 1 round
             </button>
             {{/if}}
 
-            {{#if (eq damageType "E")}}
+            {{#if isElectricity}}
             <button class="bonus-option attack-bonus" data-option="electricity" data-cost="3">
                 Electricity (3 successes): Chain to adjacent target
             </button>
             {{/if}}
 
-            {{#if (eq damageType "So")}}
+            {{#if isSonic}}
             <button class="bonus-option attack-bonus" data-option="sonic" data-cost="3" data-damage="{{halfDamage}}">
                 Sonic (3 successes): Deafness for {{halfDamage}} rounds
             </button>
             {{/if}}
 
-            {{#if (eq damageType "Sm")}}
+            {{#if isSmiting}}
             <button class="bonus-option attack-bonus" data-option="smiting" data-cost="3">
                 Smiting (3 successes): Fear (Moderate) for 1d6 rounds
             </button>
             {{/if}}
 
-            {{#if (eq damageType "Ex")}}
+            {{#if isExpel}}
             <button class="bonus-option attack-bonus" data-option="expel" data-cost="3">
                 Expel (3 successes): Stunned (Moderate) for 1d6 rounds
             </button>
             {{/if}}
 
-            {{#if (eq damageType "Psi")}}
+            {{#if isPsychokinetic}}
             <button class="bonus-option attack-bonus" data-option="psychokinetic-damage" data-cost="2">
                 Psychokinetic (2 successes): Half damage to sanity
             </button>
@@ -135,7 +135,7 @@
             </button>
             {{/if}}
 
-            {{#if (eq damageType "Co")}}
+            {{#if isCorruption}}
             <button class="bonus-option attack-bonus" data-option="corruption" data-cost="2">
                 Corruption (2 successes): Half damage unhealable for 24h
             </button>
