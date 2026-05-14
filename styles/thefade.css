@@ -7432,16 +7432,17 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .inventory-tabs .tab-button {
-    background: var(--bg-surface-deep);
-    border: 1px solid var(--border-faint);
-    border-bottom: none;
-    color: var(--text-muted);
-    padding: 7px 14px;
-    font-size: 0.85em;
-    letter-spacing: 0.4px;
-    font-weight: 500;
-    border-radius: 3px 3px 0 0;
-    transition: all var(--transition-speed) ease;
+  background: var(--bg-surface-deep);
+  border: 1px solid var(--border-faint);
+  border-bottom: none;
+  color: var(--text-muted);
+  padding: 7px 14px;
+  font-size: 0.85em;
+  letter-spacing: 0.4px;
+  font-weight: 500;
+  border-radius: 3px 3px 0 0;
+  transition: all var(--transition-speed) ease;
+  width: fit-content;
 }
 
 .thefade .inventory-tabs .tab-button:hover {
