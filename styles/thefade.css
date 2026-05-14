@@ -1145,7 +1145,8 @@ input[readonly] {
 /* Ensure weapon table doesn't overflow container */
 .thefade .weapons {
   overflow-x: auto;
-  min-width: 800px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 /* Currency */
@@ -10037,6 +10038,14 @@ select[name="system.aura.color"] option[value="white"] {
     border-bottom: none;
     border-radius: 4px 4px 0 0;
     margin-bottom: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.thefade .inventory-tabs .tab-button {
+    flex: 0 0 auto;
+    white-space: nowrap;
 }
 
 .thefade .inventory-tabs .tab-button {
