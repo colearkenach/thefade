@@ -10484,6 +10484,237 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade .aura-card .aura-property strong { color: var(--accent-gold); min-width: 80px; }
 .thefade .aura-card .aura-bonus { color: var(--text-muted); margin-left: auto; }
 
+/* ----- Aura Ignition controls ----- */
+.thefade .aura-card .aura-ignition {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border-faint);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.thefade .aura-card .aura-ignition .ignition-status {
+    font-size: 0.85em;
+    color: var(--accent-gold);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.thefade .aura-card .aura-ignition .ignition-status.recovering {
+    color: var(--text-muted);
+}
+
+.thefade .aura-card .aura-ignite-btn,
+.thefade .aura-card .aura-end-ignition-btn {
+    align-self: flex-start;
+    padding: 4px 12px;
+    font-size: 0.85em;
+    background: linear-gradient(180deg, #5a1d0a, #3a1004);
+    color: #ffd9b8;
+    border: 1px solid var(--accent-gold);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.thefade .aura-card .aura-ignite-btn:hover:not(:disabled),
+.thefade .aura-card .aura-end-ignition-btn:hover:not(:disabled) {
+    background: linear-gradient(180deg, #7a2e15, #5a1d0a);
+}
+
+.thefade .aura-card .aura-ignite-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ----- Ignition chat card ----- */
+.thefade-ignition-card {
+    border: 1px solid #8a3a16;
+    border-left: 3px solid #c66b2c;
+    background: rgba(40, 16, 8, 0.18);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 0.9em;
+}
+
+.thefade-ignition-card .ignition-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(198, 107, 44, 0.4);
+    margin-bottom: 6px;
+}
+
+.thefade-ignition-card .ignition-header i { color: #c66b2c; }
+
+.thefade-ignition-card .ignition-meta {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: #8a8074;
+}
+
+.thefade-ignition-card .ignition-section-label {
+    margin: 6px 0 2px;
+    font-size: 0.88em;
+}
+
+.thefade-ignition-card ul.ignition-participants,
+.thefade-ignition-card ul.ignition-effects-list {
+    list-style: none;
+    margin: 0;
+    padding-left: 4px;
+}
+
+.thefade-ignition-card ul.ignition-participants li,
+.thefade-ignition-card ul.ignition-effects-list li {
+    padding: 1px 0;
+    font-size: 0.85em;
+}
+
+.thefade-ignition-card ul.ignition-participants i {
+    color: #c66b2c;
+    margin-right: 4px;
+    width: 12px;
+}
+
+.thefade-ignition-card .ignition-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.thefade-ignition-card .ignition-action-btn {
+    flex: 0 0 auto;
+    padding: 3px 8px;
+    font-size: 0.8em;
+    background: rgba(198, 107, 44, 0.15);
+    border: 1px solid #8a3a16;
+    color: #e8c79a;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.thefade-ignition-card .ignition-action-btn:hover:not(:disabled) {
+    background: rgba(198, 107, 44, 0.3);
+}
+
+.thefade-ignition-card .ignition-action-btn.spent,
+.thefade-ignition-card .ignition-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.thefade-ignition-card .ignition-controls {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+.thefade-ignition-card .ignition-join-btn,
+.thefade-ignition-card .ignition-end-btn {
+    padding: 3px 10px;
+    font-size: 0.82em;
+    background: rgba(40, 8, 4, 0.6);
+    border: 1px solid #8a3a16;
+    color: #e8c79a;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.thefade-ignition-card .ignition-end-btn:hover:not(:disabled),
+.thefade-ignition-card .ignition-join-btn:hover:not(:disabled) {
+    background: rgba(60, 16, 8, 0.8);
+}
+
+/* ----- Ignition invitation (whispered) ----- */
+.thefade-ignition-invite {
+    border: 1px solid #8a3a16;
+    border-left: 3px solid #c66b2c;
+    background: rgba(40, 16, 8, 0.18);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 0.9em;
+}
+
+.thefade-ignition-invite .ignition-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(198, 107, 44, 0.4);
+    margin-bottom: 6px;
+}
+
+.thefade-ignition-invite .ignition-header i { color: #c66b2c; }
+
+.thefade-ignition-invite .ignition-meta {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: #8a8074;
+}
+
+.thefade-ignition-invite .ignition-invite-controls {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.thefade-ignition-invite .ignition-accept-btn,
+.thefade-ignition-invite .ignition-decline-btn {
+    padding: 3px 10px;
+    font-size: 0.82em;
+    background: rgba(198, 107, 44, 0.15);
+    border: 1px solid #8a3a16;
+    color: #e8c79a;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.thefade-ignition-invite .ignition-accept-btn:hover:not(:disabled) {
+    background: rgba(198, 107, 44, 0.35);
+}
+
+.thefade-ignition-invite .ignition-decline-btn:hover:not(:disabled) {
+    background: rgba(40, 8, 4, 0.6);
+}
+
+.thefade-ignition-invite .ignition-accept-btn.spent,
+.thefade-ignition-invite .ignition-decline-btn.spent,
+.thefade-ignition-invite .ignition-accept-btn:disabled,
+.thefade-ignition-invite .ignition-decline-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.thefade-ignition-invite .ignition-invite-resolved {
+    margin: 6px 0 0;
+    font-size: 0.85em;
+    color: #8a8074;
+}
+
+.thefade-ignition-end {
+    padding: 6px 10px;
+    border-left: 3px solid #c66b2c;
+    background: rgba(40, 16, 8, 0.15);
+    font-size: 0.9em;
+}
+
+.thefade-ignition-end i { color: #c66b2c; margin-right: 4px; }
+
+.thefade-ignition-action {
+    padding: 6px 10px;
+    border-left: 3px solid #c66b2c;
+    background: rgba(40, 16, 8, 0.1);
+    font-size: 0.9em;
+}
+
 .thefade .sin-dark-magic-section .sin-management {
     margin-top: 8px;
 }

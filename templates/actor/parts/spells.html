@@ -79,6 +79,32 @@
                 </div>
                 {{/if}}
             </div>
+
+            <div class="aura-ignition">
+                {{#if ignition.active}}
+                    <div class="ignition-status">
+                        <i class="fas fa-fire"></i>
+                        <strong>Ignition active</strong>
+                        <span>({{ignition.intensityLabel}}, {{ignition.radius}} hex, {{ignition.participantCount}} participant(s))</span>
+                    </div>
+                    <button type="button" class="aura-end-ignition-btn">
+                        <i class="fas fa-fire-flame-curved"></i> End Ignition
+                    </button>
+                {{else}}
+                    {{#if ignition.recovering}}
+                        <div class="ignition-status recovering">
+                            <i class="fas fa-hourglass-half"></i>
+                            <em>Recovering from Ignition — {{ignition.recoveryRemainingMin}} min remaining.</em>
+                        </div>
+                    {{/if}}
+                    <button type="button" class="aura-ignite-btn"
+                            title="Begin an Ignition with allies in your aura's radius"
+                            {{#unless system.aura.intensity}}disabled{{/unless}}
+                            {{#if ignition.recovering}}disabled{{/if}}>
+                        <i class="fas fa-fire"></i> Ignite
+                    </button>
+                {{/if}}
+            </div>
         </div>
     </div>
 
