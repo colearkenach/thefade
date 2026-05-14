@@ -310,13 +310,16 @@ export class TheFadeActor extends Actor {
         // Calculate Max HP based on Species, Path, Physique, and misc bonus
         let baseHP = (data.species?.baseHP) || 0;
         let pathHP = 0;
+        let highestPathTier = 0;
 
         // Add HP from Paths - safer item processing
         if (actorData.items && typeof actorData.items.forEach === 'function') {
             try {
                 actorData.items.forEach(item => {
-                    if (item && item.type === "path" && item.system && typeof item.system.baseHP === 'number') {
-                        pathHP += item.system.baseHP;
+                    if (item && item.type === "path" && item.system) {
+                        if (typeof item.system.baseHP === 'number') pathHP += item.system.baseHP;
+                        const t = Number(item.system.tier) || 0;
+                        if (t > highestPathTier) highestPathTier = t;
                     }
                 });
             } catch (error) {
@@ -324,16 +327,39 @@ export class TheFadeActor extends Actor {
             }
         }
 
+        // Optional "More HP" alt rule: scaling HP per level based on highest path tier.
+        // Tier 2 paths grant +1 HP per character level from L5 onward; Tier 3 paths grant
+        // +2 HP per level from L10 onward (replacing the +1 rate for those levels).
+        let levelHP = 0;
+        let levelHPNote = "";
+        try {
+            if (game?.settings?.get?.("thefade", "moreHPScaling")) {
+                const level = Math.max(1, Number(data.level) || 1);
+                if (highestPathTier >= 2) {
+                    const t2End = highestPathTier >= 3 ? Math.min(level, 9) : Math.min(level, 9999);
+                    const t2Levels = Math.max(0, t2End - 4); // levels 5..t2End
+                    levelHP += t2Levels;
+                }
+                if (highestPathTier >= 3 && level >= 10) {
+                    const t3Levels = level - 9; // levels 10..level
+                    levelHP += t3Levels * 2;
+                }
+                if (levelHP) levelHPNote = ` + ${levelHP} level`;
+            }
+        } catch (e) {
+            // settings not ready yet during early prep; ignore
+        }
+
         // Calculate max HP and update both properties
         const physiqueValue = data.attributes?.physique?.value || 1;
         const hpMiscBonus = data.hpMiscBonus || 0;
-        const calculatedMaxHP = baseHP + pathHP + physiqueValue + hpMiscBonus;
+        const calculatedMaxHP = baseHP + pathHP + physiqueValue + hpMiscBonus + levelHP;
 
         data.hp.max = calculatedMaxHP;
         data.maxHP = calculatedMaxHP; // For backward compatibility with UI
         // Tooltip formula string for the UI
         const miscHPPart = hpMiscBonus ? ` + ${hpMiscBonus} misc` : "";
-        data.hp.formula = `Species ${baseHP} + Path ${pathHP} + Physique ${physiqueValue}${miscHPPart} = ${calculatedMaxHP}`;
+        data.hp.formula = `Species ${baseHP} + Path ${pathHP} + Physique ${physiqueValue}${miscHPPart}${levelHPNote} = ${calculatedMaxHP}`;
 
         // Calculate max Sanity and update both properties
         const mindValue = data.attributes?.mind?.value || 1;
