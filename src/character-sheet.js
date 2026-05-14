@@ -13,6 +13,7 @@ import {
 } from './skills.js';
 import { renderModifierHtml } from './conditions.js';
 import { handleDarkCast } from './dark-magic.js';
+import { damageTypeFlags } from './damage.js';
 import { openOpposedRollDialog, openAidAnotherDialog } from './opposed.js';
 import { rollHitLocation, locationLabel } from './hit-location.js';
 
@@ -2328,7 +2329,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 hitLocationLabel: resolvedLocation ? locationLabel(resolvedLocation) : null,
                 hitLocationRollDetail: locationRollDetail,
                 calledShot: calledShot,
-                bonusDice: weaponData.miscBonus ? `Includes +${weaponData.miscBonus} bonus dice` : null
+                bonusDice: weaponData.miscBonus ? `Includes +${weaponData.miscBonus} bonus dice` : null,
+                ...damageTypeFlags(weaponData.damageType, weaponData.damageComponents)
             };
 
             const content = renderModifierHtml(condModsUntrained) +
@@ -2531,7 +2533,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 `Includes bonus dice: ${[
                     skillData.miscBonus ? `+${skillData.miscBonus} from skill` : '',
                     weaponData.miscBonus ? `+${weaponData.miscBonus} from weapon` : ''
-                ].filter(Boolean).join(', ')}` : null
+                ].filter(Boolean).join(', ')}` : null,
+            ...damageTypeFlags(weaponData.damageType, weaponData.damageComponents)
         };
 
         const content = renderModifierHtml(condMods) +
@@ -2998,6 +3001,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             damage: spellSucceeds && spellData.damage ? spellData.damage : null,
             damageType: spellData.damageType,
             halfDamage: halfDamage,
+            ...damageTypeFlags(spellData.damageType, spellData.damageComponents),
             description: spellData.description,
             hasAttack: !!attackRollData,
             attackRoll: attackRollData,
