@@ -1,209 +1,160 @@
-<form class="{{cssClass}}" autocomplete="off">
+<form class="{{cssClass}} path-sheet" autocomplete="off">
   <header class="sheet-header">
     <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
     <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+      <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Path Name"/></h1>
+      <div class="path-header-meta flexrow">
+        <div class="form-group inline">
+          <label>Tier</label>
+          <select name="system.tier">
+            {{selectOptions pathTierOptions selected=system.tier}}
+          </select>
+        </div>
+        <div class="form-group inline">
+          <label>Base HP</label>
+          <input type="number" name="system.baseHP" value="{{system.baseHP}}" data-dtype="Number" />
+        </div>
+      </div>
     </div>
   </header>
 
   {{!-- Sheet Tab Navigation --}}
   <nav class="sheet-tabs tabs" data-group="primary">
-    <a class="item" data-tab="description">Description</a>
-    <a class="item" data-tab="attributes">Attributes</a>
-    <a class="item" data-tab="abilities">Abilities</a>
-    <a class="item" data-tab="skills">Skills</a>
+    <a class="item" data-tab="description"><i class="fas fa-book"></i> Description</a>
+    <a class="item" data-tab="attributes"><i class="fas fa-cog"></i> Attributes</a>
+    <a class="item" data-tab="abilities"><i class="fas fa-star"></i> Abilities</a>
+    <a class="item" data-tab="skills"><i class="fas fa-graduation-cap"></i> Skills</a>
   </nav>
 
   {{!-- Sheet Body --}}
-<section class="sheet-body">
+  <section class="sheet-body">
     {{!-- Description Tab --}}
-    <div class="tab" data-group="primary" data-tab="description">
-        <textarea name="system.description">{{system.description}}</textarea>
+    <div class="tab description-tab" data-group="primary" data-tab="description">
+      <label class="section-label">Description</label>
+      <textarea name="system.description" placeholder="Describe this path...">{{system.description}}</textarea>
     </div>
 
     {{!-- Attributes Tab --}}
-    <div class="tab" data-group="primary" data-tab="attributes">
-        <div class="form-group">
-            <label>Tier</label>
-            <select name="system.tier">
-                {{selectOptions pathTierOptions selected=system.tier}}
-            </select>
-        </div>
+    <div class="tab attributes-tab" data-group="primary" data-tab="attributes">
+      <div class="form-group">
+        <label>Tier</label>
+        <select name="system.tier">
+          {{selectOptions pathTierOptions selected=system.tier}}
+        </select>
+        <p class="hint">Tier 1 paths are available at character creation. Higher tiers unlock at levels 5 and 10.</p>
+      </div>
 
-        <div class="form-group">
-            <label>Base HP</label>
-            <input type="text" name="system.baseHP" value="{{system.baseHP}}" data-dtype="Number" />
-        </div>
+      <div class="form-group">
+        <label>Base HP Bonus</label>
+        <input type="number" name="system.baseHP" value="{{system.baseHP}}" data-dtype="Number" />
+        <p class="hint">Added to the character's max HP while this path is taken.</p>
+      </div>
 
-        {{#if (gt system.tier 1)}}
-        <div class="form-group">
-            <label>Requirements</label>
-            <textarea name="system.requirements">{{system.requirements}}</textarea>
-        </div>
-        {{/if}}
+      {{#if (gt system.tier 1)}}
+      <div class="form-group stacked">
+        <label>Requirements</label>
+        <textarea name="system.requirements" placeholder="Prerequisites for taking this path...">{{system.requirements}}</textarea>
+      </div>
+      {{/if}}
     </div>
 
     {{!-- Abilities Tab --}}
-    <div class="tab" data-group="primary" data-tab="abilities">
-        <h2>
-            Path Abilities
-            <a class="ability-add" title="Add Ability"><i class="fas fa-plus"></i></a>
-        </h2>
+    <div class="tab abilities-tab" data-group="primary" data-tab="abilities">
+      <header class="section-header">
+        <h2>Path Abilities</h2>
+        <a class="ability-add" title="Add Ability"><i class="fas fa-plus"></i> Add</a>
+      </header>
 
-        {{#each system.abilities as |ability id|}}
-        <div class="ability-item" data-ability-id="{{id}}">
-            <div class="ability-header flexrow">
-                <input type="text" name="system.abilities.{{id}}.name" value="{{ability.name}}" placeholder="Ability Name" />
-                <div class="ability-controls">
-                    <a class="ability-delete" title="Delete Ability"><i class="fas fa-trash"></i></a>
-                </div>
-            </div>
-            <textarea name="system.abilities.{{id}}.description">{{ability.description}}</textarea>
+      {{#unless system.abilities}}
+      <p class="hint empty-hint">No abilities yet. Click <i class="fas fa-plus"></i> Add to create one.</p>
+      {{/unless}}
+
+      {{#each system.abilities as |ability id|}}
+      <div class="ability-item" data-ability-id="{{id}}">
+        <div class="ability-header flexrow">
+          <input type="text" name="system.abilities.{{id}}.name" value="{{ability.name}}" placeholder="Ability Name" />
+          <div class="ability-controls">
+            <a class="ability-delete" title="Delete Ability"><i class="fas fa-trash"></i></a>
+          </div>
         </div>
-        {{/each}}
+        <textarea name="system.abilities.{{id}}.description" placeholder="Describe the ability...">{{ability.description}}</textarea>
+      </div>
+      {{/each}}
     </div>
 
     {{!-- Skills Tab --}}
-    <div class="tab" data-group="primary" data-tab="skills">
-        <h2>
-            Path Skills
-            <a class="path-skill-create" title="Add Skill Entry"><i class="fas fa-plus"></i></a>
-            <a class="skill-browse" title="Browse Core Skills"><i class="fas fa-search"></i></a>
-        </h2>
-
-        <p class="hint">
-            Define how this path affects character skills. You can set specific skills, create custom skills,
-            or allow players to choose from categories.
-        </p>
-
-        {{#if pathSkills.length}}
-        <ol class="items-list skills-list">
-            <li class="items-header flexrow">
-                <div class="item-name">Skill Entry</div>
-                <div class="item-rank">Target Rank</div>
-                <div class="item-type">Type</div>
-                <div class="item-category">Category</div>
-                <div class="item-controls">
-                    <a class="item-control path-skill-create" title="Add Entry"><i class="fas fa-plus"></i></a>
-                </div>
-            </li>
-
-            {{#each pathSkills as |skill|}}
-            <li class="item flexrow path-skill-entry {{skill.entryTypeClass}}" data-item-id="{{skill._id}}">
-                <div class="item-name">
-                    <span class="skill-entry-name">{{skill.name}}</span>
-                    {{#if skill.isChoiceEntry}}
-                    <span class="choice-badge">Player Choice</span>
-                    {{/if}}
-                    {{#if skill.isCustomEntry}}
-                    <span class="custom-badge">Custom</span>
-                    {{/if}}
-                </div>
-                <div class="item-rank">
-                    <select class="path-skill-rank" data-skill-id="{{skill._id}}">
-                        {{selectOptions ../skillRankOptions selected=skill.rank}}
-                    </select>
-                </div>
-                <div class="item-type">
-                    <span class="entry-type-badge {{skill.entryTypeClass}}">{{skill.entryTypeDisplay}}</span>
-                </div>
-                <div class="item-category">{{skill.system.category}}</div>
-                <div class="skill-controls">
-                    {{#if isChoiceEntry}}
-                    <!-- Locked edit for choice entries -->
-                    <span class="skill-edit-locked" title="Choice Entry - Cannot Edit Directly">
-                        <i class="fas fa-edit-disabled"></i>
-                    </span>
-                    {{else}}
-                    <!-- Normal edit for specific skills -->
-                    <a class="path-skill-edit" title="Edit Skill">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    {{/if}}
-
-                    <a class="path-skill-delete" title="Remove from Path">
-                        <i class="fas fa-trash"></i>
-                    </a>
-                </div>
-            </li>
-            {{/each}}
-        </ol>
-        {{else}}
-        <div class="no-skills-message">
-            <p>No skill entries have been added to this path yet.</p>
-
-            <div class="skill-entry-examples">
-                <h4>Skill Entry Types:</h4>
-                <div class="example-grid">
-                    <div class="example-category">
-                        <h5>Specific Skills</h5>
-                        <ul>
-                            <li><strong>Core Skills:</strong> Sword, Medicine, Arcana</li>
-                            <li><strong>Custom Lore:</strong> Lore (Religion), Lore (History)</li>
-                            <li><strong>Custom Perform:</strong> Perform (Singing), Perform (Dancing)</li>
-                            <li><strong>Custom Craft:</strong> Blacksmithing, Soapmaking</li>
-                        </ul>
-                    </div>
-
-                    <div class="example-category">
-                        <h5>Player Choices</h5>
-                        <ul>
-                            <li><strong>Choose from Category:</strong> Choose 1 Combat Skills</li>
-                            <li><strong>Choose Lore:</strong> Choose 2 Lore Skills</li>
-                            <li><strong>Choose Perform:</strong> Choose 1 Perform Skills</li>
-                            <li><strong>Choose Craft:</strong> Choose 3 Custom Craft Skills</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="quick-add-buttons">
-                <h5>Quick Add Common Entries:</h5>
-                <button type="button" class="quick-add-btn" data-type="choose-combat-1">Choose 1 Combat Skill</button>
-                <button type="button" class="quick-add-btn" data-type="choose-social-1">Choose 1 Social Skill</button>
-                <button type="button" class="quick-add-btn" data-type="choose-lore-1">Choose 1 Lore Skill</button>
-                <button type="button" class="quick-add-btn" data-type="choose-craft-1">Choose 1 Craft Skill</button>
-            </div>
+    <div class="tab skills-tab" data-group="primary" data-tab="skills">
+      <header class="section-header">
+        <h2>Path Skills</h2>
+        <div class="section-actions">
+          <a class="path-skill-create" title="Add Skill Entry"><i class="fas fa-plus"></i> Add</a>
+          <a class="skill-browse" title="Browse Core Skills"><i class="fas fa-search"></i> Browse</a>
         </div>
-        {{/if}}
+      </header>
 
-        {{!-- Path Skill Entry Legend --}}
-        <div class="path-skills-legend">
-            <h4>Entry Type Legend:</h4>
-            <div class="legend-items">
-                <span class="legend-item">
-                    <span class="entry-type-badge specific">Specific</span>
-                    Sets a specific skill to the target rank
-                </span>
-                <span class="legend-item">
-                    <span class="entry-type-badge custom">Custom</span>
-                    Creates a new custom skill at the target rank
-                </span>
-                <span class="legend-item">
-                    <span class="entry-type-badge choice">Choice</span>
-                    Player chooses which skills to improve/create
-                </span>
-            </div>
+      <p class="hint">
+        Define how this path affects character skills. Drop a skill from the compendium here, or click Add to set a specific skill, create a custom one, or let the player choose from a category.
+      </p>
+
+      {{#if pathSkills.length}}
+      <ol class="items-list skills-list">
+        <li class="items-header flexrow">
+          <div class="item-name">Skill Entry</div>
+          <div class="item-rank">Rank</div>
+          <div class="item-type">Type</div>
+          <div class="item-category">Category</div>
+          <div class="item-controls"></div>
+        </li>
+
+        {{#each pathSkills as |skill|}}
+        <li class="item flexrow path-skill-entry {{skill.entryTypeClass}}" data-item-id="{{skill._id}}">
+          <div class="item-name">
+            <span class="skill-entry-name">{{skill.name}}</span>
+            {{#if skill.isChoiceEntry}}<span class="choice-badge">Player Choice</span>{{/if}}
+            {{#if skill.isCustomEntry}}<span class="custom-badge">Custom</span>{{/if}}
+          </div>
+          <div class="item-rank">
+            <select class="path-skill-rank" data-skill-id="{{skill._id}}">
+              {{selectOptions ../skillRankOptions selected=skill.system.rank}}
+            </select>
+          </div>
+          <div class="item-type">
+            <span class="entry-type-badge {{skill.entryTypeClass}}">{{skill.entryTypeDisplay}}</span>
+          </div>
+          <div class="item-category">{{skill.system.category}}</div>
+          <div class="item-controls">
+            {{#if skill.isChoiceEntry}}
+            <span class="skill-edit-locked" title="Choice entries cannot be edited; remove and re-add to change."><i class="fas fa-lock"></i></span>
+            {{else}}
+            <a class="path-skill-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
+            {{/if}}
+            <a class="path-skill-delete" title="Remove from Path"><i class="fas fa-trash"></i></a>
+          </div>
+        </li>
+        {{/each}}
+      </ol>
+      {{else}}
+      <div class="no-skills-message">
+        <p>No skill entries have been added to this path yet.</p>
+
+        <div class="quick-add-buttons">
+          <h5>Quick add:</h5>
+          <button type="button" class="quick-add-btn" data-type="choose-combat-1">Choose 1 Combat</button>
+          <button type="button" class="quick-add-btn" data-type="choose-social-1">Choose 1 Social</button>
+          <button type="button" class="quick-add-btn" data-type="choose-lore-1">Choose 1 Lore</button>
+          <button type="button" class="quick-add-btn" data-type="choose-craft-1">Choose 1 Craft</button>
         </div>
+      </div>
+      {{/if}}
+
+      <div class="path-skills-legend">
+        <h4>Entry Type Legend</h4>
+        <div class="legend-items">
+          <span class="legend-item"><span class="entry-type-badge specific">Specific</span> Sets a specific skill to the target rank.</span>
+          <span class="legend-item"><span class="entry-type-badge custom">Custom</span> Creates a new custom skill at the target rank.</span>
+          <span class="legend-item"><span class="entry-type-badge choice">Choice</span> Player picks which skills to improve / create.</span>
+        </div>
+      </div>
     </div>
-
-    {{!-- Add this script section to the path sheet for quick-add functionality --}}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Handle quick-add buttons
-            document.querySelectorAll('.quick-add-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const type = this.dataset.type;
-
-                    // Trigger the appropriate quick-add action
-                    // This will be handled by the sheet's event listeners
-                    const event = new CustomEvent('quickAddPathSkill', {
-                        detail: { type: type }
-                    });
-                    document.dispatchEvent(event);
-                });
-            });
-        });
-    </script>
-</section>
+  </section>
 </form>

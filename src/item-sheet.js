@@ -1461,11 +1461,13 @@ export class TheFadeItemSheet extends ItemSheet {
             }
         });
 
-        // Quick-add buttons for common path skill entries
-        document.addEventListener('quickAddPathSkill', async (e) => {
+        // Quick-add buttons for common path skill entries (bound on the sheet
+        // so they work after every re-render, unlike DOMContentLoaded).
+        html.find('.quick-add-btn').on('click', async (ev) => {
+            ev.preventDefault();
             if (this.item.type !== 'path') return;
 
-            const type = e.detail.type;
+            const type = ev.currentTarget.dataset.type;
             let skillEntry;
 
             switch (type) {
@@ -2184,14 +2186,30 @@ export class TheFadeItemSheet extends ItemSheet {
                 skillData._id = foundry.utils.randomID(16);
             }
 
+            // Normalize into a path-skill entry so applyPathSkillModifications
+            // can act on it. Skills are no longer Items on the actor; the entry
+            // here is plain data describing which core skill to bump.
+            const skillSys = skillData.system || {};
+            const pathEntry = {
+                _id: skillData._id,
+                name: skillData.name,
+                img: skillData.img,
+                system: {
+                    rank: skillSys.rank || "learned",
+                    category: skillSys.category,
+                    attribute: skillSys.attribute,
+                    entryType: PATH_SKILL_TYPES.SPECIFIC_SKILL
+                }
+            };
+
             // Add to path skills and update
-            pathSkills.push(skillData);
+            pathSkills.push(pathEntry);
             await this.item.update({
                 "system.pathSkills": pathSkills
             });
 
             // Show success and refresh
-            ui.notifications.info(`Added ${skillData.name} to ${this.item.name}`);
+            ui.notifications.info(`Added ${pathEntry.name} to ${this.item.name}`);
             this.render(true);
             return true;
         }
