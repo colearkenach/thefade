@@ -1,23 +1,16 @@
 // Utility helpers for The Fade system (extracted from thefade.js).
 import { DEFAULT_SKILLS, PATH_SKILL_TYPES, DEFAULT_TOKEN } from './constants.js';
+import {
+    getSkill,
+    getSkillByKey,
+    slugifySkill,
+    setSkillRank,
+    createCustomSkill as createCustomSkillData,
+    getRankValue as getRankValueImpl
+} from './skills.js';
 
-/**
-* Convert skill rank to numeric value for comparison
-* @param {string} rank - The skill rank
-* @returns {number} Numeric value of the rank
-*/
-export function getRankValue(rank) {
-    switch (rank) {
-        case "untrained": return 0;
-        case "learned": return 1;
-        case "practiced": return 2;
-        case "adept": return 3;
-        case "experienced": return 4;
-        case "expert": return 5;
-        case "mastered": return 6;
-        default: return 0;
-    }
-}
+/** Re-export for callers that still import getRankValue from helpers. */
+export const getRankValue = getRankValueImpl;
 
 /**
 * Apply spell filtering based on stored filter criteria
@@ -213,110 +206,29 @@ export function openCompendiumBrowser(itemType, actor, compendiumName = null) {
 }
 
 /**
-* Initialize default skills for a new character
-* Call this when creating a new character or when migrating existing characters
-*/
+ * Reset skills on an actor. Core skills are inherent (no creation needed);
+ * this clears all overrides so every core skill returns to its default rank
+ * and zero miscBonus. Custom skills are preserved by default.
+ *
+ * Retained for backward compat with the "Reset Skills" sheet button.
+ */
 export async function initializeDefaultSkills(actor) {
-    if (actor.type !== 'character') return;
-    if (actor.getFlag("thefade", "addingSkills")) return;
-    await actor.setFlag("thefade", "addingSkills", true);
-
-    const skillsToCreate = [];
-
-    for (const skill of DEFAULT_SKILLS) {
-        // Check if character already has this skill
-        const existingSkill = actor.items.find(i =>
-            i.type === 'skill' && i.name === skill.name
-        );
-
-        if (!existingSkill) {
-            skillsToCreate.push({
-                name: skill.name,
-                type: "skill",
-                system: {
-                    rank: skill.rank,
-                    category: skill.category,
-                    attribute: skill.attribute,
-                    description: "",
-                    miscBonus: 0,
-                    isCore: true // Flag to mark as core skill
-                }
-            });
-        }
+    if (!actor || actor.type !== 'character') return;
+    const overrides = actor.system?.skills || {};
+    const updates = {};
+    let cleared = 0;
+    for (const [key, data] of Object.entries(overrides)) {
+        if (data?.isCustom) continue;
+        updates[`system.skills.-=${key}`] = null;
+        cleared++;
     }
-
-    if (skillsToCreate.length > 0) {
-        await actor.createEmbeddedDocuments("Item", skillsToCreate);
-        ui.notifications.info(`Added ${skillsToCreate.length} missing default skills to ${actor.name}.`);
-    }
-
-    await actor.unsetFlag("thefade", "addingSkills");
-
+    if (Object.keys(updates).length) await actor.update(updates);
+    ui.notifications.info(`Reset ${cleared} core skill override(s) on ${actor.name}.`);
 }
 
-/**
- * Create a custom skill (Custom Craft, Lore, or Perform)
- */
+/** Create a custom skill (Custom Craft, Lore, or Perform). Thin wrapper. */
 export async function createCustomSkill(actor, skillType, subtype, rank = "untrained") {
-    if (!subtype || subtype.trim() === "") {
-        ui.notifications.error("Subtype is required for custom skills.");
-        return null;
-    }
-
-    let skillName, category, attribute;
-
-    switch (skillType.toLowerCase()) {
-        case "craft":
-            skillName = subtype.trim(); // Custom crafts are just the name (e.g., "Soapmaking")
-            category = "Craft";
-            attribute = "mind"; // Default to mind, but can be changed
-            break;
-
-        case "lore":
-            skillName = `Lore (${subtype.trim()})`;
-            category = "Knowledge";
-            attribute = "mind";
-            break;
-
-        case "perform":
-            skillName = `Perform (${subtype.trim()})`;
-            category = "Physical";
-            attribute = "finesse_presence"; // Combined attribute
-            break;
-
-        default:
-            ui.notifications.error("Invalid custom skill type. Must be Craft, Lore, or Perform.");
-            return null;
-    }
-
-    // Check if skill already exists
-    const existingSkill = actor.items.find(i =>
-        i.type === 'skill' && i.name === skillName
-    );
-
-    if (existingSkill) {
-        ui.notifications.warn(`${skillName} already exists.`);
-        return existingSkill;
-    }
-
-    const skillData = {
-        name: skillName,
-        type: "skill",
-        system: {
-            rank: rank,
-            category: category,
-            attribute: attribute,
-            description: "",
-            miscBonus: 0,
-            isCore: false, // Mark as custom skill
-            skillType: skillType.toLowerCase(),
-            subtype: subtype.trim()
-        }
-    };
-
-    const createdSkills = await actor.createEmbeddedDocuments("Item", [skillData]);
-    ui.notifications.info(`Created custom skill: ${skillName}`);
-    return createdSkills[0];
+    return createCustomSkillData(actor, skillType, subtype, rank);
 }
 
 /**
@@ -424,24 +336,18 @@ export async function applyPathSkillModifications(actor, path) {
         const entryType = pathSkill.system.entryType;
 
         switch (entryType) {
-            case PATH_SKILL_TYPES.SPECIFIC_SKILL:
-                // Improve existing core skill
-                const coreSkill = actor.items.find(i =>
-                    i.type === 'skill' && i.name === pathSkill.name
-                );
-
-                if (coreSkill) {
-                    const currentRankValue = getRankValue(coreSkill.system.rank);
+            case PATH_SKILL_TYPES.SPECIFIC_SKILL: {
+                const skill = getSkill(actor, pathSkill.name);
+                if (skill) {
+                    const currentRankValue = getRankValue(skill.rank);
                     const pathRankValue = getRankValue(pathSkill.system.rank);
-
                     if (pathRankValue > currentRankValue) {
-                        await coreSkill.update({
-                            "system.rank": pathSkill.system.rank
-                        });
+                        await setSkillRank(actor, skill.key, pathSkill.system.rank);
                         skillsModified++;
                     }
                 }
                 break;
+            }
 
             case PATH_SKILL_TYPES.SPECIFIC_CUSTOM:
                 // Create specific custom skill
@@ -508,38 +414,20 @@ export async function applyPathSkillModifications(actor, path) {
 }
 
 /**
-* Improve a character's skill to the specified rank
-* @param {Actor} actor - The character actor
-* @param {Object} skillData - The skill data from DEFAULT_SKILLS
-* @param {string} targetRank - The rank to improve to
-*/
+ * Improve a character's skill to the specified rank if higher than current.
+ * Works on core skills (overrides system.skills[key].rank) and noops for
+ * unknown skills — custom skills must be created via createCustomSkill.
+ */
 export async function improveCharacterSkill(actor, skillData, targetRank) {
-    // Find existing skill on character
-    const existingSkill = actor.items.find(i =>
-        i.type === 'skill' && i.name === skillData.name
-    );
-
-    if (existingSkill) {
-        // Update existing skill if target rank is higher
-        const currentRankValue = getRankValue(existingSkill.system.rank);
-        const targetRankValue = getRankValue(targetRank);
-
-        if (targetRankValue > currentRankValue) {
-            await existingSkill.update({ "system.rank": targetRank });
-        }
-    } else {
-        // Create new skill
-        const newSkill = {
-            name: skillData.name,
-            type: "skill",
-            system: {
-                rank: targetRank,
-                category: skillData.category,
-                attribute: skillData.attribute
-            }
-        };
-
-        await actor.createEmbeddedDocuments("Item", [newSkill]);
+    const skill = getSkill(actor, skillData.name);
+    if (!skill) {
+        console.warn(`improveCharacterSkill: unknown skill ${skillData.name}`);
+        return;
+    }
+    const currentRankValue = getRankValue(skill.rank);
+    const targetRankValue = getRankValue(targetRank);
+    if (targetRankValue > currentRankValue) {
+        await setSkillRank(actor, skill.key, targetRank);
     }
 }
 
