@@ -1,11 +1,1 @@
-2026/05/13-12:42:38.988 4268 Log #27: 0 ops saved to Table #50 OK
-2026/05/13-12:42:38.990 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/000027.log: OK
-2026/05/13-12:42:38.990 4268 Log #41: 0 ops saved to Table #51 OK
-2026/05/13-12:42:38.990 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/000041.log: OK
-2026/05/13-12:42:38.990 4268 Log #49: 0 ops saved to Table #52 OK
-2026/05/13-12:42:38.990 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/000049.log: OK
-2026/05/13-12:42:38.990 4268 Table #5: 13 entries OK
-2026/05/13-12:42:38.992 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/MANIFEST-000026: OK
-2026/05/13-12:42:38.993 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/MANIFEST-000040: OK
-2026/05/13-12:42:38.993 4268 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/MANIFEST-000048: OK
-2026/05/13-12:42:38.994 4268 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics; recovered 1 files; 14429 bytes. Some data may have been lost. ****
+2026/05/13-12:42:38.997 4268 Delete type=3 #1

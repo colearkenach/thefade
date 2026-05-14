@@ -1,14 +1,9 @@
-2026/05/13-12:42:38.927 64e8 Log #218: 0 ops saved to Table #242 OK
-2026/05/13-12:42:38.927 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/000218.log: OK
-2026/05/13-12:42:38.930 64e8 Log #233: 29 ops saved to Table #243 OK
-2026/05/13-12:42:38.930 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/000233.log: OK
-2026/05/13-12:42:38.930 64e8 Log #241: 0 ops saved to Table #244 OK
-2026/05/13-12:42:38.931 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/000241.log: OK
-2026/05/13-12:42:38.931 64e8 Table #196: 50 entries OK
-2026/05/13-12:42:38.931 64e8 Table #226: 178 entries OK
-2026/05/13-12:42:38.931 64e8 Table #235: 29 entries OK
-2026/05/13-12:42:38.931 64e8 Table #243: 29 entries OK
-2026/05/13-12:42:38.932 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/MANIFEST-000217: OK
-2026/05/13-12:42:38.933 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/MANIFEST-000232: OK
-2026/05/13-12:42:38.933 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/MANIFEST-000240: OK
-2026/05/13-12:42:38.934 64e8 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item; recovered 4 files; 112437 bytes. Some data may have been lost. ****
+2026/05/13-12:42:38.937 64e8 Delete type=3 #1
+2026/05/13-12:42:38.937 3188 Compacting 4@0 + 0@1 files
+2026/05/13-12:42:38.940 3188 Generated table #247@0: 117 keys, 58471 bytes
+2026/05/13-12:42:38.940 3188 Compacted 4@0 + 0@1 files => 58471 bytes
+2026/05/13-12:42:38.940 3188 compacted to: files[ 0 1 0 0 0 0 0 ]
+2026/05/13-12:42:38.940 3188 Delete type=2 #196
+2026/05/13-12:42:38.941 3188 Delete type=2 #226
+2026/05/13-12:42:38.941 3188 Delete type=2 #235
+2026/05/13-12:42:38.941 3188 Delete type=2 #243

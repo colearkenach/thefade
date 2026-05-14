@@ -1,11 +1,1 @@
-2026/05/13-12:42:38.916 64e8 Log #393: 0 ops saved to Table #416 OK
-2026/05/13-12:42:38.916 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/000393.log: OK
-2026/05/13-12:42:38.916 64e8 Log #407: 0 ops saved to Table #417 OK
-2026/05/13-12:42:38.916 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/000407.log: OK
-2026/05/13-12:42:38.916 64e8 Log #415: 0 ops saved to Table #418 OK
-2026/05/13-12:42:38.918 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/000415.log: OK
-2026/05/13-12:42:38.918 64e8 Table #371: 31 entries OK
-2026/05/13-12:42:38.919 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/MANIFEST-000392: OK
-2026/05/13-12:42:38.920 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/MANIFEST-000406: OK
-2026/05/13-12:42:38.920 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor/MANIFEST-000414: OK
-2026/05/13-12:42:38.921 64e8 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\armor; recovered 1 files; 6661 bytes. Some data may have been lost. ****
+2026/05/13-12:42:38.924 64e8 Delete type=3 #1

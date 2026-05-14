@@ -1,11 +1,1 @@
-2026/05/13-12:42:38.953 64e8 Log #394: 0 ops saved to Table #417 OK
-2026/05/13-12:42:38.953 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/000394.log: OK
-2026/05/13-12:42:38.953 64e8 Log #408: 0 ops saved to Table #418 OK
-2026/05/13-12:42:38.953 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/000408.log: OK
-2026/05/13-12:42:38.953 64e8 Log #416: 0 ops saved to Table #419 OK
-2026/05/13-12:42:38.954 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/000416.log: OK
-2026/05/13-12:42:38.954 64e8 Table #372: 147 entries OK
-2026/05/13-12:42:38.956 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/MANIFEST-000393: OK
-2026/05/13-12:42:38.957 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/MANIFEST-000407: OK
-2026/05/13-12:42:38.957 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells/MANIFEST-000415: OK
-2026/05/13-12:42:38.958 64e8 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\spells; recovered 1 files; 84464 bytes. Some data may have been lost. ****
+2026/05/13-12:42:38.961 64e8 Delete type=3 #1

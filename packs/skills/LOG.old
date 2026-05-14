@@ -1,11 +1,1 @@
-2026/05/13-12:42:38.892 64e8 Log #390: 0 ops saved to Table #413 OK
-2026/05/13-12:42:38.893 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/000390.log: OK
-2026/05/13-12:42:38.893 64e8 Log #404: 0 ops saved to Table #414 OK
-2026/05/13-12:42:38.893 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/000404.log: OK
-2026/05/13-12:42:38.893 64e8 Log #412: 0 ops saved to Table #415 OK
-2026/05/13-12:42:38.893 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/000412.log: OK
-2026/05/13-12:42:38.893 64e8 Table #368: 58 entries OK
-2026/05/13-12:42:38.895 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/MANIFEST-000389: OK
-2026/05/13-12:42:38.895 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/MANIFEST-000403: OK
-2026/05/13-12:42:38.895 64e8 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills/MANIFEST-000411: OK
-2026/05/13-12:42:38.897 64e8 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\skills; recovered 1 files; 12833 bytes. Some data may have been lost. ****
+2026/05/13-12:42:38.900 64e8 Delete type=3 #1
