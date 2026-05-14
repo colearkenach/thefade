@@ -71,8 +71,9 @@
         <a class="item" data-tab="main">Stats</a>
         <a class="item" data-tab="skills">Skills</a>
         <a class="item" data-tab="inventory">Inventory</a>
+        <a class="item" data-tab="combat">Combat</a>
         <a class="item" data-tab="paths">Abilities</a>
-        <a class="item" data-tab="spells">Spells</a>
+        <a class="item" data-tab="spells">Magic</a>
         <a class="item" data-tab="background">Background</a>
     </nav>
 
@@ -80,6 +81,68 @@
     <section class="sheet-body">
         {{!-- Main Tab --}}
         <div class="tab" data-group="primary" data-tab="main">
+            {{!-- Identity: Species + Talents summary --}}
+            <div class="identity-row identity-row-top">
+                <div class="species-card{{#if system.species.manualEntry}} species-card-manual{{/if}}" data-item-id="{{actor.speciesItem._id}}">
+                    <h2>
+                        Species
+                        <a class="species-browse" title="Browse Species"><i class="fas fa-search"></i></a>
+                        <label class="species-manual-toggle" title="Enable to edit species fields manually (disables right-click to open)">
+                            <input type="checkbox" name="system.species.manualEntry" {{#if system.species.manualEntry}}checked{{/if}} />
+                            <span>Manual</span>
+                        </label>
+                    </h2>
+
+                    {{#if system.species.manualEntry}}
+                    <div class="species-details">
+                        <div class="form-group">
+                            <label>Species</label>
+                            <input type="text" name="system.species.name" value="{{system.species.name}}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Creature Type</label>
+                            <input type="text" name="system.species.creatureType" value="{{system.species.creatureType}}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Subtype</label>
+                            <input type="text" name="system.species.creatureSubtype" value="{{system.species.creatureSubtype}}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Base HP</label>
+                            <input type="text" name="system.species.baseHP" value="{{system.species.baseHP}}" data-dtype="Number" />
+                        </div>
+                        <div class="form-group">
+                            <label>Size</label>
+                            <select name="system.species.size">
+                                {{selectOptions sizeOptions selected=system.species.size}}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Languages</label>
+                            <input type="text" name="system.species.languages" value="{{system.species.languages}}" placeholder="Common, Elvish, etc." />
+                        </div>
+                    </div>
+                    {{else}}
+                    <div class="species-name-display{{#unless actor.speciesItem}} species-name-empty{{/unless}}" title="{{#if actor.speciesItem}}Right-click to open species{{else}}No species attached — drop a Species item, browse, or enable Manual{{/if}}">
+                        {{#if system.species.name}}{{system.species.name}}{{else}}<em>No species</em>{{/if}}
+                    </div>
+                    {{/if}}
+                </div>
+
+                <div class="talents-summary-card">
+                    <h2>Talents</h2>
+                    {{#if actor.talents.length}}
+                    <ul class="talents-summary-list">
+                        {{#each actor.talents as |talent|}}
+                        <li class="talent-summary-item" data-item-id="{{talent._id}}" title="Right-click to open talent">{{talent.name}}</li>
+                        {{/each}}
+                    </ul>
+                    {{else}}
+                    <p class="talents-summary-empty"><em>No talents yet</em></p>
+                    {{/if}}
+                </div>
+            </div>
+
             {{> "systems/thefade/templates/actor/parts/attributes.html"}}
 
             {{!-- Defenses — unified 6-col band (active + passive together) --}}
@@ -173,164 +236,6 @@
                 </tbody>
             </table>
 
-            {{> "systems/thefade/templates/actor/parts/combat-state.html"}}
-            {{> "systems/thefade/templates/actor/parts/injuries.html"}}
-
-            {{!-- Species + Aura side-by-side --}}
-            <div class="identity-row">
-                <div class="species-item" data-item-id="{{species._id}}">
-                    <h2>
-                        Species
-                        <a class="species-browse" title="Browse Species"><i class="fas fa-search"></i></a>
-                    </h2>
-                    <div class="species-details">
-                        <div class="form-group">
-                            <label>Species</label>
-                            <input type="text" name="system.species.name" value="{{system.species.name}}" />
-                        </div>
-                        <div class="form-group">
-                            <label>Creature Type</label>
-                            <input type="text" name="system.species.creatureType" value="{{system.species.creatureType}}" />
-                        </div>
-                        <div class="form-group">
-                            <label>Subtype</label>
-                            <input type="text" name="system.species.creatureSubtype" value="{{system.species.creatureSubtype}}" />
-                        </div>
-                        <div class="form-group">
-                            <label>Base HP</label>
-                            <input type="text" name="system.species.baseHP" value="{{system.species.baseHP}}" data-dtype="Number" />
-                        </div>
-                        <div class="form-group">
-                            <label>Size</label>
-                            <select name="system.species.size">
-                                {{selectOptions sizeOptions selected=system.species.size}}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Languages</label>
-                            <input type="text" name="system.species.languages" value="{{system.species.languages}}" placeholder="Common, Elvish, etc." />
-                        </div>
-                        <div class="form-group species-abilities-group">
-                            <label>
-                                Abilities
-                                <a class="species-ability-add" title="Add Ability"><i class="fas fa-plus"></i></a>
-                            </label>
-                            <div class="species-abilities-list">
-                                {{#each system.species.speciesAbilities as |ability id|}}
-                                <div class="species-ability" data-ability-id="{{id}}">
-                                    <div class="ability-header flexrow">
-                                        <strong>{{ability.name}}</strong>
-                                        <div class="ability-controls">
-                                            <a class="species-ability-edit" title="Edit Ability"><i class="fas fa-edit"></i></a>
-                                            <a class="species-ability-delete" title="Delete Ability"><i class="fas fa-trash"></i></a>
-                                        </div>
-                                    </div>
-                                    <div class="ability-description">{{ability.description}}</div>
-                                </div>
-                                {{/each}}
-                            </div>
-                        </div>
-                        {{#if system.abilityEffects}}
-                        {{#if system.abilityEffects.applied.length}}
-                        <div class="form-group ability-effects-group">
-                            <label>Automated Abilities</label>
-                            <ul class="ability-effects-applied">
-                                {{#each system.abilityEffects.applied}}
-                                <li><strong>{{name}}</strong> <span class="ability-source">({{source}})</span> &mdash; {{description}}</li>
-                                {{/each}}
-                            </ul>
-                        </div>
-                        {{/if}}
-                        {{#if system.abilityEffects.unmatched.length}}
-                        <div class="form-group ability-effects-group ability-effects-unmatched">
-                            <label>Text-only abilities <span class="hint">(no automated effect; apply manually)</span></label>
-                            <ul>
-                                {{#each system.abilityEffects.unmatched}}
-                                <li><strong>{{name}}</strong> <span class="ability-source">({{source}})</span></li>
-                                {{/each}}
-                            </ul>
-                        </div>
-                        {{/if}}
-                        {{/if}}
-                    </div>
-                </div>
-
-                <div class="aura-card">
-                    <h2>Aura</h2>
-                    <div class="form-group">
-                        <label>Color</label>
-                        <select name="system.aura.color">
-                            {{selectOptions auraColorOptions selected=system.aura.color}}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Shape</label>
-                        <select name="system.aura.shape">
-                            {{selectOptions auraShapeOptions selected=system.aura.shape}}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Intensity</label>
-                        <select name="system.aura.intensity">
-                            {{selectOptions auraIntensityOptions selected=system.aura.intensity}}
-                        </select>
-                    </div>
-
-                    <div class="aura-info">
-                        {{#if system.aura.color}}
-                        <div class="aura-property">
-                            <strong>Color:</strong> {{titleCase system.aura.color}}
-                            <span class="aura-bonus">
-                                {{#if (eq system.aura.color "red")}}Athletics{{/if}}
-                                {{#if (eq system.aura.color "blue")}}Medicine{{/if}}
-                                {{#if (eq system.aura.color "green")}}Herbalism{{/if}}
-                                {{#if (eq system.aura.color "yellow")}}Research{{/if}}
-                                {{#if (eq system.aura.color "purple")}}Arcana{{/if}}
-                                {{#if (eq system.aura.color "orange")}}Etiquette{{/if}}
-                                {{#if (eq system.aura.color "pink")}}Seduction{{/if}}
-                                {{#if (eq system.aura.color "gold")}}Gambling{{/if}}
-                                {{#if (eq system.aura.color "silver")}}Symbology{{/if}}
-                                {{#if (eq system.aura.color "turquoise")}}Sight{{/if}}
-                                {{#if (eq system.aura.color "indigo")}}Ritual{{/if}}
-                                {{#if (eq system.aura.color "brown")}}Linguistics{{/if}}
-                                {{#if (eq system.aura.color "violet")}}Insight{{/if}}
-                                {{#if (eq system.aura.color "gray")}}Intimidate{{/if}}
-                                {{#if (eq system.aura.color "black")}}Toxicology{{/if}}
-                                {{#if (eq system.aura.color "white")}}Lore (Religion){{/if}}
-                            </span>
-                        </div>
-                        {{/if}}
-
-                        {{#if system.aura.shape}}
-                        <div class="aura-property">
-                            <strong>Shape:</strong> {{titleCase system.aura.shape}}
-                            <span class="aura-bonus">
-                                {{#if (eq system.aura.shape "circular")}}Etiquette{{/if}}
-                                {{#if (eq system.aura.shape "jagged")}}Trickery{{/if}}
-                                {{#if (eq system.aura.shape "flowing")}}Persuasion{{/if}}
-                                {{#if (eq system.aura.shape "spiky")}}Lockpicking{{/if}}
-                                {{#if (eq system.aura.shape "radiant")}}Deception{{/if}}
-                                {{#if (eq system.aura.shape "dense")}}Medicine{{/if}}
-                                {{#if (eq system.aura.shape "wispy")}}Sneaking{{/if}}
-                                {{#if (eq system.aura.shape "geometric")}}Research{{/if}}
-                            </span>
-                        </div>
-                        {{/if}}
-
-                        {{#if system.aura.intensity}}
-                        <div class="aura-property">
-                            <strong>Intensity:</strong> {{titleCase system.aura.intensity}}
-                            <span class="aura-bonus">
-                                {{#if (eq system.aura.intensity "faint")}}+1D, 3 hex{{/if}}
-                                {{#if (eq system.aura.intensity "moderate")}}+2D, 2 hex{{/if}}
-                                {{#if (eq system.aura.intensity "intense")}}+3D, 1 hex{{/if}}
-                            </span>
-                        </div>
-                        {{/if}}
-                    </div>
-                </div>
-            </div>
-
             {{!-- Carrying + Religion footer --}}
             <div class="minor-stats-row">
                 <div class="capacity-card">
@@ -385,6 +290,12 @@
         {{!-- Inventory Tab --}}
         <div class="tab" data-group="primary" data-tab="inventory">
             {{> "systems/thefade/templates/actor/parts/inventory.html"}}
+        </div>
+
+        {{!-- Combat Tab --}}
+        <div class="tab" data-group="primary" data-tab="combat">
+            {{> "systems/thefade/templates/actor/parts/combat-state.html"}}
+            {{> "systems/thefade/templates/actor/parts/injuries.html"}}
         </div>
 
         {{!-- Paths Tab --}}

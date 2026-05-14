@@ -44,7 +44,8 @@
         "creatureType": "humanoid",
         "creatureSubtype": "",
         "languages": "",
-        "speciesAbilities": {}
+        "speciesAbilities": {},
+        "manualEntry": false
       },
       "movement": {
         "land": 4,

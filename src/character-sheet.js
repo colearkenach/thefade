@@ -446,6 +446,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         actorData.spells = spells;
         actorData.skills = skills;
         actorData.talents = talents;
+        actorData.speciesItem = items.find(i => i?.type === 'species') || null;
         actorData.traits = traits;
         actorData.precepts = precepts;
         actorData.itemsOfPower = itemsOfPower;
@@ -4033,6 +4034,23 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.species-browse').click(ev => {
             ev.preventDefault();
             openCompendiumBrowser("species", this.actor);
+        });
+
+        // Right-click the compact species name to open the attached Species item sheet.
+        html.find('.species-name-display').on('contextmenu', ev => {
+            ev.preventDefault();
+            const itemId = ev.currentTarget.closest('.species-card')?.dataset.itemId;
+            const item = itemId ? this.actor.items.get(itemId) : this.actor.items.find(i => i.type === 'species');
+            if (item) item.sheet.render(true);
+            else ui.notifications.info("No Species item attached. Drop a Species, browse one, or enable Manual entry.");
+        });
+
+        // Right-click a talent name in the Stats-tab summary to open its sheet.
+        html.find('.talent-summary-item').on('contextmenu', ev => {
+            ev.preventDefault();
+            const itemId = ev.currentTarget.dataset.itemId;
+            const item = itemId ? this.actor.items.get(itemId) : null;
+            if (item) item.sheet.render(true);
         });
 
         html.find('.weapon-browse').click(ev => {

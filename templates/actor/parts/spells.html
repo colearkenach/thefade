@@ -1,4 +1,82 @@
 <section class="spells-section">
+    <!-- Aura -->
+    <div class="aura-card">
+        <h2>Aura</h2>
+        <div class="aura-fields">
+            <div class="form-group">
+                <label>Color</label>
+                <select name="system.aura.color">
+                    {{selectOptions auraColorOptions selected=system.aura.color}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Shape</label>
+                <select name="system.aura.shape">
+                    {{selectOptions auraShapeOptions selected=system.aura.shape}}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Intensity</label>
+                <select name="system.aura.intensity">
+                    {{selectOptions auraIntensityOptions selected=system.aura.intensity}}
+                </select>
+            </div>
+        </div>
+
+        <div class="aura-info">
+            {{#if system.aura.color}}
+            <div class="aura-property">
+                <strong>Color:</strong> {{titleCase system.aura.color}}
+                <span class="aura-bonus">
+                    {{#if (eq system.aura.color "red")}}Athletics{{/if}}
+                    {{#if (eq system.aura.color "blue")}}Medicine{{/if}}
+                    {{#if (eq system.aura.color "green")}}Herbalism{{/if}}
+                    {{#if (eq system.aura.color "yellow")}}Research{{/if}}
+                    {{#if (eq system.aura.color "purple")}}Arcana{{/if}}
+                    {{#if (eq system.aura.color "orange")}}Etiquette{{/if}}
+                    {{#if (eq system.aura.color "pink")}}Seduction{{/if}}
+                    {{#if (eq system.aura.color "gold")}}Gambling{{/if}}
+                    {{#if (eq system.aura.color "silver")}}Symbology{{/if}}
+                    {{#if (eq system.aura.color "turquoise")}}Sight{{/if}}
+                    {{#if (eq system.aura.color "indigo")}}Ritual{{/if}}
+                    {{#if (eq system.aura.color "brown")}}Linguistics{{/if}}
+                    {{#if (eq system.aura.color "violet")}}Insight{{/if}}
+                    {{#if (eq system.aura.color "gray")}}Intimidate{{/if}}
+                    {{#if (eq system.aura.color "black")}}Toxicology{{/if}}
+                    {{#if (eq system.aura.color "white")}}Lore (Religion){{/if}}
+                </span>
+            </div>
+            {{/if}}
+
+            {{#if system.aura.shape}}
+            <div class="aura-property">
+                <strong>Shape:</strong> {{titleCase system.aura.shape}}
+                <span class="aura-bonus">
+                    {{#if (eq system.aura.shape "circular")}}Etiquette{{/if}}
+                    {{#if (eq system.aura.shape "jagged")}}Trickery{{/if}}
+                    {{#if (eq system.aura.shape "flowing")}}Persuasion{{/if}}
+                    {{#if (eq system.aura.shape "spiky")}}Lockpicking{{/if}}
+                    {{#if (eq system.aura.shape "radiant")}}Deception{{/if}}
+                    {{#if (eq system.aura.shape "dense")}}Medicine{{/if}}
+                    {{#if (eq system.aura.shape "wispy")}}Sneaking{{/if}}
+                    {{#if (eq system.aura.shape "geometric")}}Research{{/if}}
+                </span>
+            </div>
+            {{/if}}
+
+            {{#if system.aura.intensity}}
+            <div class="aura-property">
+                <strong>Intensity:</strong> {{titleCase system.aura.intensity}}
+                <span class="aura-bonus">
+                    {{#if (eq system.aura.intensity "faint")}}+1D, 3 hex{{/if}}
+                    {{#if (eq system.aura.intensity "moderate")}}+2D, 2 hex{{/if}}
+                    {{#if (eq system.aura.intensity "intense")}}+3D, 1 hex{{/if}}
+                </span>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+
     <!-- Spells Learned Counter -->
     <div class="spells-learned-counter">
         <h3>Spells Learned</h3>
