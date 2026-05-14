@@ -6114,10 +6114,31 @@ select[name="system.aura.color"] option[value="white"] {
     text-align: center;
 }
 
+/* Header row containing the Roll Dice tool and Initiative pill side-by-side. */
+.thefade .redesigned-header .header-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.thefade .redesigned-header .header-actions-row .dice-section,
+.thefade .redesigned-header .header-actions-row .vital-pill {
+  flex: 0 0 auto;
+}
+
 /* ----- Vitals strip (HP / Sanity / Initiative) ----- */
 .thefade .vitals-strip {
   display: flex;
   align-items: stretch;
+  gap: 8px;
+}
+
+/* Inline variant rendered at the top of the Stats and Combat tabs. */
+.thefade .vitals-strip.vitals-strip-inline {
+  margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .thefade .vital-pill {

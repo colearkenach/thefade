@@ -4004,6 +4004,14 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.roll-addiction').click(this._onDarkMagicAddictionRoll.bind(this));
         html.find('.rest-daily').click(this._onRestDaily.bind(this));
         html.find('.take-rest-btn').click(this._onTakeRest.bind(this));
+
+        // Mirror duplicated HP/Sanity inputs (rendered on Stats + Combat tabs) so
+        // form serialization stays consistent regardless of which tab is active.
+        html.find('.vitals-strip-inline input[name]').on('input', function () {
+            const name = this.getAttribute('name');
+            if (!name) return;
+            html.find(`input[name="${name}"]`).not(this).val(this.value);
+        });
         html.find('.roll-attributes').click(this._onRollAttributes.bind(this));
 
         html.find('.level-up-btn').click(this._onLevelUp.bind(this));
