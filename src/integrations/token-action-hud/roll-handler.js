@@ -38,18 +38,19 @@ export function makeRollHandler(coreApi) {
             });
         }
 
-        async _rollSkill(actor, skillId, event) {
+        async _rollSkill(actor, skillKey, event) {
             // Defer to the character sheet's existing handler so DT prompt &
             // condition modifiers stay consistent.
             const sheet = actor.sheet;
             if (sheet?._onSkillRoll) {
-                const fakeEvent = this._fakeItemEvent(event, skillId);
+                const fakeEvent = this._fakeSkillEvent(event, skillKey);
                 return sheet._onSkillRoll(fakeEvent);
             }
-            // NPC fallback: roll skill's attribute pool directly.
-            const skill = actor.items.get(skillId);
+            // NPC fallback: roll skill's attribute pool directly via data layer.
+            const { getSkillByKey } = await import("../../skills.js");
+            const skill = getSkillByKey(actor, skillKey);
             if (!skill) return;
-            return this._rollAttribute(actor, skill.system?.attribute || "physique");
+            return this._rollAttribute(actor, skill.attribute || "physique");
         }
 
         async _rollWeapon(actor, weaponId, event) {
@@ -135,6 +136,19 @@ export function makeRollHandler(coreApi) {
                 currentTarget: {
                     dataset: {},
                     closest: (sel) => sel === ".item" ? { dataset: { itemId } } : null
+                }
+            };
+        }
+
+        _fakeSkillEvent(event, skillKey) {
+            return {
+                preventDefault: () => {},
+                stopPropagation: () => {},
+                type: event?.type ?? "click",
+                button: event?.button ?? 0,
+                currentTarget: {
+                    dataset: {},
+                    closest: (sel) => sel === "[data-skill-key]" ? { dataset: { skillKey } } : null
                 }
             };
         }

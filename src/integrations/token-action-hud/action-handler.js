@@ -1,5 +1,6 @@
 // Builds Token Action HUD actions from a selected The Fade actor.
 import { ACTION_TYPE, ATTRIBUTES, GROUP } from "./constants.js";
+import { getAllSkills } from "../../skills.js";
 
 export function makeActionHandler(coreApi) {
     return class TheFadeActionHandler extends coreApi.ActionHandler {
@@ -56,13 +57,13 @@ export function makeActionHandler(coreApi) {
                 "Magical":  GROUP.skillsMagic.id
             };
             const grouped = {};
-            for (const skill of actor.items.filter(i => i.type === "skill")) {
-                const bucket = buckets[skill.system?.category] || GROUP.skillsOther.id;
+            for (const skill of getAllSkills(actor)) {
+                const bucket = buckets[skill.category] || GROUP.skillsOther.id;
                 (grouped[bucket] ??= []).push({
-                    id: `skill-${skill.id}`,
+                    id: `skill-${skill.key}`,
                     name: skill.name,
-                    encodedValue: this._enc(ACTION_TYPE.skill, skill.id),
-                    info1: { text: this._rankAbbr(skill.system?.rank) }
+                    encodedValue: this._enc(ACTION_TYPE.skill, skill.key),
+                    info1: { text: this._rankAbbr(skill.rank) }
                 });
             }
             for (const [groupId, actions] of Object.entries(grouped)) {
