@@ -7160,14 +7160,13 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .custom-skills-bar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    background: var(--bg-surface-deep);
-    border: 1px solid var(--border-faint);
-    border-radius: 3px;
-    margin: 8px 0 14px;
+  display: block;
+  gap: 0px;
+  padding: 9px 0px;
+  background: var(--bg-surface-deep);
+  border: 1px solid var(--border-faint);
+  border-radius: 3px;
+  margin: 8px 0 14px;
 }
 
 .thefade .custom-skills-bar label {
