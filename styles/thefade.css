@@ -10611,9 +10611,12 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade-ignition-card .ignition-controls {
     margin-top: 8px;
-    text-align: right;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
 }
 
+.thefade-ignition-card .ignition-join-btn,
 .thefade-ignition-card .ignition-end-btn {
     padding: 3px 10px;
     font-size: 0.82em;
@@ -10624,8 +10627,76 @@ select[name="system.aura.color"] option[value="white"] {
     cursor: pointer;
 }
 
-.thefade-ignition-card .ignition-end-btn:hover:not(:disabled) {
+.thefade-ignition-card .ignition-end-btn:hover:not(:disabled),
+.thefade-ignition-card .ignition-join-btn:hover:not(:disabled) {
     background: rgba(60, 16, 8, 0.8);
+}
+
+/* ----- Ignition invitation (whispered) ----- */
+.thefade-ignition-invite {
+    border: 1px solid #8a3a16;
+    border-left: 3px solid #c66b2c;
+    background: rgba(40, 16, 8, 0.18);
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-size: 0.9em;
+}
+
+.thefade-ignition-invite .ignition-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed rgba(198, 107, 44, 0.4);
+    margin-bottom: 6px;
+}
+
+.thefade-ignition-invite .ignition-header i { color: #c66b2c; }
+
+.thefade-ignition-invite .ignition-meta {
+    margin-left: auto;
+    font-size: 0.85em;
+    color: #8a8074;
+}
+
+.thefade-ignition-invite .ignition-invite-controls {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.thefade-ignition-invite .ignition-accept-btn,
+.thefade-ignition-invite .ignition-decline-btn {
+    padding: 3px 10px;
+    font-size: 0.82em;
+    background: rgba(198, 107, 44, 0.15);
+    border: 1px solid #8a3a16;
+    color: #e8c79a;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.thefade-ignition-invite .ignition-accept-btn:hover:not(:disabled) {
+    background: rgba(198, 107, 44, 0.35);
+}
+
+.thefade-ignition-invite .ignition-decline-btn:hover:not(:disabled) {
+    background: rgba(40, 8, 4, 0.6);
+}
+
+.thefade-ignition-invite .ignition-accept-btn.spent,
+.thefade-ignition-invite .ignition-decline-btn.spent,
+.thefade-ignition-invite .ignition-accept-btn:disabled,
+.thefade-ignition-invite .ignition-decline-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.thefade-ignition-invite .ignition-invite-resolved {
+    margin: 6px 0 0;
+    font-size: 0.85em;
+    color: #8a8074;
 }
 
 .thefade-ignition-end {

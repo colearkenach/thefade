@@ -127,24 +127,17 @@ export async function startIgnition(initiatorActor) {
     const radius = IGNITION_INTENSITY_RADIUS[intensity];
     const candidates = findAlliesInRadius(token, radius);
 
+    // Initiator only — allies opt in via whispered invites (or the Join button
+    // on the public card). Matches the rules: joining is a free action on the
+    // ally's turn or a Reaction outside of it.
     const participants = [{
         actorUuid: initiatorActor.uuid,
         tokenUuid: token.document.uuid,
         name: initiatorActor.name,
         role: "initiator"
     }];
-    for (const t of candidates) {
-        participants.push({
-            actorUuid: t.actor.uuid,
-            tokenUuid: t.document.uuid,
-            name: t.actor.name,
-            role: "ally"
-        });
-    }
 
     const totalLevel = Number(initiatorActor.system?.level) || 1;
-    const durationMin = Math.min(participants.length, totalLevel);
-
     const flag = {
         active: true,
         role: "initiator",
@@ -154,28 +147,109 @@ export async function startIgnition(initiatorActor) {
         participants,
         spentActions: [],
         startedAt: now,
-        durationSec: durationMin * 60,
+        durationSec: _durationSecFor(participants.length, totalLevel),
+        maxParticipants: totalLevel,
         recoveryUntil: 0
     };
     await initiatorActor.setFlag(FLAG_SCOPE, FLAG_KEY, flag);
 
-    for (const p of participants.slice(1)) {
-        const ally = await fromUuid(p.actorUuid);
-        if (ally) {
-            await ally.setFlag(FLAG_SCOPE, FLAG_KEY, {
-                active: true,
-                role: "participant",
-                initiatorUuid: initiatorActor.uuid,
-                intensity, radius,
-                startedAt: now,
-                durationSec: flag.durationSec,
-                recoveryUntil: 0
-            });
-        }
+    await _postIgnitionCard(initiatorActor, flag);
+
+    // Whisper each candidate ally an Accept/Decline invite
+    for (const t of candidates) {
+        await _postIgnitionInvite(initiatorActor, t.actor, t.document);
+    }
+    if (candidates.length) {
+        ui.notifications.info(`Sent ${candidates.length} Ignition invite(s).`);
     }
 
-    await _postIgnitionCard(initiatorActor, flag);
     drawIgnitionOverlay();
+}
+
+function _durationSecFor(participantCount, totalLevel) {
+    return Math.min(participantCount, Math.max(1, totalLevel)) * 60;
+}
+
+/**
+ * Add an ally to an active Ignition. Validates the ally's token is currently
+ * within radius of the initiator's token and that the ignition is live and
+ * not full. Joining is the rules' "free action on your turn / Reaction
+ * outside your turn" — the system enforces eligibility, the table decides
+ * whether the action economy fits.
+ */
+export async function joinIgnition(initiatorUuid, allyActorUuid) {
+    const initiator = await fromUuid(initiatorUuid);
+    if (!initiator) {
+        ui.notifications.warn("Initiator not found.");
+        return false;
+    }
+    const flag = getIgnitionState(initiator);
+    if (!flag?.active || flag.role !== "initiator") {
+        ui.notifications.warn("That Ignition is no longer active.");
+        return false;
+    }
+
+    const ally = await fromUuid(allyActorUuid);
+    if (!ally) return false;
+    if (!ally.isOwner && !game.user.isGM) {
+        ui.notifications.warn("You don't own that actor.");
+        return false;
+    }
+    if ((flag.participants || []).some(p => p.actorUuid === ally.uuid)) {
+        ui.notifications.info(`${ally.name} is already in the Ignition.`);
+        return false;
+    }
+
+    const initToken = canvas?.tokens?.placeables.find(t => t.document.uuid === flag.participants?.[0]?.tokenUuid);
+    if (!initToken) {
+        ui.notifications.warn("Initiator's token isn't on the active scene.");
+        return false;
+    }
+    const allyToken = canvas?.tokens?.placeables.find(t => t.actor?.id === ally.id);
+    if (!allyToken) {
+        ui.notifications.warn(`${ally.name} has no token on this scene.`);
+        return false;
+    }
+    const d = hexDistance(initToken.center, allyToken.center);
+    if (d > flag.radius + 0.001) {
+        ui.notifications.warn(`${ally.name} is outside the aura's radius.`);
+        return false;
+    }
+
+    const newParticipant = {
+        actorUuid: ally.uuid,
+        tokenUuid: allyToken.document.uuid,
+        name: ally.name,
+        role: "ally"
+    };
+    const participants = [...flag.participants, newParticipant];
+    const totalLevel = Number(initiator.system?.level) || 1;
+    const durationSec = _durationSecFor(participants.length, totalLevel);
+
+    await initiator.setFlag(FLAG_SCOPE, FLAG_KEY, {
+        ...flag,
+        participants,
+        durationSec
+    });
+
+    await ally.setFlag(FLAG_SCOPE, FLAG_KEY, {
+        active: true,
+        role: "participant",
+        initiatorUuid: initiator.uuid,
+        intensity: flag.intensity,
+        radius: flag.radius,
+        startedAt: flag.startedAt,
+        durationSec,
+        recoveryUntil: 0
+    });
+
+    await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: ally }),
+        content: `<div class="thefade-ignition-action"><strong>${ally.name}</strong> joins <strong>${initiator.name}</strong>'s Ignition.</div>`
+    });
+
+    drawIgnitionOverlay();
+    return true;
 }
 
 /**
@@ -209,6 +283,51 @@ export async function endIgnition(initiatorActor, { reason = "ended" } = {}) {
     });
 
     drawIgnitionOverlay();
+}
+
+/**
+ * Whisper an Ignition invitation to the owners of an ally token. Includes
+ * Accept / Decline buttons that the ally's owner can click.
+ */
+async function _postIgnitionInvite(initiator, allyActor, allyTokenDoc) {
+    const owners = _ownerUserIds(allyActor);
+    const whisper = owners.length ? owners : [game.user.id];
+    const content = `
+        <div class="thefade-ignition-invite" data-initiator-uuid="${initiator.uuid}" data-ally-uuid="${allyActor.uuid}">
+            <header class="ignition-header">
+                <i class="fas fa-fire"></i>
+                <strong>${initiator.name}</strong> invites <strong>${allyActor.name}</strong> to an Ignition
+                <span class="ignition-meta">${IGNITION_INTENSITY_LABEL[initiator.system?.aura?.intensity] || ""}</span>
+            </header>
+            <p class="ignition-section-label">Joining is a free action on your turn, or a Reaction outside it.</p>
+            <div class="ignition-invite-controls">
+                <button type="button" class="ignition-accept-btn"
+                        data-initiator-uuid="${initiator.uuid}"
+                        data-ally-uuid="${allyActor.uuid}">
+                    <i class="fas fa-fire"></i> Accept
+                </button>
+                <button type="button" class="ignition-decline-btn"
+                        data-ally-uuid="${allyActor.uuid}">
+                    Decline
+                </button>
+            </div>
+        </div>`;
+    await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor: allyActor }),
+        whisper,
+        content
+    });
+}
+
+function _ownerUserIds(actor) {
+    const ids = [];
+    for (const user of game.users) {
+        if (user.isGM) continue;
+        if (actor.testUserPermission?.(user, "OWNER")) ids.push(user.id);
+    }
+    // Always include GMs so they see invites too
+    for (const user of game.users) if (user.isGM) ids.push(user.id);
+    return Array.from(new Set(ids));
 }
 
 async function _postIgnitionCard(actor, flag) {
@@ -291,10 +410,74 @@ export function drawIgnitionOverlay() {
 
 // ---------------- Chat card handlers ----------------
 
+function _bindIgnitionInvite(html) {
+    const $html = html instanceof jQuery ? html : $(html);
+    const invite = $html.find(".thefade-ignition-invite");
+    if (!invite.length) return;
+
+    invite.find(".ignition-accept-btn").on("click", async (ev) => {
+        ev.preventDefault();
+        const btn = ev.currentTarget;
+        const ok = await joinIgnition(btn.dataset.initiatorUuid, btn.dataset.allyUuid);
+        if (ok) {
+            invite.find(".ignition-accept-btn, .ignition-decline-btn")
+                .prop("disabled", true).addClass("spent");
+            invite.append('<p class="ignition-invite-resolved"><em>Accepted.</em></p>');
+        }
+    });
+
+    invite.find(".ignition-decline-btn").on("click", async (ev) => {
+        ev.preventDefault();
+        const btn = ev.currentTarget;
+        const ally = await fromUuid(btn.dataset.allyUuid);
+        if (ally && !ally.isOwner && !game.user.isGM) {
+            ui.notifications.warn("You don't own that actor.");
+            return;
+        }
+        invite.find(".ignition-accept-btn, .ignition-decline-btn")
+            .prop("disabled", true).addClass("spent");
+        invite.append('<p class="ignition-invite-resolved"><em>Declined.</em></p>');
+    });
+}
+
 function _bindIgnitionCard(html) {
     const $html = html instanceof jQuery ? html : $(html);
     const card = $html.find(".thefade-ignition-card");
     if (!card.length) return;
+
+    card.find(".ignition-join-btn").on("click", async (ev) => {
+        ev.preventDefault();
+        const initiatorUuid = ev.currentTarget.dataset.actorUuid;
+        // Use the user's first owned character on this scene as the joiner
+        const candidates = (canvas?.tokens?.placeables || []).filter(t => t.actor?.isOwner && ["character","npc"].includes(t.actor?.type));
+        if (!candidates.length) {
+            ui.notifications.warn("You don't own a token on this scene to join with.");
+            return;
+        }
+        let allyActor = candidates[0].actor;
+        if (candidates.length > 1) {
+            const opts = candidates.map((t, i) =>
+                `<label style="display:block;margin:2px 0"><input type="radio" name="join" value="${i}" ${i===0?"checked":""}/> ${t.actor.name}</label>`
+            ).join("");
+            allyActor = await new Promise(resolve => {
+                new Dialog({
+                    title: "Join Ignition",
+                    content: `<form><p>Join with which token?</p>${opts}</form>`,
+                    buttons: {
+                        ok: { label: "Join", callback: h => {
+                            const v = Number(h[0].querySelector("input[name='join']:checked")?.value ?? 0);
+                            resolve(candidates[v].actor);
+                        } },
+                        cancel: { label: "Cancel", callback: () => resolve(null) }
+                    },
+                    default: "ok",
+                    close: () => resolve(null)
+                }).render(true);
+            });
+            if (!allyActor) return;
+        }
+        await joinIgnition(initiatorUuid, allyActor.uuid);
+    });
 
     card.find(".ignition-action-btn").on("click", async (ev) => {
         ev.preventDefault();
@@ -452,5 +635,8 @@ export function registerIgnitionHooks() {
             drawIgnitionOverlay();
         }
     });
-    Hooks.on("renderChatMessage", (msg, html) => _bindIgnitionCard(html));
+    Hooks.on("renderChatMessage", (msg, html) => {
+        _bindIgnitionCard(html);
+        _bindIgnitionInvite(html);
+    });
 }
