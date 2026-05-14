@@ -9884,7 +9884,7 @@ select[name="system.aura.color"] option[value="white"] {
     background: var(--bg-surface);
     border: 1px solid var(--border-faint);
     border-radius: 4px;
-    overflow: hidden;
+    overflow: visible;
     margin-bottom: 14px;
 }
 
