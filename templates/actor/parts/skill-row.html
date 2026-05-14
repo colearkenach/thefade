@@ -1,0 +1,26 @@
+<div class="skill-entry ability-entry {{#if isCustom}}custom-skill{{/if}}" data-skill-key="{{key}}">
+    <div class="skill-row">
+        <div class="skill-name-cell">
+            <span class="skill-name ability-name">{{name}}</span>
+            {{#if isCustom}}<span class="ability-meta custom-badge">Custom</span>{{/if}}
+        </div>
+        <div class="skill-rank-cell">
+            <select name="system.skills.{{key}}.rank" class="skill-rank-select">
+                {{selectOptions ../skillRankOptions selected=rank}}
+            </select>
+        </div>
+        <div class="skill-attribute-cell">{{attributeAbbr}}</div>
+        <div class="skill-bonus-cell">
+            <input type="number" name="system.skills.{{key}}.miscBonus" value="{{miscBonus}}" data-dtype="Number" class="small-input" />
+        </div>
+        <div class="skill-total-cell">{{calculatedDice}}d12</div>
+        <div class="skill-controls ability-controls">
+            <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
+            {{#if isCustom}}
+            <a class="skill-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
+            {{else}}
+            <span class="core-skill-indicator" title="Core Skill"><i class="fas fa-lock"></i></span>
+            {{/if}}
+        </div>
+    </div>
+</div>

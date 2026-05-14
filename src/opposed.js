@@ -8,23 +8,12 @@
 // Aid Another (Core Rulebook p. 60 / AUDIT P2 #26): a helper makes a
 // skill check vs DT 3 at rank Practiced or better. On success, the
 // helped ally adds +1D to their next roll with that skill.
-//
-// This module provides:
-//  - rollSkillPool(actor, {skillId, attribute, extraDice, label}) →
-//    returns { dicePool, successes, dieResultsDetails, roll, label }.
-//  - openOpposedRollDialog(actor) — attacker side, picks a target and
-//    both skills, rolls both, posts a combined chat card.
-//  - openAidAnotherDialog(actor) — helper side, picks ally and skill,
-//    rolls vs DT 3, posts an Aid Another declaration on success.
 
-const RANK_BONUS = {
-    untrained: null,       // untrained is a divisor, handled inline
-    practiced: 1,
-    adept: 2,
-    experienced: 3,
-    expert: 4,
-    mastered: 6
-};
+import {
+    getSkillByKey,
+    getAllSkills,
+    calculateSkillDice
+} from './skills.js';
 
 const TRAINED_RANKS = new Set(["practiced", "adept", "experienced", "expert", "mastered"]);
 
@@ -41,35 +30,23 @@ function getAttributeValue(actor, attribute) {
 
 /**
  * Roll a skill or attribute dice pool for the given actor.
- * Mirrors the pool math used by TheFadeCharacterSheet._onSkillRoll so
- * opposed rolls and Aid Another use the same rank/attribute formula.
+ * `skillKey` selects an entry from actor.system.skills (via getSkillByKey).
  */
-export async function rollSkillPool(actor, { skillId = null, attribute = null, extraDice = 0, label = null } = {}) {
+export async function rollSkillPool(actor, { skillKey = null, attribute = null, extraDice = 0, label = null } = {}) {
     let dicePool = 0;
     let resolvedLabel = label;
     let skill = null;
 
-    if (skillId) {
-        skill = actor.items.get(skillId);
-        if (!skill || skill.type !== "skill") skill = null;
-    }
+    if (skillKey) skill = getSkillByKey(actor, skillKey);
 
     if (skill) {
-        const attrKey = skill.system.attribute || attribute || "physique";
-        dicePool = getAttributeValue(actor, attrKey);
-        const rank = skill.system.rank || "untrained";
-        if (rank === "untrained") {
-            dicePool = Math.floor(dicePool / 2);
-        } else {
-            dicePool += RANK_BONUS[rank] || 0;
-        }
-        dicePool += (skill.system.miscBonus || 0);
-        if (!resolvedLabel) resolvedLabel = `${skill.name} (${rank})`;
+        dicePool = calculateSkillDice(actor, skill);
+        if (!resolvedLabel) resolvedLabel = `${skill.name} (${skill.rank})`;
     } else if (attribute) {
         dicePool = getAttributeValue(actor, attribute);
         if (!resolvedLabel) resolvedLabel = attribute;
     } else {
-        throw new Error("rollSkillPool requires skillId or attribute");
+        throw new Error("rollSkillPool requires skillKey or attribute");
     }
 
     dicePool += (Number(extraDice) || 0);
@@ -93,15 +70,12 @@ function renderDieStrip(details) {
     return details.map(d => `<span class="die-result ${d.class}">${d.value}</span>`).join(" ");
 }
 
-function skillOptionsHtml(actor, selectedId = "") {
-    const skills = actor.items
-        .filter(i => i.type === "skill")
-        .sort((a, b) => a.name.localeCompare(b.name));
+function skillOptionsHtml(actor, selectedKey = "") {
+    const skills = getAllSkills(actor).sort((a, b) => a.name.localeCompare(b.name));
     const options = [`<option value="">— Attribute only —</option>`];
     for (const s of skills) {
-        const sel = s.id === selectedId ? " selected" : "";
-        const rank = s.system?.rank || "untrained";
-        options.push(`<option value="${s.id}"${sel}>${s.name} (${rank})</option>`);
+        const sel = s.key === selectedKey ? " selected" : "";
+        options.push(`<option value="${s.key}"${sel}>${s.name} (${s.rank})</option>`);
     }
     return options.join("");
 }
@@ -130,7 +104,6 @@ function eligibleOpposedActors(currentActor) {
         seen.add(a.id);
         list.push(a);
     }
-    // Fall back to world actors if the scene is empty.
     if (list.length === 0) {
         for (const a of game.actors?.contents || []) {
             if (a.id === currentActor.id) continue;
@@ -209,11 +182,11 @@ export async function openOpposedRollDialog(actor) {
                 roll: {
                     icon: '<i class="fas fa-dice"></i>', label: "Roll",
                     callback: html => resolve({
-                        selfSkillId: html.find('[name="selfSkill"]').val(),
+                        selfSkillKey: html.find('[name="selfSkill"]').val(),
                         selfAttr: html.find('[name="selfAttr"]').val(),
                         selfExtra: parseInt(html.find('[name="selfExtra"]').val()) || 0,
                         targetId: html.find('[name="targetId"]').val(),
-                        targetSkillId: html.find('[name="targetSkill"]').val(),
+                        targetSkillKey: html.find('[name="targetSkill"]').val(),
                         targetAttr: html.find('[name="targetAttr"]').val(),
                         targetExtra: parseInt(html.find('[name="targetExtra"]').val()) || 0
                     })
@@ -248,17 +221,16 @@ export async function openOpposedRollDialog(actor) {
     }
 
     const attackerResult = await rollSkillPool(actor, {
-        skillId: choice.selfSkillId || null,
-        attribute: choice.selfSkillId ? null : choice.selfAttr,
+        skillKey: choice.selfSkillKey || null,
+        attribute: choice.selfSkillKey ? null : choice.selfAttr,
         extraDice: choice.selfExtra
     });
     const defenderResult = await rollSkillPool(target, {
-        skillId: choice.targetSkillId || null,
-        attribute: choice.targetSkillId ? null : choice.targetAttr,
+        skillKey: choice.targetSkillKey || null,
+        attribute: choice.targetSkillKey ? null : choice.targetAttr,
         extraDice: choice.targetExtra
     });
 
-    // Defender wins ties — standard opposed-roll convention.
     let winner = "tie-defender";
     if (attackerResult.successes > defenderResult.successes) winner = "attacker";
     else if (defenderResult.successes > attackerResult.successes) winner = "defender";
@@ -331,7 +303,7 @@ export async function openAidAnotherDialog(actor) {
                     icon: '<i class="fas fa-hands-helping"></i>', label: "Roll to Aid",
                     callback: html => resolve({
                         targetId: html.find('[name="targetId"]').val(),
-                        helperSkillId: html.find('[name="helperSkill"]').val()
+                        helperSkillKey: html.find('[name="helperSkill"]').val()
                     })
                 },
                 cancel: { icon: '<i class="fas fa-times"></i>', label: "Cancel", callback: () => resolve(null) }
@@ -346,18 +318,17 @@ export async function openAidAnotherDialog(actor) {
     const target = game.actors.get(choice.targetId);
     if (!target) { ui.notifications.warn("Aid Another: ally not found."); return; }
 
-    const helperSkill = choice.helperSkillId ? actor.items.get(choice.helperSkillId) : null;
+    const helperSkill = choice.helperSkillKey ? getSkillByKey(actor, choice.helperSkillKey) : null;
     if (!helperSkill) {
         ui.notifications.warn("Aid Another requires picking a skill.");
         return;
     }
-    const rank = helperSkill.system?.rank || "untrained";
-    if (!TRAINED_RANKS.has(rank)) {
-        ui.notifications.warn(`Aid Another requires rank Practiced or better (you have ${rank}).`);
+    if (!TRAINED_RANKS.has(helperSkill.rank)) {
+        ui.notifications.warn(`Aid Another requires rank Practiced or better (you have ${helperSkill.rank}).`);
         return;
     }
 
-    const result = await rollSkillPool(actor, { skillId: helperSkill.id });
+    const result = await rollSkillPool(actor, { skillKey: helperSkill.key });
     const DT = 3;
     const success = result.successes >= DT;
 
@@ -365,7 +336,7 @@ export async function openAidAnotherDialog(actor) {
         <div class="thefade chat-card thefade-aid-card">
             <header class="card-header"><h3>Aid Another</h3></header>
             <div class="card-content">
-                <p><strong>${actor.name}</strong> aids <strong>${target.name}</strong> with ${helperSkill.name} (${rank}).</p>
+                <p><strong>${actor.name}</strong> aids <strong>${target.name}</strong> with ${helperSkill.name} (${helperSkill.rank}).</p>
                 <p>Pool: ${result.dicePool}d12 &nbsp; Successes: <strong>${result.successes}</strong> / DT ${DT}</p>
                 <p>${renderDieStrip(result.dieResultsDetails)}</p>
                 <p class="${success ? "success" : "failure"}">

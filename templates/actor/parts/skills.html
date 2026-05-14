@@ -1,266 +1,48 @@
 <section class="skills-section">
-    <header class="skills-header flexrow">
-        <div class="skill-name">Name</div>
-        <div class="skill-rank">Rank</div>
-        <div class="skill-attribute">Attribute</div>
-        <div class="skill-bonus">Bonus</div>
-        <div class="skill-total">Total Dice</div>
-        <div class="skill-controls">
-            {{!-- Remove old buttons, add custom skill buttons --}}
-            <a class="add-custom-skill" title="Add Custom Skill"><i class="fas fa-plus"></i></a>
-            <a class="initialize-skills" title="Initialize Missing Skills"><i class="fas fa-sync"></i></a>
+    {{!-- Custom skill creation bar --}}
+    <div class="custom-skills-bar inv-block">
+        <h2 class="inv-heading">
+            <i class="fas fa-plus-circle"></i>
+            <span class="inv-title">Add Custom Skill</span>
+            <span class="inv-actions">
+                <a class="initialize-skills" title="Reset core skill ranks to defaults"><i class="fas fa-sync"></i></a>
+            </span>
+        </h2>
+        <div class="inv-block-body custom-skills-bar-body">
+            <button type="button" class="add-custom-craft" title="Add Custom Craft Skill">
+                <i class="fas fa-hammer"></i> Craft
+            </button>
+            <button type="button" class="add-custom-lore" title="Add Lore Skill">
+                <i class="fas fa-book"></i> Lore
+            </button>
+            <button type="button" class="add-custom-perform" title="Add Perform Skill">
+                <i class="fas fa-theater-masks"></i> Perform
+            </button>
         </div>
-    </header>
-
-    {{!-- Add custom skill creation buttons --}}
-    <div class="custom-skills-bar">
-        <label>Add Custom Skills:</label>
-        <button type="button" class="add-custom-craft" title="Add Custom Craft Skill">
-            <i class="fas fa-hammer"></i> Craft
-        </button>
-        <button type="button" class="add-custom-lore" title="Add Lore Skill">
-            <i class="fas fa-book"></i> Lore
-        </button>
-        <button type="button" class="add-custom-perform" title="Add Perform Skill">
-            <i class="fas fa-theater-masks"></i> Perform
-        </button>
     </div>
 
-    {{!-- Combat Skills Section --}}
-    <h2>Combat Skills</h2>
-    <ol class="items-list">
-        {{#each actor.skills as |skill id|}}
-        {{#if (eq skill.system.category "Combat")}}
-        <li class="item flexrow {{#if skill.isCustomSkill}}custom-skill{{/if}}" data-item-id="{{skill._id}}">
-            <div class="skill-name">
-                {{skill.name}}
-                {{#if skill.isCustomSkill}}<span class="custom-badge">Custom</span>{{/if}}
-            </div>
-            <div class="skill-rank">
-                <select name="system.rank" data-item-id="{{skill._id}}">
-                    {{selectOptions ../skillRankOptions selected=skill.system.rank}}
-                </select>
-            </div>
-            <div class="skill-attribute">{{skill.system.attribute}}</div>
-            <div class="skill-bonus">
-                <input type="number" name="system.miscBonus" value="{{skill.system.miscBonus}}" data-dtype="Number" data-item-id="{{skill._id}}" class="small-input" />
-            </div>
-            <div class="skill-total">{{skill.calculatedDice}}d12</div>
-            <div class="skill-controls">
-                <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
-                <a class="item-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
-                {{#if skill.canDelete}}
-                <a class="item-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
-                {{else}}
-                <span class="core-skill-indicator" title="Core Skill - Cannot Delete"><i class="fas fa-lock"></i></span>
-                {{/if}}
-            </div>
-        </li>
-        {{/if}}
-        {{/each}}
-    </ol>
+    {{#each skillCategoryGroups as |group|}}
+    <div class="skill-category inv-block">
+        <h2 class="inv-heading">
+            <i class="fas {{group.icon}}"></i>
+            <span class="inv-title">{{group.label}} Skills</span>
+            <span class="inv-count">{{group.skills.length}}</span>
+        </h2>
 
-    {{!-- Craft Skills Section --}}
-    <h2>Craft Skills</h2>
-    <ol class="items-list">
-        {{#each actor.skills as |skill id|}}
-        {{#if (eq skill.system.category "Craft")}}
-        <li class="item flexrow {{#if skill.isCustomSkill}}custom-skill{{/if}}" data-item-id="{{skill._id}}">
-            <div class="skill-name">
-                {{skill.name}}
-                {{#if skill.isCustomSkill}}<span class="custom-badge">Custom</span>{{/if}}
-            </div>
-            <div class="skill-rank">
-                <select name="system.rank" data-item-id="{{skill._id}}">
-                    {{selectOptions ../skillRankOptions selected=skill.system.rank}}
-                </select>
-            </div>
-            <div class="skill-attribute">{{skill.system.attribute}}</div>
-            <div class="skill-bonus">
-                <input type="number" name="system.miscBonus" value="{{skill.system.miscBonus}}" data-dtype="Number" data-item-id="{{skill._id}}" class="small-input" />
-            </div>
-            <div class="skill-total">{{skill.calculatedDice}}d12</div>
-            <div class="skill-controls">
-                <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
-                <a class="item-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
-                {{#if skill.canDelete}}
-                <a class="item-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
-                {{else}}
-                <span class="core-skill-indicator" title="Core Skill - Cannot Delete"><i class="fas fa-lock"></i></span>
-                {{/if}}
-            </div>
-        </li>
-        {{/if}}
-        {{/each}}
-    </ol>
+        <div class="skills-column-header">
+            <div class="skill-name-cell">Name</div>
+            <div class="skill-rank-cell">Rank</div>
+            <div class="skill-attribute-cell">Attr</div>
+            <div class="skill-bonus-cell">Bonus</div>
+            <div class="skill-total-cell">Dice</div>
+            <div class="skill-controls"></div>
+        </div>
 
-    {{!-- Knowledge Skills Section --}}
-    <h2>Knowledge Skills</h2>
-    <ol class="items-list">
-        {{#each actor.skills as |skill id|}}
-        {{#if (eq skill.system.category "Knowledge")}}
-        <li class="item flexrow {{#if skill.isCustomSkill}}custom-skill{{/if}}" data-item-id="{{skill._id}}">
-            <div class="skill-name">
-                {{skill.name}}
-                {{#if skill.isCustomSkill}}<span class="custom-badge">Custom</span>{{/if}}
-            </div>
-            <div class="skill-rank">
-                <select name="system.rank" data-item-id="{{skill._id}}">
-                    {{selectOptions ../skillRankOptions selected=skill.system.rank}}
-                </select>
-            </div>
-            <div class="skill-attribute">{{skill.system.attribute}}</div>
-            <div class="skill-bonus">
-                <input type="number" name="system.miscBonus" value="{{skill.system.miscBonus}}" data-dtype="Number" data-item-id="{{skill._id}}" class="small-input" />
-            </div>
-            <div class="skill-total">{{skill.calculatedDice}}d12</div>
-            <div class="skill-controls">
-                <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
-                <a class="item-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
-                {{#if skill.canDelete}}
-                <a class="item-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
-                {{else}}
-                <span class="core-skill-indicator" title="Core Skill - Cannot Delete"><i class="fas fa-lock"></i></span>
-                {{/if}}
-            </div>
-        </li>
-        {{/if}}
-        {{/each}}
-    </ol>
-
-    {{!-- Magical Skills Section --}}
-    <h2>Magical Skills</h2>
-    <ol class="items-list">
-        {{#each actor.skills as |skill id|}}
-        {{#if (eq skill.system.category "Magical")}}
-        <li class="item flexrow {{#if skill.isCustomSkill}}custom-skill{{/if}}" data-item-id="{{skill._id}}">
-            <div class="skill-name">
-                {{skill.name}}
-                {{#if skill.isCustomSkill}}<span class="custom-badge">Custom</span>{{/if}}
-            </div>
-            <div class="skill-rank">
-                <select name="system.rank" data-item-id="{{skill._id}}">
-                    {{selectOptions ../skillRankOptions selected=skill.system.rank}}
-                </select>
-            </div>
-            <div class="skill-attribute">{{skill.system.attribute}}</div>
-            <div class="skill-bonus">
-                <input type="number" name="system.miscBonus" value="{{skill.system.miscBonus}}" data-dtype="Number" data-item-id="{{skill._id}}" class="small-input" />
-            </div>
-            <div class="skill-total">{{skill.calculatedDice}}d12</div>
-            <div class="skill-controls">
-                <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
-                <a class="item-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
-                {{#if skill.canDelete}}
-                <a class="item-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
-                {{else}}
-                <span class="core-skill-indicator" title="Core Skill - Cannot Delete"><i class="fas fa-lock"></i></span>
-                {{/if}}
-            </div>
-        </li>
-        {{/if}}
-        {{/each}}
-    </ol>
-
-    {{!-- Physical Skills Section --}}
-    <h2>Physical Skills</h2>
-    <ol class="items-list">
-        {{#each actor.skills as |skill id|}}
-        {{#if (eq skill.system.category "Physical")}}
-        <li class="item flexrow {{#if skill.isCustomSkill}}custom-skill{{/if}}" data-item-id="{{skill._id}}">
-            <div class="skill-name">
-                {{skill.name}}
-                {{#if skill.isCustomSkill}}<span class="custom-badge">Custom</span>{{/if}}
-            </div>
-            <div class="skill-rank">
-                <select name="system.rank" data-item-id="{{skill._id}}">
-                    {{selectOptions ../skillRankOptions selected=skill.system.rank}}
-                </select>
-            </div>
-            <div class="skill-attribute">{{skill.system.attribute}}</div>
-            <div class="skill-bonus">
-                <input type="number" name="system.miscBonus" value="{{skill.system.miscBonus}}" data-dtype="Number" data-item-id="{{skill._id}}" class="small-input" />
-            </div>
-            <div class="skill-total">{{skill.calculatedDice}}d12</div>
-            <div class="skill-controls">
-                <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
-                <a class="item-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
-                {{#if skill.canDelete}}
-                <a class="item-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
-                {{else}}
-                <span class="core-skill-indicator" title="Core Skill - Cannot Delete"><i class="fas fa-lock"></i></span>
-                {{/if}}
-            </div>
-        </li>
-        {{/if}}
-        {{/each}}
-    </ol>
-
-    {{!-- Sense Skills Section --}}
-    <h2>Sense Skills</h2>
-    <ol class="items-list">
-        {{#each actor.skills as |skill id|}}
-        {{#if (eq skill.system.category "Sense")}}
-        <li class="item flexrow {{#if skill.isCustomSkill}}custom-skill{{/if}}" data-item-id="{{skill._id}}">
-            <div class="skill-name">
-                {{skill.name}}
-                {{#if skill.isCustomSkill}}<span class="custom-badge">Custom</span>{{/if}}
-            </div>
-            <div class="skill-rank">
-                <select name="system.rank" data-item-id="{{skill._id}}">
-                    {{selectOptions ../skillRankOptions selected=skill.system.rank}}
-                </select>
-            </div>
-            <div class="skill-attribute">{{skill.system.attribute}}</div>
-            <div class="skill-bonus">
-                <input type="number" name="system.miscBonus" value="{{skill.system.miscBonus}}" data-dtype="Number" data-item-id="{{skill._id}}" class="small-input" />
-            </div>
-            <div class="skill-total">{{skill.calculatedDice}}d12</div>
-            <div class="skill-controls">
-                <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
-                <a class="item-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
-                {{#if skill.canDelete}}
-                <a class="item-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
-                {{else}}
-                <span class="core-skill-indicator" title="Core Skill - Cannot Delete"><i class="fas fa-lock"></i></span>
-                {{/if}}
-            </div>
-        </li>
-        {{/if}}
-        {{/each}}
-    </ol>
-
-    {{!-- Social Skills Section --}}
-    <h2>Social Skills</h2>
-    <ol class="items-list">
-        {{#each actor.skills as |skill id|}}
-        {{#if (eq skill.system.category "Social")}}
-        <li class="item flexrow {{#if skill.isCustomSkill}}custom-skill{{/if}}" data-item-id="{{skill._id}}">
-            <div class="skill-name">
-                {{skill.name}}
-                {{#if skill.isCustomSkill}}<span class="custom-badge">Custom</span>{{/if}}
-            </div>
-            <div class="skill-rank">
-                <select name="system.rank" data-item-id="{{skill._id}}">
-                    {{selectOptions ../skillRankOptions selected=skill.system.rank}}
-                </select>
-            </div>
-            <div class="skill-attribute">{{skill.system.attribute}}</div>
-            <div class="skill-bonus">
-                <input type="number" name="system.miscBonus" value="{{skill.system.miscBonus}}" data-dtype="Number" data-item-id="{{skill._id}}" class="small-input" />
-            </div>
-            <div class="skill-total">{{skill.calculatedDice}}d12</div>
-            <div class="skill-controls">
-                <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
-                <a class="item-edit" title="Edit Skill"><i class="fas fa-edit"></i></a>
-                {{#if skill.canDelete}}
-                <a class="item-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
-                {{else}}
-                <span class="core-skill-indicator" title="Core Skill - Cannot Delete"><i class="fas fa-lock"></i></span>
-                {{/if}}
-            </div>
-        </li>
-        {{/if}}
-        {{/each}}
-    </ol>
+        <div class="skills-list abilities-list">
+            {{#each group.skills as |skill|}}
+            {{> "systems/thefade/templates/actor/parts/skill-row.html" this skillRankOptions=../../skillRankOptions}}
+            {{/each}}
+        </div>
+    </div>
+    {{/each}}
 </section>

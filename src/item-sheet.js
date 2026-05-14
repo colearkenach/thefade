@@ -11,7 +11,8 @@ import {
     ARMOR_MOD_SLOTS,
     DAMAGE_TYPE_LABELS
 } from './constants.js';
-import { getRankValue, openCompendiumBrowser } from './helpers.js';
+import { getRankValue, openCompendiumBrowser, applyPathSkillModifications } from './helpers.js';
+import { getSkill } from './skills.js';
 
 /**
 * Item Sheet class for The Fade system
@@ -366,8 +367,8 @@ export class TheFadeItemSheet extends ItemSheet {
             if (this.item?.type === 'weapon' && this.item.parent) {
                 const actor = this.item.parent;
                 const sys = this.item.system;
-                const skillItem = actor.items.find(i => i.type === 'skill' && i.name === sys.skill);
-                const rank = skillItem ? getRankValue(skillItem.system.rank) : 0;
+                const skill = getSkill(actor, sys.skill);
+                const rank = skill ? getRankValue(skill.rank) : 0;
                 const miscBonus = sys.miscBonus ?? 0;
                 const total = rank + miscBonus;
                 if (total > 0) data.calculatedDice = total;
@@ -745,57 +746,11 @@ export class TheFadeItemSheet extends ItemSheet {
 
                                 if (!actor) return;
 
-                                // Check if the path has associated skills
+                                // Delegate to the central path-skill application
+                                // helper so behavior matches dragging a path onto
+                                // an actor (covers SPECIFIC/CHOOSE/CUSTOM entries).
                                 if (this.item.system.pathSkills && this.item.system.pathSkills.length > 0) {
-                                    // Collect skills to add
-                                    const skillsToAdd = [];
-                                    let skillsUpgraded = 0;
-
-                                    for (const pathSkill of this.item.system.pathSkills) {
-                                        // Check if character already has this skill
-                                        const existingSkill = actor.items.find(i =>
-                                            i.type === 'skill' && i.name === pathSkill.name
-                                        );
-
-                                        if (!existingSkill) {
-                                            // Add this skill to our list
-                                            const newSkill = foundry.utils.deepClone(pathSkill);
-                                            delete newSkill._id; // Remove the path's ID to allow Foundry to generate a new one
-                                            skillsToAdd.push(newSkill);
-                                        } else {
-                                            // Character already has this skill, optionally upgrade the rank if path offers better training
-                                            const pathRankValue = getRankValue(pathSkill.system.rank);
-                                            const existingRankValue = getRankValue(existingSkill.system.rank);
-
-                                            // If path offers better training, upgrade the skill
-                                            if (pathRankValue > existingRankValue) {
-                                                await existingSkill.update({
-                                                    "system.rank": pathSkill.system.rank
-                                                });
-                                                skillsUpgraded++;
-                                            }
-                                        }
-                                    }
-
-                                    // Add all new skills to the character
-                                    if (skillsToAdd.length > 0) {
-                                        await actor.createEmbeddedDocuments("Item", skillsToAdd);
-                                    }
-
-                                    // Display results
-                                    let message = "";
-                                    if (skillsToAdd.length > 0) {
-                                        message += `${skillsToAdd.length} skills added. `;
-                                    }
-                                    if (skillsUpgraded > 0) {
-                                        message += `${skillsUpgraded} skills upgraded.`;
-                                    }
-
-                                    if (message) {
-                                        ui.notifications.info(`Skills from ${this.item.name} applied to ${actor.name}: ${message}`);
-                                    } else {
-                                        ui.notifications.info(`No new skills to add. ${actor.name} already has all skills from ${this.item.name}.`);
-                                    }
+                                    await applyPathSkillModifications(actor, this.item);
                                 } else {
                                     ui.notifications.warn(`${this.item.name} has no associated skills to add.`);
                                 }
@@ -940,8 +895,8 @@ export class TheFadeItemSheet extends ItemSheet {
                 const actor = this.item.parent;
                 if (!actor) return ui.notifications.warn("Equip this weapon to a character to roll.");
                 const sys = this.item.system;
-                const skillItem = actor.items.find(i => i.type === 'skill' && i.name === sys.skill);
-                const rank = skillItem ? getRankValue(skillItem.system.rank) : 0;
+                const skill = getSkill(actor, sys.skill);
+                const rank = skill ? getRankValue(skill.rank) : 0;
                 const miscBonus = sys.miscBonus ?? 0;
                 const dice = rank + miscBonus;
                 if (dice <= 0) return ui.notifications.warn("No dice to roll — assign a skill rank first.");

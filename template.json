@@ -17,6 +17,7 @@
     },
     "character": {
       "templates": [ "base" ],
+      "skills": {},
       "biography": "",
       "appearance": "",
       "sanity": {

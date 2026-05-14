@@ -4,6 +4,7 @@ import { aggregateConditionState, computeRollModifiers, summarizeConditionState 
 import { applyBaseDefenseStances, applyPassiveStances, summarizeStance, getDamageMitigation } from './stances.js';
 import { applyAddictionPenalties, resetDailySin } from './dark-magic.js';
 import { applyAbilityEffects } from './abilities.js';
+import { getSkill } from './skills.js';
 
 /**
 * Base Actor class for The Fade system
@@ -579,11 +580,10 @@ export class TheFadeActor extends Actor {
         let finesseDodge = Math.floor(data.attributes.finesse.total / 4);
 
         // Find Acrobatics skill
-        const acrobaticsSkill = actor.items.find(i =>
-            i.type === 'skill' && i.name.toLowerCase() === 'acrobatics');
+        const acrobaticsSkill = getSkill(actor, "Acrobatics");
 
         if (acrobaticsSkill) {
-            const rank = acrobaticsSkill.system.rank;
+            const rank = acrobaticsSkill.rank;
             if (rank === 'adept') acrobonaticsDodge = 1;
             else if (rank === 'experienced') acrobonaticsDodge = 1;
             else if (rank === 'expert') acrobonaticsDodge = 2;
@@ -599,21 +599,19 @@ export class TheFadeActor extends Actor {
 
         // Calculate Passive Parry based on highest weapon skill
         let highestParry = 0;
-        const weaponSkills = actor.items.filter(i =>
-            i.type === 'skill' && ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Unarmed'].includes(i.name));
-
-        weaponSkills.forEach(skill => {
+        const weaponSkillNames = ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Unarmed'];
+        for (const name of weaponSkillNames) {
+            const skill = getSkill(actor, name);
+            if (!skill) continue;
             let parryValue = 0;
-            const rank = skill.system.rank;
-
+            const rank = skill.rank;
             if (rank === 'practiced') parryValue = 1;
             else if (rank === 'adept') parryValue = 2;
             else if (rank === 'experienced') parryValue = 3;
             else if (rank === 'expert') parryValue = 4;
             else if (rank === 'mastered') parryValue = 6;
-
             if (parryValue > highestParry) highestParry = parryValue;
-        });
+        }
 
         data.defenses.basePassiveParry = highestParry;
         const pParryBonus = Number(data.defenses.passiveParryBonus || 0);

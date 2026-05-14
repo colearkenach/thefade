@@ -7,6 +7,10 @@ import {
     openCompendiumBrowser, initializeDefaultSkills,
     createCustomSkill, showCustomSkillDialog
 } from './helpers.js';
+import {
+    getSkill, getSkillByKey, getAllSkills, getSkillsByCategory,
+    calculateSkillDice, deleteCustomSkill, slugifySkill
+} from './skills.js';
 import { renderModifierHtml } from './conditions.js';
 import { handleDarkCast } from './dark-magic.js';
 import { openOpposedRollDialog, openAidAnotherDialog } from './opposed.js';
@@ -98,6 +102,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
             "expert": "Expert",
             "mastered": "Mastered"
         };
+
+        // Build the Skills tab view-model: groups by category with icons.
+        data.skillCategoryGroups = this._buildSkillCategoryGroups();
 
         // Additional safety checks
         if (!data.actor) {
@@ -277,7 +284,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const armor = [];
         const paths = [];
         const spells = [];
-        const skills = [];
         const talents = [];
         const traits = [];
         const precepts = [];
@@ -382,7 +388,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
                     spells.push(i);
                 }
                 else if (i.type === 'skill') {
-                    skills.push(i);
+                    // Skills are no longer items; legacy skill items are
+                    // migrated to actor.system.skills on world ready. Drop.
                 }
                 else if (i.type === 'talent') {
                     talents.push(i);
@@ -402,22 +409,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
         }
 
-        // Sort skills safely
-        try {
-            skills.sort((a, b) => {
-                const aCat = a.system?.category || '';
-                const bCat = b.system?.category || '';
-                const aName = a.name || '';
-                const bName = b.name || '';
-
-                if (aCat !== bCat) {
-                    return aCat.localeCompare(bCat);
-                }
-                return aName.localeCompare(bName);
-            });
-        } catch (error) {
-            console.error("Error sorting skills:", error);
-        }
+        // Skills now come from actor.system.skills (data, not items).
+        const skills = getAllSkills(this.actor);
 
         // Process Items of Power with ring slot logic
         const { equippedItemsOfPower, unequippedItemsOfPower } = this._processItemsOfPower(itemsOfPower);
@@ -520,48 +513,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
      * @param {Object} actorData - Actor data
      */
     _calculateSkillDicePools(skills, actorData) {
-        if (!Array.isArray(skills) || !actorData?.system?.attributes) return;
-
-        skills.forEach(skill => {
-            if (!skill || !skill.system) return;
-
+        if (!Array.isArray(skills)) return;
+        for (const skill of skills) {
+            if (!skill) continue;
             try {
-                const attributeName = skill.system.attribute;
-                let attrValue = 0;
-
-                if (attributeName && attributeName.includes('_')) {
-                    const attributes = attributeName.split('_');
-                    const attr1 = actorData.system.attributes[attributes[0]]?.value || 0;
-                    const attr2 = actorData.system.attributes[attributes[1]]?.value || 0;
-                    attrValue = Math.floor((attr1 + attr2) / 2);
-                } else if (attributeName) {
-                    attrValue = actorData.system.attributes[attributeName]?.value || 0;
-                }
-
-                let dicePool = attrValue;
-
-                switch (skill.system.rank) {
-                    case "practiced": dicePool += 1; break;
-                    case "adept": dicePool += 2; break;
-                    case "experienced": dicePool += 3; break;
-                    case "expert": dicePool += 4; break;
-                    case "mastered": dicePool += 6; break;
-                    case "untrained": dicePool = Math.floor(dicePool / 2); break;
-                }
-
-                dicePool += (skill.system.miscBonus || 0);
-                // Apply bonuses from equipped Items of Power
-                const eb = actorData.system?.equippedBonuses;
-                if (eb) {
-                    dicePool += (eb.skills?.[skill.name] || 0) + (eb.skills?.all || 0);
-                    if (skill.system.category === "Magical") dicePool += (eb.spell || 0);
-                }
-                skill.calculatedDice = Math.max(1, dicePool);
+                skill.calculatedDice = calculateSkillDice(this.actor, skill);
             } catch (error) {
                 console.warn(`Error calculating dice pool for skill ${skill.name}:`, error);
                 skill.calculatedDice = 1;
             }
-        });
+        }
     }
 
     /**
@@ -754,19 +715,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
     // Calculate spells learned from level (even levels if has spellcasting)
     _calculateSpellsLearnedFromLevel(level) {
-        // Check if character has spellcasting skill at Learned or higher
-        const spellcastingSkill = this.actor.items.find(i =>
-            i.type === 'skill' &&
-            i.name.toLowerCase().includes('spellcasting') &&
-            ['learned', 'practiced', 'adept', 'experienced', 'expert', 'mastered'].includes(i.system.rank)
-        );
-
-        if (!spellcastingSkill) return 0;
+        const spellcasting = getSkill(this.actor, "Spellcasting");
+        const trained = ['learned', 'practiced', 'adept', 'experienced', 'expert', 'mastered'];
+        if (!spellcasting || !trained.includes(spellcasting.rank)) return 0;
 
         let spells = 0;
-        for (let i = 2; i <= level; i += 2) { // Even levels starting at 2
-            spells++;
-        }
+        for (let i = 2; i <= level; i += 2) spells++;
         return spells;
     }
 
@@ -837,13 +791,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Spells learned (handled automatically in _prepareCharacterData)
         if (level % 2 === 0) {
-            const hasSpellcasting = this.actor.items.find(i =>
-                i.type === 'skill' &&
-                i.name.toLowerCase().includes('spellcasting') &&
-                ['learned', 'practiced', 'adept', 'experienced', 'expert', 'mastered'].includes(i.system.rank)
-            );
-
-            if (hasSpellcasting) {
+            const spellcasting = getSkill(this.actor, "Spellcasting");
+            const trained = ['learned', 'practiced', 'adept', 'experienced', 'expert', 'mastered'];
+            if (spellcasting && trained.includes(spellcasting.rank)) {
                 ui.notifications.info("You can learn a new spell! Check your spells learned count.");
             }
         }
@@ -1067,17 +1017,60 @@ export class TheFadeCharacterSheet extends ActorSheet {
     * @param {Array} skills - Array of skills
     */
     _markCustomSkills(skills) {
-        skills.forEach(skill => {
-            if (skill && skill.system) {
-                skill.isCustomSkill = !skill.system.isCore;
-                skill.canDelete = !skill.system.isCore;
-
-                // Add skill type display for custom skills
-                if (skill.system.skillType) {
-                    skill.skillTypeDisplay = skill.system.skillType.charAt(0).toUpperCase() + skill.system.skillType.slice(1);
-                }
+        if (!Array.isArray(skills)) return;
+        for (const skill of skills) {
+            if (!skill) continue;
+            skill.isCustomSkill = !!skill.isCustom;
+            skill.canDelete = !!skill.isCustom;
+            if (skill.skillType) {
+                skill.skillTypeDisplay = skill.skillType.charAt(0).toUpperCase() + skill.skillType.slice(1);
             }
-        });
+        }
+    }
+
+    /**
+     * Build the grouped view-model the Skills tab renders from.
+     * Each group has { key, label, icon, skills: [...] } and each skill
+     * gets `attributeAbbr` + `calculatedDice` populated for the template.
+     */
+    _buildSkillCategoryGroups() {
+        const ATTR_ABBR = {
+            "physique": "PHY", "finesse": "FIN", "mind": "MND",
+            "presence": "PRS", "soul": "SOL",
+            "physique_finesse": "PHY/FIN", "physique_mind": "PHY/MND",
+            "mind_soul": "MND/SOL", "finesse_presence": "FIN/PRS"
+        };
+        const CATEGORY_META = [
+            { key: "Combat",    label: "Combat",    icon: "fa-gavel" },
+            { key: "Physical",  label: "Physical",  icon: "fa-person-running" },
+            { key: "Craft",     label: "Craft",     icon: "fa-hammer" },
+            { key: "Knowledge", label: "Knowledge", icon: "fa-book" },
+            { key: "Magical",   label: "Magical",   icon: "fa-wand-sparkles" },
+            { key: "Sense",     label: "Sense",     icon: "fa-eye" },
+            { key: "Social",    label: "Social",    icon: "fa-comments" }
+        ];
+
+        const byCategory = getSkillsByCategory(this.actor);
+        for (const list of Object.values(byCategory)) {
+            for (const skill of list) {
+                skill.calculatedDice = calculateSkillDice(this.actor, skill);
+                skill.attributeAbbr = ATTR_ABBR[skill.attribute] || (skill.attribute || "").toUpperCase();
+                skill.isCustomSkill = !!skill.isCustom;
+                skill.canDelete = !!skill.isCustom;
+            }
+        }
+
+        const groups = [];
+        for (const meta of CATEGORY_META) {
+            const list = byCategory[meta.key];
+            if (list && list.length) groups.push({ ...meta, skills: list });
+        }
+        // Any unknown category (defensive) gets dumped at the end.
+        for (const [cat, list] of Object.entries(byCategory)) {
+            if (CATEGORY_META.find(m => m.key === cat)) continue;
+            groups.push({ key: cat, label: cat, icon: "fa-star", skills: list });
+        }
+        return groups;
     }
 
     // --------------------------------------------------------------------
@@ -1618,11 +1611,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
         let finesseDodge = Math.floor((data.attributes.finesse.total ?? data.attributes.finesse.value) / 4);
 
         // Find Acrobatics skill
-        const acrobaticsSkill = actor.items.find(i =>
-            i.type === 'skill' && i.name.toLowerCase() === 'acrobatics');
+        const acrobaticsSkill = getSkill(actor, "Acrobatics");
 
         if (acrobaticsSkill) {
-            const rank = acrobaticsSkill.system.rank;
+            const rank = acrobaticsSkill.rank;
             if (rank === 'adept') acrobonaticsDodge = 1;
             else if (rank === 'experienced') acrobonaticsDodge = 1;
             else if (rank === 'expert') acrobonaticsDodge = 2;
@@ -1634,21 +1626,19 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Calculate Passive Parry from weapon skills
         let highestParry = 0;
-        const weaponSkills = actor.items.filter(i =>
-            i.type === 'skill' && ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Heavy Weaponry', 'Unarmed'].includes(i.name));
-
-        weaponSkills.forEach(skill => {
+        const weaponSkillNames = ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Heavy Weaponry', 'Unarmed'];
+        for (const name of weaponSkillNames) {
+            const skill = getSkill(actor, name);
+            if (!skill) continue;
             let parryValue = 0;
-            const rank = skill.system.rank;
-
+            const rank = skill.rank;
             if (rank === 'practiced') parryValue = 1;
             else if (rank === 'adept') parryValue = 2;
             else if (rank === 'experienced') parryValue = 3;
             else if (rank === 'expert') parryValue = 4;
             else if (rank === 'mastered') parryValue = 6;
-
             if (parryValue > highestParry) highestParry = parryValue;
-        });
+        }
 
         const basePassiveParry = highestParry;
 
@@ -1996,8 +1986,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
     async _onSkillRoll(event) {
         event.preventDefault();
         const element = event.currentTarget;
-        const skillId = element.closest(".item").dataset.itemId;
-        const skill = this.actor.items.get(skillId);
+        const row = element.closest("[data-skill-key]");
+        const skillKey = row?.dataset.skillKey;
+        const skill = getSkillByKey(this.actor, skillKey);
 
         if (!skill) return;
 
@@ -2005,69 +1996,21 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const dt = await this._getDifficultyThreshold("Skill Check Difficulty");
         if (dt === null) return; // User cancelled the dialog
 
-        const skillData = skill.system;
-        const attributeName = skillData.attribute;
-
-        // Get attribute value, handling combined attributes
-        let attrValue = 0;
-
-        if (attributeName.includes('_')) {
-            // Handle combined attributes like "physique_finesse"
-            const attributes = attributeName.split('_');
-            const attr1 = this.actor.system.attributes[attributes[0]]?.value || 0;
-            const attr2 = this.actor.system.attributes[attributes[1]]?.value || 0;
-            attrValue = Math.floor((attr1 + attr2) / 2); // Calculate average
-        } else {
-            // Normal single attribute
-            attrValue = this.actor.system.attributes[attributeName]?.value || 0;
-        }
-
-        let dicePool = attrValue;
-
-        // Add bonus dice based on skill rank
-        switch (skillData.rank) {
-            case "practiced":
-                dicePool += 1;
-                break;
-            case "adept":
-                dicePool += 2;
-                break;
-            case "experienced":
-                dicePool += 3;
-                break;
-            case "expert":
-                dicePool += 4;
-                break;
-            case "mastered":
-                dicePool += 6;
-                break;
-            case "untrained":
-                dicePool = Math.floor(dicePool / 2);
-                break;
-        }
-
-        // Add misc bonus dice
-        dicePool += (skillData.miscBonus || 0);
-
-        // Add bonuses from equipped Items of Power
-        const rollEb = this.actor.system?.equippedBonuses;
-        if (rollEb) {
-            dicePool += (rollEb.skills?.[skill.name] || 0) + (rollEb.skills?.all || 0);
-            if (skillData.category === "Magical") dicePool += (rollEb.spell || 0);
-        }
+        const attributeName = skill.attribute;
+        let dicePool = calculateSkillDice(this.actor, skill);
 
         // Apply active-condition modifiers before min-1 clamp
         const condMods = this.actor.getConditionRollModifiers({
             kind: "skill",
             skillName: skill.name,
-            skillCategory: skillData.category,
+            skillCategory: skill.category,
             attributeName: attributeName
         });
 
         if (condMods.autoFail) {
             ChatMessage.create({
                 speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-                flavor: `${skill.name} Check (${skillData.rank})`,
+                flavor: `${skill.name} Check (${skill.rank})`,
                 content: renderModifierHtml(condMods) +
                     `<p><strong>${this.actor.name}</strong> cannot attempt this check due to an active condition.</p>`
             });
@@ -2114,8 +2057,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             successes: successes,
             dt: dt,
             success: rollSucceeds,
-            miscBonus: skillData.miscBonus || null,
-            rank: skillData.rank
+            miscBonus: skill.miscBonus || null,
+            rank: skill.rank
         };
 
         // Render the template, prepend condition modifier banner if any
@@ -2125,7 +2068,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Send to chat
         roll.toMessage({
             speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-            flavor: `${skill.name} Check (${skillData.rank})`,
+            flavor: `${skill.name} Check (${skill.rank})`,
             content: content
         });
     }
@@ -2267,7 +2210,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const skillName = weaponData.skill;
 
         // Find the appropriate skill
-        const skill = this.actor.items.find(i => i.type === "skill" && i.name === skillName);
+        const skill = getSkill(this.actor, skillName);
 
         if (!skill) {
             // Default to untrained if skill not found
@@ -2406,7 +2349,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             return;
         }
 
-        const skillData = skill.system;
+        const skillData = skill; // skill is already a merged data object
         const attributeName = skillData.attribute;
         // Get attribute value, handling combined attributes
         let attrValue = 0;
@@ -2856,14 +2799,14 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const spellData = spell.system;
 
         // Find the Spellcasting skill
-        const spellcasting = this.actor.items.find(i => i.type === "skill" && i.name === "Spellcasting");
+        const spellcasting = getSkill(this.actor, "Spellcasting");
 
         if (!spellcasting) {
             ui.notifications.warn("Character does not have the Spellcasting skill.");
             return;
         }
 
-        const skillData = spellcasting.system;
+        const skillData = spellcasting; // merged data object
         // Get the attribute name from the skill
         const attributeName = skillData.attribute || "soul"; // Default to "soul" if not specified
         let attrValue = 0;
@@ -3883,40 +3826,38 @@ export class TheFadeCharacterSheet extends ActorSheet {
             const item = this.actor.items.get(itemId);
             if (!item) return;
 
-            // Prevent deletion of core skills
-            if (item.type === 'skill' && item.system.isCore) {
+            this.actor.deleteEmbeddedDocuments("Item", [itemId]);
+            li.slideUp(200, () => this.render(false));
+        });
+
+        // Custom-skill deletion (skills live on system.skills, not as items)
+        html.find('.skill-delete').off('click').click(ev => {
+            ev.preventDefault();
+            const row = ev.currentTarget.closest("[data-skill-key]");
+            const key = row?.dataset.skillKey;
+            if (!key) return;
+            const skill = getSkillByKey(this.actor, key);
+            if (!skill) return;
+            if (!skill.isCustom) {
                 ui.notifications.warn("Core skills cannot be deleted.");
                 return;
             }
-
-            // Allow deletion of custom skills only
-            if (item.type === 'skill' && !item.system.isCore) {
-                const confirmDialog = new Dialog({
-                    title: "Delete Custom Skill",
-                    content: `<p>Are you sure you want to delete the custom skill "${item.name}"?</p>`,
-                    buttons: {
-                        delete: {
-                            icon: '<i class="fas fa-trash"></i>',
-                            label: "Delete",
-                            callback: () => {
-                                this.actor.deleteEmbeddedDocuments("Item", [itemId]);
-                                li.slideUp(200, () => this.render(false));
-                            }
-                        },
-                        cancel: {
-                            icon: '<i class="fas fa-times"></i>',
-                            label: "Cancel"
+            new Dialog({
+                title: "Delete Custom Skill",
+                content: `<p>Are you sure you want to delete the custom skill "${skill.name}"?</p>`,
+                buttons: {
+                    delete: {
+                        icon: '<i class="fas fa-trash"></i>',
+                        label: "Delete",
+                        callback: async () => {
+                            await deleteCustomSkill(this.actor, key);
+                            this.render(false);
                         }
                     },
-                    default: "cancel"
-                });
-                confirmDialog.render(true);
-                return;
-            }
-
-            // Regular deletion for non-skill items
-            this.actor.deleteEmbeddedDocuments("Item", [itemId]);
-            li.slideUp(200, () => this.render(false));
+                    cancel: { icon: '<i class="fas fa-times"></i>', label: "Cancel" }
+                },
+                default: "cancel"
+            }).render(true);
         });
 
         html.find('.species-ability-add').click(async ev => {
