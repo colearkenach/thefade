@@ -16,6 +16,10 @@ import { handleDarkCast } from './dark-magic.js';
 import { damageTypeFlags } from './damage.js';
 import { openOpposedRollDialog, openAidAnotherDialog } from './opposed.js';
 import { rollHitLocation, locationLabel } from './hit-location.js';
+import {
+    startIgnition, endIgnition, getIgnitionState,
+    IGNITION_INTENSITY_LABEL
+} from './ignition.js';
 
 /**
 * Character Sheet class for The Fade system
@@ -85,6 +89,23 @@ export class TheFadeCharacterSheet extends ActorSheet {
             "moderate": "Moderate",
             "intense": "Intense"
         };
+
+        // Ignition status view-model for the aura card UI
+        try {
+            const ig = getIgnitionState(this.actor);
+            const now = game?.time?.worldTime ?? 0;
+            const recoveryRemaining = Math.max(0, (ig?.recoveryUntil || 0) - now);
+            data.ignition = {
+                active: !!ig?.active,
+                intensityLabel: ig?.intensity ? (IGNITION_INTENSITY_LABEL[ig.intensity] || ig.intensity) : "",
+                radius: ig?.radius || 0,
+                participantCount: ig?.participants?.length || 0,
+                recovering: !ig?.active && recoveryRemaining > 0,
+                recoveryRemainingMin: Math.ceil(recoveryRemaining / 60)
+            };
+        } catch (_) {
+            data.ignition = { active: false, recovering: false };
+        }
 
         data.addictionLevelOptions = {
             "none": "None",
@@ -3509,6 +3530,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Pencil-icon edit dialog for adjustable computed values.
         html.find('.tf-edit-adjustable').on('click', this._onEditAdjustable.bind(this));
+
+        // Aura: Ignite / End Ignition
+        html.find('.aura-ignite-btn').on('click', async (ev) => {
+            ev.preventDefault();
+            await startIgnition(this.actor);
+        });
+        html.find('.aura-end-ignition-btn').on('click', async (ev) => {
+            ev.preventDefault();
+            await endIgnition(this.actor);
+        });
 
         // Combat-state: clear all conditions + stance
         html.find('.combat-state-clear').on('click', async (ev) => {

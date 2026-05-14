@@ -1,0 +1,51 @@
+<div class="thefade-ignition-card" data-actor-uuid="{{actorUuid}}">
+    <header class="ignition-header">
+        <i class="fas fa-fire"></i>
+        <strong>{{actorName}}</strong> initiates an <strong>Ignition</strong>
+        <span class="ignition-meta">{{intensity}} &middot; {{radius}} hex &middot; up to {{durationMin}} min</span>
+    </header>
+
+    <div class="ignition-body">
+        <div class="ignition-participants-block">
+            <p class="ignition-section-label"><strong>Participants ({{participants.length}}):</strong></p>
+            <ul class="ignition-participants">
+                {{#each participants}}
+                <li>
+                    <i class="fas fa-{{#if (eq role "initiator")}}fire{{else}}user{{/if}}"></i>
+                    {{name}}{{#if (eq role "initiator")}} <em>(initiator)</em>{{/if}}
+                </li>
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="ignition-effects-block">
+            <p class="ignition-section-label"><strong>While active:</strong></p>
+            <ul class="ignition-effects-list">
+                <li>+1D to attack rolls (allies in radius)</li>
+                <li>Bonus to skills associated with Aura Color and Shape</li>
+                <li>Sense the life force of allies in the Ignition</li>
+            </ul>
+        </div>
+
+        <div class="ignition-actions-block">
+            <p class="ignition-section-label"><strong>Ignition Actions</strong> <em>(one-time, shared)</em>:</p>
+            <div class="ignition-actions">
+                {{#each actions}}
+                <button type="button"
+                        class="ignition-action-btn"
+                        data-action="{{key}}"
+                        data-actor-uuid="{{../actorUuid}}"
+                        title="{{description}}">
+                    {{label}}
+                </button>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="ignition-controls">
+            <button type="button" class="ignition-end-btn" data-actor-uuid="{{actorUuid}}">
+                <i class="fas fa-fire-flame-curved"></i> End Ignition
+            </button>
+        </div>
+    </div>
+</div>

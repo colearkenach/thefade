@@ -18,8 +18,10 @@ import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
 import './src/token-facing.js';
 import { registerTokenActionHud } from './src/integrations/token-action-hud/index.js';
 import { migrateAllActorSkills } from './src/skills.js';
+import { registerIgnitionHooks } from './src/ignition.js';
 
 registerTokenActionHud();
+registerIgnitionHooks();
 
 
 /**
@@ -261,6 +263,7 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/chat/attack-roll.html",
         "systems/thefade/templates/chat/skill-roll.html",
         "systems/thefade/templates/chat/spell-cast.html",
+        "systems/thefade/templates/chat/ignition.html",
         "systems/thefade/templates/dialogs/ability-edit.html",
         "systems/thefade/templates/dialogs/character-select.html",
 
