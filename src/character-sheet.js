@@ -103,6 +103,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
             "mastered": "Mastered"
         };
 
+        // Build the Skills tab view-model: groups by category with icons.
+        data.skillCategoryGroups = this._buildSkillCategoryGroups();
+
         // Additional safety checks
         if (!data.actor) {
             console.error("Actor missing from getData result");
@@ -1023,6 +1026,51 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 skill.skillTypeDisplay = skill.skillType.charAt(0).toUpperCase() + skill.skillType.slice(1);
             }
         }
+    }
+
+    /**
+     * Build the grouped view-model the Skills tab renders from.
+     * Each group has { key, label, icon, skills: [...] } and each skill
+     * gets `attributeAbbr` + `calculatedDice` populated for the template.
+     */
+    _buildSkillCategoryGroups() {
+        const ATTR_ABBR = {
+            "physique": "PHY", "finesse": "FIN", "mind": "MND",
+            "presence": "PRS", "soul": "SOL",
+            "physique_finesse": "PHY/FIN", "physique_mind": "PHY/MND",
+            "mind_soul": "MND/SOL", "finesse_presence": "FIN/PRS"
+        };
+        const CATEGORY_META = [
+            { key: "Combat",    label: "Combat",    icon: "fa-gavel" },
+            { key: "Physical",  label: "Physical",  icon: "fa-person-running" },
+            { key: "Craft",     label: "Craft",     icon: "fa-hammer" },
+            { key: "Knowledge", label: "Knowledge", icon: "fa-book" },
+            { key: "Magical",   label: "Magical",   icon: "fa-wand-sparkles" },
+            { key: "Sense",     label: "Sense",     icon: "fa-eye" },
+            { key: "Social",    label: "Social",    icon: "fa-comments" }
+        ];
+
+        const byCategory = getSkillsByCategory(this.actor);
+        for (const list of Object.values(byCategory)) {
+            for (const skill of list) {
+                skill.calculatedDice = calculateSkillDice(this.actor, skill);
+                skill.attributeAbbr = ATTR_ABBR[skill.attribute] || (skill.attribute || "").toUpperCase();
+                skill.isCustomSkill = !!skill.isCustom;
+                skill.canDelete = !!skill.isCustom;
+            }
+        }
+
+        const groups = [];
+        for (const meta of CATEGORY_META) {
+            const list = byCategory[meta.key];
+            if (list && list.length) groups.push({ ...meta, skills: list });
+        }
+        // Any unknown category (defensive) gets dumped at the end.
+        for (const [cat, list] of Object.entries(byCategory)) {
+            if (CATEGORY_META.find(m => m.key === cat)) continue;
+            groups.push({ key: cat, label: cat, icon: "fa-star", skills: list });
+        }
+        return groups;
     }
 
     // --------------------------------------------------------------------
