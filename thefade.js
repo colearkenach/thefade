@@ -16,6 +16,7 @@ import { TheFadeShopSheet } from './src/shop-sheet.js';
 import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
 import './src/token-facing.js';
 import { registerTokenActionHud } from './src/integrations/token-action-hud/index.js';
+import { migrateAllActorSkills } from './src/skills.js';
 
 registerTokenActionHud();
 
@@ -670,15 +671,20 @@ Hooks.on("createItem", async (item, options, userId) => {
 });
 
 Hooks.on("createActor", async (actor, options, userId) => {
-    if (actor.type === 'character' && game.user.id === userId) {
-        await initializeDefaultSkills(actor);
-    }
+    // New actors no longer need skill items created up-front; core skills
+    // live in DEFAULT_SKILLS and are surfaced via getSkill helpers.
 });
 
 /**
  * System ready hook - final setup after all systems loaded
  */
 Hooks.once('ready', async function () {
+    // One-shot migration: convert legacy skill items into actor.system.skills.
+    if (game.user.isGM) {
+        try { await migrateAllActorSkills(); }
+        catch (err) { console.warn("thefade | skill migration error:", err); }
+    }
+
     if (game.user.isGM) {
         let initButton = $(`<button id="fade-init-skills">Initialize All Character Skills</button>`);
         initButton.click(async function () {
