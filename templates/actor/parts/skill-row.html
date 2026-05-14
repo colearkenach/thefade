@@ -9,7 +9,15 @@
                 {{selectOptions skillRankOptions selected=rank}}
             </select>
         </div>
-        <div class="skill-attribute-cell">{{attributeAbbr}}</div>
+        <div class="skill-attribute-cell">
+            {{#if canEditAttribute}}
+            <select name="system.skills.{{key}}.attribute" class="skill-attribute-select">
+                {{selectOptions skillAttributeOptions selected=attribute}}
+            </select>
+            {{else}}
+            <span class="skill-attribute-text" title="Default: {{defaultAttributeAbbr}}">{{attributeAbbr}}</span>
+            {{/if}}
+        </div>
         <div class="skill-bonus-cell">
             <input type="number" name="system.skills.{{key}}.miscBonus" value="{{miscBonus}}" data-dtype="Number" class="small-input" />
         </div>
@@ -19,7 +27,10 @@
             {{#if isCustom}}
             <a class="skill-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
             {{else}}
-            <span class="core-skill-indicator" title="Core Skill"><i class="fas fa-lock"></i></span>
+            <a class="skill-attribute-lock {{#if attributeUnlocked}}is-unlocked{{/if}}"
+               title="{{#if attributeUnlocked}}Lock attribute back to default ({{defaultAttributeAbbr}}){{else}}Unlock to change attribute{{/if}}">
+                <i class="fas {{#if attributeUnlocked}}fa-lock-open{{else}}fa-lock{{/if}}"></i>
+            </a>
             {{/if}}
         </div>
     </div>

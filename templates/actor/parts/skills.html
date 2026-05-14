@@ -40,7 +40,9 @@
 
         <div class="skills-list abilities-list">
             {{#each group.skills as |skill|}}
-            {{> "systems/thefade/templates/actor/parts/skill-row.html" this skillRankOptions=../../skillRankOptions}}
+            {{> "systems/thefade/templates/actor/parts/skill-row.html" this
+                skillRankOptions=../../skillRankOptions
+                skillAttributeOptions=../../skillAttributeOptions}}
             {{/each}}
         </div>
     </div>

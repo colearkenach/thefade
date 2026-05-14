@@ -84,11 +84,17 @@ export function getSkillByKey(actor, key) {
     const override = getOverride(actor, key);
 
     if (core) {
+        const attributeUnlocked = !!override?.attributeUnlocked;
+        const attribute = attributeUnlocked && override?.attribute
+            ? override.attribute
+            : core.attribute;
         return {
             key,
             name: core.name,
             category: core.category,
-            attribute: core.attribute,
+            attribute,
+            defaultAttribute: core.attribute,
+            attributeUnlocked,
             rank: override?.rank ?? core.defaultRank,
             miscBonus: Number(override?.miscBonus) || 0,
             isCore: true,
@@ -104,6 +110,8 @@ export function getSkillByKey(actor, key) {
             name: override.name || key,
             category: override.category || "Knowledge",
             attribute: override.attribute || "mind",
+            defaultAttribute: override.attribute || "mind",
+            attributeUnlocked: true,
             rank: override.rank || "untrained",
             miscBonus: Number(override.miscBonus) || 0,
             isCore: false,

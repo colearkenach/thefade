@@ -10809,3 +10809,32 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade .skill-entry .skill-controls a.skill-delete:hover { color: var(--accent-hot); }
 .thefade .skill-entry .skill-controls .core-skill-indicator { cursor: default; opacity: 0.5; }
 
+/* Attribute lock toggle on core skills */
+.thefade .skill-entry .skill-controls a.skill-attribute-lock {
+    color: var(--text-muted);
+    opacity: 0.55;
+    transition: color var(--transition-speed) ease, opacity var(--transition-speed) ease;
+}
+.thefade .skill-entry .skill-controls a.skill-attribute-lock:hover {
+    color: var(--accent-gold);
+    opacity: 1;
+}
+.thefade .skill-entry .skill-controls a.skill-attribute-lock.is-unlocked {
+    color: var(--accent-gold);
+    opacity: 1;
+}
+
+/* Inline attribute select shown when a skill is unlocked or custom */
+.thefade .skill-entry .skill-attribute-cell select.skill-attribute-select {
+    width: 100%;
+    height: 24px;
+    padding: 0 4px;
+    font-size: 0.8em;
+    background: var(--bg-surface-deep);
+    border: 1px solid var(--accent-gold);
+    color: var(--text-primary);
+    border-radius: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
