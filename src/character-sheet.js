@@ -106,6 +106,15 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Build the Skills tab view-model: groups by category with icons.
         data.skillCategoryGroups = this._buildSkillCategoryGroups();
 
+        // Attribute options shown when a skill is unlocked for editing.
+        data.skillAttributeOptions = {
+            "physique": "Physique",
+            "finesse": "Finesse",
+            "mind": "Mind",
+            "presence": "Presence",
+            "soul": "Soul"
+        };
+
         // Additional safety checks
         if (!data.actor) {
             console.error("Actor missing from getData result");
@@ -1055,8 +1064,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
             for (const skill of list) {
                 skill.calculatedDice = calculateSkillDice(this.actor, skill);
                 skill.attributeAbbr = ATTR_ABBR[skill.attribute] || (skill.attribute || "").toUpperCase();
+                skill.defaultAttributeAbbr = ATTR_ABBR[skill.defaultAttribute] || (skill.defaultAttribute || "").toUpperCase();
                 skill.isCustomSkill = !!skill.isCustom;
                 skill.canDelete = !!skill.isCustom;
+                skill.canEditAttribute = !!skill.isCustom || !!skill.attributeUnlocked;
             }
         }
 
@@ -3858,6 +3869,20 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 },
                 default: "cancel"
             }).render(true);
+        });
+
+        // Toggle the attribute lock on a core skill. Locking is non-destructive:
+        // any previously-picked override attribute stays in the data and
+        // returns the next time the lock is opened.
+        html.find('.skill-attribute-lock').off('click').click(async ev => {
+            ev.preventDefault();
+            const row = ev.currentTarget.closest("[data-skill-key]");
+            const key = row?.dataset.skillKey;
+            if (!key) return;
+            const current = this.actor.system?.skills?.[key]?.attributeUnlocked ?? false;
+            await this.actor.update({
+                [`system.skills.${key}.attributeUnlocked`]: !current
+            });
         });
 
         html.find('.species-ability-add').click(async ev => {
