@@ -1,9 +1,5 @@
-2026/05/13-12:42:38.937 64e8 Delete type=3 #1
-2026/05/13-12:42:38.937 3188 Compacting 4@0 + 0@1 files
-2026/05/13-12:42:38.940 3188 Generated table #247@0: 117 keys, 58471 bytes
-2026/05/13-12:42:38.940 3188 Compacted 4@0 + 0@1 files => 58471 bytes
-2026/05/13-12:42:38.940 3188 compacted to: files[ 0 1 0 0 0 0 0 ]
-2026/05/13-12:42:38.940 3188 Delete type=2 #196
-2026/05/13-12:42:38.941 3188 Delete type=2 #226
-2026/05/13-12:42:38.941 3188 Delete type=2 #235
-2026/05/13-12:42:38.941 3188 Delete type=2 #243
+2026/05/14-13:42:23.480 320c Log #254: 0 ops saved to Table #257 OK
+2026/05/14-13:42:23.480 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/000254.log: OK
+2026/05/14-13:42:23.480 320c Table #256: 126 entries OK
+2026/05/14-13:42:23.482 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/MANIFEST-000252: OK
+2026/05/14-13:42:23.484 320c **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item; recovered 1 files; 66783 bytes. Some data may have been lost. ****

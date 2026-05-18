@@ -1,1 +1,5 @@
-2026/05/13-12:42:38.997 4268 Delete type=3 #1
+2026/05/14-13:42:23.539 8f4 Log #61: 0 ops saved to Table #64 OK
+2026/05/14-13:42:23.539 8f4 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/000061.log: OK
+2026/05/14-13:42:23.539 8f4 Table #63: 12 entries OK
+2026/05/14-13:42:23.540 8f4 Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics/MANIFEST-000059: OK
+2026/05/14-13:42:23.542 8f4 **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\gamemechanics; recovered 1 files; 14391 bytes. Some data may have been lost. ****

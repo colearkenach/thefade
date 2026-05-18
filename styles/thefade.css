@@ -5791,7 +5791,6 @@ select[name="system.aura.color"] option[value="white"] {
 /* Abilities List */
 .thefade .abilities-list {
     border: 1px solid var(--border-light);
-    max-height: 120px;
     overflow-y: auto;
     background: #fff;
 }

@@ -1,1 +1,5 @@
-2026/05/13-12:42:38.888 64e8 Delete type=3 #1
+2026/05/14-13:42:23.433 320c Log #436: 0 ops saved to Table #439 OK
+2026/05/14-13:42:23.434 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths/000436.log: OK
+2026/05/14-13:42:23.434 320c Table #438: 70 entries OK
+2026/05/14-13:42:23.435 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths/MANIFEST-000434: OK
+2026/05/14-13:42:23.437 320c **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\paths; recovered 1 files; 121389 bytes. Some data may have been lost. ****
