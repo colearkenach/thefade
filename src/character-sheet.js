@@ -9,7 +9,7 @@ import {
     createCustomSkill, showCustomSkillDialog
 } from './helpers.js';
 import {
-    getSkill, getSkillByKey, getAllSkills, getSkillsByCategory,
+    getSkill, getSkillByKey, getAllSkills,
     calculateSkillDice, deleteCustomSkill, slugifySkill
 } from './skills.js';
 import { renderModifierHtml } from './conditions.js';
@@ -151,9 +151,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
             "mastered": "Mastered"
         };
 
-        // Build the Skills tab view-model: groups by category with icons.
-        data.skillCategoryGroups = this._buildSkillCategoryGroups();
-
         // Attribute options shown when a skill is unlocked for editing.
         data.skillAttributeOptions = {
             "physique": "Physique",
@@ -204,6 +201,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 this._initializeMinimalCharacterData(data);
             }
         }
+
+        // Build the Skills tab view-model after character/item prep so we can
+        // reuse computed skill objects instead of rebuilding from scratch.
+        data.skillCategoryGroups = this._buildSkillCategoryGroups(data.actor?.skills || []);
 
         // Ensure magic items data is available to template (with fallbacks)
         try {
@@ -574,7 +575,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
         for (const skill of skills) {
             if (!skill) continue;
             try {
-                skill.calculatedDice = calculateSkillDice(this.actor, skill);
+                if (skill.calculatedDice === undefined) {
+                    skill.calculatedDice = calculateSkillDice(this.actor, skill);
+                }
             } catch (error) {
                 console.warn(`Error calculating dice pool for skill ${skill.name}:`, error);
                 skill.calculatedDice = 1;
@@ -1074,7 +1077,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
      * Each group has { key, label, icon, skills: [...] } and each skill
      * gets `attributeAbbr` + `calculatedDice` populated for the template.
      */
-    _buildSkillCategoryGroups() {
+    _buildSkillCategoryGroups(skills = []) {
         const ATTR_ABBR = {
             "physique": "PHY", "finesse": "FIN", "mind": "MND",
             "presence": "PRS", "soul": "SOL",
@@ -1091,10 +1094,18 @@ export class TheFadeCharacterSheet extends ActorSheet {
             { key: "Social",    label: "Social",    icon: "fa-comments" }
         ];
 
-        const byCategory = getSkillsByCategory(this.actor);
+        const byCategory = {};
+        for (const skill of skills) {
+            if (!skill) continue;
+            const cat = skill.category || "Other";
+            (byCategory[cat] ||= []).push(skill);
+        }
         for (const list of Object.values(byCategory)) {
+            list.sort((a, b) => a.name.localeCompare(b.name));
             for (const skill of list) {
-                skill.calculatedDice = calculateSkillDice(this.actor, skill);
+                if (skill.calculatedDice === undefined) {
+                    skill.calculatedDice = calculateSkillDice(this.actor, skill);
+                }
                 skill.attributeAbbr = ATTR_ABBR[skill.attribute] || (skill.attribute || "").toUpperCase();
                 skill.defaultAttributeAbbr = ATTR_ABBR[skill.defaultAttribute] || (skill.defaultAttribute || "").toUpperCase();
                 skill.isCustomSkill = !!skill.isCustom;
