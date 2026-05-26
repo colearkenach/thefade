@@ -26,6 +26,12 @@
         </div>
 
         <div class="tab-content active" id="weapons-tab">
+            <details class="inventory-category-collapsible" open>
+                <summary class="collapsible-header">
+                    <span><i class="fas fa-gavel"></i> Weapons</span>
+                    <span class="inv-count">{{actor.weapons.length}}</span>
+                </summary>
+                <div class="collapsible-content">
             <div class="weapons inv-block">
                 <h2 class="inv-heading">
                     <i class="fas fa-gavel"></i>
@@ -63,9 +69,17 @@
                     {{/each}}
                 </ol>
             </div>
+                </div>
+            </details>
         </div>
 
         <div class="tab-content" id="armor-tab">
+            <details class="inventory-category-collapsible" open>
+                <summary class="collapsible-header">
+                    <span><i class="fas fa-shield-halved"></i> Armor</span>
+                    <span class="inv-count">{{actor.unequippedArmor.length}}</span>
+                </summary>
+                <div class="collapsible-content">
             <div class="armor-section inv-block">
                 <h2 class="inv-heading">
                     <i class="fas fa-shield-halved"></i>
@@ -563,9 +577,17 @@
                     </div>
                 </div>
             </div>
+                </div>
+            </details>
         </div>
 
         <div class="tab-content" id="items-of-power-tab">
+            <details class="inventory-category-collapsible" open>
+                <summary class="collapsible-header">
+                    <span><i class="fas fa-gem"></i> Items of Power</span>
+                    <span class="inv-count">{{actor.unequippedItemsOfPower.length}}</span>
+                </summary>
+                <div class="collapsible-content">
             <!-- Items of Power -->
             <div class="magical-items inv-block">
                 <h2 class="inv-heading">
@@ -867,10 +889,18 @@
 
                 </div>
             </div>
+                </div>
+            </details>
         </div>
 
         <!-- Consumables Tab -->
         <div class="tab-content" id="consumables-tab">
+            <details class="inventory-category-collapsible" open>
+                <summary class="collapsible-header">
+                    <span><i class="fas fa-flask"></i> Consumables</span>
+                    <span class="inv-count">3</span>
+                </summary>
+                <div class="collapsible-content">
             <div class="consumables-section inv-block">
                 <h2 class="inv-heading">
                     <i class="fas fa-flask"></i>
@@ -1021,10 +1051,18 @@
                     </div>
                 </div>
             </div>
+                </div>
+            </details>
         </div>
 
         <!-- Magic Gear Tab -->
         <div class="tab-content" id="magic-gear-tab">
+            <details class="inventory-category-collapsible" open>
+                <summary class="collapsible-header">
+                    <span><i class="fas fa-hat-wizard"></i> Magic Gear</span>
+                    <span class="inv-count">6</span>
+                </summary>
+                <div class="collapsible-content">
             <div class="magic-gear-section inv-block">
                 <h2 class="inv-heading">
                     <i class="fas fa-hat-wizard"></i>
@@ -1298,6 +1336,8 @@
                     </div>
                 </div>
             </div>
+                </div>
+            </details>
         </div>
 
         <!-- Mundane Gear Tab -->
