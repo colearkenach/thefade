@@ -57,84 +57,13 @@
     <section class="sheet-body">
         {{!-- Main Tab --}}
         <div class="tab" data-group="primary" data-tab="main">
-            {{> "systems/thefade/templates/actor/parts/vitals-hp-sanity.html"}}
+            <div class="main-tab-block main-tab-block--tactical">
+                {{> "systems/thefade/templates/actor/parts/vitals-hp-sanity.html"}}
+                {{> "systems/thefade/templates/actor/parts/attributes.html"}}
 
-            {{!-- Identity: Species + Paths summary --}}
-            <div class="identity-row identity-row-top">
-                <div class="species-card{{#if system.species.manualEntry}} species-card-manual{{/if}}" data-item-id="{{actor.speciesItem._id}}">
-                    <h2>
-                        Species
-                        <a class="species-browse" title="Browse Species"><i class="fas fa-search"></i></a>
-                        <label class="species-manual-toggle" title="Enable to edit species fields manually (disables right-click to open)">
-                            <input type="checkbox" name="system.species.manualEntry" {{#if system.species.manualEntry}}checked{{/if}} />
-                            <span>Manual</span>
-                        </label>
-                    </h2>
-
-                    {{#if system.species.manualEntry}}
-                    <div class="species-details">
-                        <div class="form-group">
-                            <label>Species</label>
-                            <input type="text" name="system.species.name" value="{{system.species.name}}" />
-                        </div>
-                        <div class="form-group">
-                            <label>Creature Type</label>
-                            <input type="text" name="system.species.creatureType" value="{{system.species.creatureType}}" />
-                        </div>
-                        <div class="form-group">
-                            <label>Subtype</label>
-                            <input type="text" name="system.species.creatureSubtype" value="{{system.species.creatureSubtype}}" />
-                        </div>
-                        <div class="form-group">
-                            <label>Base HP</label>
-                            <input type="text" name="system.species.baseHP" value="{{system.species.baseHP}}" data-dtype="Number" />
-                        </div>
-                        <div class="form-group">
-                            <label>Size</label>
-                            <select name="system.species.size">
-                                {{selectOptions sizeOptions selected=system.species.size}}
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Languages</label>
-                            <input type="text" name="system.species.languages" value="{{system.species.languages}}" placeholder="Common, Elvish, etc." />
-                        </div>
-                    </div>
-                    {{else}}
-                    <div class="species-name-display{{#unless actor.speciesItem}} species-name-empty{{/unless}}" title="{{#if actor.speciesItem}}Right-click to open species{{else}}No species attached — drop a Species item, browse, or enable Manual{{/if}}">
-                        {{#if system.species.name}}{{system.species.name}}{{else}}<em>No species</em>{{/if}}
-                    </div>
-                    {{/if}}
-                </div>
-
-                <div class="paths-summary-card">
-                    <div class="paths-summary-header">
-                        <label class="level-inline">
-                            <span>Level</span>
-                            <input type="number" name="system.level" value="{{system.level}}" data-dtype="Number" min="0" />
-                        </label>
-                        <h2>Paths</h2>
-                    </div>
-                    {{#if actor.paths.length}}
-                    <ul class="paths-summary-list">
-                        {{#each actor.paths as |path|}}
-                        <li class="path-summary-item" data-item-id="{{path._id}}" title="Right-click to open path">
-                            <span class="path-summary-name">{{path.name}}</span>
-                            {{#if path.system.tier}}<span class="path-summary-tier">Tier {{path.system.tier}}</span>{{/if}}
-                        </li>
-                        {{/each}}
-                    </ul>
-                    {{else}}
-                    <p class="paths-summary-empty"><em>No paths yet</em></p>
-                    {{/if}}
-                </div>
-            </div>
-
-            {{> "systems/thefade/templates/actor/parts/attributes.html"}}
-
-            {{!-- Defenses — unified 6-col band (active + passive together) --}}
-            <h2>Defenses</h2>
-            <div class="defenses-band">
+                {{!-- Defenses — unified 6-col band (active + passive together) --}}
+                <h2>Defenses</h2>
+                <div class="defenses-band">
                 <div class="defense defense-compact" data-defense="resilience">
                     <label class="defense-label">Resilience
                         <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="resilience" data-label="Resilience" title="Edit Resilience (bonus / override)"><i class="fas fa-pencil"></i></a>
@@ -182,11 +111,11 @@
                         <input type="text" value="{{system.defenses.passiveParry}}" disabled class="total-value passive-parry-value" title="{{system.defenses.passiveParryFormula}}" />
                     </div>
                 </div>
-            </div>
+                </div>
 
-            {{!-- Movement — 2-col Hexes/Miles table --}}
-            <h2>Movement</h2>
-            <table class="movement-table">
+                {{!-- Movement — 2-col Hexes/Miles table --}}
+                <h2>Movement</h2>
+                <table class="movement-table">
                 <thead>
                     <tr>
                         <th>Speed</th>
@@ -221,11 +150,10 @@
                         <td><input type="text" name="system.overland-movement.burrowOverland" value="{{system.overland-movement.burrowOverland}}" data-dtype="Number" disabled /></td>
                     </tr>
                 </tbody>
-            </table>
+                </table>
 
-            {{!-- Carrying + Religion footer --}}
-            <div class="minor-stats-row">
-                <div class="capacity-card">
+                <div class="minor-stats-row">
+                    <div class="capacity-card">
                     <h3>Carrying Capacity
                         <span class="capacity-load-inline">
                             Load: <input class="capacity-load-input" type="number" name="system.currentLoad" value="{{system.currentLoad}}" min="0" />
@@ -258,7 +186,82 @@
                             <input type="text" value="{{system.carryingCapacity.pushOrDrag}}" disabled />
                         </div>
                     </div>
+                    </div>
                 </div>
+            </div>
+
+            <div class="main-tab-block main-tab-block--narrative">
+                {{!-- Identity: Species + Paths summary --}}
+                <div class="identity-row identity-row-top">
+                    <div class="species-card{{#if system.species.manualEntry}} species-card-manual{{/if}}" data-item-id="{{actor.speciesItem._id}}">
+                        <h2>
+                            Species
+                            <a class="species-browse" title="Browse Species"><i class="fas fa-search"></i></a>
+                            <label class="species-manual-toggle" title="Enable to edit species fields manually (disables right-click to open)">
+                                <input type="checkbox" name="system.species.manualEntry" {{#if system.species.manualEntry}}checked{{/if}} />
+                                <span>Manual</span>
+                            </label>
+                        </h2>
+
+                        {{#if system.species.manualEntry}}
+                        <div class="species-details">
+                            <div class="form-group">
+                                <label>Species</label>
+                                <input type="text" name="system.species.name" value="{{system.species.name}}" />
+                            </div>
+                            <div class="form-group">
+                                <label>Creature Type</label>
+                                <input type="text" name="system.species.creatureType" value="{{system.species.creatureType}}" />
+                            </div>
+                            <div class="form-group">
+                                <label>Subtype</label>
+                                <input type="text" name="system.species.creatureSubtype" value="{{system.species.creatureSubtype}}" />
+                            </div>
+                            <div class="form-group">
+                                <label>Base HP</label>
+                                <input type="text" name="system.species.baseHP" value="{{system.species.baseHP}}" data-dtype="Number" />
+                            </div>
+                            <div class="form-group">
+                                <label>Size</label>
+                                <select name="system.species.size">
+                                    {{selectOptions sizeOptions selected=system.species.size}}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Languages</label>
+                                <input type="text" name="system.species.languages" value="{{system.species.languages}}" placeholder="Common, Elvish, etc." />
+                            </div>
+                        </div>
+                        {{else}}
+                        <div class="species-name-display{{#unless actor.speciesItem}} species-name-empty{{/unless}}" title="{{#if actor.speciesItem}}Right-click to open species{{else}}No species attached — drop a Species item, browse, or enable Manual{{/if}}">
+                            {{#if system.species.name}}{{system.species.name}}{{else}}<em>No species</em>{{/if}}
+                        </div>
+                        {{/if}}
+                    </div>
+
+                    <div class="paths-summary-card">
+                        <div class="paths-summary-header">
+                            <label class="level-inline">
+                                <span>Level</span>
+                                <input type="number" name="system.level" value="{{system.level}}" data-dtype="Number" min="0" />
+                            </label>
+                            <h2>Paths</h2>
+                        </div>
+                        {{#if actor.paths.length}}
+                        <ul class="paths-summary-list">
+                            {{#each actor.paths as |path|}}
+                            <li class="path-summary-item" data-item-id="{{path._id}}" title="Right-click to open path">
+                                <span class="path-summary-name">{{path.name}}</span>
+                                {{#if path.system.tier}}<span class="path-summary-tier">Tier {{path.system.tier}}</span>{{/if}}
+                            </li>
+                            {{/each}}
+                        </ul>
+                        {{else}}
+                        <p class="paths-summary-empty"><em>No paths yet</em></p>
+                        {{/if}}
+                    </div>
+                </div>
+
                 <div class="religion-card">
                     <h3>Religion &amp; Faith</h3>
                     <div class="form-group">
