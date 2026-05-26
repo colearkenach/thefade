@@ -1,22 +1,54 @@
 {
   "Actor": {
-    "types": [ "character", "npc", "party", "shop" ],
+    "types": [
+      "character",
+      "npc",
+      "party",
+      "shop"
+    ],
     "templates": {
       "base": {
         "hp": {
           "value": 0
         },
         "attributes": {
-          "physique": { "value": 1, "bonus": 0, "override": null, "total": 1 },
-          "finesse":  { "value": 1, "bonus": 0, "override": null, "total": 1 },
-          "mind":     { "value": 1, "bonus": 0, "override": null, "total": 1 },
-          "presence": { "value": 1, "bonus": 0, "override": null, "total": 1 },
-          "soul":     { "value": 1, "bonus": 0, "override": null, "total": 1 }
+          "physique": {
+            "value": 1,
+            "bonus": 0,
+            "override": null,
+            "total": 1
+          },
+          "finesse": {
+            "value": 1,
+            "bonus": 0,
+            "override": null,
+            "total": 1
+          },
+          "mind": {
+            "value": 1,
+            "bonus": 0,
+            "override": null,
+            "total": 1
+          },
+          "presence": {
+            "value": 1,
+            "bonus": 0,
+            "override": null,
+            "total": 1
+          },
+          "soul": {
+            "value": 1,
+            "bonus": 0,
+            "override": null,
+            "total": 1
+          }
         }
       }
     },
     "character": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "skills": {},
       "biography": "",
       "appearance": "",
@@ -80,29 +112,78 @@
         "facing": "front"
       },
       "conditions": {
-        "bleed":      { "active": false, "intensity": "trivial" },
-        "blindness":  { "active": false },
-        "confusion":  { "active": false },
-        "dazed":      { "active": false, "intensity": "trivial" },
-        "deafness":   { "active": false },
-        "fatigue":    { "active": false, "intensity": "trivial" },
-        "fear":       { "active": false, "intensity": "trivial" },
-        "flatFooted": { "active": false },
-        "illness":    { "active": false, "intensity": "trivial" },
-        "pain":       { "active": false, "intensity": "trivial" },
-        "paralysis":  { "active": false, "intensity": "trivial" },
-        "sleep":      { "active": false },
-        "staggered":  { "active": false, "intensity": "trivial" },
-        "stunned":    { "active": false, "intensity": "trivial" }
+        "bleed": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "blindness": {
+          "active": false
+        },
+        "confusion": {
+          "active": false
+        },
+        "dazed": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "deafness": {
+          "active": false
+        },
+        "fatigue": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "fear": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "flatFooted": {
+          "active": false
+        },
+        "illness": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "pain": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "paralysis": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "sleep": {
+          "active": false
+        },
+        "staggered": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "stunned": {
+          "active": false,
+          "intensity": "trivial"
+        }
       },
       "activeStance": "none",
       "injuries": {
-        "head":     { "severed": false },
-        "body":     { "severed": false },
-        "leftArm":  { "severed": false },
-        "rightArm": { "severed": false },
-        "leftLeg":  { "severed": false },
-        "rightLeg": { "severed": false }
+        "head": {
+          "severed": false
+        },
+        "body": {
+          "severed": false
+        },
+        "leftArm": {
+          "severed": false
+        },
+        "rightArm": {
+          "severed": false
+        },
+        "leftLeg": {
+          "severed": false
+        },
+        "rightLeg": {
+          "severed": false
+        }
       },
       "mentalDisorders": [],
       "magicItems": {
@@ -143,7 +224,16 @@
         "xenochild": false,
         "handedness": "",
         "birthplace": "",
-        "culture": ""
+        "culture": "",
+        "build": "",
+        "distinguishingMarks": "",
+        "voice": "",
+        "socialClass": "",
+        "education": "",
+        "occupation": "",
+        "greatestVice": "",
+        "reputation": "",
+        "fightingStyle": ""
       },
       "family": {
         "father": {
@@ -160,43 +250,90 @@
           "name": "",
           "alive": false
         },
-        "children": [],
-        "build": "",
-        "distinguishingMarks": "",
-        "voice": "",
-        "socialClass": "",
-        "education": "",
-        "occupation": "",
-        "greatestVice": "",
-        "reputation": "",
-        "fightingStyle": ""
+        "children": []
       }
     },
     "npc": {
-      "templates": ["base"],
-      "hp": { "value": 10, "max": 10 },
-      "defenses": {
-        "resilience": 0, "avoid": 0, "grit": 0,
-        "resilienceBonus": 0, "avoidBonus": 0, "gritBonus": 0,
-        "resilienceOverride": null, "avoidOverride": null, "gritOverride": null,
-        "passiveDodge": 0, "passiveParry": 0, "facing": "front"
+      "templates": [
+        "base"
+      ],
+      "hp": {
+        "value": 10,
+        "max": 10
       },
-      "movement": { "land": 4, "fly": 0, "swim": 0, "climb": 0, "burrow": 0 },
+      "defenses": {
+        "resilience": 0,
+        "avoid": 0,
+        "grit": 0,
+        "resilienceBonus": 0,
+        "avoidBonus": 0,
+        "gritBonus": 0,
+        "resilienceOverride": null,
+        "avoidOverride": null,
+        "gritOverride": null,
+        "passiveDodge": 0,
+        "passiveParry": 0,
+        "facing": "front"
+      },
+      "movement": {
+        "land": 4,
+        "fly": 0,
+        "swim": 0,
+        "climb": 0,
+        "burrow": 0
+      },
       "conditions": {
-        "bleed":      { "active": false, "intensity": "trivial" },
-        "blindness":  { "active": false },
-        "confusion":  { "active": false },
-        "dazed":      { "active": false, "intensity": "trivial" },
-        "deafness":   { "active": false },
-        "fatigue":    { "active": false, "intensity": "trivial" },
-        "fear":       { "active": false, "intensity": "trivial" },
-        "flatFooted": { "active": false },
-        "illness":    { "active": false, "intensity": "trivial" },
-        "pain":       { "active": false, "intensity": "trivial" },
-        "paralysis":  { "active": false, "intensity": "trivial" },
-        "sleep":      { "active": false },
-        "staggered":  { "active": false, "intensity": "trivial" },
-        "stunned":    { "active": false, "intensity": "trivial" }
+        "bleed": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "blindness": {
+          "active": false
+        },
+        "confusion": {
+          "active": false
+        },
+        "dazed": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "deafness": {
+          "active": false
+        },
+        "fatigue": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "fear": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "flatFooted": {
+          "active": false
+        },
+        "illness": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "pain": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "paralysis": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "sleep": {
+          "active": false
+        },
+        "staggered": {
+          "active": false,
+          "intensity": "trivial"
+        },
+        "stunned": {
+          "active": false,
+          "intensity": "trivial"
+        }
       },
       "activeStance": "none",
       "creatureType": "humanoid",
@@ -206,12 +343,16 @@
       "notes": ""
     },
     "party": {
-      "currency": { "serpents": 0 },
+      "currency": {
+        "serpents": 0
+      },
       "members": [],
       "notes": ""
     },
     "shop": {
-      "currency": { "serpents": 0 },
+      "currency": {
+        "serpents": 0
+      },
       "description": "",
       "notes": ""
     }
@@ -255,11 +396,14 @@
         "weight": 0,
         "price": 0,
         "quantity": 1,
-        "equipped":  false
+        "equipped": false
       }
     },
     "weapon": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "damage": 0,
       "damageType": "B",
       "damageComponents": [],
@@ -280,7 +424,10 @@
       "modifications": []
     },
     "armor": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "ap": 0,
       "currentAP": 0,
       "isHeavy": false,
@@ -295,7 +442,9 @@
       "modifications": []
     },
     "skill": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "rank": "untrained",
       "category": "Combat",
       "attribute": "physique",
@@ -303,7 +452,9 @@
       "miscBonus": 0
     },
     "path": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "tier": 1,
       "baseHP": 0,
       "skills": "",
@@ -312,7 +463,9 @@
       "pathSkills": []
     },
     "spell": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "school": "General",
       "isDarkMagic": false,
       "damage": "",
@@ -325,14 +478,18 @@
       "mishapModifier": "none"
     },
     "talent": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "prerequisites": "",
       "usesPerDay": 0,
       "currentUses": 0,
       "associatedPath": ""
     },
     "species": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "baseHP": 0,
       "size": "medium",
       "creatureType": "humanoid",
@@ -372,13 +529,19 @@
       "biologicallyImmortal": false
     },
     "item": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "itemCategory": "mundane",
       "effect": "",
       "duration": ""
     },
     "magicitem": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "slot": "head",
       "effect": "",
       "catalyst": "",
@@ -391,18 +554,24 @@
       "creationRequirements": ""
     },
     "trait": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "prerequisites": "",
       "description": ""
     },
     "precept": {
-      "templates": [ "base" ],
+      "templates": [
+        "base"
+      ],
       "effect": "",
       "usesPerDay": 0
     },
-
     "drug": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "addiction": "",
       "addictionRating": 0,
       "overdose": "",
@@ -411,7 +580,10 @@
       "sideEffects": ""
     },
     "poison": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "toxicity": 0,
       "poisonType": "injury",
       "onset": "immediate",
@@ -419,7 +591,10 @@
       "effect": ""
     },
     "disease": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "transmission": {
         "airborne": false,
         "contact": false,
@@ -437,7 +612,10 @@
       "effect": ""
     },
     "biological": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "creatureType": "",
       "specialAbilities": "",
       "effect": "",
@@ -447,23 +625,35 @@
       "maxEnergy": 0
     },
     "medical": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "effect": "",
       "duration": ""
     },
     "travel": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "effect": ""
     },
     "mount": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "hp": 0,
       "size": "medium",
       "movement": 0,
       "carryCapacity": 0
     },
     "vehicle": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "hp": 0,
       "size": "medium",
       "movement": 0,
@@ -474,16 +664,25 @@
       "vehicleType": "land"
     },
     "musical": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "effect": ""
     },
     "potion": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "effect": "",
       "duration": ""
     },
     "staff": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "charges": 20,
       "usesPerDay": 3,
       "spellName": "",
@@ -491,7 +690,10 @@
       "school": "General"
     },
     "wand": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "charges": 20,
       "usesPerDay": 3,
       "spellName": "",
@@ -499,31 +701,46 @@
       "school": "General"
     },
     "gate": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "range": "",
       "distance": ""
     },
     "communication": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "range": "",
       "complexity": "audio",
       "relayCode": "",
       "usesPerDay": 0
     },
     "containment": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "creaturesAffected": "",
       "effect": ""
     },
     "dream": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "el": 1,
       "effect": "",
       "dreamType": "",
       "duration": ""
     },
     "fleshcraft": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "creatureType": "",
       "naturalWeapons": "",
       "specialAbilities": "",
@@ -555,7 +772,10 @@
       }
     },
     "clothing": {
-      "templates": [ "base", "physical" ],
+      "templates": [
+        "base",
+        "physical"
+      ],
       "clothingType": "normal",
       "coldBonus": 0,
       "hotBonus": 0,
