@@ -11030,3 +11030,39 @@ select[name="system.aura.color"] option[value="white"] {
     letter-spacing: 0.4px;
 }
 
+
+/* Background semantic grouping layout */
+.thefade .background-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.thefade .background-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 10px;
+}
+
+.thefade .background-card h4 {
+    margin: 0 0 8px;
+    color: var(--accent-gold);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.thefade .background-card .detail-row {
+    margin-bottom: 8px;
+}
+
+.thefade .background-card .detail-row:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+    .thefade .background-grid {
+        grid-template-columns: 1fr;
+    }
+}
