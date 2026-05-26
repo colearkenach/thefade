@@ -6684,6 +6684,23 @@ select[name="system.aura.color"] option[value="white"] {
     opacity: 0.5;
 }
 
+.thefade .main-tab-block {
+    margin-bottom: 14px;
+}
+
+.thefade .main-tab-block:last-child {
+    margin-bottom: 0;
+}
+
+.thefade .main-tab-block--narrative {
+    border-top: 1px solid var(--border-faint);
+    padding-top: 12px;
+}
+
+.thefade .main-tab-block h2 {
+    margin-top: 0;
+}
+
 /* ----- Species + Aura side-by-side ----- */
 .thefade .identity-row {
     display: grid;
@@ -6928,8 +6945,23 @@ select[name="system.aura.color"] option[value="white"] {
     padding: 10px 14px;
 }
 
+.thefade .religion-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 10px 14px;
+}
+
 .thefade .minor-stats-row .capacity-card h3,
 .thefade .minor-stats-row .religion-card h3 {
+    margin: 0 0 8px !important;
+    font-size: 0.75em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-gold);
+}
+
+.thefade .religion-card h3 {
     margin: 0 0 8px !important;
     font-size: 0.75em !important;
     text-transform: uppercase;
