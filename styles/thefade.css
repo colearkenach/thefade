@@ -2251,27 +2251,6 @@ input[readonly] {
   color: #000;
 }
 
-.path-description,
-.talent-description,
-.trait-description,
-.precept-description {
-  padding: 0;
-  max-height: 0;
-  overflow: hidden;
-  background: var(--white);
-  transition:
-    max-height 0.3s ease,
-    padding 0.3s ease;
-}
-
-.path-checkbox:checked ~ .path-description,
-.talent-checkbox:checked ~ .talent-description,
-.trait-checkbox:checked ~ .trait-description,
-.precept-checkbox:checked ~ .precept-description {
-  max-height: 500px;
-  padding: 10px;
-}
-
 .path-description p,
 .talent-description p,
 .trait-description p,
