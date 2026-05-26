@@ -31,7 +31,7 @@
   --accent-gold:     #a88a4c;
 
   /* Legacy aliases — keep so old rules continue to work */
-  --primary-color:    var(--bg-surface);
+  --surface-primary:  var(--bg-surface);
   --secondary-color:  var(--text-muted);
   --tertiary-color:   var(--text-primary);
   --accent-color:     var(--accent-crimson);
@@ -110,13 +110,13 @@
   padding-bottom: 5px;
   margin-top: 15px;
   margin-bottom: 10px;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .thefade h3 {
   font-size: 1.2em;
   font-weight: 600;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 /* ===== FORM ELEMENTS ===== */
@@ -167,7 +167,7 @@
 
 /* ===== BUTTONS ===== */
 .thefade button {
-  background: var(--primary-color);
+  background: var(--surface-primary);
   color: var(--light-text);
   border: none;
   border-radius: 3px;
@@ -195,7 +195,7 @@
 
 /* Specialized Buttons */
 .create-item-button {
-  background-color: var(--primary-color);
+  background-color: var(--surface-primary);
   color: var(--light-text);
   border: none;
   padding: 5px 10px;
@@ -240,7 +240,7 @@
   flex-direction: row;
   align-items: center;
   margin-bottom: 10px;
-  border-bottom: 2px solid var(--primary-color);
+  border-bottom: 2px solid var(--surface-primary);
   padding-bottom: 5px;
 }
 
@@ -249,7 +249,7 @@
   height: 100px !important;
   object-fit: fill;
   border-radius: 8px;
-  border: 3px solid var(--primary-color);
+  border: 3px solid var(--surface-primary);
   flex-shrink: 0;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -322,9 +322,9 @@
 }
 
 .thefade .sheet-tabs .item.active {
-  background: var(--primary-color);
+  background: var(--surface-primary);
   color: var(--light-text);
-  border-color: var(--primary-color);
+  border-color: var(--surface-primary);
   transform: translateY(0);
 }
 
@@ -568,7 +568,7 @@ input[readonly] {
 
 .thefade .resource label {
   font-weight: bold;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .thefade .resource-content {
@@ -741,7 +741,7 @@ input[readonly] {
 }
 
 .thefade .defense-details .detail-row span strong {
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .defense-desc {
@@ -836,7 +836,7 @@ input[readonly] {
 .thefade .skills-header {
   font-weight: bold;
   margin-bottom: 5px;
-  background: var(--primary-color);
+  background: var(--surface-primary);
   color: var(--light-text);
   padding: 5px;
   border-radius: 3px;
@@ -916,7 +916,7 @@ input[readonly] {
 
 .custom-skills-bar label {
   font-weight: bold;
-  color: var(--primary-color);
+  color: var(--text-primary);
   margin-right: 10px;
 }
 
@@ -956,7 +956,7 @@ input[readonly] {
 }
 
 .core-skill-indicator {
-  color: var(--primary-color);
+  color: var(--text-primary);
   opacity: 0.6;
   cursor: help;
 }
@@ -1008,7 +1008,7 @@ input[readonly] {
 .thefade .gear-header {
   font-weight: bold;
   margin-bottom: 5px;
-  background: var(--primary-color);
+  background: var(--surface-primary);
   color: var(--light-text);
   padding: 5px;
   border-radius: 3px;
@@ -1225,7 +1225,7 @@ input[readonly] {
   margin: 0;
   font-size: 1.1em;
   font-weight: bold;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .total-ap {
@@ -2314,7 +2314,7 @@ input[readonly] {
 }
 
 .thefade .spell-header {
-  background: var(--primary-color);
+  background: var(--surface-primary);
   color: var(--light-text);
   padding: 8px;
   border-radius: 3px 3px 0 0;
@@ -3070,7 +3070,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade.chat-card .card-header {
-  background: var(--primary-color);
+  background: var(--surface-primary);
   color: var(--light-text);
   padding: 5px;
   border-radius: 5px 5px 0 0;
@@ -3104,7 +3104,7 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade.chat-card h4 {
   margin: 0 0 5px 0;
   font-size: 1.1em;
-  color: var(--primary-color);
+  color: var(--text-primary);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   padding-bottom: 3px;
 }
@@ -3183,7 +3183,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .bonus-option {
-  background: var(--primary-color);
+  background: var(--surface-primary);
   color: var(--light-text);
   border: none;
   border-radius: 3px;
@@ -3493,7 +3493,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade .gate-properties .property-name {
   font-weight: bold;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .create-new-item {
@@ -3515,7 +3515,7 @@ select[name="system.aura.color"] option[value="white"] {
   border-bottom: 1px solid var(--border-color);
   padding-bottom: 5px;
   margin-bottom: 10px;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .item-type-grid {
@@ -3639,7 +3639,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .skill-examples h4 {
   margin-top: 0;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .skill-examples ul {
@@ -3749,7 +3749,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .no-skills-message h4 {
   margin-top: 0;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .skill-entry-examples {
@@ -3786,7 +3786,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 .quick-add-buttons h5 {
   margin-bottom: 10px;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .quick-add-btn {
@@ -3816,7 +3816,7 @@ select[name="system.aura.color"] option[value="white"] {
 .path-skills-legend h4 {
   margin-top: 0;
   margin-bottom: 10px;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .legend-items {
@@ -3860,7 +3860,7 @@ select[name="system.aura.color"] option[value="white"] {
   display: block;
   font-weight: bold;
   margin-bottom: 5px;
-  color: var(--primary-color);
+  color: var(--text-primary);
 }
 
 .dialog .form-group select,
@@ -4065,7 +4065,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 /* ===== CLEANER HEADER ===== */
 .thefade .sheet-header {
-    border-bottom: 2px solid var(--primary-color, #4a5568);
+    border-bottom: 2px solid var(--surface-primary, #4a5568);
     padding-bottom: 10px;
     margin-bottom: 10px;
 }
@@ -4123,9 +4123,9 @@ select[name="system.aura.color"] option[value="white"] {
 
         .thefade .sheet-tabs .item.active {
             background: transparent;
-            color: var(--primary-color, #4a5568);
+            color: var(--surface-primary, #4a5568);
             border-color: transparent;
-            border-bottom-color: var(--primary-color, #4a5568);
+            border-bottom-color: var(--surface-primary, #4a5568);
         }
 
 /* ===== VITAL STATS - SIMPLIFIED ===== */
@@ -4345,7 +4345,7 @@ select[name="system.aura.color"] option[value="white"] {
         .thefade .form-group input:focus,
         .thefade .form-group select:focus,
         .thefade .form-group textarea:focus {
-            border-color: var(--primary-color, #4a5568);
+            border-color: var(--surface-primary, #4a5568);
             outline: none;
         }
 
@@ -4490,7 +4490,7 @@ select[name="system.aura.color"] option[value="white"] {
 /* ===== BUTTONS - CONSISTENT STYLE ===== */
 .thefade button,
 .thefade .roll-dice {
-    background: var(--primary-color, #4a5568);
+    background: var(--surface-primary, #4a5568);
     color: white;
     border: none;
     border-radius: 4px;
