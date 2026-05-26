@@ -23,6 +23,14 @@ import {
 } from './ignition.js';
 
 /**
+ * Dice audit (templates/ + src/):
+ * - Check/attack contexts are d12 (weapon item-sheet roll path updated to d12; character and skill roll paths already d12-based).
+ * - Legacy d20/d10 iconography replaced in character/npc initiative and weapon attack UI with generic `fa-dice`.
+ * - `1d6x6` attribute generation is intentionally preserved by rules.
+ * - Remaining d6 references are duration/effect rolls (fire/fear/stun/confusion) and descriptive damage text, not attack/skill/check die-size mismatches.
+ */
+
+/**
 * Character Sheet class for The Fade system
 * Handles all character sheet rendering, interactions, and calculations
 */

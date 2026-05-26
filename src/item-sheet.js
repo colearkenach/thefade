@@ -900,7 +900,7 @@ export class TheFadeItemSheet extends ItemSheet {
                 const miscBonus = sys.miscBonus ?? 0;
                 const dice = rank + miscBonus;
                 if (dice <= 0) return ui.notifications.warn("No dice to roll — assign a skill rank first.");
-                const roll = await new Roll(`${dice}d10`).evaluate();
+                const roll = await new Roll(`${dice}d12`).evaluate();
                 const baseDmg = Number(sys.damage) || 0;
                 const dmgInc = Number(sys.damageIncrease) || 0;
                 const effDmg = baseDmg + dmgInc;
