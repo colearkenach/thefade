@@ -14,6 +14,8 @@ import { BODY_PARTS } from './constants.js';
  * Body locations valid for hit-location selection.
  */
 export const DAMAGE_LOCATIONS = [...BODY_PARTS];
+const ARM_LOCATIONS = new Set(["leftarm", "rightarm"]);
+const LEG_LOCATIONS = new Set(["leftleg", "rightleg"]);
 
 /**
  * Damage-type codes that cause Bleed (weapons list them in `damageType`).
@@ -107,11 +109,11 @@ function computeArmorAbsorption(actor, location, damage) {
             absorbed += take;
         }
     };
-    if (remaining > 0 && (location === "leftarm" || location === "rightarm")) {
+    if (remaining > 0 && ARM_LOCATIONS.has(location)) {
         const prop = location === "leftarm" ? "derivedLeftAP" : "derivedRightAP";
         decrementDerived(actor.equippedArmor?.arms || [], prop);
     }
-    if (remaining > 0 && (location === "leftleg" || location === "rightleg")) {
+    if (remaining > 0 && LEG_LOCATIONS.has(location)) {
         const prop = location === "leftleg" ? "derivedLeftAP" : "derivedRightAP";
         decrementDerived(actor.equippedArmor?.legs || [], prop);
     }

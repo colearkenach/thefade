@@ -82,6 +82,49 @@ export const SKILL_RANK_OPTIONS = {
 export const BODY_PARTS = ["head", "body", "leftarm", "rightarm", "leftleg", "rightleg"];
 
 /**
+ * Shared hit-location key mapping by subsystem.
+ * Canonical ids are kept lowercase to match persisted naturalDeflection and
+ * most armor/location paths. Injury keys intentionally remain camelCase for
+ * backward compatibility with existing persisted schema.
+ */
+export const BODY_PART_KEY_MAP = {
+    head: {
+        injury: "head",
+        naturalDeflection: "head",
+        armorDisplay: "head"
+    },
+    body: {
+        injury: "body",
+        naturalDeflection: "body",
+        armorDisplay: "body"
+    },
+    leftarm: {
+        injury: "leftArm",
+        naturalDeflection: "leftarm",
+        armorDisplay: "leftarm"
+    },
+    rightarm: {
+        injury: "rightArm",
+        naturalDeflection: "rightarm",
+        armorDisplay: "rightarm"
+    },
+    leftleg: {
+        injury: "leftLeg",
+        naturalDeflection: "leftleg",
+        armorDisplay: "leftleg"
+    },
+    rightleg: {
+        injury: "rightLeg",
+        naturalDeflection: "rightleg",
+        armorDisplay: "rightleg"
+    }
+};
+
+export function getBodyPartKey(canonicalId, style = "naturalDeflection") {
+    return BODY_PART_KEY_MAP[canonicalId]?.[style] ?? canonicalId;
+}
+
+/**
  * Pretty-print labels for weapon damage type codes. Used by the item sheet
  * to render the typed Effective Damage breakdown (e.g. "3 Fire + 3 Bludgeoning").
  * Keep in sync with weaponDamageTypeOptions in item-sheet.js.

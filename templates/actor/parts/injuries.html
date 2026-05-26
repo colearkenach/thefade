@@ -12,67 +12,15 @@
     <div class="limbs-section">
         <h3>Severed Limbs</h3>
         <div class="limbs-grid">
-
-            <div class="limb-card {{#if system.injuries.head.severed}}is-severed{{/if}}" data-limb="head">
-                <label class="limb-toggle" title="Instant death (unless multiple heads)">
-                    <input type="checkbox" name="system.injuries.head.severed"
-                        {{#if system.injuries.head.severed}}checked{{/if}} />
-                    <span class="limb-icon"><i class="fas fa-skull"></i></span>
-                    <span class="limb-name">Head</span>
+            {{#each injuryLocations}}
+            <div class="limb-card {{#if (lookup (lookup ../system.injuries this.injuryKey) 'severed')}}is-severed{{/if}}" data-limb="{{this.injuryKey}}">
+                <label class="limb-toggle">
+                    <input type="checkbox" name="system.injuries.{{this.injuryKey}}.severed"
+                        {{#if (lookup (lookup ../system.injuries this.injuryKey) 'severed')}}checked{{/if}} />
+                    <span class="limb-name">{{this.label}}</span>
                 </label>
-                <div class="limb-effect">Instant death</div>
             </div>
-
-            <div class="limb-card {{#if system.injuries.body.severed}}is-severed{{/if}}" data-limb="body">
-                <label class="limb-toggle" title="Instant death">
-                    <input type="checkbox" name="system.injuries.body.severed"
-                        {{#if system.injuries.body.severed}}checked{{/if}} />
-                    <span class="limb-icon"><i class="fas fa-user"></i></span>
-                    <span class="limb-name">Body</span>
-                </label>
-                <div class="limb-effect">Instant death</div>
-            </div>
-
-            <div class="limb-card {{#if system.injuries.leftArm.severed}}is-severed{{/if}}" data-limb="leftArm">
-                <label class="limb-toggle" title="Can't two-hand weapons; -1D to Physique & Finesse checks">
-                    <input type="checkbox" name="system.injuries.leftArm.severed"
-                        {{#if system.injuries.leftArm.severed}}checked{{/if}} />
-                    <span class="limb-icon"><i class="fas fa-hand-paper"></i></span>
-                    <span class="limb-name">Left Arm</span>
-                </label>
-                <div class="limb-effect">No two-handing; -1D Phys/Fin</div>
-            </div>
-
-            <div class="limb-card {{#if system.injuries.rightArm.severed}}is-severed{{/if}}" data-limb="rightArm">
-                <label class="limb-toggle" title="Can't two-hand weapons; -1D to Physique & Finesse checks">
-                    <input type="checkbox" name="system.injuries.rightArm.severed"
-                        {{#if system.injuries.rightArm.severed}}checked{{/if}} />
-                    <span class="limb-icon"><i class="fas fa-hand-paper fa-flip-horizontal"></i></span>
-                    <span class="limb-name">Right Arm</span>
-                </label>
-                <div class="limb-effect">No two-handing; -1D Phys/Fin</div>
-            </div>
-
-            <div class="limb-card {{#if system.injuries.leftLeg.severed}}is-severed{{/if}}" data-limb="leftLeg">
-                <label class="limb-toggle" title="Prone, can't walk without support; support gives -1 hex speed">
-                    <input type="checkbox" name="system.injuries.leftLeg.severed"
-                        {{#if system.injuries.leftLeg.severed}}checked{{/if}} />
-                    <span class="limb-icon"><i class="fas fa-walking"></i></span>
-                    <span class="limb-name">Left Leg</span>
-                </label>
-                <div class="limb-effect">Prone; -1 hex (w/ support)</div>
-            </div>
-
-            <div class="limb-card {{#if system.injuries.rightLeg.severed}}is-severed{{/if}}" data-limb="rightLeg">
-                <label class="limb-toggle" title="Prone, can't walk without support; support gives -1 hex speed">
-                    <input type="checkbox" name="system.injuries.rightLeg.severed"
-                        {{#if system.injuries.rightLeg.severed}}checked{{/if}} />
-                    <span class="limb-icon"><i class="fas fa-walking fa-flip-horizontal"></i></span>
-                    <span class="limb-name">Right Leg</span>
-                </label>
-                <div class="limb-effect">Prone; -1 hex (w/ support)</div>
-            </div>
-
+            {{/each}}
         </div>
     </div>
 
