@@ -533,6 +533,13 @@ input[readonly] {
   max-height: 0 !important;
 }
 
+/* <details>-based inventory collapsibles handle show/hide natively, so the
+   inner content must not clip — otherwise the weapon-row ContextMenu popup
+   is cut off and Edit/Delete become unreachable. */
+.inventory-category-collapsible > .collapsible-content {
+  overflow: visible;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .core-stats {
@@ -2214,10 +2221,10 @@ input[readonly] {
   transition: transform 0.3s ease;
 }
 
-.path-checkbox:checked ~ .path-header .path-toggle-icon,
-.talent-checkbox:checked ~ .talent-header .talent-toggle-icon,
-.trait-checkbox:checked ~ .trait-header .trait-toggle-icon,
-.precept-checkbox:checked ~ .precept-header .precept-toggle-icon {
+.path-checkbox:checked ~ .ability-header-row .path-toggle-icon,
+.talent-checkbox:checked ~ .ability-header-row .talent-toggle-icon,
+.trait-checkbox:checked ~ .ability-header-row .trait-toggle-icon,
+.precept-checkbox:checked ~ .ability-header-row .precept-toggle-icon {
   transform: rotate(180deg);
 }
 
@@ -9830,9 +9837,26 @@ select[name="system.aura.color"] option[value="white"] {
     margin-left: 2px;
 }
 
-.thefade .ability-checkbox:checked ~ .ability-header .ability-toggle-icon {
+.thefade .ability-checkbox:checked ~ .ability-header-row .ability-toggle-icon {
     transform: rotate(180deg);
     color: var(--accent-crimson);
+}
+
+/* Header row wraps the (label) ability-header and its sibling controls so
+   clicks on Edit/Delete never reach the label and toggle the checkbox. */
+.thefade .ability-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.thefade .ability-header-row > .ability-header {
+    flex: 1;
+    min-width: 0;
+}
+
+.thefade .ability-header-row > .ability-controls {
+    padding-right: 14px;
 }
 
 .thefade .ability-description {
