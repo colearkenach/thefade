@@ -3874,6 +3874,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
         });
 
         html.find('.item-delete').off('click').click(ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
             const li = $(ev.currentTarget).closest("[data-item-id]");
             const itemId = li.data("itemId");
 
@@ -3885,6 +3887,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             this.actor.deleteEmbeddedDocuments("Item", [itemId]);
             li.slideUp(200, () => this.render(false));
         });
+
+        html.find('.ability-controls a').on('click', ev => ev.stopPropagation());
 
         // Custom-skill deletion (skills live on system.skills, not as items)
         html.find('.skill-delete').off('click').click(ev => {

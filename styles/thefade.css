@@ -2221,10 +2221,10 @@ input[readonly] {
   transition: transform 0.3s ease;
 }
 
-.path-checkbox:checked ~ .ability-header-row .path-toggle-icon,
-.talent-checkbox:checked ~ .ability-header-row .talent-toggle-icon,
-.trait-checkbox:checked ~ .ability-header-row .trait-toggle-icon,
-.precept-checkbox:checked ~ .ability-header-row .precept-toggle-icon {
+.ability-entry[open] > summary .path-toggle-icon,
+.ability-entry[open] > summary .talent-toggle-icon,
+.ability-entry[open] > summary .trait-toggle-icon,
+.ability-entry[open] > summary .precept-toggle-icon {
   transform: rotate(180deg);
 }
 
@@ -9771,6 +9771,14 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade .ability-checkbox { display: none; }
 
+.thefade summary.ability-header {
+    list-style: none;
+}
+
+.thefade summary.ability-header::-webkit-details-marker {
+    display: none;
+}
+
 .thefade .ability-header {
     display: flex;
     align-items: center;
@@ -9837,42 +9845,16 @@ select[name="system.aura.color"] option[value="white"] {
     margin-left: 2px;
 }
 
-.thefade .ability-checkbox:checked ~ .ability-header-row .ability-toggle-icon {
+.thefade .ability-entry[open] > summary .ability-toggle-icon {
     transform: rotate(180deg);
     color: var(--accent-crimson);
 }
 
-/* Header row wraps the (label) ability-header and its sibling controls so
-   clicks on Edit/Delete never reach the label and toggle the checkbox. */
-.thefade .ability-header-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.thefade .ability-header-row > .ability-header {
-    flex: 1;
-    min-width: 0;
-}
-
-.thefade .ability-header-row > .ability-controls {
-    padding-right: 14px;
-}
-
 .thefade .ability-description {
-    max-height: 0;
-    overflow: hidden;
-    padding: 0 14px;
-    background: var(--bg-surface-deep);
-    border-top: 0 solid var(--border-faint);
-    color: var(--text-primary);
-    transition: max-height 0.25s ease, padding 0.25s ease, border-width 0.25s ease;
-}
-
-.thefade .ability-checkbox:checked ~ .ability-description {
-    max-height: 1000px;
     padding: 10px 14px;
-    border-top-width: 1px;
+    background: var(--bg-surface-deep);
+    border-top: 1px solid var(--border-faint);
+    color: var(--text-primary);
 }
 
 .thefade .ability-description p { margin: 0 0 6px; line-height: 1.45; }
