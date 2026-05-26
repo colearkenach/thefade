@@ -2929,13 +2929,30 @@ select[name="system.aura.color"] option[value="white"] {
   font-weight: bold;
 }
 
+.color-row .color-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .color-row input[type="color"] {
-  width: 50px;
-  height: 30px;
+  width: 42px;
+  min-width: 42px;
+  height: 28px;
   padding: 0;
   border: 1px solid var(--border-color);
   border-radius: 3px;
   cursor: pointer;
+}
+
+.color-row .color-hex-readout {
+  flex: 1;
+  min-width: 0;
+  font-family: monospace;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  background: var(--bg-surface-deep);
 }
 
 .checkbox-row label {
@@ -11034,4 +11051,3 @@ select[name="system.aura.color"] option[value="white"] {
     text-transform: uppercase;
     letter-spacing: 0.4px;
 }
-

@@ -345,17 +345,26 @@
 
                         <div class="detail-row color-row">
                             <label>Hair Color</label>
-                            <input type="color" name="system.personalDetails.hairColor" value="{{system.personalDetails.hairColor}}" />
+                            <div class="color-row-controls">
+                                <input type="color" name="system.personalDetails.hairColor" value="{{system.personalDetails.hairColor}}" />
+                                <input type="text" class="color-hex-readout" value="{{system.personalDetails.hairColor}}" readonly />
+                            </div>
                         </div>
 
                         <div class="detail-row color-row">
                             <label>Eye Color</label>
-                            <input type="color" name="system.personalDetails.eyeColor" value="{{system.personalDetails.eyeColor}}" />
+                            <div class="color-row-controls">
+                                <input type="color" name="system.personalDetails.eyeColor" value="{{system.personalDetails.eyeColor}}" />
+                                <input type="text" class="color-hex-readout" value="{{system.personalDetails.eyeColor}}" readonly />
+                            </div>
                         </div>
 
                         <div class="detail-row color-row">
                             <label>Skin Color</label>
-                            <input type="color" name="system.personalDetails.skinColor" value="{{system.personalDetails.skinColor}}" />
+                            <div class="color-row-controls">
+                                <input type="color" name="system.personalDetails.skinColor" value="{{system.personalDetails.skinColor}}" />
+                                <input type="text" class="color-hex-readout" value="{{system.personalDetails.skinColor}}" readonly />
+                            </div>
                         </div>
 
                         <div class="detail-row checkbox-row">
