@@ -1,5 +1,1 @@
-2026/05/14-13:42:23.492 320c Log #252: 0 ops saved to Table #255 OK
-2026/05/14-13:42:23.492 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\magic-item/000252.log: OK
-2026/05/14-13:42:23.492 320c Table #254: 159 entries OK
-2026/05/14-13:42:23.493 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\magic-item/MANIFEST-000250: OK
-2026/05/14-13:42:23.495 320c **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\magic-item; recovered 1 files; 97162 bytes. Some data may have been lost. ****
+2026/05/14-13:42:23.499 320c Delete type=3 #1

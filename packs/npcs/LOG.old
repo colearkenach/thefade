@@ -1,4 +1,1 @@
-2026/05/14-13:42:23.550 320c Log #61: 0 ops saved to Table #62 OK
-2026/05/14-13:42:23.551 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/000061.log: OK
-2026/05/14-13:42:23.552 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs/MANIFEST-000059: OK
-2026/05/14-13:42:23.553 320c **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\npcs; recovered 0 files; 0 bytes. Some data may have been lost. ****
+2026/05/14-13:42:23.558 320c Delete type=3 #1
