@@ -15,17 +15,19 @@
             {{#each actor.paths as |path id|}}
             <div class="path-item ability-entry" data-item-id="{{path._id}}">
                 <input type="checkbox" id="toggle-path-{{path._id}}" class="path-checkbox ability-checkbox">
-                <label for="toggle-path-{{path._id}}" class="path-header ability-header">
-                    <div class="path-name-container ability-name-container">
-                        <span class="path-name ability-name">{{path.name}}</span>
-                        <span class="path-tier ability-meta">Tier {{path.system.tier}}</span>
-                    </div>
+                <div class="ability-header-row">
+                    <label for="toggle-path-{{path._id}}" class="path-header ability-header">
+                        <div class="path-name-container ability-name-container">
+                            <span class="path-name ability-name">{{path.name}}</span>
+                            <span class="path-tier ability-meta">Tier {{path.system.tier}}</span>
+                        </div>
+                        <i class="fas fa-chevron-down path-toggle-icon ability-toggle-icon"></i>
+                    </label>
                     <div class="path-controls ability-controls">
                         <a class="item-edit" title="Edit Path"><i class="fas fa-edit"></i></a>
                         <a class="item-delete" title="Delete Path"><i class="fas fa-trash"></i></a>
-                        <i class="fas fa-chevron-down path-toggle-icon ability-toggle-icon"></i>
                     </div>
-                </label>
+                </div>
                 <div class="path-description ability-description">
                     <p><strong>Base HP:</strong> {{path.system.baseHP}}</p>
                     {{#if path.system.description}}
@@ -63,19 +65,21 @@
             {{#each actor.talents as |talent id|}}
             <div class="talent-item ability-entry" data-item-id="{{talent._id}}">
                 <input type="checkbox" id="toggle-talent-{{talent._id}}" class="talent-checkbox ability-checkbox">
-                <label for="toggle-talent-{{talent._id}}" class="talent-header ability-header">
-                    <div class="talent-name-container ability-name-container">
-                        <span class="talent-name ability-name">{{talent.name}}</span>
-                        {{#if talent.system.usesPerDay}}
-                        <span class="ability-meta">{{talent.system.usesPerDay}}/day</span>
-                        {{/if}}
-                    </div>
+                <div class="ability-header-row">
+                    <label for="toggle-talent-{{talent._id}}" class="talent-header ability-header">
+                        <div class="talent-name-container ability-name-container">
+                            <span class="talent-name ability-name">{{talent.name}}</span>
+                            {{#if talent.system.usesPerDay}}
+                            <span class="ability-meta">{{talent.system.usesPerDay}}/day</span>
+                            {{/if}}
+                        </div>
+                        <i class="fas fa-chevron-down talent-toggle-icon ability-toggle-icon"></i>
+                    </label>
                     <div class="talent-controls ability-controls">
                         <a class="item-edit" title="Edit Talent"><i class="fas fa-edit"></i></a>
                         <a class="item-delete" title="Delete Talent"><i class="fas fa-trash"></i></a>
-                        <i class="fas fa-chevron-down talent-toggle-icon ability-toggle-icon"></i>
                     </div>
-                </label>
+                </div>
                 <div class="talent-description ability-description">
                     <p>{{talent.system.description}}</p>
                     {{#if talent.system.prerequisites}}
@@ -103,19 +107,21 @@
             {{#each actor.precepts as |precept id|}}
             <div class="precept-item ability-entry" data-item-id="{{precept._id}}">
                 <input type="checkbox" id="toggle-precept-{{precept._id}}" class="precept-checkbox ability-checkbox">
-                <label for="toggle-precept-{{precept._id}}" class="precept-header ability-header">
-                    <div class="precept-name-container ability-name-container">
-                        <span class="precept-name ability-name">{{precept.name}}</span>
-                        {{#if precept.system.deity}}
-                        <span class="ability-meta">{{precept.system.deity}}</span>
-                        {{/if}}
-                    </div>
+                <div class="ability-header-row">
+                    <label for="toggle-precept-{{precept._id}}" class="precept-header ability-header">
+                        <div class="precept-name-container ability-name-container">
+                            <span class="precept-name ability-name">{{precept.name}}</span>
+                            {{#if precept.system.deity}}
+                            <span class="ability-meta">{{precept.system.deity}}</span>
+                            {{/if}}
+                        </div>
+                        <i class="fas fa-chevron-down precept-toggle-icon ability-toggle-icon"></i>
+                    </label>
                     <div class="precept-controls ability-controls">
                         <a class="item-edit" title="Edit Precept"><i class="fas fa-edit"></i></a>
                         <a class="item-delete" title="Delete Precept"><i class="fas fa-trash"></i></a>
-                        <i class="fas fa-chevron-down precept-toggle-icon ability-toggle-icon"></i>
                     </div>
-                </label>
+                </div>
                 <div class="precept-description ability-description">
                     <p>{{precept.system.description}}</p>
                     {{#if precept.system.domain}}
@@ -146,19 +152,21 @@
             {{#each actor.traits as |trait id|}}
             <div class="trait-item ability-entry" data-item-id="{{trait._id}}">
                 <input type="checkbox" id="toggle-trait-{{trait._id}}" class="trait-checkbox ability-checkbox">
-                <label for="toggle-trait-{{trait._id}}" class="trait-header ability-header">
-                    <div class="trait-name-container ability-name-container">
-                        <span class="trait-name ability-name">{{trait.name}}</span>
-                        {{#if trait.system.source}}
-                        <span class="ability-meta">{{trait.system.source}}</span>
-                        {{/if}}
-                    </div>
+                <div class="ability-header-row">
+                    <label for="toggle-trait-{{trait._id}}" class="trait-header ability-header">
+                        <div class="trait-name-container ability-name-container">
+                            <span class="trait-name ability-name">{{trait.name}}</span>
+                            {{#if trait.system.source}}
+                            <span class="ability-meta">{{trait.system.source}}</span>
+                            {{/if}}
+                        </div>
+                        <i class="fas fa-chevron-down trait-toggle-icon ability-toggle-icon"></i>
+                    </label>
                     <div class="trait-controls ability-controls">
                         <a class="item-edit" title="Edit Trait"><i class="fas fa-edit"></i></a>
                         <a class="item-delete" title="Delete Trait"><i class="fas fa-trash"></i></a>
-                        <i class="fas fa-chevron-down trait-toggle-icon ability-toggle-icon"></i>
                     </div>
-                </label>
+                </div>
                 <div class="trait-description ability-description">
                     <p>{{trait.system.description}}</p>
                     {{#if trait.system.prerequisites}}
