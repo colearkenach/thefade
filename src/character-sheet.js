@@ -1,7 +1,8 @@
 // TheFadeCharacterSheet class (extracted from thefade.js).
 import {
     SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS,
-    FLEXIBLE_BONUS_OPTIONS, FALLBACK_ACTOR_DATA
+    FLEXIBLE_BONUS_OPTIONS, FALLBACK_ACTOR_DATA,
+    BODY_PARTS, BODY_PART_KEY_MAP, getBodyPartKey
 } from './constants.js';
 import {
     openCompendiumBrowser, initializeDefaultSkills,
@@ -115,6 +116,23 @@ export class TheFadeCharacterSheet extends ActorSheet {
             "terminal": "Terminal (N/A)"
         }
 
+
+        const injuryLabelMap = {
+            head: "Head",
+            body: "Body",
+            leftArm: "Left Arm",
+            rightArm: "Right Arm",
+            leftLeg: "Left Leg",
+            rightLeg: "Right Leg"
+        };
+        data.injuryLocations = BODY_PARTS.map((canonical) => {
+            const injuryKey = BODY_PART_KEY_MAP[canonical].injury;
+            return {
+                canonical,
+                injuryKey,
+                label: injuryLabelMap[injuryKey] || injuryKey
+            };
+        });
         data.skillRankOptions = {
             "untrained": "Untrained",
             "learned": "Learned",
@@ -969,7 +987,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Calculate armor totals properly
         // Calculate armor totals properly
         const armorTotals = {};
-        const locations = ['head', 'body', 'leftarm', 'rightarm', 'leftleg', 'rightleg', 'shield'];
+        const locations = [...BODY_PARTS, 'shield'];
 
         locations.forEach(location => {
             armorTotals[location] = { current: 0, max: 0 };
@@ -987,7 +1005,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             // Add derived AP from arms/legs armor. `|| armor.system.ap` was a
             // bug: derivedLeftAP=0 (drained) is falsy and fell back to max,
             // hiding damage. Use an explicit typeof check instead.
-            if (location === 'leftarm' || location === 'rightarm') {
+            if (["leftarm", "rightarm"].includes(location)) {
                 const armsArmor = equippedArmor.arms || [];
                 armsArmor.forEach(armor => {
                     const derivedProp = location === 'leftarm' ? 'derivedLeftAP' : 'derivedRightAP';
@@ -998,7 +1016,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 });
             }
 
-            if (location === 'leftleg' || location === 'rightleg') {
+            if (["leftleg", "rightleg"].includes(location)) {
                 const legsArmor = equippedArmor.legs || [];
                 legsArmor.forEach(armor => {
                     const derivedProp = location === 'leftleg' ? 'derivedLeftAP' : 'derivedRightAP';
@@ -1164,7 +1182,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const ndData = this.actor.system.naturalDeflection?.[location];
         if (ndData && ndData.stacks && ndData.current > 0 && remaining > 0) {
             const ndReduction = Math.min(ndData.current, remaining);
-            updates[`system.naturalDeflection.${location}.current`] = ndData.current - ndReduction;
+            updates[`system.naturalDeflection.${getBodyPartKey(location, 'naturalDeflection')}.current`] = ndData.current - ndReduction;
             remaining -= ndReduction;
         }
 
@@ -1187,7 +1205,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
 
             // Handle derived armor for limbs
-            if (remaining > 0 && (location === 'leftarm' || location === 'rightarm')) {
+            if (remaining > 0 && ["leftarm", "rightarm"].includes(location)) {
                 const armsArmor = this.actor.equippedArmor?.arms || [];
                 for (const armor of armsArmor) {
                     if (remaining <= 0) break;
@@ -1203,7 +1221,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 }
             }
 
-            if (remaining > 0 && (location === 'leftleg' || location === 'rightleg')) {
+            if (remaining > 0 && ["leftleg", "rightleg"].includes(location)) {
                 const legsArmor = this.actor.equippedArmor?.legs || [];
                 for (const armor of legsArmor) {
                     if (remaining <= 0) break;

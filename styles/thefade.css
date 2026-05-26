@@ -30,6 +30,10 @@
   --accent-ghost:    #4a3333;
   --accent-gold:     #a88a4c;
 
+  --tab-bg:           var(--bg-surface-deep);
+  --tab-bg-hover:     var(--bg-surface-alt);
+  --tab-bg-active:    #3a2629;
+
   /* Legacy aliases — keep so old rules continue to work */
   --surface-primary:  var(--bg-surface);
   --secondary-color:  var(--text-muted);
@@ -2925,13 +2929,30 @@ select[name="system.aura.color"] option[value="white"] {
   font-weight: bold;
 }
 
+.color-row .color-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .color-row input[type="color"] {
-  width: 50px;
-  height: 30px;
+  width: 42px;
+  min-width: 42px;
+  height: 28px;
   padding: 0;
   border: 1px solid var(--border-color);
   border-radius: 3px;
   cursor: pointer;
+}
+
+.color-row .color-hex-readout {
+  flex: 1;
+  min-width: 0;
+  font-family: monospace;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  background: var(--bg-surface-deep);
 }
 
 .checkbox-row label {
@@ -4123,9 +4144,9 @@ select[name="system.aura.color"] option[value="white"] {
 
         .thefade .sheet-tabs .item.active {
             background: transparent;
-            color: var(--surface-primary, #4a5568);
+            color: var(--text-primary);
             border-color: transparent;
-            border-bottom-color: var(--surface-primary, #4a5568);
+            border-bottom-color: var(--accent-crimson);
         }
 
 /* ===== VITAL STATS - SIMPLIFIED ===== */
@@ -6292,10 +6313,11 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .sheet-tabs .item.active {
-    background: var(--bg-surface);
+    background: var(--tab-bg-active);
     color: var(--text-primary);
     border-color: var(--accent-crimson);
-    border-bottom: 1px solid var(--bg-surface);
+    border-bottom: 1px solid var(--tab-bg-active);
+    box-shadow: inset 0 0 0 1px rgba(168, 40, 40, 0.25);
     margin-bottom: -1px;
 }
 
@@ -6662,6 +6684,23 @@ select[name="system.aura.color"] option[value="white"] {
     opacity: 0.5;
 }
 
+.thefade .main-tab-block {
+    margin-bottom: 14px;
+}
+
+.thefade .main-tab-block:last-child {
+    margin-bottom: 0;
+}
+
+.thefade .main-tab-block--narrative {
+    border-top: 1px solid var(--border-faint);
+    padding-top: 12px;
+}
+
+.thefade .main-tab-block h2 {
+    margin-top: 0;
+}
+
 /* ----- Species + Aura side-by-side ----- */
 .thefade .identity-row {
     display: grid;
@@ -6906,8 +6945,23 @@ select[name="system.aura.color"] option[value="white"] {
     padding: 10px 14px;
 }
 
+.thefade .religion-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    border-radius: 4px;
+    padding: 10px 14px;
+}
+
 .thefade .minor-stats-row .capacity-card h3,
 .thefade .minor-stats-row .religion-card h3 {
+    margin: 0 0 8px !important;
+    font-size: 0.75em !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent-gold);
+}
+
+.thefade .religion-card h3 {
     margin: 0 0 8px !important;
     font-size: 0.75em !important;
     text-transform: uppercase;
