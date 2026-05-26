@@ -185,6 +185,14 @@
           "severed": false
         }
       },
+      "naturalDeflection": {
+        "head":     { "current": 0, "max": 0, "stacks": false },
+        "body":     { "current": 0, "max": 0, "stacks": false },
+        "leftarm":  { "current": 0, "max": 0, "stacks": false },
+        "rightarm": { "current": 0, "max": 0, "stacks": false },
+        "leftleg":  { "current": 0, "max": 0, "stacks": false },
+        "rightleg": { "current": 0, "max": 0, "stacks": false }
+      },
       "mentalDisorders": [],
       "magicItems": {
         "head": null,
