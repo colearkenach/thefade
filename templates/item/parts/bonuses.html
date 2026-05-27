@@ -1,0 +1,27 @@
+<div class="bonus-section" data-bonus-path="{{bonusPath}}">
+    <div class="bonus-section-header">
+        <span>Bonuses</span>
+        <button type="button" class="bonus-add"><i class="fas fa-plus"></i> Add</button>
+    </div>
+    {{#if bonuses.length}}
+        {{#each bonuses}}
+        <div class="bonus-row" data-bonus-id="{{this.id}}">
+            <select class="bonus-type" data-bonus-id="{{this.id}}">
+                <option value="skill" {{#ifEquals this.type "skill"}}selected{{/ifEquals}}>Skill</option>
+                <option value="attack" {{#ifEquals this.type "attack"}}selected{{/ifEquals}}>Attack</option>
+                <option value="damage" {{#ifEquals this.type "damage"}}selected{{/ifEquals}}>Damage</option>
+                <option value="spell" {{#ifEquals this.type "spell"}}selected{{/ifEquals}}>Spell</option>
+                <option value="avoid" {{#ifEquals this.type "avoid"}}selected{{/ifEquals}}>Avoid</option>
+                <option value="resilience" {{#ifEquals this.type "resilience"}}selected{{/ifEquals}}>Resilience</option>
+                <option value="grit" {{#ifEquals this.type "grit"}}selected{{/ifEquals}}>Grit</option>
+                <option value="hp" {{#ifEquals this.type "hp"}}selected{{/ifEquals}}>Max HP</option>
+            </select>
+            <input type="text" class="bonus-target" value="{{this.target}}" placeholder="Target (or blank = all)" data-bonus-id="{{this.id}}" />
+            <input type="number" class="bonus-value" value="{{this.value}}" data-bonus-id="{{this.id}}" />
+            <button type="button" class="bonus-delete" data-bonus-id="{{this.id}}"><i class="fas fa-times"></i></button>
+        </div>
+        {{/each}}
+    {{else}}
+        <div class="bonus-empty">No bonuses — click <strong>+ Add</strong> to create one.</div>
+    {{/if}}
+</div>

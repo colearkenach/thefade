@@ -481,51 +481,70 @@ export class TheFadeActor extends Actor {
         // Initialize the lookup table roll handlers read from
         data.equippedBonuses = { skills: {}, attack: 0, damage: 0, spell: 0 };
 
-        const equippedItems = actorData.items
-            ? [...actorData.items].filter(i => i.type === 'magicitem' && i.system?.equipped)
-            : [];
+        const applyBonus = (bonus) => {
+            const val = Number(bonus.value) || 0;
+            const target = (bonus.target || "").trim().toLowerCase();
 
-        for (const item of equippedItems) {
-            const bonuses = item.system?.bonuses;
-            if (!Array.isArray(bonuses)) continue;
-
-            for (const bonus of bonuses) {
-                const val = Number(bonus.value) || 0;
-                const target = (bonus.target || "").trim().toLowerCase();
-
-                switch (bonus.type) {
-                    case "avoid":
-                        data.totalAvoid = (data.totalAvoid || 0) + val;
-                        break;
-                    case "resilience":
-                        data.totalResilience = (data.totalResilience || 0) + val;
-                        break;
-                    case "grit":
-                        data.totalGrit = (data.totalGrit || 0) + val;
-                        break;
-                    case "hp":
-                        data.hpMiscBonus = (data.hpMiscBonus || 0) + val;
-                        break;
-                    case "skill": {
-                        const key = target || "all";
-                        data.equippedBonuses.skills[key] = (data.equippedBonuses.skills[key] || 0) + val;
-                        break;
+            switch (bonus.type) {
+                case "avoid":
+                    data.totalAvoid = (data.totalAvoid || 0) + val;
+                    break;
+                case "resilience":
+                    data.totalResilience = (data.totalResilience || 0) + val;
+                    break;
+                case "grit":
+                    data.totalGrit = (data.totalGrit || 0) + val;
+                    break;
+                case "hp":
+                    data.hpMiscBonus = (data.hpMiscBonus || 0) + val;
+                    break;
+                case "skill": {
+                    const key = target || "all";
+                    data.equippedBonuses.skills[key] = (data.equippedBonuses.skills[key] || 0) + val;
+                    break;
+                }
+                case "attack":
+                    if (!target || target === "all") {
+                        data.equippedBonuses.attack += val;
+                    } else {
+                        const aKey = `attack_${target}`;
+                        data.equippedBonuses[aKey] = (data.equippedBonuses[aKey] || 0) + val;
                     }
-                    case "attack":
-                        if (!target || target === "all") {
-                            data.equippedBonuses.attack += val;
-                        } else {
-                            // Store per-skill-name attack bonus
-                            const aKey = `attack_${target}`;
-                            data.equippedBonuses[aKey] = (data.equippedBonuses[aKey] || 0) + val;
-                        }
-                        break;
-                    case "damage":
-                        data.equippedBonuses.damage += val;
-                        break;
-                    case "spell":
-                        data.equippedBonuses.spell += val;
-                        break;
+                    break;
+                case "damage":
+                    data.equippedBonuses.damage += val;
+                    break;
+                case "spell":
+                    data.equippedBonuses.spell += val;
+                    break;
+            }
+        };
+
+        const items = actorData.items ? [...actorData.items] : [];
+
+        for (const item of items) {
+            const sys = item.system;
+            if (!sys) continue;
+
+            // Top-level bonuses arrays
+            // - magicitem: only when equipped
+            // - talent / precept: always active when owned
+            let topLevel = null;
+            if (item.type === 'magicitem' && sys.equipped) topLevel = sys.bonuses;
+            else if (item.type === 'talent' || item.type === 'precept') topLevel = sys.bonuses;
+
+            if (Array.isArray(topLevel)) {
+                for (const bonus of topLevel) applyBonus(bonus);
+            }
+
+            // Per-ability bonuses on paths and species
+            const abilityMap = item.type === 'path' ? sys.abilities
+                : item.type === 'species' ? sys.speciesAbilities
+                    : null;
+            if (abilityMap && typeof abilityMap === 'object') {
+                for (const ability of Object.values(abilityMap)) {
+                    if (!ability || !Array.isArray(ability.bonuses)) continue;
+                    for (const bonus of ability.bonuses) applyBonus(bonus);
                 }
             }
         }

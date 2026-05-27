@@ -1201,9 +1201,14 @@ export class TheFadeItemSheet extends ItemSheet {
                     ui.notifications.info(`${this.item.name} is no longer attuned to anyone.`);
                 }
             });
+        }
 
-            // Hide target input for bonus types that don't need one
+        // Bonuses UI — supports magicitem, talent, precept (top-level)
+        // and path/species (per-ability). Each .bonus-section carries
+        // its own data-bonus-path identifying where to persist the array.
+        if (['magicitem', 'talent', 'precept', 'path', 'species'].includes(this.item.type)) {
             const NO_TARGET_TYPES = new Set(["avoid", "resilience", "grit", "hp"]);
+
             const updateTargetVisibility = (row) => {
                 const type = row.find('.bonus-type').val();
                 const targetInput = row.find('.bonus-target');
@@ -1214,13 +1219,23 @@ export class TheFadeItemSheet extends ItemSheet {
                 }
             };
 
-            // Initialize visibility for existing bonus rows
-            html.find('.bonus-row').each((i, el) => updateTargetVisibility($(el)));
+            // Read the array currently stored at a dotted path on the item.
+            const getBonusesAt = (path) => {
+                const parts = path.split('.');
+                let cur = this.item;
+                for (const p of parts) {
+                    if (cur == null) return [];
+                    cur = cur[p];
+                }
+                return Array.isArray(cur) ? cur : [];
+            };
 
-            // Collect all bonus rows from the DOM and save
-            const saveBonuses = () => {
+            // Collect bonus rows belonging to a single section and persist.
+            const saveBonusesForSection = ($section) => {
+                const path = $section.attr('data-bonus-path');
+                if (!path) return;
                 const bonuses = [];
-                html.find('.bonus-row').each((i, el) => {
+                $section.find('.bonus-row').each((i, el) => {
                     const $row = $(el);
                     const type = $row.find('.bonus-type').val();
                     bonuses.push({
@@ -1230,34 +1245,40 @@ export class TheFadeItemSheet extends ItemSheet {
                         value: parseInt($row.find('.bonus-value').val()) || 0
                     });
                 });
-                this.item.update({ "system.bonuses": bonuses });
+                this.item.update({ [path]: bonuses });
             };
 
-            // Add bonus
+            html.find('.bonus-row').each((i, el) => updateTargetVisibility($(el)));
+
             html.find('.bonus-add').click(ev => {
                 ev.preventDefault();
-                const bonuses = foundry.utils.deepClone(this.item.system.bonuses || []);
+                const $section = $(ev.currentTarget).closest('.bonus-section');
+                const path = $section.attr('data-bonus-path');
+                if (!path) return;
+                const bonuses = foundry.utils.deepClone(getBonusesAt(path));
                 bonuses.push({ id: foundry.utils.randomID(16), type: "skill", target: "", value: 1 });
-                this.item.update({ "system.bonuses": bonuses }).then(() => this.render(false));
+                this.item.update({ [path]: bonuses }).then(() => this.render(false));
             });
 
-            // Delete bonus
             html.find('.bonus-delete').click(ev => {
                 ev.preventDefault();
+                const $section = $(ev.currentTarget).closest('.bonus-section');
+                const path = $section.attr('data-bonus-path');
+                if (!path) return;
                 const id = ev.currentTarget.dataset.bonusId;
-                const bonuses = (this.item.system.bonuses || []).filter(b => b.id !== id);
-                this.item.update({ "system.bonuses": bonuses }).then(() => this.render(false));
+                const bonuses = getBonusesAt(path).filter(b => b.id !== id);
+                this.item.update({ [path]: bonuses }).then(() => this.render(false));
             });
 
-            // Type change — update target visibility then save
             html.find('.bonus-type').change(ev => {
                 const $row = $(ev.currentTarget).closest('.bonus-row');
                 updateTargetVisibility($row);
-                saveBonuses();
+                saveBonusesForSection($row.closest('.bonus-section'));
             });
 
-            // Target / value changes
-            html.find('.bonus-target, .bonus-value').change(() => saveBonuses());
+            html.find('.bonus-target, .bonus-value').change(ev => {
+                saveBonusesForSection($(ev.currentTarget).closest('.bonus-section'));
+            });
         }
 
         // Damage components (weapons only)
