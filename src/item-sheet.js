@@ -703,6 +703,20 @@ export class TheFadeItemSheet extends ItemSheet {
             this._showPathSkillBrowserDialog();
         });
 
+        // Path: header mirror fields (Tier + Base HP also appear in Attributes tab).
+        // Removed name= attributes on mirrors to avoid duplicate form-field collision; wire change handlers manually.
+        if (this.item.type === 'path') {
+            html.find('.path-tier-mirror').change(async ev => {
+                ev.preventDefault();
+                await this.item.update({ "system.tier": ev.currentTarget.value });
+            });
+            html.find('.path-basehp-mirror').change(async ev => {
+                ev.preventDefault();
+                const val = Number(ev.currentTarget.value);
+                if (Number.isFinite(val)) await this.item.update({ "system.baseHP": val });
+            });
+        }
+
         // Add a button to handle adding path skills to a character
         if (this.item.type === 'path') {
             // Add apply to character button if it doesn't exist
@@ -921,6 +935,11 @@ export class TheFadeItemSheet extends ItemSheet {
 
         // Armor: AP reduce/reset buttons
         if (this.item.type === 'armor') {
+            html.find('.ap-current').change(async ev => {
+                ev.preventDefault();
+                const val = Number(ev.currentTarget.value);
+                if (Number.isFinite(val)) await this.item.update({ "system.currentAP": val });
+            });
             html.find('.reduce-ap').click(async ev => {
                 ev.preventDefault();
                 const cur = this.item.system.currentAP ?? this.item.system.ap ?? 0;
