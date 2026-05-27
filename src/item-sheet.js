@@ -12,7 +12,7 @@ import {
     DAMAGE_TYPE_LABELS
 } from './constants.js';
 import { getRankValue, openCompendiumBrowser, applyPathSkillModifications } from './helpers.js';
-import { getSkill } from './skills.js';
+import { getSkill, calculateSkillDice } from './skills.js';
 
 /**
 * Item Sheet class for The Fade system
@@ -363,14 +363,21 @@ export class TheFadeItemSheet extends ItemSheet {
                 };
             }
 
-            // Calculated dice pool for weapons owned by an actor
+            // Calculated dice pool for weapons owned by an actor. Mirrors the
+            // attack-roll math in character-sheet.js so the sheet preview matches
+            // what an actual attack roll would use.
             if (this.item?.type === 'weapon' && this.item.parent) {
                 const actor = this.item.parent;
                 const sys = this.item.system;
                 const skill = getSkill(actor, sys.skill);
-                const rank = skill ? getRankValue(skill.rank) : 0;
-                const miscBonus = sys.miscBonus ?? 0;
-                const total = rank + miscBonus;
+                const skillDice = skill ? calculateSkillDice(actor, skill) : 0;
+                const weaponMisc = Number(sys.miscBonus) || 0;
+                const eb = actor.system?.equippedBonuses;
+                const skillKey = (sys.skill || "").toLowerCase();
+                const attackBonus = eb
+                    ? (eb.attack || 0) + (eb[`attack_${skillKey}`] || 0)
+                    : 0;
+                const total = skillDice + weaponMisc + attackBonus;
                 if (total > 0) data.calculatedDice = total;
             }
 
@@ -414,19 +421,29 @@ export class TheFadeItemSheet extends ItemSheet {
                 if (this.item.parent?.system?.attributes) {
                     const attrs = this.item.parent.system.attributes;
                     const qualities = sys.qualities || "";
-                    if (qualities.includes("Agile") && attrs.finesse) {
-                        attrBonus = Math.floor((attrs.finesse.value || 0) / 2);
+                    const attrTotal = (k) => attrs[k]?.total ?? attrs[k]?.value ?? 0;
+                    // Explicit attribute dropdown wins over Brutish/Agile defaults.
+                    if (sys.attribute && sys.attribute !== "none" && attrs[sys.attribute]) {
+                        attrBonus = Math.floor(attrTotal(sys.attribute) / 2);
+                        attrLabel = sys.attribute.charAt(0).toUpperCase() + sys.attribute.slice(1);
+                    } else if (qualities.includes("Agile") && attrs.finesse) {
+                        attrBonus = Math.floor(attrTotal("finesse") / 2);
                         attrLabel = "Finesse";
                     } else if (qualities.includes("Brutish") && attrs.physique) {
-                        attrBonus = Math.floor((attrs.physique.value || 0) / 2);
+                        attrBonus = Math.floor(attrTotal("physique") / 2);
                         attrLabel = "Physique";
-                    } else if (sys.attribute && sys.attribute !== "none" && attrs[sys.attribute]) {
-                        attrBonus = Math.floor((attrs[sys.attribute].value || 0) / 2);
-                        attrLabel = sys.attribute.charAt(0).toUpperCase() + sys.attribute.slice(1);
                     }
                 }
 
-                // Build the typed breakdown: "3 Fire + 3 Bludgeoning + 2 + 4"
+                // Equipped damage bonuses (global + per-skill from talents/paths/etc.)
+                let equipDmgBonus = 0;
+                if (this.item.parent?.system?.equippedBonuses) {
+                    const eb = this.item.parent.system.equippedBonuses;
+                    const skillKey = (sys.skill || "").toLowerCase();
+                    equipDmgBonus = (eb.damage || 0) + (eb[`damage_${skillKey}`] || 0);
+                }
+
+                // Build the typed breakdown with labels for every part
                 const parts = [];
                 let typedTotal = 0;
                 for (const c of components) {
@@ -436,10 +453,11 @@ export class TheFadeItemSheet extends ItemSheet {
                     const label = DAMAGE_TYPE_LABELS[c.type] || c.type || "Untyped";
                     parts.push(`${amt} ${label}`);
                 }
-                if (dmgInc > 0) parts.push(`${dmgInc}`);
-                if (attrBonus > 0) parts.push(`${attrBonus}`);
+                if (dmgInc > 0) parts.push(`${dmgInc} Strengthening`);
+                if (attrBonus > 0) parts.push(`${attrBonus} ${attrLabel}`);
+                if (equipDmgBonus > 0) parts.push(`${equipDmgBonus} Bonus`);
 
-                data.effectiveDamage = typedTotal + dmgInc + attrBonus;
+                data.effectiveDamage = typedTotal + dmgInc + attrBonus + equipDmgBonus;
                 data.effectiveDamageBreakdown = parts.length > 1 ? parts.join(" + ") : null;
                 data.weaponAttrBonus = attrBonus;
                 data.weaponAttrLabel = attrLabel;
