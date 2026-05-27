@@ -1,5 +1,1 @@
-2026/05/14-13:42:23.527 320c Log #61: 0 ops saved to Table #64 OK
-2026/05/14-13:42:23.528 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\lore/000061.log: OK
-2026/05/14-13:42:23.528 320c Table #63: 75 entries OK
-2026/05/14-13:42:23.530 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\lore/MANIFEST-000059: OK
-2026/05/14-13:42:23.531 320c **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\lore; recovered 1 files; 67185 bytes. Some data may have been lost. ****
+2026/05/26-02:35:16.220 3a5c Delete type=3 #1

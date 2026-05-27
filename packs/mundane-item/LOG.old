@@ -1,5 +1,1 @@
-2026/05/14-13:42:23.480 320c Log #254: 0 ops saved to Table #257 OK
-2026/05/14-13:42:23.480 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/000254.log: OK
-2026/05/14-13:42:23.480 320c Table #256: 126 entries OK
-2026/05/14-13:42:23.482 320c Archiving C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item/MANIFEST-000252: OK
-2026/05/14-13:42:23.484 320c **** Repaired leveldb C:\Users\colea\AppData\Local\FoundryVTT\Data\systems\thefade\packs\mundane-item; recovered 1 files; 66783 bytes. Some data may have been lost. ****
+2026/05/26-02:35:16.158 8624 Delete type=3 #1
