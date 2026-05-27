@@ -15,6 +15,16 @@
                 <option value="resilience" {{#ifEquals this.type "resilience"}}selected{{/ifEquals}}>Resilience</option>
                 <option value="grit" {{#ifEquals this.type "grit"}}selected{{/ifEquals}}>Grit</option>
                 <option value="hp" {{#ifEquals this.type "hp"}}selected{{/ifEquals}}>Max HP</option>
+                <option value="sanity" {{#ifEquals this.type "sanity"}}selected{{/ifEquals}}>Max Sanity</option>
+                <option value="initiative" {{#ifEquals this.type "initiative"}}selected{{/ifEquals}}>Initiative</option>
+                <option value="passiveDodge" {{#ifEquals this.type "passiveDodge"}}selected{{/ifEquals}}>Passive Dodge</option>
+                <option value="passiveParry" {{#ifEquals this.type "passiveParry"}}selected{{/ifEquals}}>Passive Parry</option>
+                <option value="sinThreshold" {{#ifEquals this.type "sinThreshold"}}selected{{/ifEquals}}>Sin Threshold</option>
+                <option value="physique" {{#ifEquals this.type "physique"}}selected{{/ifEquals}}>Physique (PHY)</option>
+                <option value="finesse" {{#ifEquals this.type "finesse"}}selected{{/ifEquals}}>Finesse (FIN)</option>
+                <option value="mind" {{#ifEquals this.type "mind"}}selected{{/ifEquals}}>Mind (MND)</option>
+                <option value="presence" {{#ifEquals this.type "presence"}}selected{{/ifEquals}}>Presence (PRS)</option>
+                <option value="soul" {{#ifEquals this.type "soul"}}selected{{/ifEquals}}>Soul (SOL)</option>
             </select>
             <input type="text" class="bonus-target" value="{{this.target}}" placeholder="Target (or blank = all)" data-bonus-id="{{this.id}}" />
             <input type="number" class="bonus-value" value="{{this.value}}" data-bonus-id="{{this.id}}" />
