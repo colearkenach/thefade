@@ -285,7 +285,8 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/item/wand-sheet.html",
         "systems/thefade/templates/item/clothing-sheet.html",
         "systems/thefade/templates/item/trait-sheet.html",
-        "systems/thefade/templates/item/precept-sheet.html"
+        "systems/thefade/templates/item/precept-sheet.html",
+        "systems/thefade/templates/item/parts/bonuses.html"
 
     ]);
 

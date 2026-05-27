@@ -29,6 +29,8 @@
                 <label>Deity</label>
                 <input type="text" name="system.deity" value="{{system.deity}}" placeholder="Associated deity or divine force" />
             </div>
+
+            {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=system.bonuses bonusPath="system.bonuses"}}
         </div>
     </section>
 </form>

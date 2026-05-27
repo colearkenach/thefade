@@ -175,6 +175,7 @@
                     </div>
                 </div>
                 <textarea name="system.speciesAbilities.{{id}}.description">{{ability.description}}</textarea>
+                {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=ability.bonuses bonusPath=(concat "system.speciesAbilities." id ".bonuses")}}
             </div>
             {{/each}}
         </div>
