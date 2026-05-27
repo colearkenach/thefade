@@ -45,9 +45,7 @@ export class TheFadeNPCSheet extends ActorSheet {
         html.find(".initiative-roll").click(async () => {
             const fin = this.actor.system.attributes?.finesse?.value || 0;
             const mnd = this.actor.system.attributes?.mind?.value || 0;
-            const bonus = Math.floor((fin + mnd) / 2)
-                + (this.actor.system.initiativeBonus || 0)
-                + Number(this.actor.system.itemBonuses?.initiative || 0);
+            const bonus = Math.floor((fin + mnd) / 2) + (this.actor.system.initiativeBonus || 0);
             const roll = await new Roll(`1d12 + ${bonus}`).evaluate();
             roll.toMessage({
                 speaker: ChatMessage.getSpeaker({ actor: this.actor }),
