@@ -2627,9 +2627,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const mindValue = this.actor.system.attributes.mind?.value || 0;
 
         const averagedFINMND = Math.floor((finesseValue + mindValue) / 2);
+        const initBonus = Number(this.actor.system.initiativeBonus || 0)
+            + Number(this.actor.system.itemBonuses?.initiative || 0);
+        const modifier = averagedFINMND + initBonus;
 
         // Roll the dice
-        const roll = new Roll(`1d12+${averagedFINMND}`);
+        const roll = new Roll(`1d12+${modifier}`);
         await roll.evaluate();
 
         // Get the roll result
@@ -2649,7 +2652,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             speaker: ChatMessage.getSpeaker({ actor: this.actor }),
             flavor: `Initiative Roll`,
             content: `
-      <p>${this.actor.name} rolled for initiative: 1d12 (${dieResult}) + ${averagedFINMND} = ${totalResult}</p>
+      <p>${this.actor.name} rolled for initiative: 1d12 (${dieResult}) + ${modifier} = ${totalResult}</p>
     `
         });
     }
