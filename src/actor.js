@@ -559,7 +559,12 @@ export class TheFadeActor extends Actor {
                     }
                     break;
                 case "damage":
-                    data.equippedBonuses.damage += val;
+                    if (!target || target === "all") {
+                        data.equippedBonuses.damage += val;
+                    } else {
+                        const dKey = `damage_${target}`;
+                        data.equippedBonuses[dKey] = (data.equippedBonuses[dKey] || 0) + val;
+                    }
                     break;
                 case "spell":
                     data.equippedBonuses.spell += val;

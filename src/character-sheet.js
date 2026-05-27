@@ -2448,21 +2448,32 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Ensure minimum of 1 die
         dicePool = Math.max(1, dicePool);
 
-        // Add weapon specific bonuses
+        // Add weapon specific bonuses. Explicit attribute dropdown wins over
+        // Brutish/Agile defaults so the user can override.
         const attrTotal = (k) => (this.actor.system.attributes[k]?.total ?? this.actor.system.attributes[k]?.value ?? 0);
-        if (weaponData.qualities.includes("Agile")) {
+        if (weaponData.attribute && weaponData.attribute !== "none") {
+            const bonusDamage = Math.floor(attrTotal(weaponData.attribute) / 2);
+            weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
+        } else if (weaponData.qualities.includes("Agile")) {
             const bonusDamage = Math.floor(attrTotal("finesse") / 2);
             weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
         } else if (weaponData.qualities.includes("Brutish")) {
             const bonusDamage = Math.floor(attrTotal("physique") / 2);
             weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
-        } else if (weaponData.attribute && weaponData.attribute !== "none") {
-            // Add half of the weapon's attribute to damage if not "none"
-            const bonusDamage = Math.floor(attrTotal(weaponData.attribute) / 2);
-            weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
         } else {
-            // No attribute bonus
             weaponData.totalDamage = parseInt(weaponData.damage);
+        }
+
+        // Magical strengthening
+        const dmgInc = Number(weaponData.damageIncrease) || 0;
+        if (dmgInc) weaponData.totalDamage = (weaponData.totalDamage || 0) + dmgInc;
+
+        // Add equipped damage bonuses (global + per-skill from talents/paths/etc.)
+        const dmgEb = this.actor.system?.equippedBonuses;
+        if (dmgEb) {
+            const skillKey = (skill.name || "").toLowerCase();
+            const equipDmg = (dmgEb.damage || 0) + (dmgEb[`damage_${skillKey}`] || 0);
+            if (equipDmg) weaponData.totalDamage = (weaponData.totalDamage || 0) + equipDmg;
         }
 
         // Roll the dice
