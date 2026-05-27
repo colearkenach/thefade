@@ -803,10 +803,15 @@ export class TheFadeItemSheet extends ItemSheet {
         // Handle input changes for species sheets
         if (this.item.type === 'species') {
             html.find('input, select, textarea').change(async (ev) => {
+                const element = ev.currentTarget;
+                // Skip bonus-row controls — they're persisted by the dedicated
+                // bonus handlers below and don't carry a `name` attribute.
+                if (element.closest('.bonus-section')) return;
+                if (!element.name) return;
+
                 ev.preventDefault();
                 ev.stopImmediatePropagation();
 
-                const element = ev.currentTarget;
                 const field = element.name;
                 let value = element.value;
 
