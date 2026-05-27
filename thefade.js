@@ -307,7 +307,8 @@ Hooks.once('init', async function () {
         if (["character", "npc"].includes(actor.type)) {
             const finesse = actor.system.attributes?.finesse?.value || 0;
             const mind = actor.system.attributes?.mind?.value || 0;
-            const bonus = (actor.system.initiativeBonus || 0);
+            const bonus = (actor.system.initiativeBonus || 0)
+                + Number(actor.system.itemBonuses?.initiative || 0);
             const modifier = Math.floor((finesse + mind) / 2) + bonus;
             return `1d12 + ${modifier}`;
         }

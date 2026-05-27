@@ -252,16 +252,19 @@ export class TheFadeActor extends Actor {
             // Ensure data integrity before calculations
             this._ensureSystemDataIntegrity(data);
 
+            // Collect bonuses from items (Items of Power, talents, precepts,
+            // path/species abilities). Must run BEFORE attribute totals and
+            // defenses so attribute, passive dodge/parry, etc. bonuses
+            // propagate through the downstream math.
+            this._applyEquippedItemBonuses(data, actorData);
+
             // Compute effective attribute totals (value + speciesBonus +
-            // flexibleBonus + manual bonus, or manual override). Must run
-            // before defenses or anything else reading attribute totals.
+            // flexibleBonus + manual bonus + item bonus, or manual override).
+            // Must run before defenses or anything else reading attribute totals.
             this._computeAttributeTotals(data);
 
             // Calculate defenses based on attributes and include bonuses
             this._calculateBaseDefenses(data, actorData);
-
-            // Apply bonuses from equipped Items of Power
-            this._applyEquippedItemBonuses(data, actorData);
 
             // Apply facing modifiers
             this._applyFacingModifiers(data);
@@ -364,12 +367,14 @@ export class TheFadeActor extends Actor {
         // Calculate max Sanity and update both properties
         const mindValue = data.attributes?.mind?.value || 1;
         const sanityMiscBonus = data.sanity?.miscBonus || 0;
-        const calculatedMaxSanity = 10 + mindValue + sanityMiscBonus;
+        const sanityItemBonus = Number(data.itemBonuses?.sanity || 0);
+        const calculatedMaxSanity = 10 + mindValue + sanityMiscBonus + sanityItemBonus;
 
         data.sanity.max = calculatedMaxSanity;
         data.maxSanity = calculatedMaxSanity; // For backward compatibility with UI
         const miscSanPart = sanityMiscBonus ? ` + ${sanityMiscBonus} misc` : "";
-        data.sanity.formula = `10 + Mind ${mindValue}${miscSanPart} = ${calculatedMaxSanity}`;
+        const itemSanPart = sanityItemBonus ? ` + ${sanityItemBonus} item` : "";
+        data.sanity.formula = `10 + Mind ${mindValue}${miscSanPart}${itemSanPart} = ${calculatedMaxSanity}`;
 
         // Ensure HP and Sanity values don't exceed max
         if (data.hp.value > data.hp.max) data.hp.value = data.hp.max;
@@ -413,7 +418,8 @@ export class TheFadeActor extends Actor {
         // Calculate sin threshold: Soul - 1 per dark magic spell + bonus
         const soulValue = data.attributes?.soul?.value || 1;
         const sinThresholdBonus = data.darkMagic.sinThresholdBonus || 0;
-        data.darkMagic.sinThreshold = soulValue - darkMagicCount + sinThresholdBonus;
+        const sinThresholdItem  = Number(data.itemBonuses?.sinThreshold || 0);
+        data.darkMagic.sinThreshold = soulValue - darkMagicCount + sinThresholdBonus + sinThresholdItem;
     }
 
     /**
@@ -464,9 +470,12 @@ export class TheFadeActor extends Actor {
 
         // Calculate the average
         const averagedFINMND = Math.floor((finesseValue + mindValue) / 2);
+        const initBonus = Number(this.system.initiativeBonus || 0)
+            + Number(this.system.itemBonuses?.initiative || 0);
+        const modifier = averagedFINMND + initBonus;
 
         // Create the roll with the proper formula
-        const formula = `1d12 + ${averagedFINMND}`;
+        const formula = `1d12 + ${modifier}`;
         const roll = new Roll(formula);
 
         return roll;
@@ -481,22 +490,60 @@ export class TheFadeActor extends Actor {
         // Initialize the lookup table roll handlers read from
         data.equippedBonuses = { skills: {}, attack: 0, damage: 0, spell: 0 };
 
+        // Structured pot consumed by attribute totals, defenses, max
+        // sanity, sin threshold, and initiative. These run AFTER this
+        // method, so they must read from this pot rather than from
+        // already-computed totals.
+        data.itemBonuses = {
+            attributes: { physique: 0, finesse: 0, mind: 0, presence: 0, soul: 0 },
+            avoid: 0,
+            resilience: 0,
+            grit: 0,
+            passiveDodge: 0,
+            passiveParry: 0,
+            initiative: 0,
+            sanity: 0,
+            sinThreshold: 0
+        };
+
         const applyBonus = (bonus) => {
             const val = Number(bonus.value) || 0;
             const target = (bonus.target || "").trim().toLowerCase();
 
             switch (bonus.type) {
                 case "avoid":
-                    data.totalAvoid = (data.totalAvoid || 0) + val;
+                    data.itemBonuses.avoid += val;
                     break;
                 case "resilience":
-                    data.totalResilience = (data.totalResilience || 0) + val;
+                    data.itemBonuses.resilience += val;
                     break;
                 case "grit":
-                    data.totalGrit = (data.totalGrit || 0) + val;
+                    data.itemBonuses.grit += val;
                     break;
                 case "hp":
                     data.hpMiscBonus = (data.hpMiscBonus || 0) + val;
+                    break;
+                case "sanity":
+                    data.itemBonuses.sanity += val;
+                    break;
+                case "initiative":
+                    data.itemBonuses.initiative += val;
+                    break;
+                case "passiveDodge":
+                    data.itemBonuses.passiveDodge += val;
+                    break;
+                case "passiveParry":
+                    data.itemBonuses.passiveParry += val;
+                    break;
+                case "sinThreshold":
+                    data.itemBonuses.sinThreshold += val;
+                    break;
+                case "physique":
+                case "finesse":
+                case "mind":
+                case "presence":
+                case "soul":
+                    data.itemBonuses.attributes[bonus.type] += val;
                     break;
                 case "skill": {
                     const key = target || "all";
@@ -600,15 +647,21 @@ export class TheFadeActor extends Actor {
         data.defenses.grit = Math.max(1, data.defenses.grit);
 
         // Calculate total defenses including bonuses but without facing penalties
-        data.totalResilience = Math.max(1, data.defenses.resilience + Number(data.defenses.resilienceBonus || 0));
-        data.totalAvoid = Math.max(1, data.defenses.avoid + Number(data.defenses.avoidBonus || 0));
-        data.totalGrit = Math.max(1, data.defenses.grit + Number(data.defenses.gritBonus || 0));
+        const itemAvoid = Number(data.itemBonuses?.avoid || 0);
+        const itemResil = Number(data.itemBonuses?.resilience || 0);
+        const itemGrit  = Number(data.itemBonuses?.grit || 0);
+        data.totalResilience = Math.max(1, data.defenses.resilience + Number(data.defenses.resilienceBonus || 0) + itemResil);
+        data.totalAvoid = Math.max(1, data.defenses.avoid + Number(data.defenses.avoidBonus || 0) + itemAvoid);
+        data.totalGrit = Math.max(1, data.defenses.grit + Number(data.defenses.gritBonus || 0) + itemGrit);
 
         // Tooltip formula strings — show the effective attribute total
         const phy = data.attributes.physique.total, fin = data.attributes.finesse.total, mnd = data.attributes.mind.total;
-        data.defenses.resilienceFormula = `Physique ${phy} ÷ 2 = ${data.defenses.resilience}` + (data.defenses.resilienceBonus ? ` + ${data.defenses.resilienceBonus} bonus` : "");
-        data.defenses.avoidFormula     = `Finesse ${fin} ÷ 2 = ${data.defenses.avoid}` + (data.defenses.avoidBonus ? ` + ${data.defenses.avoidBonus} bonus` : "");
-        data.defenses.gritFormula      = `Mind ${mnd} ÷ 2 = ${data.defenses.grit}` + (data.defenses.gritBonus ? ` + ${data.defenses.gritBonus} bonus` : "");
+        const itemResilPart = itemResil ? ` + ${itemResil} item` : "";
+        const itemAvoidPart = itemAvoid ? ` + ${itemAvoid} item` : "";
+        const itemGritPart  = itemGrit  ? ` + ${itemGrit} item`  : "";
+        data.defenses.resilienceFormula = `Physique ${phy} ÷ 2 = ${data.defenses.resilience}` + (data.defenses.resilienceBonus ? ` + ${data.defenses.resilienceBonus} bonus` : "") + itemResilPart;
+        data.defenses.avoidFormula     = `Finesse ${fin} ÷ 2 = ${data.defenses.avoid}` + (data.defenses.avoidBonus ? ` + ${data.defenses.avoidBonus} bonus` : "") + itemAvoidPart;
+        data.defenses.gritFormula      = `Mind ${mnd} ÷ 2 = ${data.defenses.grit}` + (data.defenses.gritBonus ? ` + ${data.defenses.gritBonus} bonus` : "") + itemGritPart;
 
         // Stance-level defense overrides (Tough it Out / Resolute Will replace
         // the half-attribute formula with full-attribute for Resilience/Grit).
@@ -631,8 +684,9 @@ export class TheFadeActor extends Actor {
 
         data.defenses.basePassiveDodge = Math.max(acrobonaticsDodge, finesseDodge);
         const pDodgeBonus = Number(data.defenses.passiveDodgeBonus || 0);
-        data.defenses.passiveDodge = data.defenses.basePassiveDodge + pDodgeBonus;
-        data.defenses.passiveDodgeFormula = `Base ${data.defenses.basePassiveDodge}` + (pDodgeBonus ? ` + ${pDodgeBonus} bonus` : "");
+        const pDodgeItem  = Number(data.itemBonuses?.passiveDodge || 0);
+        data.defenses.passiveDodge = data.defenses.basePassiveDodge + pDodgeBonus + pDodgeItem;
+        data.defenses.passiveDodgeFormula = `Base ${data.defenses.basePassiveDodge}` + (pDodgeBonus ? ` + ${pDodgeBonus} bonus` : "") + (pDodgeItem ? ` + ${pDodgeItem} item` : "");
         // Stash Acrobatics rank dice so stance code can add them to Avoid in Dodge Stance.
         data.defenses.acrobaticsDodgeDice = acrobonaticsDodge;
 
@@ -654,8 +708,9 @@ export class TheFadeActor extends Actor {
 
         data.defenses.basePassiveParry = highestParry;
         const pParryBonus = Number(data.defenses.passiveParryBonus || 0);
-        data.defenses.passiveParry = data.defenses.basePassiveParry + pParryBonus;
-        data.defenses.passiveParryFormula = `Base ${data.defenses.basePassiveParry}` + (pParryBonus ? ` + ${pParryBonus} bonus` : "");
+        const pParryItem  = Number(data.itemBonuses?.passiveParry || 0);
+        data.defenses.passiveParry = data.defenses.basePassiveParry + pParryBonus + pParryItem;
+        data.defenses.passiveParryFormula = `Base ${data.defenses.basePassiveParry}` + (pParryBonus ? ` + ${pParryBonus} bonus` : "") + (pParryItem ? ` + ${pParryItem} item` : "");
     }
 
     /**
@@ -757,9 +812,10 @@ export class TheFadeActor extends Actor {
             const species = Number(a.speciesBonus ?? 0);
             const flex = Number(a.flexibleBonus ?? 0);
             const bonus = Number(a.bonus ?? 0);
+            const itemBonus = Number(data.itemBonuses?.attributes?.[k] ?? 0);
             const o = a.override;
             const overridden = o !== null && o !== undefined && o !== "" && Number.isFinite(Number(o));
-            a.total = Math.max(1, overridden ? Number(o) : value + species + flex + bonus);
+            a.total = Math.max(1, overridden ? Number(o) : value + species + flex + bonus + itemBonus);
         }
     }
 
