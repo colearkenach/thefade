@@ -3,7 +3,7 @@
   "name": "thefade",
   "title": "The Fade (Abyss)",
   "description": "A system for playing The Fade (Abyss) TTRPG in Foundry VTT",
-  "version": "13.0.0",
+  "version": "13.3.0",
   "authors": [
     {
       "name": "Jeremy H.",
@@ -13,7 +13,7 @@
   "compatibility": {
     "minimum": 12,
     "verified": "13",
-    "maximum": "13"
+    "maximum": "14"
   },
   "esmodules": [
     "thefade.js"
@@ -135,8 +135,8 @@
   "primaryTokenAttribute": "hp",
   "secondaryTokenAttribute": "sanity",
   "url": "https://github.com/colearkenach/thefade-foundry",
-  "manifest": "https://github.com/colearkenach/thefade-foundry/releases/download/v2/system.json",
-  "download": "https://github.com/colearkenach/thefade-foundry/archive/refs/tags/v2.zip",
+  "manifest": "https://github.com/colearkenach/thefade-foundry/releases/download/v3/system.json",
+  "download": "https://github.com/colearkenach/thefade-foundry/archive/refs/tags/v3.zip",
   "license": "LICENSE.txt",
   "itemTypes": [
     "weapon",
