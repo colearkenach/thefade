@@ -188,7 +188,14 @@ export function calculateSkillDice(actor, skill) {
 
     const eb = actor?.system?.equippedBonuses;
     if (eb) {
-        pool += (eb.skills?.[skill.name] || 0) + (eb.skills?.all || 0);
+        // Item bonuses are stored by the same stable key used by core and
+        // custom skills. Keep fallbacks for actors prepared by older builds.
+        const skillKey = skill.key || slugifySkill(skill.name);
+        const namedBonus = eb.skills?.[skillKey]
+            ?? eb.skills?.[skill.name]
+            ?? eb.skills?.[String(skill.name || "").toLowerCase()]
+            ?? 0;
+        pool += (Number(namedBonus) || 0) + (eb.skills?.all || 0);
         if (skill.category === "Magical") pool += (eb.spell || 0);
     }
     return Math.max(1, pool);

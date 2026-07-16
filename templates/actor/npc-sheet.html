@@ -9,9 +9,11 @@
                     <input name="name" type="text" value="{{actor.name}}" placeholder="NPC Name" />
                 </h1>
                 <div class="char-subtitle npc-meta">
-                    <input type="text" name="system.creatureType" value="{{system.creatureType}}" placeholder="Creature Type" style="width:110px" />
+                    <select name="system.creatureType" style="width:130px">
+                        {{selectOptions creatureTypeOptions selected=selectedCreatureType}}
+                    </select>
                     <span class="sep">·</span>
-                    <input type="text" name="system.creatureSubtype" value="{{system.creatureSubtype}}" placeholder="Subtype" style="width:90px" />
+                    <span>{{#if creatureSubtypeSelector.selected.length}}{{creatureSubtypeSelector.selected.length}} subtype(s){{else}}{{#if system.creatureSubtype}}{{system.creatureSubtype}}{{else}}No subtype{{/if}}{{/if}}</span>
                     <span class="sep">·</span>
                     <select name="system.size">
                         {{#each sizeOptions as |label key|}}
@@ -62,31 +64,31 @@
                 <div class="attribute panel">
                     <label>Physique</label>
                     <div class="attribute-value">
-                        <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.value}}" data-dtype="Number" />
+                        <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.displayValue}}" data-dtype="Number" />
                     </div>
                 </div>
                 <div class="attribute panel">
                     <label>Finesse</label>
                     <div class="attribute-value">
-                        <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.value}}" data-dtype="Number" />
+                        <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.displayValue}}" data-dtype="Number" />
                     </div>
                 </div>
                 <div class="attribute panel">
                     <label>Mind</label>
                     <div class="attribute-value">
-                        <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.value}}" data-dtype="Number" />
+                        <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.displayValue}}" data-dtype="Number" />
                     </div>
                 </div>
                 <div class="attribute panel">
                     <label>Presence</label>
                     <div class="attribute-value">
-                        <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.value}}" data-dtype="Number" />
+                        <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.displayValue}}" data-dtype="Number" />
                     </div>
                 </div>
                 <div class="attribute panel">
                     <label>Soul</label>
                     <div class="attribute-value">
-                        <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.value}}" data-dtype="Number" />
+                        <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.displayValue}}" data-dtype="Number" />
                     </div>
                 </div>
             </div>
@@ -128,6 +130,36 @@
                     </select>
                 </div>
             </div>
+
+            <section class="npc-creature-identity panel">
+                <h2>Creature Subtypes</h2>
+                {{> "systems/thefade/templates/actor/parts/creature-subtypes.html" selector=creatureSubtypeSelector path="system.creatureSubtypes"}}
+                <label>Custom Subtype
+                    <input type="text" name="system.creatureSubtype" value="{{system.creatureSubtype}}" placeholder="Homebrew or setting-specific subtype" />
+                </label>
+            </section>
+
+            {{#if creatureRuleAbilityView.sources.length}}
+            <section class="npc-creature-abilities panel">
+                <h2>Type &amp; Subtype Abilities</h2>
+                {{> "systems/thefade/templates/actor/parts/creature-rule-abilities.html" creatureRuleAbilityView}}
+            </section>
+            {{/if}}
+
+            {{#if temporaryAbilityBonuses.length}}
+            <section class="temporary-ability-bonuses panel">
+                <header><i class="fas fa-hourglass-half"></i> Active Temporary Bonuses</header>
+                {{#each temporaryAbilityBonuses as |entry|}}
+                <div class="temporary-ability-bonus">
+                    <span><strong>{{entry.ability}}</strong> · {{entry.source}}</span>
+                    <span>{{entry.remainingRounds}} round(s)</span>
+                    <button type="button" class="temporary-ability-bonus-remove" data-temporary-bonus-id="{{entry.id}}"><i class="fas fa-times"></i></button>
+                </div>
+                {{/each}}
+            </section>
+            {{/if}}
+
+            {{> "systems/thefade/templates/actor/parts/protection.html"}}
 
             <!-- Movement -->
             <h2>Movement</h2>

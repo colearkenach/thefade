@@ -1,0 +1,31 @@
+{{#if sources.length}}
+<div class="creature-rule-sources">
+    {{#each sources as |source|}}
+    <section class="creature-rule-source" data-creature-rule-source="{{source.id}}">
+        <header>
+            <strong>{{source.label}}</strong>
+            <span class="ability-meta">{{source.kind}}</span>
+        </header>
+        {{#each source.abilities as |ability|}}
+        <article class="creature-rule-ability" data-creature-rule-ability="{{ability.id}}">
+            <div class="creature-rule-ability-heading">
+                <strong>{{ability.name}}</strong>
+                {{#if (eq ability.activation "active")}}
+                    <span class="ability-meta active-ability-badge">Active{{#if ability.actionCost}} · {{ability.actionCost}}{{/if}}</span>
+                    {{#if ../../canActivate}}
+                    <button type="button" class="creature-rule-ability-use" title="Use {{ability.name}}"><i class="fas fa-comment-alt"></i> Use</button>
+                    {{/if}}
+                {{else}}
+                    <span class="ability-meta">Passive</span>
+                {{/if}}
+            </div>
+            <p>{{ability.description}}</p>
+            {{#if ability.bonuses.length}}
+            <small class="creature-rule-mechanics">Includes {{ability.bonuses.length}} automatic mechanical {{#if (eq ability.bonuses.length 1)}}effect{{else}}effects{{/if}}.</small>
+            {{/if}}
+        </article>
+        {{/each}}
+    </section>
+    {{/each}}
+</div>
+{{/if}}

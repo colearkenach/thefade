@@ -1,0 +1,71 @@
+<section class="linked-ability-source" data-linked-item-id="{{itemId}}">
+    <header class="linked-ability-source-header">
+        <div>
+            <strong>{{itemName}}</strong>
+            {{#if tierLabel}}<span class="ability-meta">{{tierLabel}}</span>{{/if}}
+        </div>
+        <div class="linked-ability-source-actions">
+            <button type="button" class="linked-ability-add" data-item-id="{{itemId}}" data-ability-root="{{abilityRoot}}" title="Add an ability to {{itemName}}">
+                <i class="fas fa-plus"></i> Ability
+            </button>
+            <a class="linked-source-edit" data-item-id="{{itemId}}" title="Open {{itemName}} source item"><i class="fas fa-external-link-alt"></i></a>
+        </div>
+    </header>
+
+    {{#if abilities.length}}
+    <div class="linked-ability-editors">
+        {{#each abilities as |ability|}}
+        <article class="linked-ability-editor"
+                 data-item-id="{{../itemId}}"
+                 data-ability-id="{{ability.id}}"
+                 data-ability-root="{{../abilityRoot}}">
+            <div class="linked-ability-editor-header">
+                <input type="text"
+                       class="linked-ability-field linked-ability-name"
+                       data-item-path="{{ability.namePath}}"
+                       value="{{ability.name}}"
+                       placeholder="Ability name" />
+                {{#if (eq ability.activation "active")}}
+                <button type="button" class="linked-ability-use" title="Use {{ability.name}}"><i class="fas fa-comment-alt"></i> Use</button>
+                {{/if}}
+                <button type="button" class="linked-ability-delete" title="Delete ability"><i class="fas fa-trash"></i></button>
+            </div>
+            <textarea class="linked-ability-field linked-ability-description"
+                      data-item-path="{{ability.descriptionPath}}"
+                      rows="2"
+                      placeholder="Ability description">{{ability.description}}</textarea>
+
+            <div class="ability-activation-fields linked-ability-activation-fields">
+                <label>Behavior
+                    <select class="linked-ability-field" data-item-path="{{ability.activationPath}}">
+                        <option value="passive" {{#if (eq ability.activation "passive")}}selected{{/if}}>Passive</option>
+                        <option value="active" {{#if (eq ability.activation "active")}}selected{{/if}}>Active (post to chat)</option>
+                    </select>
+                </label>
+                {{#if (eq ability.activation "active")}}
+                <label>Activation
+                    <input type="text" class="linked-ability-field" data-item-path="{{ability.actionCostPath}}" value="{{ability.actionCost}}" placeholder="Minor Action" />
+                </label>
+                <label>Bonus Duration
+                    <span><input type="number" class="linked-ability-field" data-item-path="{{ability.durationRoundsPath}}" data-dtype="Number" value="{{ability.durationRounds}}" min="1" /> rounds</span>
+                </label>
+                {{/if}}
+            </div>
+
+            <details class="linked-ability-bonuses sheet-state-section"
+                     data-section-key="{{ability.bonusSectionKey}}"
+                     {{#if ability.bonusesOpen}}open{{/if}}>
+                <summary>
+                    <span>Mechanical Bonuses</span>
+                    <span class="ability-meta">{{ability.bonuses.length}}</span>
+                    <i class="fas fa-chevron-down section-toggle-icon"></i>
+                </summary>
+                {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=ability.bonuses bonusPath=ability.bonusPath}}
+            </details>
+        </article>
+        {{/each}}
+    </div>
+    {{else}}
+    <p class="linked-abilities-empty">No abilities defined for this source.</p>
+    {{/if}}
+</section>

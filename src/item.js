@@ -1,5 +1,7 @@
 // TheFadeItem document class (extracted from thefade.js).
 import { DEFAULT_WEAPON, DEFAULT_ARMOR, DEFAULT_SKILL } from './constants.js';
+import { isNaturalWeapon } from './weapon-rules.js';
+import { getDarkMagicItemCorruptionValue, isDarkMagicItem } from './item-power-rules.js';
 
 /**
 * Base Item class for The Fade system
@@ -21,8 +23,11 @@ export class TheFadeItem extends Item {
             weapon: this._prepareWeaponData,
             armor: this._prepareArmorData,
             skill: this._prepareSkillData,
+            path: this._preparePathData,
+            monsterpath: this._preparePathData,
             spell: this._prepareSpellData,
             species: this._prepareSpeciesData,
+            monsterspecies: this._prepareSpeciesData,
             drug: this._prepareDrugData,
             poison: this._preparePoisonData,
             disease: this._prepareDiseaseData,
@@ -36,7 +41,12 @@ export class TheFadeItem extends Item {
             fleshcraft: this._prepareFleshcraftData,
             talent: this._prepareTalentData,
             trait: this._prepareTraitData,
-            precept: this._preparePreceptData
+            precept: this._preparePreceptData,
+            mutation: this._prepareRulesData,
+            heritage: this._prepareRulesData,
+            trap: this._prepareRulesData,
+            hazard: this._prepareRulesData,
+            downtime: this._prepareRulesData
         };
         const fn = prepMap[itemData.type];
         if (fn) fn.call(this, itemData);
@@ -62,6 +72,7 @@ export class TheFadeItem extends Item {
         if (!Array.isArray(data.enchantmentPowers)) data.enchantmentPowers = [];
         if (!Array.isArray(data.modifications)) data.modifications = [];
         if (!Array.isArray(data.damageComponents)) data.damageComponents = [];
+        if (!Array.isArray(data.qualityIds)) data.qualityIds = [];
 
         // In-memory hydration from legacy single damage/damageType. The persisted
         // migration (so user edits write components) happens lazily in the item
@@ -84,7 +95,8 @@ export class TheFadeItem extends Item {
         }
 
         // Derived: total damage including magical strengthening
-        data.effectiveDamage = (Number(data.damage) || 0) + (Number(data.damageIncrease) || 0);
+        data.effectiveDamage = (Number(data.damage) || 0)
+            + (isNaturalWeapon(data) ? 0 : (Number(data.damageIncrease) || 0));
     }
 
     /**
@@ -134,6 +146,17 @@ export class TheFadeItem extends Item {
         });
     }
 
+    _preparePathData(itemData) {
+        const data = itemData.system;
+        if (data.tier === undefined || data.tier === null) data.tier = 1;
+        if (data.baseHP === undefined || data.baseHP === null) data.baseHP = 0;
+        if (!data.skills) data.skills = "";
+        if (!data.requirements) data.requirements = "";
+        if (!data.abilities || typeof data.abilities !== "object") data.abilities = {};
+        if (!Array.isArray(data.pathSkills)) data.pathSkills = [];
+        if (itemData.type === "monsterpath") data.isMonsterPath = true;
+    }
+
     /**
     * Prepare spell-specific data
     * @param {Object} itemData - Item data object
@@ -163,6 +186,7 @@ export class TheFadeItem extends Item {
         if (!data.size) data.size = "medium";
         if (!data.creatureType) data.creatureType = "sapient";
         if (!data.creatureSubtype) data.creatureSubtype = "";
+        if (!Array.isArray(data.creatureSubtypes)) data.creatureSubtypes = [];
         if (!data.languages) data.languages = "";
         if (!data.description) data.description = "";
         if (!data.speciesAbilities) data.speciesAbilities = {};
@@ -183,12 +207,94 @@ export class TheFadeItem extends Item {
             if (data.abilityBonuses[attr] === undefined) data.abilityBonuses[attr] = 0;
         });
 
+        if (!data.flexibleBonus || typeof data.flexibleBonus !== "object") {
+            data.flexibleBonus = { value: 0, selectedAttribute: "" };
+        }
+
         if (!data.movement) {
             data.movement = {
                 land: 4,
                 fly: 0,
-                swim: 0
+                swim: 0,
+                climb: 0,
+                burrow: 0
             };
+        }
+
+        if (data.movement.climb === undefined) data.movement.climb = 0;
+        if (data.movement.burrow === undefined) data.movement.burrow = 0;
+
+        if (itemData.type === "monsterspecies") {
+            if (!data.attributeSet || typeof data.attributeSet !== "object") {
+                data.attributeSet = { physique: 1, finesse: 1, mind: 1, presence: 1, soul: 1 };
+            }
+            for (const attr of ["physique", "finesse", "mind", "presence", "soul"]) {
+                if (data.attributeSet[attr] === undefined || data.attributeSet[attr] === null) data.attributeSet[attr] = 1;
+            }
+            if (!data.attributeSpread) data.attributeSpread = "10, 5, 3, 1, 1";
+            if (!data.naturalDeflectionTypes || typeof data.naturalDeflectionTypes !== "object") data.naturalDeflectionTypes = {};
+            const defaults = {
+                fragile: { baseMultiplier: 2, parts: { head: "0.25", body: "1", arms: "0.3333333333", legs: "0.3333333333" } },
+                average: { baseMultiplier: 5, parts: { head: "0.3333333333", body: "1", arms: "0.5", legs: "0.5" } },
+                tough: { baseMultiplier: 10, parts: { head: "0.5", body: "1", arms: "0.6666666667", legs: "0.6666666667" } }
+            };
+            foundry.utils.mergeObject(data.naturalDeflectionTypes, defaults, {
+                enforceTypes: false,
+                insertKeys: true,
+                overwrite: false
+            });
+            if (!Array.isArray(data.standardAttacks)) data.standardAttacks = [];
+            data.standardAttacks = data.standardAttacks.map(entry => {
+                if (Array.isArray(entry.weapons)) return entry;
+                const weapons = [];
+                for (const option of [entry.optionA, entry.optionB]) {
+                    if (!option?.name) continue;
+                    weapons.push({
+                        id: foundry.utils.randomID(16),
+                        name: option.name,
+                        img: "icons/svg/sword.svg",
+                        type: "weapon",
+                        system: {
+                            damage: Number(option.damage) || 0,
+                            damageType: option.damageType || "B",
+                            critical: 4,
+                            handedness: option.type === "natural" ? "Natural Weapon" : "One-Handed",
+                            range: "Melee",
+                            integrity: 10,
+                            qualities: option.qualities || "",
+                            qualityIds: [],
+                            skill: option.skill || (option.type === "natural" ? "Unarmed" : "Cudgel"),
+                            attribute: "physique",
+                            weight: option.type === "natural" ? 0 : 1,
+                            price: 0,
+                            quantity: 1,
+                            equipped: true
+                        }
+                    });
+                }
+                return {
+                    id: entry.id || foundry.utils.randomID(16),
+                    mode: entry.mode || "grant",
+                    weapons
+                };
+            });
+            if (!data.sizeRules || typeof data.sizeRules !== "object") data.sizeRules = {};
+            const sizeKeys = ["miniscule", "diminutive", "tiny", "small", "medium", "large", "massive", "immense", "enormous", "titanic"];
+            for (const size of sizeKeys) {
+                if (!data.sizeRules[size] || typeof data.sizeRules[size] !== "object") data.sizeRules[size] = {};
+                const rule = data.sizeRules[size];
+                if (rule.averageEL === undefined || rule.averageEL === null) rule.averageEL = 0;
+                if (rule.bonusHP === undefined || rule.bonusHP === null) rule.bonusHP = 0;
+                if (!rule.movement || typeof rule.movement !== "object") rule.movement = {};
+                if (rule.movement.land === undefined || rule.movement.land === null) rule.movement.land = 0;
+                if (!rule.bonuses || typeof rule.bonuses !== "object") rule.bonuses = {};
+                if (!rule.caps || typeof rule.caps !== "object") rule.caps = {};
+                for (const attr of ["physique", "finesse", "mind", "presence", "soul"]) {
+                    if (rule.bonuses[attr] === undefined || rule.bonuses[attr] === null) rule.bonuses[attr] = 0;
+                    if (rule.caps[attr] === undefined || rule.caps[attr] === null) rule.caps[attr] = "";
+                }
+                if (!rule.example) rule.example = "";
+            }
         }
     }
 
@@ -346,9 +452,12 @@ export class TheFadeItem extends Item {
 
         // Initialize Items of Power properties if undefined
         if (!data.slot) data.slot = "head";
+        if (!data.overlapMode) data.overlapMode = "overlaps";
         if (!data.effect) data.effect = "";
         if (!data.catalyst) data.catalyst = "";
         if (typeof data.attunement === "undefined") data.attunement = false;
+        if (typeof data.darkMagic === "undefined") data.darkMagic = false;
+        if (data.corruptionValueOverride === undefined || data.corruptionValueOverride === null) data.corruptionValueOverride = 0;
         if (typeof data.equipped === "undefined") data.equipped = false;
         if (typeof data.hasAura === "undefined") data.hasAura = true;
         if (!data.auraColor) data.auraColor = "dull gray";
@@ -356,6 +465,34 @@ export class TheFadeItem extends Item {
         if (!data.radiationEffect) data.radiationEffect = "";
         if (!data.creationRequirements) data.creationRequirements = "";
         if (!Array.isArray(data.bonuses)) data.bonuses = [];
+        if (data.ap === undefined || data.ap === null) data.ap = 0;
+        if (data.currentAP === undefined || data.currentAP === null) data.currentAP = 0;
+        if (data.apIncrease === undefined || data.apIncrease === null) data.apIncrease = 0;
+        if (!data.location) data.location = "Body";
+        if (typeof data.isHeavy === "undefined") data.isHeavy = false;
+        if (!data.material) data.material = "iron";
+        if (typeof data.autoBlock !== "string") data.autoBlock = "";
+        if (data.derivedLeftAP === undefined) data.derivedLeftAP = null;
+        if (data.derivedRightAP === undefined) data.derivedRightAP = null;
+
+        if (!data.traitGrants || typeof data.traitGrants !== "object") data.traitGrants = {};
+        const grants = data.traitGrants;
+        if (!grants.abilities || typeof grants.abilities !== "object") grants.abilities = {};
+        if (grants.spellResistancePercent === undefined || grants.spellResistancePercent === null) grants.spellResistancePercent = 50;
+        if (!grants.resistances || typeof grants.resistances !== "object") grants.resistances = {};
+        if (!grants.immunities || typeof grants.immunities !== "object") grants.immunities = {};
+        if (!grants.immunities.damageTypes || typeof grants.immunities.damageTypes !== "object") grants.immunities.damageTypes = {};
+        if (!grants.immunities.statuses || typeof grants.immunities.statuses !== "object") grants.immunities.statuses = {};
+        if (!grants.immunities.effects || typeof grants.immunities.effects !== "object") grants.immunities.effects = {};
+        if (typeof grants.customImmunities !== "string") grants.customImmunities = "";
+        if (typeof grants.notes !== "string") grants.notes = "";
+
+        data.isDarkMagicItem = isDarkMagicItem(itemData);
+        data.corruptionValue = getDarkMagicItemCorruptionValue(itemData);
+        if (data.isDarkMagicItem) {
+            data.hasAura = true;
+            if (!data.auraColor || data.auraColor === "dull gray") data.auraColor = "gray-black flame / light-absorbing darkness";
+        }
     }
     /**
     * Prepare fleshcraft-specific data
@@ -412,5 +549,44 @@ export class TheFadeItem extends Item {
         if (!data.description) data.description = "";
         if (!data.deity) data.deity = "";
         if (!data.domain) data.domain = "";
+    }
+
+    _prepareRulesData(itemData) {
+        const data = itemData.system;
+        if (typeof data.description !== "string") data.description = "";
+        if (typeof data.source !== "string") data.source = "";
+
+        if (itemData.type === "mutation") {
+            if (!data.severity) data.severity = "minor";
+            if (!data.rollRange) data.rollRange = "";
+            if (typeof data.effect !== "string") data.effect = "";
+        } else if (itemData.type === "heritage") {
+            if (!data.heritageType) data.heritageType = "hybrid";
+            if (typeof data.motherSpecies !== "string") data.motherSpecies = "";
+            if (typeof data.fatherSpecies !== "string") data.fatherSpecies = "";
+            if (!Number.isFinite(Number(data.characteristicChanges))) data.characteristicChanges = 0;
+            if (typeof data.mutationRolls !== "string") data.mutationRolls = "";
+            if (typeof data.effect !== "string") data.effect = "";
+        } else if (itemData.type === "trap" || itemData.type === "hazard") {
+            if (!Number.isFinite(Number(data.attackDice))) data.attackDice = 0;
+            if (!data.defense) data.defense = "none";
+            if (data.damage === undefined || data.damage === null || data.damage === "") data.damage = "0";
+            if (!data.damageType) data.damageType = "Ut";
+            if (!["hp", "sanity"].includes(data.damageTrack)) data.damageTrack = "hp";
+            if (typeof data.bypassArmor !== "boolean") data.bypassArmor = false;
+            if (typeof data.effect !== "string") data.effect = "";
+            if (itemData.type === "trap") {
+                if (!Number.isFinite(Number(data.level))) data.level = 1;
+                if (!data.category) data.category = "mechanical";
+                if (!Number.isFinite(Number(data.detectionDT))) data.detectionDT = 0;
+                if (!Number.isFinite(Number(data.disarmDT))) data.disarmDT = 0;
+            } else if (!Number.isFinite(Number(data.escalationDice))) data.escalationDice = 0;
+        } else if (itemData.type === "downtime") {
+            if (!data.activityType) data.activityType = "other";
+            if (!data.status) data.status = "planned";
+            if (!Number.isFinite(Number(data.progress))) data.progress = 0;
+            if (!Number.isFinite(Number(data.target)) || Number(data.target) < 1) data.target = 1;
+            data.percentComplete = Math.min(100, Math.max(0, Math.round((Number(data.progress) / Number(data.target)) * 100)));
+        }
     }
 }

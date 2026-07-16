@@ -1,0 +1,99 @@
+<section class="heritage-rules-panel">
+    <div class="heritage-rules-grid">
+        <article class="panel heritage-builder">
+            <header class="rules-card-header"><div><h2>Heritage & Xenochildren</h2><p>Heirs to Rangar, pp. 33-47</p></div><a class="rules-item-create" data-type="heritage" title="Add special heritage"><i class="fas fa-plus"></i></a></header>
+            <label class="checkbox-label heritage-xenochild"><input type="checkbox" name="system.personalDetails.xenochild" {{#if system.personalDetails.xenochild}}checked{{/if}} /> Created as a Xenochild</label>
+            <div class="heritage-parent-grid">
+                <label>Mother's Type<select name="system.heritage.motherType"><option value="">Choose type</option>{{selectOptions crossbreedTypes selected=system.heritage.motherType}}</select></label>
+                <label>Father's Type<select name="system.heritage.fatherType"><option value="">Choose type</option>{{selectOptions crossbreedTypes selected=system.heritage.fatherType}}</select></label>
+            </div>
+            {{#if system.personalDetails.xenochild}}
+            <fieldset class="xenochild-modifiers">
+                <legend>Ritual Modifiers</legend>
+                <label class="checkbox-label"><input type="checkbox" name="system.heritage.xenochildModifiers.designerSculpting" {{#if system.heritage.xenochildModifiers.designerSculpting}}checked{{/if}} /> Designer Sculpting (+1 roll)</label>
+                <label class="checkbox-label"><input type="checkbox" name="system.heritage.xenochildModifiers.extradimensionalParentage" {{#if system.heritage.xenochildModifiers.extradimensionalParentage}}checked{{/if}} /> Extradimensional Parentage (+3)</label>
+                <label class="checkbox-label"><input type="checkbox" name="system.heritage.xenochildModifiers.dragonParent" {{#if system.heritage.xenochildModifiers.dragonParent}}checked{{/if}} /> Dragon Parent (+2)</label>
+                <label class="checkbox-label"><input type="checkbox" name="system.heritage.xenochildModifiers.faeParent" {{#if system.heritage.xenochildModifiers.faeParent}}checked{{/if}} /> Fae Parent (+1)</label>
+                <label class="checkbox-label"><input type="checkbox" name="system.heritage.xenochildModifiers.undeadDNA" {{#if system.heritage.xenochildModifiers.undeadDNA}}checked{{/if}} /> Undead DNA (+2)</label>
+                <label>Additional DNA Sources<input type="number" name="system.heritage.xenochildModifiers.additionalParents" min="0" value="{{system.heritage.xenochildModifiers.additionalParents}}" title="Each source beyond the first two adds 2 rolls" /></label>
+            </fieldset>
+            {{/if}}
+            <button type="button" class="heritage-calculate"><i class="fas fa-dna"></i> Check Crossbreed Index</button>
+            {{#if system.heritage.outcomeLabel}}
+            <div class="heritage-result heritage-result-{{system.heritage.outcome}}">
+                <strong>{{system.heritage.outcomeLabel}}</strong>
+                {{#if system.personalDetails.xenochild}}
+                <span>Mix parental Characteristics freely</span>
+                <span>{{system.heritage.xenochildRolls}} Xenochild mutation roll(s)</span>
+                {{else}}
+                <span>{{system.heritage.characteristicChanges}} characteristic change(s)</span>
+                <span>Mutation rolls: {{system.heritage.standardMutationRolls}}</span>
+                {{/if}}
+            </div>
+            {{/if}}
+            <label>Heritage Notes<textarea name="system.heritage.notes" rows="2">{{system.heritage.notes}}</textarea></label>
+            {{#if actor.heritages.length}}
+            <ol class="rules-embedded-list">
+                {{#each actor.heritages as |heritage|}}
+                <li data-item-id="{{heritage._id}}"><div><strong>{{heritage.name}}</strong><span>{{heritage.system.heritageType}}</span></div><div class="rules-item-controls"><a class="rules-item-edit"><i class="fas fa-edit"></i></a><a class="rules-item-delete"><i class="fas fa-trash"></i></a></div></li>
+                {{/each}}
+            </ol>
+            {{/if}}
+        </article>
+
+        <article class="panel mutation-card">
+            <header class="rules-card-header"><div><h2>Mutations</h2><p>Heirs to Rangar, pp. 21-32</p></div><a class="rules-item-create" data-type="mutation" title="Add custom mutation"><i class="fas fa-plus"></i></a></header>
+            <div class="mutation-tools">
+                <select name="mutation-roll-severity">{{selectOptions mutationSeverityOptions selected="minor"}}</select>
+                <button type="button" class="mutation-roll"><i class="fas fa-dice-d10"></i> Roll & Add</button>
+            </div>
+            {{#if actor.mutations.length}}
+            <ol class="rules-embedded-list mutation-list">
+                {{#each actor.mutations as |mutation|}}
+                <li data-item-id="{{mutation._id}}">
+                    <div><strong>{{mutation.name}}</strong><span class="mutation-severity mutation-{{mutation.system.severity}}">{{mutation.system.severity}}{{#if mutation.system.rollRange}} · {{mutation.system.rollRange}}{{/if}}</span><p>{{mutation.system.effect}}</p></div>
+                    <div class="rules-item-controls"><a class="rules-item-edit"><i class="fas fa-edit"></i></a><a class="rules-item-delete"><i class="fas fa-trash"></i></a></div>
+                </li>
+                {{/each}}
+            </ol>
+            {{else}}<p class="empty-list">No mutations recorded.</p>{{/if}}
+        </article>
+    </div>
+
+    {{#if fatePointsEnabled}}
+    <article class="panel fate-card">
+        <header class="rules-card-header"><div><h2>Fate Points & Motivations</h2><p>Bestiary of Morta IV, pp. 349-351</p></div><div class="fate-total"><i class="fas fa-star"></i><input type="number" name="system.fate.points" min="0" value="{{system.fate.points}}" /><span>Fate</span></div></header>
+        <div class="motivation-grid">
+            <label>Personal Goal<textarea name="system.fate.motivations.personalGoal" rows="2" placeholder="A short, immediate goal">{{system.fate.motivations.personalGoal}}</textarea></label>
+            <label>Driving Force<textarea name="system.fate.motivations.drivingForce" rows="2" placeholder="The character's long-term arc">{{system.fate.motivations.drivingForce}}</textarea></label>
+            <label>Personal Relationship<textarea name="system.fate.motivations.personalRelationship" rows="2" placeholder="A person and what the character wants from the relationship">{{system.fate.motivations.personalRelationship}}</textarea></label>
+        </div>
+        <div class="fate-actions">
+            <button type="button" class="fate-spend" data-cost="1" data-label="Inspiration" data-effect="Receive +1D on a single non-combat skill.">Inspiration <span>1</span></button>
+            <button type="button" class="fate-spend" data-cost="2" data-label="Lessen Failure" data-effect="If the roll has 0 successes, add +1 success.">Lessen Failure <span>2</span></button>
+            <button type="button" class="fate-spend" data-cost="4" data-label="Do-Over" data-effect="Reroll a failed roll with a +2D bonus.">Do-Over <span>4</span></button>
+            <button type="button" class="fate-spend" data-cost="6" data-label="Brush With Death" data-effect="Survive an otherwise lethal attack at 0 HP.">Brush With Death <span>6</span></button>
+            {{#if isGM}}<div class="fate-awards"><span>Award:</span><button type="button" class="fate-award" data-amount="1">+1</button><button type="button" class="fate-award" data-amount="2">+2</button><button type="button" class="fate-award" data-amount="3">+3</button></div>{{/if}}
+        </div>
+    </article>
+    {{/if}}
+
+    <article class="panel downtime-card">
+        <header class="rules-card-header"><div><h2>Downtime</h2><p>Core Rulebook, pp. 407-414</p></div><a class="rules-item-create" data-type="downtime" title="Add downtime activity"><i class="fas fa-plus"></i></a></header>
+        {{#if actor.downtimeProjects.length}}
+        <ol class="rules-embedded-list downtime-list">
+            {{#each actor.downtimeProjects as |project|}}
+            <li data-item-id="{{project._id}}">
+                <div class="downtime-project-main">
+                    <div class="downtime-project-title"><strong>{{project.name}}</strong><span>{{project.system.status}}</span></div>
+                    <div class="downtime-progress-bar"><span style="width:{{project.system.percentComplete}}%"></span></div>
+                    <small>{{project.system.progress}} / {{project.system.target}} · {{project.system.duration}}{{#if project.system.cost}} · {{project.system.cost}}{{/if}}</small>
+                    {{#if project.system.benefit}}<p>{{project.system.benefit}}</p>{{/if}}
+                </div>
+                <div class="rules-item-controls"><button type="button" class="downtime-progress" data-amount="1" title="Advance progress"><i class="fas fa-plus"></i></button><a class="rules-item-edit"><i class="fas fa-edit"></i></a><a class="rules-item-delete"><i class="fas fa-trash"></i></a></div>
+            </li>
+            {{/each}}
+        </ol>
+        {{else}}<p class="empty-list">No downtime activities. Add one here.</p>{{/if}}
+    </article>
+</section>

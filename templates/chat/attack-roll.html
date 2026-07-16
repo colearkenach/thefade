@@ -3,6 +3,7 @@
      data-attacker-uuid="{{attackerUuid}}"
      data-base-damage="{{totalDamage}}"
      data-damage-type="{{damageType}}"
+     data-minimum-hp-damage="{{minimumHpDamage}}"
      data-weapon-name="{{weaponName}}"
      data-critical-threshold="{{criticalThreshold}}"
      data-hit-location="{{hitLocation}}"
@@ -20,7 +21,14 @@
         <p>Successes: {{successes}} (DT: {{dt}} vs {{target}})</p>
 
         <div class="damage-section">
-            <p>Base Damage: <span class="base-damage-value">{{totalDamage}}</span> {{damageType}}</p>
+            <p>Total Damage: <span class="base-damage-value">{{totalDamage}}</span></p>
+            <div class="damage-component-list">
+                {{#each damageComponents as |component|}}
+                <span class="damage-component" data-damage-type="{{component.type}}">
+                    <strong class="damage-component-value">{{component.amount}}</strong> {{component.label}}
+                </span>
+                {{/each}}
+            </div>
 
             {{#if success}}
             {{#if bonusSuccesses}}
@@ -28,8 +36,8 @@
 
             <div class="bonus-options">
                 {{#if canCritical}}
-                <button class="bonus-option" data-option="critical" data-cost="{{criticalThreshold}}" data-damage="{{totalDamage}}">
-                    Critical Hit ({{criticalThreshold}} successes): roll +{{totalDamage}} damage
+                <button class="bonus-option" data-option="critical" data-cost="{{criticalThreshold}}" data-damage="{{criticalDamageAmount}}">
+                    Critical Hit ({{criticalThreshold}} successes): +{{criticalDamageAmount}} damage
                 </button>
                 {{/if}}
 
@@ -92,8 +100,6 @@
             </div>
 
             <div class="applied-effects"></div>
-            {{else}}
-            <p>Damage: <span class="base-damage-value">{{totalDamage}}</span> {{damageType}}</p>
             {{/if}}
 
             {{#if hitLocation}}
@@ -120,7 +126,20 @@
         <p class="{{#if success}}success{{else}}failure{{/if}}">
             {{#if success}}Success! The attack hits {{target}}.{{else}}Failure! The attack misses {{target}}.{{/if}}
         </p>
-        <p>Qualities: {{qualities}}</p>
+        <p><strong>Qualities:</strong> {{qualities}}</p>
+        {{#if qualityDamageNotes.length}}
+        <div class="quality-damage-notes">
+            {{#each qualityDamageNotes as |note|}}<p><i class="fas fa-burst"></i> {{note}}</p>{{/each}}
+        </div>
+        {{/if}}
+        {{#if qualityRules.length}}
+        <details class="attack-quality-rules">
+            <summary>Quality rules</summary>
+            {{#each qualityRules as |quality|}}
+            <p><strong>{{quality.label}}.</strong> {{quality.description}}</p>
+            {{/each}}
+        </details>
+        {{/if}}
         {{#if bonusDice}}<p><em>{{bonusDice}}</em></p>{{/if}}
     </div>
 </div>

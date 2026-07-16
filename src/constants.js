@@ -117,6 +117,7 @@ export const DEFAULT_WEAPON = {
     integrity: 10,
     weight: 1,
     qualities: "",
+    qualityIds: [],
     skill: "Sword",
     attribute: "physique",
     miscBonus: 0,
@@ -200,12 +201,142 @@ export const DEFAULT_SKILL = {
     miscBonus: 0
 };
 
+export const COMBAT_DAMAGE_TYPES = [
+    { key: "B", label: "Bludgeoning" },
+    { key: "S", label: "Slashing" },
+    { key: "P", label: "Piercing" },
+    { key: "F", label: "Fire" },
+    { key: "C", label: "Cold" },
+    { key: "A", label: "Acid" },
+    { key: "E", label: "Electricity" },
+    { key: "So", label: "Sonic" },
+    { key: "Sm", label: "Smiting" },
+    { key: "Ex", label: "Expel" },
+    { key: "Psi", label: "Psychokinetic" },
+    { key: "Co", label: "Corruption" }
+];
+
+export const COMBAT_IMMUNITY_DAMAGE_TYPES = COMBAT_DAMAGE_TYPES.filter(type => type.key !== "Co");
+
+export const COMBAT_STATUS_IMMUNITIES = [
+    { key: "all", condition: "", label: "All Status Effects" },
+    { key: "bleed", condition: "bleed", label: "Bleed" },
+    { key: "blindness", condition: "blindness", label: "Blindness" },
+    { key: "confusion", condition: "confusion", label: "Confusion" },
+    { key: "dazed", condition: "dazed", label: "Dazed" },
+    { key: "deafness", condition: "deafness", label: "Deafness" },
+    { key: "fatigue", condition: "fatigue", label: "Fatigue" },
+    { key: "fear", condition: "fear", label: "Fear" },
+    { key: "flatFooted", condition: "flatFooted", label: "Flat-Footed" },
+    { key: "illness", condition: "illness", label: "Illness" },
+    { key: "pain", condition: "pain", label: "Pain" },
+    { key: "paralysis", condition: "paralysis", label: "Paralysis" },
+    { key: "sleep", condition: "sleep", label: "Sleep" },
+    { key: "staggered", condition: "staggered", label: "Staggered" },
+    { key: "stunned", condition: "stunned", label: "Stunned" }
+];
+
+export const COMBAT_IMMUNITY_EFFECTS = [
+    { key: "poisons", label: "Poisons" },
+    { key: "diseases", label: "Diseases" },
+    { key: "mindAffecting", label: "Mind-Affecting Effects" },
+    { key: "criticalHits", label: "Critical Hits" },
+    { key: "deathEffects", label: "Death Effects" }
+];
+
+export const VULNERABILITY_SEVERITY_OPTIONS = {
+    minor: "Minor (x1.5)",
+    moderate: "Moderate (x2)",
+    severe: "Severe (x3)"
+};
+
+export const UNIVERSAL_ABILITY_CATEGORIES = [
+    {
+        key: "defensive",
+        label: "Defensive",
+        abilities: [
+            { key: "adaptiveMetabolism", label: "Adaptive Metabolism", description: "Survives on organic material, oxygen-poor environments, and ignores ingested poisons and starvation." },
+            { key: "allAroundVision", label: "All-Around Vision", description: "Resists single-target blindness and avoids Sight penalties from limited facing." },
+            { key: "amorphous", label: "Amorphous", description: "Can squeeze through very small spaces by reshaping its body." },
+            { key: "amphibious", label: "Amphibious", description: "Can live and breathe comfortably on land or underwater." },
+            { key: "crystallineBody", label: "Crystalline Body", description: "Immune to Bleed, Fatigue, Illness, and Pain, but vulnerable to Sonic damage." },
+            { key: "fortified", label: "Fortified", description: "Retreats into a defensive shell, routing attacks to Body and halving damage before AP." },
+            { key: "frightening", label: "Frightening", description: "Causes Sanity damage and fear through its horrifying presence." },
+            { key: "incorporeal", label: "Incorporeal", description: "Non-physical or semi-physical, passing through mundane matter and resisting mundane attacks." },
+            { key: "mindStatic", label: "Mind Static", description: "Disrupts spellcasting and punishes mind-reading senses within its radius." },
+            { key: "reactiveSpines", label: "Reactive Spines", description: "Deals piercing damage back to unarmed or natural attackers." },
+            { key: "regeneration", label: "Regeneration", description: "Recovers HP each turn and can regrow lost limbs over time.", amount: { label: "HP / turn", default: 1, min: 1 } },
+            { key: "shapeshift", label: "Shapeshift", description: "Changes between forms, altering abilities and physical features." },
+            { key: "spellResistance", label: "Spell Resistance", description: "Negates spells through imperfect chance or perfect immunity.", amount: { label: "SR %", default: 50, min: 1, max: 100 } },
+            { key: "swarm", label: "Swarm", description: "Acts as one mass of smaller creatures with special immunities, attacks, and weaknesses." },
+            { key: "toxicBlood", label: "Toxic Blood", description: "Sprays acidic blood into adjacent hexes when injured by piercing or slashing damage." }
+        ]
+    },
+    {
+        key: "mental",
+        label: "Mental",
+        abilities: [
+            { key: "dreamwalker", label: "Dreamwalker", description: "Can enter the dreams of nearby sleeping creatures." },
+            { key: "hivemind", label: "Hivemind", description: "Telepathically shares threat awareness with linked creatures." },
+            { key: "memoryAssimilation", label: "Memory Assimilation", description: "Steals and experiences memories from a touched creature." },
+            { key: "mimic", label: "Mimic", description: "Imitates voices and sounds heard recently." }
+        ]
+    },
+    {
+        key: "movement",
+        label: "Movement",
+        abilities: [
+            { key: "dimensionalStep", label: "Dimensional Step", description: "Movement briefly becomes teleportation between start and end hexes." }
+        ]
+    },
+    {
+        key: "sensory",
+        label: "Sensory",
+        abilities: [
+            { key: "auraReading", label: "Aura Reading", description: "Detects creatures with auras, including invisible creatures, within range." },
+            { key: "blindvision", label: "Blindvision", description: "Sees through nonstandard senses or magic despite blindness." },
+            { key: "keenSmell", label: "Keen Smell", description: "Automatically gets Smell checks to notice strong scents in a large area." },
+            { key: "lifeSense", label: "Life Sense", description: "Reads life force, death state, and current HP through supernatural sight." },
+            { key: "magicalDetection", label: "Magical Detection", description: "Continuously senses nearby magical auras." },
+            { key: "thermalVision", label: "Thermal Vision", description: "Detects heat signatures, even through thin walls." },
+            { key: "thoughtSense", label: "Thought Sense", description: "Detects sentient thoughts nearby, with rules for resisting and crowded areas." },
+            { key: "tremorSense", label: "Tremor Sense", description: "Detects creatures through ground vibrations." },
+            { key: "truespeak", label: "Truespeak", description: "Speaks so language-capable creatures understand it in their own language." }
+        ]
+    },
+    {
+        key: "weakness",
+        label: "Weakness",
+        abilities: [
+            { key: "sunlightCurse", label: "Sunlight Curse", description: "Sunlight destroys the creature unless the entry says otherwise." }
+        ]
+    }
+];
+
+export const DEFAULT_COMBAT_TRAITS = {
+    abilities: {},
+    abilityValues: {},
+    abilityNotes: "",
+    spellResistancePercent: 50,
+    resistances: {},
+    immunities: {
+        damageTypes: {},
+        statuses: {},
+        effects: {}
+    },
+    absorption: {},
+    vulnerabilities: {},
+    vulnerabilitySeverity: {},
+    notes: ""
+};
+
 export const DEFAULT_TOKEN = "icons/svg/item-bag.svg";
 
 export const PATH_SKILL_TYPES = {
     SPECIFIC_SKILL: "specific",
     SPECIFIC_CUSTOM: "specific-custom",
     CHOOSE_CATEGORY: "choose-category",
+    CHOOSE_ANY: "choose-any",
     CHOOSE_LORE: "choose-lore",
     CHOOSE_PERFORM: "choose-perform",
     CHOOSE_CRAFT: "choose-craft",
@@ -315,6 +446,18 @@ export const FALLBACK_ACTOR_DATA = {
         rightarm: { current: 0, max: 0, stacks: false },
         leftleg: { current: 0, max: 0, stacks: false },
         rightleg: { current: 0, max: 0, stacks: false }
+    },
+    combatTraits: {
+        abilities: {},
+        abilityValues: {},
+        abilityNotes: "",
+        spellResistancePercent: 50,
+        resistances: {},
+        immunities: { damageTypes: {}, statuses: {}, effects: {} },
+        absorption: {},
+        vulnerabilities: {},
+        vulnerabilitySeverity: {},
+        notes: ""
     }
 };
 

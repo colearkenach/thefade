@@ -10,21 +10,22 @@
                 <div class="char-subtitle">
                     {{#if system.species.name}}<span>{{system.species.name}}</span>{{/if}}
                     {{#if system.species.creatureType}}<span class="sep">·</span><span>{{system.species.creatureType}}</span>{{/if}}
+                    {{#if creatureSubtypeSelector.selected.length}}<span class="sep">·</span>{{#each creatureSubtypeSelector.selected as |subtype|}}<span>{{subtype.label}}{{#unless @last}}, {{/unless}}</span>{{/each}}{{/if}}
                     {{#if system.species.size}}<span class="sep">·</span><span>{{titleCase system.species.size}}</span>{{/if}}
                 </div>
             </div>
 
             <div class="header-actions-row">
                 <div class="header-tool dice-section" data-collapsed="true">
-                    <div class="tool-header" data-tool="dice" title="Dice Rollerator">
+                    <div class="tool-header" data-tool="dice" title="Dice Roller" role="button" tabindex="0" aria-expanded="false">
                         <i class="fas fa-dice-d20"></i>
                         <span class="tool-label">Roll Dice</span>
                         <i class="fas fa-chevron-down collapse-icon"></i>
                     </div>
                     <div class="tool-content">
                         <div class="dice-input flexrow">
-                            <input type="number" id="dice-count" value="1" min="1" />D
-                            <button class="roll-dice">Roll</button>
+                            <input type="number" class="dice-count" value="1" min="1" max="100" aria-label="Number of d12s" title="Number of d12s (1–100)" />D
+                            <button type="button" class="roll-dice">Roll</button>
                         </div>
                         <div class="dice-tool-extras flexrow">
                             <button type="button" class="opposed-roll" title="Roll against another actor's skill or attribute"><i class="fas fa-people-arrows"></i> Opposed</button>
@@ -79,10 +80,16 @@
                         </div>
                         <div class="form-group">
                             <label>Creature Type</label>
-                            <input type="text" name="system.species.creatureType" value="{{system.species.creatureType}}" />
+                            <select name="system.species.creatureType">
+                                {{selectOptions creatureTypeOptions selected=selectedCreatureType}}
+                            </select>
                         </div>
                         <div class="form-group">
-                            <label>Subtype</label>
+                            <label>Rules-backed Subtypes</label>
+                            {{> "systems/thefade/templates/actor/parts/creature-subtypes.html" selector=creatureSubtypeSelector path="system.species.creatureSubtypes"}}
+                        </div>
+                        <div class="form-group">
+                            <label>Custom Subtype</label>
                             <input type="text" name="system.species.creatureSubtype" value="{{system.species.creatureSubtype}}" />
                         </div>
                         <div class="form-group">
@@ -94,10 +101,6 @@
                             <select name="system.species.size">
                                 {{selectOptions sizeOptions selected=system.species.size}}
                             </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Languages</label>
-                            <input type="text" name="system.species.languages" value="{{system.species.languages}}" placeholder="Common, Elvish, etc." />
                         </div>
                     </div>
                     {{else}}
@@ -120,7 +123,7 @@
                         {{#each actor.paths as |path|}}
                         <li class="path-summary-item" data-item-id="{{path._id}}" title="Right-click to open path">
                             <span class="path-summary-name">{{path.name}}</span>
-                            {{#if path.system.tier}}<span class="path-summary-tier">Tier {{path.system.tier}}</span>{{/if}}
+                            {{#if path.system.isMonsterPath}}<span class="path-summary-tier">Monster</span>{{else}}{{#if path.system.tier}}<span class="path-summary-tier">Tier {{path.system.tier}}</span>{{/if}}{{/if}}
                         </li>
                         {{/each}}
                     </ul>
@@ -141,7 +144,7 @@
                     </label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalResilience}}" disabled class="total-value" title="{{system.defenses.resilienceFormula}}" />
-                        <span class="excess-penalty resilience-excess-penalty">+0D</span>
+                        {{#if defenseExcess.resilience}}<span class="excess-penalty resilience-excess-penalty">+{{defenseExcess.resilience}}D</span>{{/if}}
                     </div>
                 </div>
 
@@ -151,7 +154,7 @@
                     </label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" title="{{system.defenses.avoidFormula}}" />
-                        <span class="excess-penalty avoid-excess-penalty">+0D</span>
+                        {{#if defenseExcess.avoid}}<span class="excess-penalty avoid-excess-penalty">+{{defenseExcess.avoid}}D</span>{{/if}}
                     </div>
                 </div>
 
@@ -161,7 +164,7 @@
                     </label>
                     <div class="defense-value">
                         <input type="text" value="{{system.totalGrit}}" disabled class="total-value" title="{{system.defenses.gritFormula}}" />
-                        <span class="excess-penalty grit-excess-penalty">+0D</span>
+                        {{#if defenseExcess.grit}}<span class="excess-penalty grit-excess-penalty">+{{defenseExcess.grit}}D</span>{{/if}}
                     </div>
                 </div>
 
@@ -183,6 +186,8 @@
                     </div>
                 </div>
             </div>
+
+            {{> "systems/thefade/templates/actor/parts/protection.html"}}
 
             {{!-- Movement — 2-col Hexes/Miles table --}}
             <h2>Movement</h2>
@@ -223,7 +228,7 @@
                 </tbody>
             </table>
 
-            {{!-- Carrying + Religion footer --}}
+            {{!-- Carrying + compact character profile footer --}}
             <div class="minor-stats-row">
                 <div class="capacity-card">
                     <h3>Carrying Capacity
@@ -259,11 +264,31 @@
                         </div>
                     </div>
                 </div>
-                <div class="religion-card">
-                    <h3>Religion &amp; Faith</h3>
-                    <div class="form-group">
-                        <label>Religion</label>
-                        <input type="text" name="system.religion" value="{{system.religion}}" />
+                <div class="stats-profile-card">
+                    <h3>Character Profile</h3>
+                    <div class="stats-profile-fields">
+                        <div class="stats-profile-demographics">
+                            <label class="stats-profile-field">
+                                <span>Age</span>
+                                <input type="number" name="system.personalDetails.age" value="{{system.personalDetails.age}}" min="0" />
+                            </label>
+                            <label class="stats-profile-field">
+                                <span>Sex</span>
+                                <select name="system.personalDetails.sex">
+                                    <option value="" {{#unless system.personalDetails.sex}}selected{{/unless}}>--</option>
+                                    <option value="male" {{#if (eq system.personalDetails.sex "male")}}selected{{/if}}>Male</option>
+                                    <option value="female" {{#if (eq system.personalDetails.sex "female")}}selected{{/if}}>Female</option>
+                                </select>
+                            </label>
+                        </div>
+                        <label class="stats-profile-field stats-profile-field-wide">
+                            <span>Languages</span>
+                            <input type="text" name="system.species.languages" value="{{system.species.languages}}" placeholder="Common, Elvish, etc." />
+                        </label>
+                        <label class="stats-profile-field stats-profile-field-wide">
+                            <span>Religion</span>
+                            <input type="text" name="system.religion" value="{{system.religion}}" placeholder="Faith, deity, or tradition" />
+                        </label>
                     </div>
                 </div>
             </div>
@@ -283,6 +308,7 @@
         <div class="tab" data-group="primary" data-tab="combat">
             {{> "systems/thefade/templates/actor/parts/vitals-hp-sanity.html" noName=true}}
             {{> "systems/thefade/templates/actor/parts/combat-state.html"}}
+            {{> "systems/thefade/templates/actor/parts/combat-traits.html"}}
             {{> "systems/thefade/templates/actor/parts/injuries.html"}}
         </div>
 
@@ -298,24 +324,11 @@
 
         {{!-- Background Tab --}}
         <div class="tab" data-group="primary" data-tab="background">
+                    {{> "systems/thefade/templates/actor/parts/heritage-downtime.html"}}
                     <center><img class="character-image" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" /></center>
                     <!-- Personal Details -->
                     <div class="character-details-section">
                         <h3>Personal Details</h3>
-
-                        <div class="detail-row">
-                            <label>Age</label>
-                            <input type="number" name="system.personalDetails.age" value="{{system.personalDetails.age}}" min="0" />
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Sex</label>
-                            <select name="system.personalDetails.sex">
-                                <option value="" {{#unless system.personalDetails.sex}} selected{{/unless}}>--</option>
-                                <option value="male" {{#if (eq system.personalDetails.sex "male")}} selected{{/if}}>Male</option>
-                                <option value="female" {{#if (eq system.personalDetails.sex "female")}} selected{{/if}}>Female</option>
-                            </select>
-                        </div>
 
                         <div class="detail-row">
                             <label>Sexuality</label>
@@ -356,13 +369,6 @@
                         <div class="detail-row color-row">
                             <label>Skin Color</label>
                             <input type="color" name="system.personalDetails.skinColor" value="{{system.personalDetails.skinColor}}" />
-                        </div>
-
-                        <div class="detail-row checkbox-row">
-                            <label>
-                                <input type="checkbox" name="system.personalDetails.xenochild" {{#if system.personalDetails.xenochild}} checked{{/if}} />
-                                Xenochild
-                            </label>
                         </div>
 
                         <div class="detail-row">

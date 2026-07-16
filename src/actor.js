@@ -1,10 +1,37 @@
 // TheFadeActor document class (extracted from thefade.js).
-import { BODY_PARTS, FALLBACK_ACTOR_DATA } from './constants.js';
+import {
+    BODY_PARTS,
+    COMBAT_DAMAGE_TYPES,
+    COMBAT_IMMUNITY_DAMAGE_TYPES,
+    COMBAT_IMMUNITY_EFFECTS,
+    COMBAT_STATUS_IMMUNITIES,
+    DEFAULT_COMBAT_TRAITS,
+    FALLBACK_ACTOR_DATA,
+    UNIVERSAL_ABILITY_CATEGORIES
+} from './constants.js';
 import { aggregateConditionState, computeRollModifiers, summarizeConditionState } from './conditions.js';
 import { applyBaseDefenseStances, applyPassiveStances, summarizeStance, getDamageMitigation } from './stances.js';
-import { applyAddictionPenalties, resetDailySin } from './dark-magic.js';
-import { applyAbilityEffects } from './abilities.js';
-import { getSkill } from './skills.js';
+import { applyAddictionPenalties, isDarkMagicSpell, resetDailySin } from './dark-magic.js';
+import { applyAbilityEffects, getActiveTemporaryBonusEntries } from './abilities.js';
+import { applyCreatureRuleEffects } from './creature-rules.js';
+import {
+    getUniversalAbilityDefinition,
+    normalizeMechanicalBonus,
+    parseMechanicalBonusImmunity
+} from './mechanical-bonuses.js';
+import { getSkill, slugifySkill } from './skills.js';
+import { isItemPowerActive } from './item-power-rules.js';
+
+function coerceSheetNumber(value, fallback = 0) {
+    if (Number.isFinite(Number(value))) return Number(value);
+    if (typeof value === "string") {
+        for (const part of value.split(",")) {
+            const number = Number(part.trim());
+            if (Number.isFinite(number)) return number;
+        }
+    }
+    return fallback;
+}
 
 /**
 * Base Actor class for The Fade system
@@ -215,6 +242,11 @@ export class TheFadeActor extends Actor {
             data.activeStance = "none";
         }
 
+        if (!Array.isArray(data.species.creatureSubtypes)) data.species.creatureSubtypes = [];
+        if (!Array.isArray(data.temporaryBonuses)) data.temporaryBonuses = [];
+
+        this._ensureCombatTraits(data);
+
         // Injuries — severed limbs. Self-heal to ensure all 6 limb slots exist.
         if (!data.injuries || typeof data.injuries !== "object") data.injuries = {};
         for (const limb of ["head", "body", "leftArm", "rightArm", "leftLeg", "rightLeg"]) {
@@ -228,6 +260,154 @@ export class TheFadeActor extends Actor {
 
         // Mental disorders — array of { type, name }. Self-heal to array.
         if (!Array.isArray(data.mentalDisorders)) data.mentalDisorders = [];
+
+        // Optional Bestiary / Heirs to Rangar subsystems. These are normal
+        // actor data so enabling the rules never depends on transient flags.
+        if (!data.anatomy || typeof data.anatomy !== "object") data.anatomy = {};
+        if (typeof data.anatomy.preset !== "string" || !data.anatomy.preset) data.anatomy.preset = "humanoid";
+        if (typeof data.anatomy.notes !== "string") data.anatomy.notes = "";
+
+        if (!data.fate || typeof data.fate !== "object") data.fate = {};
+        if (!Number.isFinite(Number(data.fate.points))) data.fate.points = 0;
+        if (!data.fate.motivations || typeof data.fate.motivations !== "object") data.fate.motivations = {};
+        for (const key of ["personalGoal", "drivingForce", "personalRelationship"]) {
+            if (typeof data.fate.motivations[key] !== "string") data.fate.motivations[key] = "";
+        }
+
+        if (!data.heritage || typeof data.heritage !== "object") data.heritage = {};
+        for (const key of ["motherType", "fatherType", "outcome", "outcomeLabel", "standardMutationRolls", "notes"]) {
+            if (typeof data.heritage[key] !== "string") data.heritage[key] = "";
+        }
+        if (!Number.isFinite(Number(data.heritage.characteristicChanges))) data.heritage.characteristicChanges = 0;
+        if (!Number.isFinite(Number(data.heritage.xenochildRolls))) data.heritage.xenochildRolls = 0;
+        if (typeof data.heritage.isXenochild !== "boolean") data.heritage.isXenochild = false;
+        if (!data.heritage.xenochildModifiers || typeof data.heritage.xenochildModifiers !== "object") {
+            data.heritage.xenochildModifiers = {};
+        }
+        for (const key of ["designerSculpting", "extradimensionalParentage", "dragonParent", "faeParent", "undeadDNA"]) {
+            data.heritage.xenochildModifiers[key] = data.heritage.xenochildModifiers[key] === true;
+        }
+        if (!Number.isFinite(Number(data.heritage.xenochildModifiers.additionalParents))) {
+            data.heritage.xenochildModifiers.additionalParents = 0;
+        } else {
+            data.heritage.xenochildModifiers.additionalParents = Math.max(0, Math.floor(Number(data.heritage.xenochildModifiers.additionalParents)));
+        }
+    }
+
+    _ensureCombatTraits(data) {
+        if (!data.combatTraits || typeof data.combatTraits !== "object") {
+            data.combatTraits = foundry.utils.deepClone(DEFAULT_COMBAT_TRAITS);
+        }
+
+        const traits = data.combatTraits;
+        if (!traits.abilities || typeof traits.abilities !== "object") traits.abilities = {};
+        if (!traits.abilityValues || typeof traits.abilityValues !== "object") traits.abilityValues = {};
+        if (typeof traits.abilityNotes !== "string") traits.abilityNotes = "";
+        traits.spellResistancePercent = Math.min(100, Math.max(1, Number(traits.spellResistancePercent) || 50));
+        if (!traits.resistances || typeof traits.resistances !== "object") traits.resistances = {};
+        if (!traits.immunities || typeof traits.immunities !== "object") traits.immunities = {};
+        if (!traits.immunities.damageTypes || typeof traits.immunities.damageTypes !== "object") traits.immunities.damageTypes = {};
+        if (!traits.immunities.statuses || typeof traits.immunities.statuses !== "object") traits.immunities.statuses = {};
+        if (!traits.immunities.effects || typeof traits.immunities.effects !== "object") traits.immunities.effects = {};
+        if (!traits.absorption || typeof traits.absorption !== "object") traits.absorption = {};
+        if (!traits.vulnerabilities || typeof traits.vulnerabilities !== "object") traits.vulnerabilities = {};
+        if (!traits.vulnerabilitySeverity || typeof traits.vulnerabilitySeverity !== "object") traits.vulnerabilitySeverity = {};
+        if (typeof traits.notes !== "string") traits.notes = "";
+
+        if (traits.immunities.effects.statusEffects) {
+            traits.immunities.statuses.all = true;
+            delete traits.immunities.effects.statusEffects;
+        }
+        if (traits.immunities.effects.allStatusEffects) {
+            traits.immunities.statuses.all = true;
+            delete traits.immunities.effects.allStatusEffects;
+        }
+
+        const abilityCategoryKeys = new Set(UNIVERSAL_ABILITY_CATEGORIES.map(category => category.key));
+        for (const key of Object.keys(traits.abilities)) {
+            if (!abilityCategoryKeys.has(key)) delete traits.abilities[key];
+        }
+        for (const category of UNIVERSAL_ABILITY_CATEGORIES) {
+            if (!traits.abilities[category.key] || typeof traits.abilities[category.key] !== "object") {
+                traits.abilities[category.key] = {};
+            }
+            if (!traits.abilityValues[category.key] || typeof traits.abilityValues[category.key] !== "object") {
+                traits.abilityValues[category.key] = {};
+            }
+            const abilityKeys = new Set(category.abilities.map(ability => ability.key));
+            for (const key of Object.keys(traits.abilities[category.key])) {
+                if (!abilityKeys.has(key)) delete traits.abilities[category.key][key];
+            }
+            for (const ability of category.abilities) {
+                traits.abilities[category.key][ability.key] = traits.abilities[category.key][ability.key] === true;
+                if (!ability.amount || ability.key === "spellResistance") continue;
+                const raw = Number(traits.abilityValues[category.key][ability.key]);
+                let amount = Number.isFinite(raw) ? raw : ability.amount.default;
+                if (ability.amount.min !== undefined) amount = Math.max(ability.amount.min, amount);
+                if (ability.amount.max !== undefined) amount = Math.min(ability.amount.max, amount);
+                traits.abilityValues[category.key][ability.key] = amount;
+            }
+            for (const key of Object.keys(traits.abilityValues[category.key])) {
+                if (!abilityKeys.has(key)) delete traits.abilityValues[category.key][key];
+            }
+        }
+
+        for (const type of COMBAT_DAMAGE_TYPES) {
+            traits.resistances[type.key] = traits.resistances[type.key] === true;
+            traits.vulnerabilities[type.key] = traits.vulnerabilities[type.key] === true;
+            if (!["minor", "moderate", "severe"].includes(traits.vulnerabilitySeverity[type.key])) {
+                traits.vulnerabilitySeverity[type.key] = "minor";
+            }
+        }
+
+        const immuneDamageKeys = new Set(COMBAT_IMMUNITY_DAMAGE_TYPES.map(type => type.key));
+        for (const type of COMBAT_IMMUNITY_DAMAGE_TYPES) {
+            traits.immunities.damageTypes[type.key] = traits.immunities.damageTypes[type.key] === true;
+            traits.absorption[type.key] = traits.absorption[type.key] === true;
+        }
+
+        for (const key of Object.keys(traits.immunities.damageTypes)) {
+            if (!immuneDamageKeys.has(key)) delete traits.immunities.damageTypes[key];
+        }
+        for (const key of Object.keys(traits.absorption)) {
+            if (!immuneDamageKeys.has(key)) delete traits.absorption[key];
+        }
+
+        const statusKeys = new Set(COMBAT_STATUS_IMMUNITIES.map(status => status.key));
+        for (const status of COMBAT_STATUS_IMMUNITIES) {
+            traits.immunities.statuses[status.key] = traits.immunities.statuses[status.key] === true;
+        }
+        for (const key of Object.keys(traits.immunities.statuses)) {
+            if (!statusKeys.has(key)) delete traits.immunities.statuses[key];
+        }
+
+        const immunityEffectKeys = new Set(COMBAT_IMMUNITY_EFFECTS.map(effect => effect.key));
+        for (const effect of COMBAT_IMMUNITY_EFFECTS) {
+            traits.immunities.effects[effect.key] = traits.immunities.effects[effect.key] === true;
+        }
+        for (const key of Object.keys(traits.immunities.effects)) {
+            if (!immunityEffectKeys.has(key)) delete traits.immunities.effects[key];
+        }
+
+        this._refreshStatusImmunityLocks(data);
+    }
+
+    _refreshStatusImmunityLocks(data) {
+        const statuses = data.combatTraits?.immunities?.statuses || {};
+        const allStatusImmune = statuses.all === true;
+        data.statusImmunityLocks = {};
+        for (const status of COMBAT_STATUS_IMMUNITIES) {
+            if (!status.condition) continue;
+            data.statusImmunityLocks[status.condition] = allStatusImmune || statuses[status.key] === true;
+        }
+    }
+
+    _conditionsWithoutImmunities(conditions, immunityLocks) {
+        if (!conditions || typeof conditions !== "object") return conditions;
+        if (!immunityLocks || !Object.values(immunityLocks).some(Boolean)) return conditions;
+        return Object.fromEntries(
+            Object.entries(conditions).filter(([key]) => immunityLocks[key] !== true)
+        );
     }
 
     /**
@@ -319,7 +499,7 @@ export class TheFadeActor extends Actor {
         if (actorData.items && typeof actorData.items.forEach === 'function') {
             try {
                 actorData.items.forEach(item => {
-                    if (item && item.type === "path" && item.system) {
+                    if (item && (item.type === "path" || item.type === "monsterpath") && item.system) {
                         if (typeof item.system.baseHP === 'number') pathHP += item.system.baseHP;
                         const t = Number(item.system.tier) || 0;
                         if (t > highestPathTier) highestPathTier = t;
@@ -354,8 +534,9 @@ export class TheFadeActor extends Actor {
         }
 
         // Calculate max HP and update both properties
-        const physiqueValue = data.attributes?.physique?.value || 1;
-        const hpMiscBonus = data.hpMiscBonus || 0;
+        const physiqueValue = Number(data.attributes?.physique?.total ?? data.attributes?.physique?.value ?? 1);
+        const hpMiscBonus = coerceSheetNumber(data.hpMiscBonus, 0);
+        data.hpMiscBonus = hpMiscBonus;
         const calculatedMaxHP = baseHP + pathHP + physiqueValue + hpMiscBonus + levelHP;
 
         data.hp.max = calculatedMaxHP;
@@ -365,8 +546,10 @@ export class TheFadeActor extends Actor {
         data.hp.formula = `Species ${baseHP} + Path ${pathHP} + Physique ${physiqueValue}${miscHPPart}${levelHPNote} = ${calculatedMaxHP}`;
 
         // Calculate max Sanity and update both properties
-        const mindValue = data.attributes?.mind?.value || 1;
-        const sanityMiscBonus = data.sanity?.miscBonus || 0;
+        const mindValue = Number(data.attributes?.mind?.total ?? data.attributes?.mind?.value ?? 1);
+        if (!data.sanity || typeof data.sanity !== "object") data.sanity = {};
+        const sanityMiscBonus = coerceSheetNumber(data.sanity.miscBonus, 0);
+        data.sanity.miscBonus = sanityMiscBonus;
         const sanityItemBonus = Number(data.itemBonuses?.sanity || 0);
         const calculatedMaxSanity = 10 + mindValue + sanityMiscBonus + sanityItemBonus;
 
@@ -411,12 +594,12 @@ export class TheFadeActor extends Actor {
 
         // Count dark magic spells the actor actually owns.
         const darkMagicCount = this.items?.filter(i =>
-            i.type === "spell" && i.system?.isDarkMagic
+            i.type === "spell" && isDarkMagicSpell(i)
         ).length ?? 0;
         data.darkMagic.spellsLearnedCount = darkMagicCount;
 
         // Calculate sin threshold: Soul - 1 per dark magic spell + bonus
-        const soulValue = data.attributes?.soul?.value || 1;
+        const soulValue = Number(data.attributes?.soul?.total ?? data.attributes?.soul?.value ?? 1);
         const sinThresholdBonus = data.darkMagic.sinThresholdBonus || 0;
         const sinThresholdItem  = Number(data.itemBonuses?.sinThreshold || 0);
         data.darkMagic.sinThreshold = soulValue - darkMagicCount + sinThresholdBonus + sinThresholdItem;
@@ -506,47 +689,33 @@ export class TheFadeActor extends Actor {
             sinThreshold: 0
         };
 
-        const applyBonus = (bonus) => {
-            const val = Number(bonus.value) || 0;
-            const target = (bonus.target || "").trim().toLowerCase();
+        const applyBonus = (bonus, grantBucket = null) => {
+            const normalized = normalizeMechanicalBonus(bonus);
+            const val = Number(normalized.value) || 0;
+            const rawTarget = String(normalized.target || "").trim();
+            const target = rawTarget.toLowerCase();
 
-            switch (bonus.type) {
-                case "avoid":
-                    data.itemBonuses.avoid += val;
+            switch (normalized.type) {
+                case "stat":
+                    if (Object.hasOwn(data.itemBonuses.attributes, rawTarget)) {
+                        data.itemBonuses.attributes[rawTarget] += val;
+                    } else if (rawTarget === "hp") {
+                        data.hpMiscBonus = coerceSheetNumber(data.hpMiscBonus, 0) + val;
+                    } else if (rawTarget === "sanity") {
+                        data.itemBonuses.sanity += val;
+                    } else if (rawTarget === "initiative") {
+                        data.itemBonuses.initiative += val;
+                    } else if (rawTarget === "sinThreshold") {
+                        data.itemBonuses.sinThreshold += val;
+                    }
                     break;
-                case "resilience":
-                    data.itemBonuses.resilience += val;
-                    break;
-                case "grit":
-                    data.itemBonuses.grit += val;
-                    break;
-                case "hp":
-                    data.hpMiscBonus = (data.hpMiscBonus || 0) + val;
-                    break;
-                case "sanity":
-                    data.itemBonuses.sanity += val;
-                    break;
-                case "initiative":
-                    data.itemBonuses.initiative += val;
-                    break;
-                case "passiveDodge":
-                    data.itemBonuses.passiveDodge += val;
-                    break;
-                case "passiveParry":
-                    data.itemBonuses.passiveParry += val;
-                    break;
-                case "sinThreshold":
-                    data.itemBonuses.sinThreshold += val;
-                    break;
-                case "physique":
-                case "finesse":
-                case "mind":
-                case "presence":
-                case "soul":
-                    data.itemBonuses.attributes[bonus.type] += val;
+                case "defense":
+                    if (["avoid", "resilience", "grit", "passiveDodge", "passiveParry"].includes(rawTarget)) {
+                        data.itemBonuses[rawTarget] += val;
+                    }
                     break;
                 case "skill": {
-                    const key = target || "all";
+                    const key = slugifySkill(target) || "all";
                     data.equippedBonuses.skills[key] = (data.equippedBonuses.skills[key] || 0) + val;
                     break;
                 }
@@ -569,37 +738,228 @@ export class TheFadeActor extends Actor {
                 case "spell":
                     data.equippedBonuses.spell += val;
                     break;
+                case "resistance": {
+                    const damageType = COMBAT_DAMAGE_TYPES.find(type =>
+                        type.key.toLowerCase() === target || type.label.toLowerCase() === target
+                    );
+                    if (!damageType) break;
+                    data.combatTraits.resistances[damageType.key] = true;
+                    if (grantBucket?.resistances) grantBucket.resistances[damageType.key] = true;
+                    break;
+                }
+                case "immunity": {
+                    const { group, key } = parseMechanicalBonusImmunity(rawTarget);
+                    const traitGroup = group === "damage" ? "damageTypes" : (group === "status" ? "statuses" : "effects");
+                    if (!traits.immunities?.[traitGroup] || !key) break;
+                    traits.immunities[traitGroup][key] = true;
+                    if (grantBucket) {
+                        if (!grantBucket.immunities) grantBucket.immunities = { damageTypes: {}, statuses: {}, effects: {} };
+                        if (!grantBucket.immunities[traitGroup]) grantBucket.immunities[traitGroup] = {};
+                        grantBucket.immunities[traitGroup][key] = true;
+                    }
+                    break;
+                }
+                case "absorption": {
+                    if (!COMBAT_IMMUNITY_DAMAGE_TYPES.some(type => type.key === rawTarget)) break;
+                    traits.absorption[rawTarget] = true;
+                    if (grantBucket) {
+                        if (!grantBucket.absorption) grantBucket.absorption = {};
+                        grantBucket.absorption[rawTarget] = true;
+                    }
+                    break;
+                }
+                case "vulnerability": {
+                    if (!COMBAT_DAMAGE_TYPES.some(type => type.key === rawTarget)) break;
+                    const severityRank = { minor: 1, moderate: 2, severe: 3 };
+                    const severity = normalized.severity;
+                    const alreadyActive = traits.vulnerabilities[rawTarget] === true;
+                    const currentSeverity = traits.vulnerabilitySeverity[rawTarget] || "minor";
+                    traits.vulnerabilities[rawTarget] = true;
+                    traits.vulnerabilitySeverity[rawTarget] = alreadyActive && severityRank[currentSeverity] > severityRank[severity]
+                        ? currentSeverity
+                        : severity;
+                    if (grantBucket) {
+                        if (!grantBucket.vulnerabilities) grantBucket.vulnerabilities = {};
+                        grantBucket.vulnerabilities[rawTarget] = true;
+                    }
+                    break;
+                }
+                case "universalAbility": {
+                    const definition = getUniversalAbilityDefinition(rawTarget);
+                    if (!definition) break;
+                    const { category, ability } = definition;
+                    if (!traits.abilities[category.key]) traits.abilities[category.key] = {};
+                    const alreadyActive = traits.abilities[category.key][ability.key] === true;
+                    if (ability.amount) {
+                        let amount = val || ability.amount.default || 1;
+                        if (ability.amount.min !== undefined) amount = Math.max(ability.amount.min, amount);
+                        if (ability.amount.max !== undefined) amount = Math.min(ability.amount.max, amount);
+                        if (ability.key === "spellResistance") {
+                            traits.spellResistancePercent = alreadyActive
+                                ? Math.max(Number(traits.spellResistancePercent) || ability.amount.default, amount)
+                                : amount;
+                        } else {
+                            if (!traits.abilityValues[category.key]) traits.abilityValues[category.key] = {};
+                            const current = Number(traits.abilityValues[category.key][ability.key]) || ability.amount.default || 1;
+                            traits.abilityValues[category.key][ability.key] = alreadyActive ? Math.max(current, amount) : amount;
+                        }
+                    }
+                    traits.abilities[category.key][ability.key] = true;
+                    if (grantBucket) {
+                        if (!grantBucket.abilities) grantBucket.abilities = {};
+                        if (!grantBucket.abilities[category.key]) grantBucket.abilities[category.key] = {};
+                        grantBucket.abilities[category.key][ability.key] = true;
+                    }
+                    break;
+                }
             }
         };
 
         const items = actorData.items ? [...actorData.items] : [];
+        const itemPowerAttunementRule = game.settings?.get("thefade", "itemPowerAttunementRule") || "standard";
+
+        actorData.equippedArmor = { head: [], body: [], arms: [], legs: [], shield: [] };
+
+        const traits = data.combatTraits;
+        traits.itemGranted = {
+            abilities: {},
+            resistances: {},
+            immunities: { damageTypes: {}, statuses: {}, effects: {} },
+            absorption: {},
+            vulnerabilities: {}
+        };
+        traits.temporaryGranted = {
+            abilities: {},
+            resistances: {},
+            immunities: { damageTypes: {}, statuses: {}, effects: {} },
+            absorption: {},
+            vulnerabilities: {}
+        };
+        traits.itemGrantedCustomImmunities = [];
+        const customImmunityKeys = new Set();
+
+        const creatureBonuses = applyCreatureRuleEffects(data, actorData.type);
+        for (const bonus of creatureBonuses) applyBonus(bonus, traits.ruleGranted);
+
+        const applyTraitGrants = (item) => {
+            const grants = item.system?.traitGrants;
+            if (!grants || typeof grants !== "object") return;
+
+            for (const category of UNIVERSAL_ABILITY_CATEGORIES) {
+                const categoryGrants = grants.abilities?.[category.key];
+                if (!categoryGrants || typeof categoryGrants !== "object") continue;
+                for (const ability of category.abilities) {
+                    if (categoryGrants[ability.key] !== true) continue;
+                    if (!traits.abilities[category.key]) traits.abilities[category.key] = {};
+                    if (!traits.itemGranted.abilities[category.key]) traits.itemGranted.abilities[category.key] = {};
+
+                    if (category.key === "defensive" && ability.key === "spellResistance") {
+                        const alreadyActive = traits.abilities.defensive?.spellResistance === true;
+                        const grantedPercent = Math.min(100, Math.max(1, Number(grants.spellResistancePercent) || 50));
+                        traits.spellResistancePercent = alreadyActive
+                            ? Math.max(Number(traits.spellResistancePercent) || 50, grantedPercent)
+                            : grantedPercent;
+                    }
+                    traits.abilities[category.key][ability.key] = true;
+                    traits.itemGranted.abilities[category.key][ability.key] = true;
+                }
+            }
+
+            for (const type of COMBAT_DAMAGE_TYPES) {
+                if (grants.resistances?.[type.key] === true) {
+                    traits.resistances[type.key] = true;
+                    traits.itemGranted.resistances[type.key] = true;
+                }
+            }
+            for (const type of COMBAT_IMMUNITY_DAMAGE_TYPES) {
+                if (grants.immunities?.damageTypes?.[type.key] === true) {
+                    traits.immunities.damageTypes[type.key] = true;
+                    traits.itemGranted.immunities.damageTypes[type.key] = true;
+                }
+            }
+            for (const status of COMBAT_STATUS_IMMUNITIES) {
+                if (grants.immunities?.statuses?.[status.key] === true) {
+                    traits.immunities.statuses[status.key] = true;
+                    traits.itemGranted.immunities.statuses[status.key] = true;
+                }
+            }
+            for (const effect of COMBAT_IMMUNITY_EFFECTS) {
+                if (grants.immunities?.effects?.[effect.key] === true) {
+                    traits.immunities.effects[effect.key] = true;
+                    traits.itemGranted.immunities.effects[effect.key] = true;
+                }
+            }
+
+            const custom = String(grants.customImmunities || "")
+                .split(/[;,\n]+/)
+                .map(value => value.trim())
+                .filter(Boolean);
+            for (const label of custom) {
+                const key = label.toLowerCase();
+                if (customImmunityKeys.has(key)) continue;
+                customImmunityKeys.add(key);
+                traits.itemGrantedCustomImmunities.push({ label, source: item.name });
+            }
+        };
 
         for (const item of items) {
             const sys = item.system;
             if (!sys) continue;
 
+            const suppliesArmor = item.type === 'armor'
+                || (item.type === 'magicitem' && sys.conflictsArmor === true);
+            if (suppliesArmor && sys.equipped && sys.location) {
+                let location = String(sys.location).toLowerCase();
+                if (location.includes('head')) location = 'head';
+                else if (location.includes('body') || location.includes('torso')) location = 'body';
+                else if (location.includes('arm')) location = 'arms';
+                else if (location.includes('leg')) location = 'legs';
+                else if (location.includes('shield')) location = 'shield';
+                if (Array.isArray(actorData.equippedArmor[location])) {
+                    actorData.equippedArmor[location].push(item);
+                }
+            }
+
             // Top-level bonuses arrays
             // - magicitem: only when equipped
             // - talent / precept: always active when owned
             let topLevel = null;
-            if (item.type === 'magicitem' && sys.equipped) topLevel = sys.bonuses;
+            if (isItemPowerActive(item, itemPowerAttunementRule)) topLevel = sys.bonuses;
             else if (item.type === 'talent' || item.type === 'precept') topLevel = sys.bonuses;
 
             if (Array.isArray(topLevel)) {
-                for (const bonus of topLevel) applyBonus(bonus);
+                for (const bonus of topLevel) applyBonus(bonus, traits.itemGranted);
             }
 
+            if (isItemPowerActive(item, itemPowerAttunementRule)) applyTraitGrants(item);
+
             // Per-ability bonuses on paths and species
-            const abilityMap = item.type === 'path' ? sys.abilities
-                : item.type === 'species' ? sys.speciesAbilities
+            const abilityMap = (item.type === 'path' || item.type === 'monsterpath') ? sys.abilities
+                : (item.type === 'species' || item.type === 'monsterspecies') ? sys.speciesAbilities
                     : null;
             if (abilityMap && typeof abilityMap === 'object') {
                 for (const ability of Object.values(abilityMap)) {
-                    if (!ability || !Array.isArray(ability.bonuses)) continue;
-                    for (const bonus of ability.bonuses) applyBonus(bonus);
+                    if (!ability || ability.activation === "active" || !Array.isArray(ability.bonuses)) continue;
+                    for (const bonus of ability.bonuses) applyBonus(bonus, traits.itemGranted);
                 }
             }
         }
+
+        for (const entry of getActiveTemporaryBonusEntries(actorData)) {
+            for (const bonus of entry.bonuses || []) applyBonus(bonus, traits.temporaryGranted);
+        }
+
+        traits.granted = foundry.utils.mergeObject(
+            foundry.utils.mergeObject(foundry.utils.deepClone(traits.ruleGranted || {}), traits.itemGranted || {}, { inplace: true }),
+            traits.temporaryGranted || {},
+            { inplace: true }
+        );
+
+        data.regeneration = traits.abilities?.defensive?.regeneration === true
+            ? Number(traits.abilityValues?.defensive?.regeneration) || 1
+            : 0;
+
+        this._refreshStatusImmunityLocks(data);
     }
 
     /**
@@ -768,7 +1128,8 @@ export class TheFadeActor extends Actor {
      * after facing so the facing avoid penalty is already baked in.
      */
     _applyConditionState(data) {
-        const state = aggregateConditionState(data.conditions);
+        const effectiveConditions = this._conditionsWithoutImmunities(data.conditions, data.statusImmunityLocks);
+        const state = aggregateConditionState(effectiveConditions);
         data.conditionState = state;
         data.conditionSummary = summarizeConditionState(state);
 
@@ -820,7 +1181,22 @@ export class TheFadeActor extends Actor {
             const itemBonus = Number(data.itemBonuses?.attributes?.[k] ?? 0);
             const o = a.override;
             const overridden = o !== null && o !== undefined && o !== "" && Number.isFinite(Number(o));
-            a.total = Math.max(1, overridden ? Number(o) : value + species + flex + bonus + itemBonus);
+            const capRaw = data.species?.statCaps?.[k];
+            const speciesCap = capRaw !== null && capRaw !== undefined && capRaw !== "" && Number.isFinite(Number(capRaw))
+                ? Number(capRaw)
+                : null;
+            const ruleCapRaw = data.creatureRuleAttributeCaps?.[k];
+            const ruleCap = ruleCapRaw !== null && ruleCapRaw !== undefined && ruleCapRaw !== "" && Number.isFinite(Number(ruleCapRaw))
+                ? Number(ruleCapRaw)
+                : null;
+            const cap = speciesCap === null ? ruleCap : (ruleCap === null ? speciesCap : Math.min(speciesCap, ruleCap));
+            const lockRaw = data.creatureRuleAttributeLocks?.[k];
+            const locked = lockRaw !== null && lockRaw !== undefined && Number.isFinite(Number(lockRaw));
+            const unclamped = overridden ? Number(o) : value + species + flex + bonus + itemBonus;
+            a.cap = cap;
+            a.lockedByCreatureRule = locked;
+            a.total = locked ? Number(lockRaw) : Math.max(1, cap !== null ? Math.min(unclamped, cap) : unclamped);
+            a.displayValue = locked ? Number(lockRaw) : value;
         }
     }
 
@@ -854,7 +1230,11 @@ export class TheFadeActor extends Actor {
      * notes[], autoFail }.
      */
     getConditionRollModifiers(context) {
-        return computeRollModifiers(this.system?.conditions, context || { kind: "generic" });
+        const conditions = this._conditionsWithoutImmunities(
+            this.system?.conditions,
+            this.system?.statusImmunityLocks
+        );
+        return computeRollModifiers(conditions, context || { kind: "generic" });
     }
 
     /**
@@ -944,6 +1324,13 @@ export class TheFadeActor extends Actor {
             };
         }
 
+        if (!Array.isArray(data.creatureSubtypes)) data.creatureSubtypes = [];
+        if (!Array.isArray(data.temporaryBonuses)) data.temporaryBonuses = [];
+
+        // Apply type/subtype mechanics, item bonuses, and active temporary
+        // bonuses before computing attributes and defenses.
+        this._applyEquippedItemBonuses(data, actorData);
+
         // Compute effective attribute totals so downstream code reads
         // `.total` consistently across characters and NPCs.
         this._computeAttributeTotals(data);
@@ -980,9 +1367,9 @@ export class TheFadeActor extends Actor {
         data.defenses.resilience = Math.max(1, Math.floor(phy / 2));
         data.defenses.avoid = Math.max(1, Math.floor(fin / 2));
         data.defenses.grit = Math.max(1, Math.floor(mnd / 2));
-        data.totalResilience = Math.max(1, data.defenses.resilience + (Number(data.defenses.resilienceBonus) || 0));
-        data.totalAvoid = Math.max(1, data.defenses.avoid + (Number(data.defenses.avoidBonus) || 0));
-        data.totalGrit = Math.max(1, data.defenses.grit + (Number(data.defenses.gritBonus) || 0));
+        data.totalResilience = Math.max(1, data.defenses.resilience + (Number(data.defenses.resilienceBonus) || 0) + Number(data.itemBonuses?.resilience || 0));
+        data.totalAvoid = Math.max(1, data.defenses.avoid + (Number(data.defenses.avoidBonus) || 0) + Number(data.itemBonuses?.avoid || 0));
+        data.totalGrit = Math.max(1, data.defenses.grit + (Number(data.defenses.gritBonus) || 0) + Number(data.itemBonuses?.grit || 0));
 
         // No Acrobatics/weapon skill lookup for NPCs
         data.defenses.basePassiveDodge = 0;
@@ -998,6 +1385,7 @@ export class TheFadeActor extends Actor {
 
         // HP state label (max is stored directly, not calculated)
         if (!data.hp) data.hp = { value: 10, max: 10 };
+        data.hp.max = Math.max(1, Number(data.hp.max || 10) + coerceSheetNumber(data.hpMiscBonus, 0));
         const hp = data.hp.value ?? 0;
         const max = Math.max(1, data.hp.max ?? 10);
         if (hp >= max)          { data.hp.state = "healthy";     data.hp.stateLabel = "Healthy"; }

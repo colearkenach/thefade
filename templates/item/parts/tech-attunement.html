@@ -1,0 +1,15 @@
+{{#if techAttunementEnabled}}
+<div class="tech-attunement-panel panel">
+    <label class="form-field">
+        <input type="checkbox" name="system.technological" {{checked system.technological}} />
+        Technological Item
+    </label>
+    {{#if system.technological}}
+    <label class="form-field">
+        <input type="checkbox" name="system.technologyAttunement" {{checked system.technologyAttunement}} />
+        Attuned Against Magical Radiation
+    </label>
+    <p class="hint">Consumes one attunement slot and prevents this technology from malfunctioning on worlds with magical radiation.</p>
+    {{/if}}
+</div>
+{{/if}}

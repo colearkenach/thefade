@@ -86,6 +86,11 @@ export const bonusOptionHandlers = {
                 const base = parseInt(card.dataset.baseDamage) || 0;
                 totalEl.textContent = String(base + prior + critDamage);
             }
+            const primaryComponent = card.querySelector('.damage-component .damage-component-value');
+            if (primaryComponent) {
+                const current = parseInt(primaryComponent.textContent || "0") || 0;
+                primaryComponent.textContent = String(current + critDamage);
+            }
         }
         return `<p><strong>Critical Hit:</strong> +${critDamage} damage rolled into total</p>`;
     },
@@ -193,21 +198,57 @@ function bindApplyDamage(html) {
         // this change.
         const location = card.dataset.hitLocation || "body";
         const calledShot = card.dataset.calledShot === "1";
-        // Read current damage including any rolled crit bonus
+        // Read current damage including any critical bonus. Modern cards keep
+        // every typed component in the DOM so resistances/immunities and armor
+        // resolve against the correct type instead of the primary type only.
         const displayed = parseInt(card.querySelector('.base-damage-value')?.textContent || "0") || 0;
         const damageType = card.dataset.damageType || "Ut";
+        const typedComponents = [...card.querySelectorAll('.damage-component')]
+            .map(element => ({
+                amount: parseInt(element.querySelector('.damage-component-value')?.textContent || "0") || 0,
+                type: element.dataset.damageType || "Ut"
+            }))
+            .filter(component => component.amount > 0);
+        const damageComponents = typedComponents.length
+            ? typedComponents
+            : [{ amount: displayed, type: damageType }];
+        const minimumHpDamage = Math.max(0, parseInt(card.dataset.minimumHpDamage || "0") || 0);
+        const damageTrack = card.dataset.damageTrack || "hp";
+        const bypassArmor = card.dataset.bypassArmor === "1";
         const weaponName = card.dataset.weaponName || "an attack";
         const attackerUuid = card.dataset.attackerUuid;
         const attacker = attackerUuid ? await fromUuid(attackerUuid) : null;
         const sourceName = attacker?.name || weaponName;
 
-        const result = await applyDamage(targetActor, {
-            amount: displayed,
-            type: damageType,
-            location,
-            calledShot,
-            sourceName: `${sourceName} (${weaponName})`
-        });
+        let result;
+        if (damageTrack === "sanity") {
+            const before = Number(targetActor.system.sanity?.value ?? 0);
+            const after = before - displayed;
+            await targetActor.update({ "system.sanity.value":after });
+            result = {
+                summary:`<div class="thefade-damage-summary"><strong>${targetActor.name}</strong> takes <strong>${displayed}</strong> ${damageType} damage to Sanity from ${sourceName}. Sanity ${before} → ${after}.</div>`
+            };
+        } else {
+            const firstNonImmune = damageComponents.findIndex(component =>
+                targetActor.system.combatTraits?.immunities?.damageTypes?.[component.type] !== true
+            );
+            const results = [];
+            for (let index = 0; index < damageComponents.length; index++) {
+                const component = damageComponents[index];
+                results.push(await applyDamage(targetActor, {
+                    amount: component.amount,
+                    type: component.type,
+                    location,
+                    calledShot,
+                    bypassArmor,
+                    minimumHpDamage: index === firstNonImmune ? minimumHpDamage : 0,
+                    sourceName: `${sourceName} (${weaponName})`
+                }));
+            }
+            result = {
+                summary: `<div class="thefade-damage-components">${results.map(entry => entry.summary).join("")}</div>`
+            };
+        }
 
         await ChatMessage.create({
             speaker: ChatMessage.getSpeaker({ actor: targetActor }),

@@ -10,6 +10,7 @@
         <a class="item" data-tab="description">Description</a>
         <a class="item" data-tab="attributes">Attributes</a>
         <a class="item" data-tab="abilities">Abilities</a>
+        {{#if isMonsterSpecies}}<a class="item" data-tab="monster">Monster</a>{{/if}}
     </nav>
 
     <section class="sheet-body">
@@ -73,13 +74,18 @@
             <div class="form-group">
                 <label>Creature Type</label>
                 <select name="system.creatureType">
-                    {{selectOptions creatureTypeOptions selected=system.creatureType}}
+                    {{selectOptions creatureTypeOptions selected=selectedCreatureType}}
                 </select>
             </div>
 
             <div class="form-group">
-                <label>Creature Subtype</label>
-                <input type="text" name="system.creatureSubtype" value="{{system.creatureSubtype}}" placeholder="e.g., Elf, Goblinoid, Aquatic" />
+                <label>Rules-backed Subtypes</label>
+                {{> "systems/thefade/templates/actor/parts/creature-subtypes.html" selector=creatureSubtypeSelector path="system.creatureSubtypes"}}
+            </div>
+
+            <div class="form-group">
+                <label>Custom Subtype</label>
+                <input type="text" name="system.creatureSubtype" value="{{system.creatureSubtype}}" placeholder="e.g., Human, homebrew subtype" />
             </div>
 
             <div class="form-group">
@@ -88,6 +94,15 @@
                     {{selectOptions sizeOptions selected=system.size}}
                 </select>
             </div>
+
+            {{#if isEmbeddedSpecies}}
+            <div class="form-group species-sync-group">
+                <label title="Apply this Species item to the attached character and keep future changes synced while checked.">
+                    <input type="checkbox" name="system.syncToActor" {{#if system.syncToActor}}checked{{/if}} />
+                    Sync to Actor
+                </label>
+            </div>
+            {{/if}}
 
             <div class="form-group">
                 <label>Languages</label>
@@ -126,6 +141,36 @@
                 </div>
             </div>
 
+            {{#if isMonsterSpecies}}
+            <h3>Monster Attribute Set</h3>
+            <div class="grid grid-5col">
+                <div class="ability-bonus">
+                    <label>PHY</label>
+                    <input type="text" name="system.attributeSet.physique" value="{{system.attributeSet.physique}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>FIN</label>
+                    <input type="text" name="system.attributeSet.finesse" value="{{system.attributeSet.finesse}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>MND</label>
+                    <input type="text" name="system.attributeSet.mind" value="{{system.attributeSet.mind}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>PRS</label>
+                    <input type="text" name="system.attributeSet.presence" value="{{system.attributeSet.presence}}" data-dtype="Number" />
+                </div>
+                <div class="ability-bonus">
+                    <label>SOL</label>
+                    <input type="text" name="system.attributeSet.soul" value="{{system.attributeSet.soul}}" data-dtype="Number" />
+                </div>
+            </div>
+            <div class="form-group stacked">
+                <label>Attribute Spread</label>
+                <input type="text" name="system.attributeSpread" value="{{system.attributeSpread}}" placeholder="10, 5, 3, 1, 1" />
+            </div>
+            {{/if}}
+
             <h3>Vision</h3>
             <div class="form-group">
                 <select name="system.visionType">
@@ -161,6 +206,8 @@
         </div>
 
         <div class="tab" data-group="primary" data-tab="abilities">
+            {{> "systems/thefade/templates/actor/parts/creature-rule-abilities.html" creatureRuleAbilityView}}
+
             <h2>
                 Species Abilities
                 <a class="ability-add" title="Add Ability"><i class="fas fa-plus"></i></a>
@@ -175,9 +222,147 @@
                     </div>
                 </div>
                 <textarea name="system.speciesAbilities.{{id}}.description">{{ability.description}}</textarea>
+                <div class="ability-activation-fields">
+                    <label>Behavior
+                        <select name="system.speciesAbilities.{{id}}.activation">
+                            <option value="passive" {{#unless (eq ability.activation "active")}}selected{{/unless}}>Passive</option>
+                            <option value="active" {{#if (eq ability.activation "active")}}selected{{/if}}>Active (post to chat)</option>
+                        </select>
+                    </label>
+                    {{#if (eq ability.activation "active")}}
+                    <label>Activation
+                        <input type="text" name="system.speciesAbilities.{{id}}.actionCost" value="{{ability.actionCost}}" placeholder="Minor Action" />
+                    </label>
+                    <label>Bonus Duration
+                        <span><input type="number" name="system.speciesAbilities.{{id}}.durationRounds" value="{{numberOr ability.durationRounds 1}}" min="1" data-dtype="Number" /> rounds</span>
+                    </label>
+                    {{/if}}
+                </div>
                 {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=ability.bonuses bonusPath=(concat "system.speciesAbilities." id ".bonuses")}}
             </div>
             {{/each}}
         </div>
+
+        {{#if isMonsterSpecies}}
+        <div class="tab" data-group="primary" data-tab="monster">
+            <h2>Natural Deflection Types</h2>
+            <div class="items-list">
+                <div class="items-header grid grid-6col">
+                    <div>Rating</div>
+                    <div>Physique Mult.</div>
+                    <div>Head</div>
+                    <div>Body</div>
+                    <div>Arms</div>
+                    <div>Legs</div>
+                </div>
+
+                <div class="grid grid-6col">
+                    <label>Fragile</label>
+                    <input type="number" name="system.naturalDeflectionTypes.fragile.baseMultiplier" value="{{system.naturalDeflectionTypes.fragile.baseMultiplier}}" data-dtype="Number" />
+                    <select name="system.naturalDeflectionTypes.fragile.parts.head">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.fragile.parts.head}}</select>
+                    <select name="system.naturalDeflectionTypes.fragile.parts.body">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.fragile.parts.body}}</select>
+                    <select name="system.naturalDeflectionTypes.fragile.parts.arms">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.fragile.parts.arms}}</select>
+                    <select name="system.naturalDeflectionTypes.fragile.parts.legs">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.fragile.parts.legs}}</select>
+                </div>
+
+                <div class="grid grid-6col">
+                    <label>Average</label>
+                    <input type="number" name="system.naturalDeflectionTypes.average.baseMultiplier" value="{{system.naturalDeflectionTypes.average.baseMultiplier}}" data-dtype="Number" />
+                    <select name="system.naturalDeflectionTypes.average.parts.head">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.average.parts.head}}</select>
+                    <select name="system.naturalDeflectionTypes.average.parts.body">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.average.parts.body}}</select>
+                    <select name="system.naturalDeflectionTypes.average.parts.arms">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.average.parts.arms}}</select>
+                    <select name="system.naturalDeflectionTypes.average.parts.legs">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.average.parts.legs}}</select>
+                </div>
+
+                <div class="grid grid-6col">
+                    <label>Tough</label>
+                    <input type="number" name="system.naturalDeflectionTypes.tough.baseMultiplier" value="{{system.naturalDeflectionTypes.tough.baseMultiplier}}" data-dtype="Number" />
+                    <select name="system.naturalDeflectionTypes.tough.parts.head">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.tough.parts.head}}</select>
+                    <select name="system.naturalDeflectionTypes.tough.parts.body">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.tough.parts.body}}</select>
+                    <select name="system.naturalDeflectionTypes.tough.parts.arms">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.tough.parts.arms}}</select>
+                    <select name="system.naturalDeflectionTypes.tough.parts.legs">{{selectOptions naturalDeflectionMultiplierOptions selected=system.naturalDeflectionTypes.tough.parts.legs}}</select>
+                </div>
+            </div>
+
+            <h2>Size Rules</h2>
+            <div class="size-rules-list">
+                {{#each sizeRuleRows as |row|}}
+                <div class="size-rule-entry">
+                    <h3>{{row.label}}</h3>
+                    <div class="grid grid-4col">
+                        <div class="form-group">
+                            <label>Average EL</label>
+                            <input type="number" name="{{concat "system.sizeRules." row.key ".averageEL"}}" value="{{row.rule.averageEL}}" data-dtype="Number" />
+                        </div>
+                        <div class="form-group">
+                            <label>Bonus HP</label>
+                            <input type="number" name="{{concat "system.sizeRules." row.key ".bonusHP"}}" value="{{row.rule.bonusHP}}" data-dtype="Number" />
+                        </div>
+                        <div class="form-group">
+                            <label>Land Move</label>
+                            <input type="number" name="{{concat "system.sizeRules." row.key ".movement.land"}}" value="{{row.rule.movement.land}}" data-dtype="Number" />
+                        </div>
+                        <div class="form-group">
+                            <label>Example</label>
+                            <input type="text" name="{{concat "system.sizeRules." row.key ".example"}}" value="{{row.rule.example}}" />
+                        </div>
+                    </div>
+                    <label>Stat Bonuses</label>
+                    <div class="grid grid-5col">
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".bonuses.physique"}}" value="{{row.rule.bonuses.physique}}" data-dtype="Number" placeholder="PHY" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".bonuses.finesse"}}" value="{{row.rule.bonuses.finesse}}" data-dtype="Number" placeholder="FIN" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".bonuses.mind"}}" value="{{row.rule.bonuses.mind}}" data-dtype="Number" placeholder="MND" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".bonuses.presence"}}" value="{{row.rule.bonuses.presence}}" data-dtype="Number" placeholder="PRS" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".bonuses.soul"}}" value="{{row.rule.bonuses.soul}}" data-dtype="Number" placeholder="SOL" />
+                    </div>
+                    <label>Stat Caps</label>
+                    <div class="grid grid-5col">
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".caps.physique"}}" value="{{row.rule.caps.physique}}" data-dtype="NumberOrEmpty" placeholder="Max PHY" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".caps.finesse"}}" value="{{row.rule.caps.finesse}}" data-dtype="NumberOrEmpty" placeholder="Max FIN" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".caps.mind"}}" value="{{row.rule.caps.mind}}" data-dtype="NumberOrEmpty" placeholder="Max MND" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".caps.presence"}}" value="{{row.rule.caps.presence}}" data-dtype="NumberOrEmpty" placeholder="Max PRS" />
+                        <input type="number" name="{{concat "system.sizeRules." row.key ".caps.soul"}}" value="{{row.rule.caps.soul}}" data-dtype="NumberOrEmpty" placeholder="Max SOL" />
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+            <h2>
+                Standard Attacks
+                <a class="standard-attack-add" title="Add Attack Group"><i class="fas fa-plus"></i></a>
+            </h2>
+
+            {{#each standardAttacks as |attack|}}
+            <div class="standard-attack-entry standard-attack-drop-zone" data-attack-id="{{attack.id}}">
+                <div class="ability-header flexrow">
+                    <select class="standard-attack-field" data-field="mode">
+                        {{selectOptions ../standardAttackGrantModeOptions selected=attack.mode}}
+                    </select>
+                    <a class="standard-attack-delete" title="Delete Standard Attack"><i class="fas fa-trash"></i></a>
+                </div>
+
+                <div class="standard-attack-weapons">
+                    {{#each attack.weapons as |weapon|}}
+                    <div class="standard-attack-weapon" data-weapon-id="{{weapon.id}}">
+                        <img src="{{weapon.img}}" alt="{{weapon.name}}" />
+                        <span>{{weapon.name}}</span>
+                        <span>{{weapon.system.damage}} {{weapon.system.damageType}}</span>
+                        <a class="standard-attack-weapon-delete" title="Remove Weapon"><i class="fas fa-trash"></i></a>
+                    </div>
+                    {{/each}}
+                    {{#unless attack.weapons.length}}
+                    <p class="hint">Drop weapons here.</p>
+                    {{/unless}}
+                </div>
+            </div>
+            {{/each}}
+
+            {{#unless standardAttacks.length}}
+            <div class="standard-attack-drop-zone no-skills-message">
+                <p>Drop a weapon here to create a standard attack group, or click Add.</p>
+            </div>
+            {{/unless}}
+        </div>
+        {{/if}}
     </section>
 </form>

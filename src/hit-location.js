@@ -1,4 +1,7 @@
-// Hit-location rolls per the Core Rulebook "Attack Location" chart.
+// Hit-location rolls per the Core Rulebook "Attack Location" chart and the
+// Bestiary's optional alternate-anatomy charts.
+
+import { anatomyLocationForRoll } from "./rules.js";
 //
 // Two simplified facing classes (per system design decision — left/right
 // sides of the target are treated as symmetric):
@@ -25,12 +28,29 @@ export function locationLabel(key) {
 /**
  * Roll a random hit location given the attacker's facing category on the target.
  * @param {"front"|"back"|"flank"|"backflank"} facing
- * @returns {Promise<{location: string, roll: number, sideRoll?: number, column: string}>}
+ * @param {string} anatomyPreset optional Bestiary anatomy preset
+ * @returns {Promise<{location: string, label?: string, roll: number, sideRoll?: number, column: string}>}
  */
-export async function rollHitLocation(facing) {
+export async function rollHitLocation(facing, anatomyPreset = "humanoid") {
     const roll = await new Roll("1d12").evaluate();
     const d12 = roll.total;
     const isFlank = facing === "flank" || facing === "backflank";
+
+    // The Bestiary charts have separate left and right columns. The existing
+    // sheet records only that a target is flanked, so choose the side on a d2.
+    if (anatomyPreset !== "humanoid") {
+        let sideRoll;
+        if (isFlank) sideRoll = await new Roll("1d2").evaluate();
+        const alternate = anatomyLocationForRoll(anatomyPreset, d12, facing, sideRoll?.total ?? 1);
+        if (alternate) {
+            return {
+                ...alternate,
+                roll: d12,
+                ...(sideRoll ? { sideRoll: sideRoll.total } : {})
+            };
+        }
+    }
+
     const column = isFlank ? "Flank" : "Front/Back";
 
     if (d12 === 1) return { location: "head", roll: d12, column };

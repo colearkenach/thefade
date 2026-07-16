@@ -1,0 +1,104 @@
+<section class="protection-panel panel">
+    <header class="protection-heading">
+        <div>
+            <h3><i class="fas fa-shield-halved"></i> Protection by Location</h3>
+            <p>Armored Protection, Natural Deflection, and effective total.</p>
+        </div>
+
+        {{#if anatomyRulesEnabled}}
+        <div class="anatomy-controls">
+            <label>Anatomy
+                <select name="system.anatomy.preset">{{selectOptions anatomyOptions selected=system.anatomy.preset}}</select>
+            </label>
+            <label>Roll From
+                <select class="anatomy-roll-facing">
+                    <option value="front">Front</option>
+                    <option value="flank">Flank</option>
+                    <option value="backflank">Back Flank</option>
+                    <option value="back">Back</option>
+                </select>
+            </label>
+            <button type="button" class="roll-anatomy-location" title="Roll 1d12 on this anatomy's hit-location chart">
+                <i class="fas fa-dice-d12"></i> Roll Location
+            </button>
+        </div>
+        {{/if}}
+    </header>
+
+    <div class="protection-table">
+        <div class="protection-row protection-column-header">
+            <div>Location</div>
+            <div>Armored Protection</div>
+            <div>Natural Deflection</div>
+            <div>Effective Total</div>
+        </div>
+
+        {{#each protectionRows as |part|}}
+        <div class="protection-row {{#unless part.isPrimaryPool}}shared-protection-pool{{/unless}}"
+             data-protection-location="{{part.location}}">
+            <div class="protection-location">
+                <strong>{{part.label}}</strong>
+                {{#if part.isMapped}}
+                <span class="protection-pool-note">Uses {{part.poolLabel}}{{#if part.isSharedPool}} shared{{/if}} pool</span>
+                {{/if}}
+            </div>
+
+            <div class="protection-value armor-protection-value" title="Current / maximum equipped armor protection">
+                <i class="fas fa-shield"></i>
+                <span class="protection-current">{{part.armor.current}}</span>
+                <span>/</span>
+                <span class="protection-max">{{part.armor.max}}</span>
+                {{#if ../protectionControlsEnabled}}
+                {{#if part.isPrimaryPool}}
+                <span class="protection-pool-actions">
+                    <button type="button" class="reduce-protection-ap" data-location="{{part.location}}"
+                            title="Reduce Armored Protection" {{#unless part.armor.hasPools}}disabled{{/unless}}>
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="reset-protection-ap" data-location="{{part.location}}"
+                            title="Refresh Armored Protection" {{#unless part.armor.hasPools}}disabled{{/unless}}>
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                </span>
+                {{/if}}
+                {{/if}}
+            </div>
+
+            <div class="protection-value natural-protection-value">
+                {{#if part.isPrimaryPool}}
+                <input type="number" name="system.naturalDeflection.{{part.location}}.current"
+                       value="{{part.natural.current}}" data-dtype="Number" min="0" title="Current Natural Deflection" />
+                <span>/</span>
+                <input type="number" name="system.naturalDeflection.{{part.location}}.max"
+                       value="{{part.natural.max}}" data-dtype="Number" min="0" title="Maximum Natural Deflection" />
+                <label class="protection-stacks" title="Add Natural Deflection to armor instead of using the higher value">
+                    <input type="checkbox" name="system.naturalDeflection.{{part.location}}.stacks" {{#if part.natural.stacks}}checked{{/if}} />
+                    Stacks
+                </label>
+                {{#if ../protectionControlsEnabled}}
+                <span class="protection-pool-actions">
+                    <button type="button" class="reduce-nd" data-location="{{part.location}}" title="Reduce Natural Deflection">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button type="button" class="reset-nd" data-location="{{part.location}}" title="Refresh Natural Deflection">
+                        <i class="fas fa-rotate-right"></i>
+                    </button>
+                </span>
+                {{/if}}
+                {{else}}
+                <span class="protection-current">{{part.natural.current}}</span>
+                <span>/</span>
+                <span class="protection-max">{{part.natural.max}}</span>
+                <span class="shared-pool-label">Shared</span>
+                {{/if}}
+            </div>
+
+            <div class="protection-value total-protection-value" title="Effective protection after stacking rules">
+                <strong class="protection-current">{{part.total.current}}</strong>
+                <span>/</span>
+                <strong class="protection-max">{{part.total.max}}</strong>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</section>

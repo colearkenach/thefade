@@ -1,0 +1,12 @@
+<fieldset class="rules-attack-fields">
+    <legend>Attack & Damage</legend>
+    <div class="rules-item-grid rules-item-grid-3">
+        <label>Attack Dice<input name="system.attackDice" type="number" min="0" value="{{system.attackDice}}" /></label>
+        <label>Defense<select name="system.defense">{{selectOptions defenseOptions selected=system.defense}}</select></label>
+        <label>Damage<input name="system.damage" type="text" value="{{system.damage}}" placeholder="10 or 2d12" /></label>
+        <label>Damage Type<select name="system.damageType">{{selectOptions damageTypeOptions selected=system.damageType}}</select></label>
+        <label>Damage Track<select name="system.damageTrack">{{selectOptions damageTrackOptions selected=system.damageTrack}}</select></label>
+        <label>Critical<input name="system.critical" type="number" min="1" value="{{system.critical}}" /></label>
+        <label class="checkbox-label"><input name="system.bypassArmor" type="checkbox" {{#if system.bypassArmor}}checked{{/if}} /> Bypasses armor</label>
+    </div>
+</fieldset>

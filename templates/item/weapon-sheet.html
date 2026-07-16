@@ -3,7 +3,7 @@
       <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
       <div class="header-fields">
           <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
-          <div class="item-type-badge {{item.type}}">{{item.type}}{{#if system.isEnchanted}} · Enchanted{{/if}}</div>
+          <div class="item-type-badge {{item.type}}">{{item.type}}{{#unless isNaturalWeapon}}{{#if system.isEnchanted}} · Enchanted{{/if}}{{/unless}}</div>
       </div>
     </header>
 
@@ -11,8 +11,10 @@
     <nav class="sheet-tabs tabs" data-group="primary">
       <a class="item" data-tab="description">Description</a>
       <a class="item" data-tab="attributes">Attributes</a>
+      {{#unless isNaturalWeapon}}
       <a class="item" data-tab="enchantment">Enchantment</a>
       <a class="item" data-tab="modifications">Modifications</a>
+      {{/unless}}
     </nav>
 
     {{!-- Sheet Body --}}
@@ -28,7 +30,6 @@
         <div class="item-calc-bar">
           <span class="calc-label">Dice Pool:</span>
           <span class="calc-value">{{calculatedDice}}d12</span>
-          <a class="item-action-btn roll-weapon-attack"><i class="fas fa-dice-d12"></i> Roll Attack</a>
         </div>
         {{/if}}
         {{#if effectiveDamage}}
@@ -69,15 +70,16 @@
 
           <div class="form-group">
             <label>Damage Attribute</label>
-            <select name="system.attribute">
-              {{selectOptions weaponAttributeOptions selected=system.attribute}}
+            <select name="system.attribute" {{#if weaponDamageAttributeLockedByQuality}}disabled title="Set automatically by {{weaponDamageAttributeSource}}"{{/if}}>
+              {{selectOptions weaponDamageAttributeOptions selected=weaponDamageAttributeSelection}}
             </select>
+            {{#if weaponDamageAttributeLockedByQuality}}<p class="hint">Set automatically by {{weaponDamageAttributeSource}}.</p>{{/if}}
           </div>
 
           <div class="form-group">
             <label>Handedness</label>
             <select name="system.handedness">
-              {{selectOptions weaponHandednessOptions selected=system.handedness}}
+              {{selectOptions weaponHandednessOptions selected=weaponHandednessSelection}}
             </select>
           </div>
 
@@ -96,6 +98,12 @@
             <input type="text" name="system.critical" value="{{system.critical}}" data-dtype="Number" />
           </div>
 
+          {{#if isNaturalWeapon}}
+          <div class="form-group full-width natural-weapon-note">
+            <i class="fas fa-paw"></i>
+            Natural weapons have no Integrity, Weight, Price, Material, Enchantment, or Modifications.
+          </div>
+          {{else}}
           <div class="form-group">
             <label>Integrity</label>
             <input type="text" name="system.integrity" value="{{system.integrity}}" data-dtype="Number" />
@@ -117,16 +125,27 @@
               {{selectOptions materialOptions selected=system.material}}
             </select>
           </div>
+          {{/if}}
 
           <div class="form-group full-width">
-            <label>Qualities</label>
-            <input type="text" name="system.qualities" value="{{system.qualities}}" />
+            <label>Rules-backed Qualities</label>
+            {{> "systems/thefade/templates/item/parts/weapon-qualities.html" selector=weaponQualitySelector}}
+          </div>
+
+          <div class="form-group full-width">
+            <label>Custom Qualities</label>
+            <input type="text" name="system.qualities" value="{{system.qualities}}" placeholder="Homebrew qualities or extra parameters" />
+          </div>
+
+          <div class="form-group full-width">
+            {{> "systems/thefade/templates/item/parts/tech-attunement.html"}}
           </div>
 
         </div>
       </div>
 
       {{!-- Enchantment Tab --}}
+      {{#unless isNaturalWeapon}}
       <div class="tab" data-group="primary" data-tab="enchantment">
         <div class="magic-section">
           <div class="magic-section-header">
@@ -221,5 +240,6 @@
           {{/if}}
         </div>
       </div>
+      {{/unless}}
     </section>
 </form>

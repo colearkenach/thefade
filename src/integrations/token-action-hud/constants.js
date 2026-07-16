@@ -4,7 +4,7 @@ export const MODULE = {
     NAME: "The Fade — Token Action HUD"
 };
 
-export const REQUIRED_CORE_MODULE_VERSION = "2.0";
+export const REQUIRED_CORE_MODULE_VERSION = "2.1";
 
 export const ACTION_TYPE = {
     attribute: "attribute",

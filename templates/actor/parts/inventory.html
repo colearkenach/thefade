@@ -55,10 +55,10 @@
                         </div>
                         <div class="weapon-skill">{{weapon.system.skill}}</div>
                         <div class="weapon-dice">{{weapon.calculatedDice}}d12</div>
-                        <div class="weapon-damage">{{weapon.system.damage}} {{weapon.system.damageType}}</div>
+                        <div class="weapon-damage">{{weapon.damageDisplay}}</div>
                         <div class="weapon-crit">{{weapon.system.critical}}</div>
                         <div class="weapon-range">{{weapon.system.range}}</div>
-                        <div class="weapon-qualities">{{weapon.system.qualities}}</div>
+                        <div class="weapon-qualities">{{weapon.qualityDisplay}}</div>
                     </li>
                     {{/each}}
                 </ol>
@@ -89,24 +89,6 @@
                                 </div>
                                 <i class="fas fa-chevron-down armor-slot-toggle"></i>
                             </label>
-
-                            <div class="natural-deflection-row">
-                                <div class="nd-input" title="Natural Deflection (Head)">
-                                    <label>Natural:</label>
-                                    <input type="number" name="system.naturalDeflection.head.current" value="{{actor.system.naturalDeflection.head.current}}" data-dtype="Number" min="0" />
-                                    <span>/</span>
-                                    <input type="number" name="system.naturalDeflection.head.max" value="{{actor.system.naturalDeflection.head.max}}" data-dtype="Number" min="0" />
-                                </div>
-                                <div class="nd-controls">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="system.naturalDeflection.head.stacks" {{#if actor.system.naturalDeflection.head.stacks}} checked{{/if}} /> Stacks
-                                    </label>
-                                </div>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="head" title="Reduce Natural Deflection">−</button>
-                                    <button type="button" class="reset-nd" data-location="head" title="Reset Natural Deflection">↻</button>
-                                </div>
-                            </div>
 
                             <div class="equipped-armor-list">
                                 {{#each actor.equippedArmor.head as |armor|}}
@@ -141,24 +123,6 @@
                                 </div>
                                 <i class="fas fa-chevron-down armor-slot-toggle"></i>
                             </label>
-
-                            <div class="natural-deflection-row">
-                                <div class="nd-input" title="Natural Deflection (Body)">
-                                    <label>Natural:</label>
-                                    <input type="number" name="system.naturalDeflection.body.current" value="{{actor.system.naturalDeflection.body.current}}" data-dtype="Number" min="0" />
-                                    <span>/</span>
-                                    <input type="number" name="system.naturalDeflection.body.max" value="{{actor.system.naturalDeflection.body.max}}" data-dtype="Number" min="0" />
-                                </div>
-                                <div class="nd-controls">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="system.naturalDeflection.body.stacks" {{#if actor.system.naturalDeflection.body.stacks}} checked{{/if}} /> Stacks
-                                    </label>
-                                </div>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="body" title="Reduce Natural Deflection">−</button>
-                                    <button type="button" class="reset-nd" data-location="body" title="Reset Natural Deflection">↻</button>
-                                </div>
-                            </div>
 
                             <div class="equipped-armor-list">
                                 {{#each actor.equippedArmor.body as |armor|}}
@@ -196,24 +160,6 @@
                                 </div>
                                 <i class="fas fa-chevron-down armor-slot-toggle"></i>
                             </label>
-
-                            <div class="natural-deflection-row">
-                                <div class="nd-input" title="Natural Deflection (Left Arm)">
-                                    <label>Natural:</label>
-                                    <input type="number" name="system.naturalDeflection.leftarm.current" value="{{actor.system.naturalDeflection.leftarm.current}}" data-dtype="Number" min="0" />
-                                    <span>/</span>
-                                    <input type="number" name="system.naturalDeflection.leftarm.max" value="{{actor.system.naturalDeflection.leftarm.max}}" data-dtype="Number" min="0" />
-                                </div>
-                                <div class="nd-controls">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="system.naturalDeflection.leftarm.stacks" {{#if actor.system.naturalDeflection.leftarm.stacks}} checked{{/if}} /> Stacks
-                                    </label>
-                                </div>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="leftarm" title="Reduce Natural Deflection">−</button>
-                                    <button type="button" class="reset-nd" data-location="leftarm" title="Reset Natural Deflection">↻</button>
-                                </div>
-                            </div>
 
                             <!-- Arms Armor affecting Left Arm -->
                             <div class="derived-armor-section">
@@ -271,24 +217,6 @@
                                 </div>
                                 <i class="fas fa-chevron-down armor-slot-toggle"></i>
                             </label>
-
-                            <div class="natural-deflection-row">
-                                <div class="nd-input" title="Natural Deflection (Right Arm)">
-                                    <label>Natural:</label>
-                                    <input type="number" name="system.naturalDeflection.rightarm.current" value="{{actor.system.naturalDeflection.rightarm.current}}" data-dtype="Number" min="0" />
-                                    <span>/</span>
-                                    <input type="number" name="system.naturalDeflection.rightarm.max" value="{{actor.system.naturalDeflection.rightarm.max}}" data-dtype="Number" min="0" />
-                                </div>
-                                <div class="nd-controls">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="system.naturalDeflection.rightarm.stacks" {{#if actor.system.naturalDeflection.rightarm.stacks}} checked{{/if}} /> Stacks
-                                    </label>
-                                </div>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="rightarm" title="Reduce Natural Deflection">−</button>
-                                    <button type="button" class="reset-nd" data-location="rightarm" title="Reset Natural Deflection">↻</button>
-                                </div>
-                            </div>
 
                             <!-- Arms Armor affecting Right Arm -->
                             <div class="derived-armor-section">
@@ -350,24 +278,6 @@
                                 <i class="fas fa-chevron-down armor-slot-toggle"></i>
                             </label>
 
-                            <div class="natural-deflection-row">
-                                <div class="nd-input" title="Natural Deflection (Left Leg)">
-                                    <label>Natural:</label>
-                                    <input type="number" name="system.naturalDeflection.leftleg.current" value="{{actor.system.naturalDeflection.leftleg.current}}" data-dtype="Number" min="0" />
-                                    <span>/</span>
-                                    <input type="number" name="system.naturalDeflection.leftleg.max" value="{{actor.system.naturalDeflection.leftleg.max}}" data-dtype="Number" min="0" />
-                                </div>
-                                <div class="nd-controls">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="system.naturalDeflection.leftleg.stacks" {{#if actor.system.naturalDeflection.leftleg.stacks}} checked{{/if}} /> Stacks
-                                    </label>
-                                </div>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="leftleg" title="Reduce Natural Deflection">−</button>
-                                    <button type="button" class="reset-nd" data-location="leftleg" title="Reset Natural Deflection">↻</button>
-                                </div>
-                            </div>
-
                             <!-- Legs Armor affecting Left Leg -->
                             <div class="derived-armor-section">
                                 {{#each actor.equippedArmor.legs as |armor|}}
@@ -424,24 +334,6 @@
                                 </div>
                                 <i class="fas fa-chevron-down armor-slot-toggle"></i>
                             </label>
-
-                            <div class="natural-deflection-row">
-                                <div class="nd-input" title="Natural Deflection (Right Leg)">
-                                    <label>Natural:</label>
-                                    <input type="number" name="system.naturalDeflection.rightleg.current" value="{{actor.system.naturalDeflection.rightleg.current}}" data-dtype="Number" min="0" />
-                                    <span>/</span>
-                                    <input type="number" name="system.naturalDeflection.rightleg.max" value="{{actor.system.naturalDeflection.rightleg.max}}" data-dtype="Number" min="0" />
-                                </div>
-                                <div class="nd-controls">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" name="system.naturalDeflection.rightleg.stacks" {{#if actor.system.naturalDeflection.rightleg.stacks}} checked{{/if}} /> Stacks
-                                    </label>
-                                </div>
-                                <div class="nd-action-buttons">
-                                    <button type="button" class="reduce-nd" data-location="rightleg" title="Reduce Natural Deflection">−</button>
-                                    <button type="button" class="reset-nd" data-location="rightleg" title="Reset Natural Deflection">↻</button>
-                                </div>
-                            </div>
 
                             <!-- Legs Armor affecting Right Leg -->
                             <div class="derived-armor-section">
@@ -571,15 +463,53 @@
                 <h2 class="inv-heading">
                     <i class="fas fa-gem"></i>
                     <span class="inv-title">Items of Power</span>
-                    <span class="attunement-limit" title="Attuned / Max">
+                    {{#unless actor.attunementRemoved}}<span class="attunement-limit" title="Attuned / Max">
                         <i class="fas fa-link"></i>
                         <span class="current-attunements">{{actor.currentAttunements}}</span>
                         <span class="attunement-sep">/</span>
                         <span class="max-attunements">{{actor.maxAttunements}}</span>
-                    </span>
+                    </span>{{/unless}}
                 </h2>
 
                 <!-- Equipment Slots -->
+                <div class="equipment-slots item-power-slot-grid">
+                    {{#each actor.itemPowerSlots as |slot|}}
+                    <div class="slot-container" data-slot="{{slot.key}}">
+                        <div class="slot-label">
+                            {{slot.label}}
+                            {{#if slot.capacityLabel}}<span class="slot-capacity">{{slot.capacityLabel}}</span>{{/if}}
+                        </div>
+                        <div class="slot-content" data-slot="{{slot.key}}">
+                            {{#each slot.items as |item|}}
+                            <div class="equipped-item {{#if item.isDarkMagicItem}}dark-magic-equipped{{/if}}" data-item-id="{{item._id}}">
+                                <img src="{{item.img}}" class="item-icon" alt="{{item.name}}" />
+                                <div class="item-info">
+                                    <span class="item-name">{{item.name}}</span>
+                                    {{#unless ../../actor.attunementRemoved}}<span class="attunement-indicator {{#if item.system.attunement}}attuned{{/if}}"></span>{{/unless}}
+                                    {{#if item.isDarkMagicItem}}<span class="dark-magic-badge">Dark · CV {{item.darkMagicCorruptionValue}}</span>{{/if}}
+                                </div>
+                                <div class="item-controls">
+                                    {{#if item.isDarkMagicItem}}
+                                    <button type="button" class="dark-item-corruption" data-item-id="{{item._id}}" data-period="{{#if item.darkMagicDawn}}dawn{{else}}week{{/if}}" title="Apply recurring Dark Magic Item corruption">
+                                        <i class="fas fa-fire-flame-curved"></i> {{#if item.darkMagicDawn}}Dawn{{else}}Week{{/if}}
+                                    </button>
+                                    {{/if}}
+                                    {{#unless ../../actor.attunementRemoved}}
+                                    {{#if item.system.attunement}}<button type="button" class="unattune-btn" data-item-id="{{item._id}}" title="Unattune"><i class="fas fa-unlink"></i> Unattune</button>{{/if}}
+                                    {{/unless}}
+                                    <button type="button" class="item-edit-btn" title="Edit Item"><i class="fas fa-edit"></i> Edit</button>
+                                    <button type="button" class="item-unequip-btn" data-item-id="{{item._id}}" title="Unequip Item"><i class="fas fa-arrow-down"></i> Unequip</button>
+                                </div>
+                            </div>
+                            {{else}}
+                            <div class="empty-slot">Empty <span>{{slot.examples}}</span></div>
+                            {{/each}}
+                        </div>
+                    </div>
+                    {{/each}}
+                </div>
+
+                {{#unless actor.itemPowerSlots}}
                 <div class="equipment-slots">
                     <div class="slot-row flexrow">
                         <div class="slot-container" data-slot="head">
@@ -829,6 +759,7 @@
                         </div>
                     </div>
                 </div>
+                {{/unless}}
 
                 <!-- Unequipped Items of Power -->
                 <div class="unequipped-magic-items inv-subblock">
@@ -844,19 +775,22 @@
                     <header class="gear-header flexrow">
                         <div class="item-name">Name</div>
                         <div class="item-slot">Slot</div>
-                        <div class="item-attunement">Attuned</div>
+                        <div class="item-attunement">{{#unless actor.attunementRemoved}}Attuned{{/unless}}</div>
                         <div class="item-controls"></div>
                     </header>
 
                     <div class="items-list magic-items-list">
                         {{#each actor.unequippedItemsOfPower as |item id|}}
                         <div class="item flexrow magic-item" data-item-id="{{item._id}}">
-                            <div class="item-name">{{item.name}}</div>
+                            <div class="item-name">{{item.name}}{{#if item.isDarkMagicItem}} <span class="dark-magic-badge">Dark · CV {{item.darkMagicCorruptionValue}}</span>{{/if}}</div>
                             <div class="item-slot">{{item.system.slot}}</div>
                             <div class="item-attunement">
+                                {{#unless ../actor.attunementRemoved}}
                                 <input type="checkbox" data-item-id="{{item._id}}" class="attunement-checkbox" title="Attune" {{#if item.system.attunement}} checked{{/if}} />
+                                {{/unless}}
                             </div>
                             <div class="item-controls">
+                                {{#if item.isDarkMagicItem}}<button type="button" class="dark-item-corruption" data-item-id="{{item._id}}" data-period="{{#if item.darkMagicDawn}}dawn{{else}}week{{/if}}" title="Apply recurring Dark Magic Item corruption"><i class="fas fa-fire-flame-curved"></i></button>{{/if}}
                                 <a class="item-equip" title="Equip Item" data-slot="{{item.system.slot}}"><i class="fas fa-hand-paper"></i></a>
                                 <a class="item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
@@ -913,7 +847,7 @@
                                     <span>{{potion.name}}</span>
                                 </div>
                                 <div class="potion-quantity">
-                                    <input type="number" name="system.quantity" value="{{potion.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.quantity" value="{{potion.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="potion-effect">{{potion.system.effect}}</div>
                                 <div class="potion-duration">{{potion.system.duration}}</div>
@@ -958,12 +892,12 @@
                                     <span>{{drug.name}}</span>
                                 </div>
                                 <div class="drug-quantity">
-                                    <input type="number" name="system.quantity" value="{{drug.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.quantity" value="{{drug.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="drug-effect">{{drug.system.effect}}</div>
                                 <div class="drug-addiction">{{drug.system.addictionRisk}}</div>
                                 <div class="drug-tolerance">
-                                    <input type="number" name="system.tolerance" value="{{drug.system.tolerance}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.tolerance" value="{{drug.system.tolerance}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="drug-controls">
                                     <a class="drug-use" title="Use Drug"><i class="fas fa-pills"></i></a>
@@ -1005,7 +939,7 @@
                                     <span>{{poison.name}}</span>
                                 </div>
                                 <div class="poison-quantity">
-                                    <input type="number" name="system.quantity" value="{{poison.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.quantity" value="{{poison.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="poison-type">{{poison.system.type}}</div>
                                 <div class="poison-potency">{{poison.system.potency}}</div>
@@ -1068,7 +1002,7 @@
                                     <span>{{staff.name}}</span>
                                 </div>
                                 <div class="staff-charges">
-                                    <input type="number" name="staff.usesPerDay" value="{{staff.usesPerDay}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.usesPerDay" value="{{staff.system.usesPerDay}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="staff-spells">{{staff.system.spellLevel}}</div>
                                 <div class="staff-controls">
@@ -1111,7 +1045,7 @@
                                     <span>{{wand.name}}</span>
                                 </div>
                                 <div class="wand-charges">
-                                    <input type="number" name="system.charges.current" value="{{wand.system.charges.current}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.charges.current" value="{{wand.system.charges.current}}" data-dtype="Number" min="0" class="small-input" />
                                     <span>/</span>
                                     <span>{{wand.system.charges.max}}</span>
                                 </div>
@@ -1158,7 +1092,7 @@
                                 <div class="comm-range">{{comm.system.range}}</div>
                                 <div class="comm-type">{{comm.system.type}}</div>
                                 <div class="comm-active">
-                                    <input type="checkbox" name="system.active" {{#if comm.system.active}} checked{{/if}} />
+                                    <input type="checkbox" data-item-path="system.active" {{#if comm.system.active}} checked{{/if}} />
                                 </div>
                                 <div class="comm-controls">
                                     <a class="communication-use" title="Use Device"><i class="fas fa-broadcast-tower"></i></a>
@@ -1242,7 +1176,7 @@
                                 <div class="gate-destination">{{gate.system.destination}}</div>
                                 <div class="gate-stability">{{gate.system.stability}}</div>
                                 <div class="gate-uses">
-                                    <input type="number" name="system.uses.current" value="{{gate.system.uses.current}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.uses.current" value="{{gate.system.uses.current}}" data-dtype="Number" min="0" class="small-input" />
                                     <span>/</span>
                                     <span>{{gate.system.uses.max}}</span>
                                 </div>
@@ -1346,12 +1280,12 @@
                                     <span>{{medical.name}}</span>
                                 </div>
                                 <div class="medical-quantity">
-                                    <input type="number" name="system.quantity" value="{{medical.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.quantity" value="{{medical.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="medical-type">{{medical.system.type}}</div>
                                 <div class="medical-bonus">+{{medical.system.bonus}}</div>
                                 <div class="medical-uses">
-                                    <input type="number" name="system.uses.current" value="{{medical.system.uses.current}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.uses.current" value="{{medical.system.uses.current}}" data-dtype="Number" min="0" class="small-input" />
                                     <span>/</span>
                                     <span>{{medical.system.uses.max}}</span>
                                 </div>
@@ -1395,7 +1329,7 @@
                                     <span>{{bio.name}}</span>
                                 </div>
                                 <div class="bio-quantity">
-                                    <input type="number" name="system.quantity" value="{{bio.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.quantity" value="{{bio.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="bio-type">{{bio.system.type}}</div>
                                 <div class="bio-condition">{{bio.system.condition}}</div>
@@ -1439,7 +1373,7 @@
                                     <span>{{travel.name}}</span>
                                 </div>
                                 <div class="travel-quantity">
-                                    <input type="number" name="system.quantity" value="{{travel.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.quantity" value="{{travel.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="travel-weight">{{travel.system.weight}}</div>
                                 <div class="travel-durability">{{travel.system.durability}}</div>
@@ -1525,7 +1459,7 @@
                                 </div>
                                 <div class="clothing-type">{{clothing.system.clothingType}}</div>
                                 <div class="clothing-quantity">
-                                    <input type="number" name="system.quantity" value="{{clothing.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
+                                    <input type="number" data-item-path="system.quantity" value="{{clothing.system.quantity}}" data-dtype="Number" min="0" class="small-input" />
                                 </div>
                                 <div class="clothing-material">{{clothing.system.material}}</div>
                                 <div class="clothing-quality">{{clothing.system.quality}}</div>
@@ -1588,13 +1522,13 @@
                                 </div>
                                 <div class="mount-type">{{mount.system.type}}</div>
                                 <div class="mount-hp">
-                                    <input type="number" name="system.hp.value" value="{{mount.system.hp.value}}" data-dtype="Number" class="small-input" />
+                                    <input type="number" data-item-path="system.hp.value" value="{{mount.system.hp.value}}" data-dtype="Number" class="small-input" />
                                     <span>/</span>
                                     <span>{{mount.system.hp.max}}</span>
                                 </div>
                                 <div class="mount-speed">{{mount.system.speed}}</div>
                                 <div class="mount-loyalty">
-                                    <input type="number" name="system.loyalty" value="{{mount.system.loyalty}}" data-dtype="Number" min="0" max="10" class="small-input" />
+                                    <input type="number" data-item-path="system.loyalty" value="{{mount.system.loyalty}}" data-dtype="Number" min="0" max="10" class="small-input" />
                                 </div>
                                 <div class="mount-controls">
                                     <a class="mount-ride" title="Open Mount Sheet"><i class="fas fa-bolt"></i></a>
@@ -1637,13 +1571,13 @@
                                 </div>
                                 <div class="fleshcraft-type">{{fleshcraft.system.type}}</div>
                                 <div class="fleshcraft-hp">
-                                    <input type="number" name="system.hp.value" value="{{fleshcraft.system.hp.value}}" data-dtype="Number" class="small-input" />
+                                    <input type="number" data-item-path="system.hp.value" value="{{fleshcraft.system.hp.value}}" data-dtype="Number" class="small-input" />
                                     <span>/</span>
                                     <span>{{fleshcraft.system.hp.max}}</span>
                                 </div>
                                 <div class="fleshcraft-sanity">{{fleshcraft.system.sanityCost}}</div>
                                 <div class="fleshcraft-active">
-                                    <input type="checkbox" name="system.active" {{#if fleshcraft.system.active}} checked{{/if}} />
+                                    <input type="checkbox" data-item-path="system.active" {{#if fleshcraft.system.active}} checked{{/if}} />
                                 </div>
                                 <div class="fleshcraft-controls">
                                     <a class="fleshcraft-activate" title="{{#if fleshcraft.system.active}}Deactivate{{else}}Activate{{/if}} Fleshcraft">
@@ -1717,7 +1651,7 @@
                                 <div class="vehicle-size">{{vehicle.system.size}}</div>
                                 <div class="vehicle-speed">{{vehicle.system.speed}}</div>
                                 <div class="vehicle-condition">
-                                    <select name="system.condition" data-dtype="String">
+                                    <select data-item-path="system.condition" data-dtype="String">
                                         <option value="excellent" {{#ifEquals vehicle.system.condition "excellent"}} selected{{/ifEquals}}>Excellent</option>
                                         <option value="good" {{#ifEquals vehicle.system.condition "good"}} selected{{/ifEquals}}>Good</option>
                                         <option value="fair" {{#ifEquals vehicle.system.condition "fair"}} selected{{/ifEquals}}>Fair</option>

@@ -9,6 +9,7 @@
 // (stances page). See AUDIT.md for traceability of P1 #4/#5/#6/#7/#8.
 
 import { BODY_PARTS } from './constants.js';
+import { armorProtectionPools } from './protection.js';
 
 /**
  * Body locations valid for hit-location selection.
@@ -53,10 +54,10 @@ export function damageTypeFlags(primary, components) {
 }
 
 /**
- * Split armor absorption between Natural Deflection and equipped armor.
- * Mirrors the rules: ND stacks (if flagged) or takes the higher of the two;
- * the attacker reduces whichever applies first (we reduce ND first if
- * stacking, else armor first, matching the existing AP-reduction helper).
+ * Split protection absorption between Natural Deflection and equipped armor.
+ * Stacking protection cascades from ND into armor. Non-stacking protection
+ * commits the whole attack to the single highest current pool; any excess
+ * goes to HP instead of spilling into another protection pool.
  *
  * Returns { absorbed, updates: {actorUpdates, itemUpdates} }.
  * Does NOT persist — caller merges updates into a batch.
@@ -65,67 +66,56 @@ function computeArmorAbsorption(actor, location, damage) {
     let remaining = damage;
     let absorbed = 0;
     const actorUpdates = {};
-    const itemUpdates = [];
+    const itemUpdateMap = new Map();
 
     const nd = actor.system.naturalDeflection?.[location];
-    const equippedArmor = actor.equippedArmor?.[location] || [];
+    const ndCurrent = Math.max(0, Number(nd?.current) || 0);
+    const armorPools = armorProtectionPools(actor, location)
+        .filter(pool => pool.current > 0);
 
-    // Natural Deflection: if stacks, reduce it first alongside armor.
-    if (nd && nd.stacks && (nd.current || 0) > 0 && remaining > 0) {
-        const take = Math.min(nd.current, remaining);
-        actorUpdates[`system.naturalDeflection.${location}.current`] = nd.current - take;
+    const reduceNatural = () => {
+        if (remaining <= 0 || ndCurrent <= 0) return;
+        const take = Math.min(ndCurrent, remaining);
+        actorUpdates[`system.naturalDeflection.${location}.current`] = ndCurrent - take;
         remaining -= take;
         absorbed += take;
-    }
-
-    // Armor pieces at the struck location.
-    for (const armor of equippedArmor) {
-        if (remaining <= 0) break;
-        const currentAP = Number(armor.system.currentAP) || 0;
-        if (currentAP <= 0) continue;
-        const take = Math.min(currentAP, remaining);
-        itemUpdates.push({ _id: armor._id, "system.currentAP": currentAP - take });
-        remaining -= take;
-        absorbed += take;
-    }
-
-    // Derived limb armor (parent arms/legs armor covers both children, with
-    // side-specific pools tracked as derivedLeftAP / derivedRightAP). The
-    // sheet displays these fields directly — writing the generic currentAP
-    // here would absorb damage invisibly.
-    const decrementDerived = (armorList, derivedProp) => {
-        for (const armor of armorList) {
-            if (remaining <= 0) break;
-            const raw = armor.system[derivedProp];
-            const startPool = (raw === undefined || raw === null)
-                ? (Number(armor.system.ap) || 0) + (Number(armor.system.apIncrease) || 0)
-                : Number(raw) || 0;
-            if (startPool <= 0) continue;
-            const take = Math.min(startPool, remaining);
-            itemUpdates.push({ _id: armor._id, [`system.${derivedProp}`]: startPool - take });
-            remaining -= take;
-            absorbed += take;
-        }
     };
-    if (remaining > 0 && (location === "leftarm" || location === "rightarm")) {
-        const prop = location === "leftarm" ? "derivedLeftAP" : "derivedRightAP";
-        decrementDerived(actor.equippedArmor?.arms || [], prop);
-    }
-    if (remaining > 0 && (location === "leftleg" || location === "rightleg")) {
-        const prop = location === "leftleg" ? "derivedLeftAP" : "derivedRightAP";
-        decrementDerived(actor.equippedArmor?.legs || [], prop);
-    }
 
-    // Non-stacking Natural Deflection: acts as a floor — contributes after
-    // armor is exhausted, up to its remaining pool.
-    if (nd && !nd.stacks && (nd.current || 0) > 0 && remaining > 0) {
-        const take = Math.min(nd.current, remaining);
-        actorUpdates[`system.naturalDeflection.${location}.current`] = nd.current - take;
+    const reduceArmor = pool => {
+        if (remaining <= 0 || !pool || pool.current <= 0) return;
+        const take = Math.min(pool.current, remaining);
+        const update = itemUpdateMap.get(pool.itemId) || { _id: pool.itemId };
+        update[pool.property] = pool.current - take;
+        itemUpdateMap.set(pool.itemId, update);
         remaining -= take;
         absorbed += take;
+    };
+
+    if (nd?.stacks === true) {
+        // ND always takes precedence. Once it is exhausted, armor pieces act
+        // as one cascading pool, consuming the lowest remaining piece first.
+        reduceNatural();
+        armorPools
+            .sort((a, b) => (a.current - b.current) || a.key.localeCompare(b.key))
+            .forEach(reduceArmor);
+    } else {
+        // One protection pool owns this attack. Ties favor ND; overflow goes
+        // directly to HP and other pools remain available for later attacks.
+        const highestArmor = armorPools
+            .sort((a, b) => (b.current - a.current) || a.key.localeCompare(b.key))[0];
+        if (ndCurrent > 0 && (!highestArmor || ndCurrent >= highestArmor.current)) {
+            reduceNatural();
+        } else {
+            reduceArmor(highestArmor);
+        }
     }
 
-    return { absorbed, carryToHp: remaining, actorUpdates, itemUpdates };
+    return {
+        absorbed,
+        carryToHp: remaining,
+        actorUpdates,
+        itemUpdates: Array.from(itemUpdateMap.values())
+    };
 }
 
 /**
@@ -156,6 +146,8 @@ function computeHpStateConditions(newHp, maxHp) {
  * @param {boolean} [opts.calledShot=false] - True when the attack was declared
  *   as a called shot. Only called shots apply location-tied status effects
  *   (e.g. Bleed on S/P). Random and Default hits deal damage only.
+ * @param {number} [opts.minimumHpDamage=0] - Minimum HP damage after armor for
+ *   qualities such as Savage. Immunity and Brace for Impact still win.
  * @returns {Promise<{absorbed, hpBefore, hpAfter, hpDamage, bleedApplied,
  *                   knockedOut, summary}>}
  */
@@ -169,19 +161,32 @@ export async function applyDamage(actor, opts) {
     const applyBleed = opts?.applyBleed !== false;
     const calledShot = !!opts?.calledShot;
 
+    // Typed resistance and immunity apply before armor. Resistance halves
+    // incoming damage; immunity negates it completely.
+    const traits = actor.system.combatTraits || {};
+    const damageImmune = traits.immunities?.damageTypes?.[type] === true;
+    const damageResistant = !damageImmune && traits.resistances?.[type] === true;
+    const mitigatedAmount = damageImmune
+        ? 0
+        : damageResistant ? Math.floor(amount / 2) : amount;
+
     const hpBefore = Number(actor.system.hp?.value ?? 0);
     const hpMax = Number(actor.system.hp?.max ?? 1);
     const mitigation = actor.system.damageMitigation || { noExcessToHp: false, halveHp: false };
 
     // 1) Armor/ND absorbs the front of the damage — unless the type bypasses
     //    armor (Sonic, Psychokinetic, Expel route straight to HP).
-    const bypassArmor = ARMOR_BYPASS_TYPES.has(type);
+    const bypassArmor = opts?.bypassArmor === true || ARMOR_BYPASS_TYPES.has(type);
     const armor = bypassArmor
-        ? { absorbed: 0, carryToHp: amount, actorUpdates: {}, itemUpdates: [] }
-        : computeArmorAbsorption(actor, location, amount);
+        ? { absorbed: 0, carryToHp: mitigatedAmount, actorUpdates: {}, itemUpdates: [] }
+        : computeArmorAbsorption(actor, location, mitigatedAmount);
 
     // 2) Brace for Impact: excess past armor never reaches HP.
     let toHp = armor.carryToHp;
+    const minimumHpDamage = Math.max(0, Math.floor(Number(opts?.minimumHpDamage) || 0));
+    if (!damageImmune && amount > 0 && minimumHpDamage > 0) {
+        toHp = Math.max(toHp, minimumHpDamage);
+    }
     if (mitigation.noExcessToHp) toHp = 0;
 
     // 3) Halve HP-bound damage (still Brace), min 1 if any got through.
@@ -195,7 +200,10 @@ export async function applyDamage(actor, opts) {
     // 5) Bleed on slashing/piercing if damage reached HP — ONLY on called shots.
     // Random and Default hits deal damage without location-tied status effects.
     let bleedApplied = false;
-    if (applyBleed && calledShot && toHp > 0 && BLEED_TYPES.has(type)) {
+    const bleedImmune = actor.system.statusImmunityLocks?.bleed === true
+        || traits.immunities?.statuses?.all === true
+        || traits.immunities?.statuses?.bleed === true;
+    if (applyBleed && calledShot && toHp > 0 && BLEED_TYPES.has(type) && !bleedImmune) {
         // Existing Bleed doesn't stack (higher wins) — we set trivial if off,
         // otherwise leave alone so GM can escalate manually on crits.
         const existing = actor.system.conditions?.bleed;
@@ -222,11 +230,23 @@ export async function applyDamage(actor, opts) {
 
     const summary = buildSummary({
         target: actor.name, sourceName, location, amount, type,
+        mitigatedAmount, damageImmune, damageResistant,
         absorbed: armor.absorbed, toHp, hpBefore, hpAfter,
         mitigation, bleedApplied, knockedOut, bypassArmor
     });
 
-    return { absorbed: armor.absorbed, hpBefore, hpAfter, hpDamage: toHp, bleedApplied, knockedOut, summary };
+    return {
+        absorbed: armor.absorbed,
+        hpBefore,
+        hpAfter,
+        hpDamage: toHp,
+        bleedApplied,
+        knockedOut,
+        damageImmune,
+        damageResistant,
+        mitigatedAmount,
+        summary
+    };
 }
 
 /**
@@ -235,9 +255,14 @@ export async function applyDamage(actor, opts) {
 function buildSummary(o) {
     const parts = [];
     parts.push(`<strong>${o.target}</strong> takes <strong>${o.amount}</strong> ${o.type} damage to ${o.location} from ${o.sourceName}.`);
-    if (o.bypassArmor) parts.push(`<em>${o.type} damage bypasses armor.</em>`);
+    if (o.damageImmune) {
+        parts.push(`<em>Immunity negates all ${o.type} damage.</em>`);
+    } else if (o.damageResistant) {
+        parts.push(`<em>Resistance reduces damage to ${o.mitigatedAmount}.</em>`);
+    }
+    if (o.bypassArmor && o.mitigatedAmount > 0) parts.push(`<em>${o.type} damage bypasses armor.</em>`);
     if (o.absorbed > 0) parts.push(`Armor/ND absorbed ${o.absorbed}.`);
-    if (o.mitigation.noExcessToHp && o.amount > o.absorbed) {
+    if (o.mitigation.noExcessToHp && o.mitigatedAmount > o.absorbed) {
         parts.push(`<em>Brace for Impact:</em> excess blocked from HP.`);
     } else if (o.mitigation.halveHp && o.toHp > 0) {
         parts.push(`<em>Brace for Impact:</em> HP damage halved.`);

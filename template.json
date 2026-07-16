@@ -41,8 +41,9 @@
         "name": "",
         "baseHP": 0,
         "size": "medium",
-        "creatureType": "humanoid",
+        "creatureType": "sapient",
         "creatureSubtype": "",
+        "creatureSubtypes": [],
         "languages": "",
         "speciesAbilities": {},
         "manualEntry": false
@@ -96,6 +97,23 @@
         "stunned":    { "active": false, "intensity": "trivial" }
       },
       "activeStance": "none",
+      "temporaryBonuses": [],
+      "combatTraits": {
+        "abilities": {},
+        "abilityValues": {},
+        "abilityNotes": "",
+        "spellResistancePercent": 50,
+        "resistances": {},
+        "immunities": {
+          "damageTypes": {},
+          "statuses": {},
+          "effects": {}
+        },
+        "absorption": {},
+        "vulnerabilities": {},
+        "vulnerabilitySeverity": {},
+        "notes": ""
+      },
       "injuries": {
         "head":     { "severed": false },
         "body":     { "severed": false },
@@ -103,6 +121,37 @@
         "rightArm": { "severed": false },
         "leftLeg":  { "severed": false },
         "rightLeg": { "severed": false }
+      },
+      "anatomy": {
+        "preset": "humanoid",
+        "notes": ""
+      },
+      "fate": {
+        "points": 0,
+        "motivations": {
+          "personalGoal": "",
+          "drivingForce": "",
+          "personalRelationship": ""
+        }
+      },
+      "heritage": {
+        "motherType": "",
+        "fatherType": "",
+        "outcome": "",
+        "outcomeLabel": "",
+        "characteristicChanges": 0,
+        "standardMutationRolls": "",
+        "xenochildRolls": 0,
+        "isXenochild": false,
+        "xenochildModifiers": {
+          "designerSculpting": false,
+          "extradimensionalParentage": false,
+          "dragonParent": false,
+          "faeParent": false,
+          "undeadDNA": false,
+          "additionalParents": 0
+        },
+        "notes": ""
       },
       "mentalDisorders": [],
       "magicItems": {
@@ -199,8 +248,11 @@
         "stunned":    { "active": false, "intensity": "trivial" }
       },
       "activeStance": "none",
-      "creatureType": "humanoid",
+      "anatomy": { "preset": "humanoid", "notes": "" },
+      "creatureType": "sapient",
       "creatureSubtype": "",
+      "creatureSubtypes": [],
+      "temporaryBonuses": [],
       "size": "medium",
       "initiativeBonus": 0,
       "notes": ""
@@ -222,10 +274,12 @@
       "armor",
       "skill",
       "path",
+      "monsterpath",
       "spell",
       "talent",
       "clothing",
       "species",
+      "monsterspecies",
       "drug",
       "poison",
       "biological",
@@ -245,7 +299,13 @@
       "magicitem",
       "trait",
       "precept",
-      "disease"
+      "disease",
+      "mutation",
+      "heritage",
+      "trap",
+      "hazard",
+      "downtime",
+      "item"
     ],
     "templates": {
       "base": {
@@ -255,7 +315,9 @@
         "weight": 0,
         "price": 0,
         "quantity": 1,
-        "equipped":  false
+        "equipped":  false,
+        "technological": false,
+        "technologyAttunement": false
       }
     },
     "weapon": {
@@ -268,6 +330,7 @@
       "range": "Melee",
       "integrity": 10,
       "qualities": "",
+      "qualityIds": [],
       "skill": "Sword",
       "attribute": "physique",
       "material": "iron",
@@ -311,6 +374,16 @@
       "abilities": {},
       "pathSkills": []
     },
+    "monsterpath": {
+      "templates": [ "base" ],
+      "tier": 1,
+      "baseHP": 0,
+      "skills": "",
+      "requirements": "",
+      "abilities": {},
+      "pathSkills": [],
+      "isMonsterPath": true
+    },
     "spell": {
       "templates": [ "base" ],
       "school": "General",
@@ -333,10 +406,12 @@
     },
     "species": {
       "templates": [ "base" ],
+      "syncToActor": false,
       "baseHP": 0,
       "size": "medium",
-      "creatureType": "humanoid",
+      "creatureType": "sapient",
       "creatureSubtype": "",
+      "creatureSubtypes": [],
       "languages": "",
       "abilityBonuses": {
         "physique": 0,
@@ -371,6 +446,168 @@
       ],
       "biologicallyImmortal": false
     },
+    "monsterspecies": {
+      "templates": [ "base" ],
+      "syncToActor": false,
+      "baseHP": 0,
+      "size": "medium",
+      "creatureType": "beast",
+      "creatureSubtype": "",
+      "creatureSubtypes": [],
+      "languages": "",
+      "abilityBonuses": {
+        "physique": 0,
+        "finesse": 0,
+        "mind": 0,
+        "presence": 0,
+        "soul": 0
+      },
+      "attributeSet": {
+        "physique": 1,
+        "finesse": 1,
+        "mind": 1,
+        "presence": 1,
+        "soul": 1
+      },
+      "attributeSpread": "10, 5, 3, 1, 1",
+      "flexibleBonus": {
+        "value": 0,
+        "selectedAttribute": ""
+      },
+      "movement": {
+        "land": 4,
+        "fly": 0,
+        "swim": 0,
+        "climb": 0,
+        "burrow": 0
+      },
+      "naturalDeflectionTypes": {
+        "fragile": {
+          "baseMultiplier": 2,
+          "parts": {
+            "head": "0.25",
+            "body": "1",
+            "arms": "0.3333333333",
+            "legs": "0.3333333333"
+          }
+        },
+        "average": {
+          "baseMultiplier": 5,
+          "parts": {
+            "head": "0.3333333333",
+            "body": "1",
+            "arms": "0.5",
+            "legs": "0.5"
+          }
+        },
+        "tough": {
+          "baseMultiplier": 10,
+          "parts": {
+            "head": "0.5",
+            "body": "1",
+            "arms": "0.6666666667",
+            "legs": "0.6666666667"
+          }
+        }
+      },
+      "standardAttacks": [],
+      "sizeRules": {
+        "miniscule": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "diminutive": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "tiny": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "small": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "medium": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "large": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "massive": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "immense": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "enormous": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        },
+        "titanic": {
+          "averageEL": 0,
+          "bonusHP": 0,
+          "movement": { "land": 0 },
+          "bonuses": { "physique": 0, "finesse": 0, "mind": 0, "presence": 0, "soul": 0 },
+          "caps": { "physique": "", "finesse": "", "mind": "", "presence": "", "soul": "" },
+          "example": ""
+        }
+      },
+      "speciesAbilities": {},
+      "description": "",
+      "personality": "",
+      "history": "",
+      "youngAge": "",
+      "adultAge": "",
+      "oldAge": "",
+      "maximumAge": 0,
+      "visionType": [
+        "normal",
+        "enhanced",
+        "darkvision"
+      ],
+      "biologicallyImmortal": false
+    },
     "item": {
       "templates": [ "base", "physical" ],
       "itemCategory": "mundane",
@@ -380,13 +617,38 @@
     "magicitem": {
       "templates": [ "base", "physical" ],
       "slot": "head",
+      "overlapMode": "overlaps",
       "effect": "",
       "catalyst": "",
       "attunement": false,
+      "darkMagic": false,
+      "corruptionValueOverride": 0,
       "equipped": false,
       "hasAura": true,
       "auraColor": "dull gray",
       "conflictsArmor": false,
+      "ap": 0,
+      "currentAP": 0,
+      "apIncrease": 0,
+      "location": "Body",
+      "isHeavy": false,
+      "material": "iron",
+      "autoBlock": "",
+      "derivedLeftAP": null,
+      "derivedRightAP": null,
+      "bonuses": [],
+      "traitGrants": {
+        "abilities": {},
+        "spellResistancePercent": 50,
+        "resistances": {},
+        "immunities": {
+          "damageTypes": {},
+          "statuses": {},
+          "effects": {}
+        },
+        "customImmunities": "",
+        "notes": ""
+      },
       "radiationEffect": "",
       "creationRequirements": ""
     },
@@ -399,6 +661,70 @@
       "templates": [ "base" ],
       "effect": "",
       "usesPerDay": 0
+    },
+    "mutation": {
+      "templates": [ "base" ],
+      "severity": "minor",
+      "rollRange": "",
+      "effect": "",
+      "source": ""
+    },
+    "heritage": {
+      "templates": [ "base" ],
+      "heritageType": "hybrid",
+      "motherSpecies": "",
+      "fatherSpecies": "",
+      "characteristicChanges": 0,
+      "mutationRolls": "",
+      "effect": "",
+      "source": ""
+    },
+    "trap": {
+      "templates": [ "base" ],
+      "level": 1,
+      "category": "mechanical",
+      "detectionSkill": "Sight",
+      "detectionDT": 4,
+      "disarmSkill": "Lockpicking",
+      "disarmDT": 4,
+      "trigger": "",
+      "attackDice": 0,
+      "defense": "avoid",
+      "damage": "0",
+      "damageType": "Ut",
+      "damageTrack": "hp",
+      "critical": 4,
+      "bypassArmor": false,
+      "reset": "",
+      "effect": "",
+      "source": ""
+    },
+    "hazard": {
+      "templates": [ "base" ],
+      "category": "hazard",
+      "attackDice": 0,
+      "escalationDice": 0,
+      "defense": "resilience",
+      "damage": "0",
+      "damageType": "Ut",
+      "damageTrack": "hp",
+      "interval": "",
+      "bypassArmor": false,
+      "effect": "",
+      "source": ""
+    },
+    "downtime": {
+      "templates": [ "base" ],
+      "activityType": "other",
+      "skill": "",
+      "dt": 0,
+      "duration": "",
+      "cost": "",
+      "progress": 0,
+      "target": 1,
+      "status": "planned",
+      "benefit": "",
+      "source": ""
     },
 
     "drug": {

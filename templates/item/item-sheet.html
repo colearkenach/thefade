@@ -11,6 +11,7 @@
     <nav class="sheet-tabs tabs" data-group="primary">
         <a class="item" data-tab="description">Description</a>
         <a class="item" data-tab="properties">Properties</a>
+        <a class="item" data-tab="grants">Grants</a>
         <a class="item" data-tab="details">Details</a>
     </nav>
 
@@ -30,14 +31,17 @@
                 <div class="form-group">
                     <label>Equipment Slot</label>
                     <select name="system.slot">
-                        <option value="head" {{#ifEquals system.slot "head"}} selected{{/ifEquals}}>Head</option>
-                        <option value="neck" {{#ifEquals system.slot "neck"}} selected{{/ifEquals}}>Neck</option>
-                        <option value="body" {{#ifEquals system.slot "body"}} selected{{/ifEquals}}>Body</option>
-                        <option value="hands" {{#ifEquals system.slot "hands"}} selected{{/ifEquals}}>Hands</option>
-                        <option value="ring" {{#ifEquals system.slot "ring"}} selected{{/ifEquals}}>Ring</option>
-                        <option value="belt" {{#ifEquals system.slot "belt"}} selected{{/ifEquals}}>Belt</option>
-                        <option value="boots" {{#ifEquals system.slot "boots"}} selected{{/ifEquals}}>Boots</option>
+                        {{selectOptions itemPowerSlotOptions selected=system.slot}}
                     </select>
+                    <p class="hint">{{#if (eq itemPowerSlotRule "alternate")}}Alternate expanded slot rules are active.{{else}}Standard Item of Power slots are active.{{/if}}</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Overlap Behavior</label>
+                    <select name="system.overlapMode">
+                        {{selectOptions itemPowerOverlapOptions selected=system.overlapMode}}
+                    </select>
+                    <p class="hint">Accessories such as earrings, monocles, gloves, bracers, and wristbands can be marked non-overlapping.</p>
                 </div>
 
                 <div class="form-group">
@@ -57,17 +61,19 @@
             </div>
 
             <div class="form-group flexrow" style="margin-top: 4px;">
+                {{#unless attunementRemoved}}
                 <div class="form-field">
                     <label>Currently Attuned</label>
                     <input type="checkbox" name="system.attunement" {{#if system.attunement}} checked{{/if}} />
                 </div>
+                {{/unless}}
                 <div class="form-field">
                     <label>Equipped</label>
                     <input type="checkbox" name="system.equipped" {{#if system.equipped}} checked{{/if}} />
                 </div>
                 <div class="form-field">
                     <label>Has Aura</label>
-                    <input type="checkbox" name="system.hasAura" {{#if system.hasAura}} checked{{/if}} />
+                    <input type="checkbox" name="system.hasAura" {{#if system.hasAura}} checked{{/if}} {{#if isDarkMagicItem}}disabled title="Dark Magic Items always radiate an aura"{{/if}} />
                 </div>
             </div>
 
@@ -79,34 +85,33 @@
             </div>
             {{/if}}
 
-            {{!-- Bonuses Section --}}
-            <div class="bonus-section">
-                <div class="bonus-section-header">
-                    <span>Bonuses</span>
-                    <button type="button" class="bonus-add"><i class="fas fa-plus"></i> Add</button>
+            <div class="dark-magic-item panel {{#if isDarkMagicItem}}is-dark{{/if}}">
+                <label class="form-field">
+                    <input type="checkbox" name="system.darkMagic" {{checked isDarkMagicItem}} />
+                    Dark Magic Item
+                </label>
+                {{#if isDarkMagicItem}}
+                <div class="dark-magic-summary">
+                    <strong>Corruption Value {{darkMagicCorruptionValue}}</strong>
+                    {{#if darkMagicRetroactive}}<span class="rules-badge">Retroactive core item</span>{{/if}}
                 </div>
-                {{#if system.bonuses.length}}
-                    {{#each system.bonuses}}
-                    <div class="bonus-row" data-bonus-id="{{this.id}}">
-                        <select class="bonus-type" data-bonus-id="{{this.id}}">
-                            <option value="skill" {{#ifEquals this.type "skill"}}selected{{/ifEquals}}>Skill</option>
-                            <option value="attack" {{#ifEquals this.type "attack"}}selected{{/ifEquals}}>Attack</option>
-                            <option value="damage" {{#ifEquals this.type "damage"}}selected{{/ifEquals}}>Damage</option>
-                            <option value="spell" {{#ifEquals this.type "spell"}}selected{{/ifEquals}}>Spell</option>
-                            <option value="avoid" {{#ifEquals this.type "avoid"}}selected{{/ifEquals}}>Avoid</option>
-                            <option value="resilience" {{#ifEquals this.type "resilience"}}selected{{/ifEquals}}>Resilience</option>
-                            <option value="grit" {{#ifEquals this.type "grit"}}selected{{/ifEquals}}>Grit</option>
-                            <option value="hp" {{#ifEquals this.type "hp"}}selected{{/ifEquals}}>Max HP</option>
-                        </select>
-                        <input type="text" class="bonus-target" value="{{this.target}}" placeholder="Target (or blank = all)" data-bonus-id="{{this.id}}" />
-                        <input type="number" class="bonus-value" value="{{this.value}}" data-bonus-id="{{this.id}}" />
-                        <button type="button" class="bonus-delete" data-bonus-id="{{this.id}}"><i class="fas fa-times"></i></button>
-                    </div>
-                    {{/each}}
-                {{else}}
-                    <div class="bonus-empty">No bonuses — click <strong>+ Add</strong> to create one.</div>
+                <label>Corruption Value Override
+                    <select name="system.corruptionValueOverride">
+                        {{selectOptions darkMagicCorruptionOptions selected=system.corruptionValueOverride}}
+                    </select>
+                </label>
+                <p class="hint">Attuned: gain Sin equal to CV each dawn. Carried but unattuned: gain 1 Sin each week. Crossing the Sin Threshold triggers an addiction check at DT equal to CV.</p>
                 {{/if}}
             </div>
+
+            {{#unless (eq item.type "magicitem")}}{{> "systems/thefade/templates/item/parts/tech-attunement.html"}}{{/unless}}
+
+            {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=system.bonuses bonusPath="system.bonuses"}}
+        </div>
+
+        {{!-- Granted Traits Tab --}}
+        <div class="tab" data-group="primary" data-tab="grants">
+            {{> "systems/thefade/templates/item/parts/item-power-grants.html"}}
         </div>
 
         {{!-- Details Tab --}}
@@ -128,9 +133,59 @@
                         <input type="checkbox" name="system.conflictsArmor" {{#if system.conflictsArmor}} checked{{/if}} />
                         Conflicts with Armor
                     </label>
-                    <p class="hint">Head, Body, and Hands slots typically conflict with armor</p>
+                    <p class="hint">When checked, this Item of Power also occupies an armor location and supplies AP while equipped.</p>
                 </div>
             </div>
+
+            {{#if system.conflictsArmor}}
+            <div class="combat-traits panel item-power-armor">
+                <div class="combat-traits-header">
+                    <h2>Armor Protection</h2>
+                </div>
+                <div class="item-attr-grid">
+                    <div class="form-group">
+                        <label>Max AP</label>
+                        <input type="number" name="system.ap" value="{{system.ap}}" data-dtype="Number" min="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Current AP</label>
+                        <input type="number" name="system.currentAP" value="{{system.currentAP}}" data-dtype="Number" min="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Armor Location</label>
+                        <select name="system.location">
+                            {{selectOptions armorLocationOptions selected=system.location}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Material</label>
+                        <select name="system.material">
+                            {{selectOptions materialOptions selected=system.material}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-field">
+                            <input type="checkbox" name="system.isHeavy" {{checked system.isHeavy}} />
+                            Heavy Armor
+                        </label>
+                        <p class="hint">Applies the normal heavy-armor handling.</p>
+                    </div>
+                </div>
+
+                {{#if (eq system.location "Shield")}}
+                <div class="form-group">
+                    <label>Auto Block</label>
+                    <input type="text" name="system.autoBlock" value="{{system.autoBlock}}" placeholder="Arms, Body" />
+                </div>
+                {{/if}}
+
+                <div class="item-ap-controls">
+                    <span>AP: <input type="number" value="{{system.currentAP}}" class="ap-current" data-dtype="Number" min="0" /> / {{effectiveAP}}</span>
+                    <a class="item-action-btn reduce-ap"><i class="fas fa-shield-alt"></i> Take Hit (−1 AP)</a>
+                    <a class="item-action-btn reset-ap"><i class="fas fa-redo"></i> Repair (Reset AP)</a>
+                </div>
+            </div>
+            {{/if}}
 
             <div class="form-group">
                 <label>Magical Radiation Effect</label>

@@ -4,8 +4,10 @@ import { openOpposedRollDialog, openAidAnotherDialog } from "../../opposed.js";
 
 export function makeRollHandler(coreApi) {
     return class TheFadeRollHandler extends coreApi.RollHandler {
-        async handleActionClick(event, encodedValue) {
-            const [actionType, id] = encodedValue.split(this.delimiter ?? "|");
+        async handleActionClick(event, encodedValue, actionTypeId, actionId) {
+            const [actionType, id] = actionTypeId && actionId
+                ? [actionTypeId, actionId]
+                : encodedValue.split(this.delimiter ?? "|");
             const actor = this.actor;
             if (!actor) return;
 

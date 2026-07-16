@@ -24,14 +24,14 @@
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="physique" data-label="Physique" title="Edit Physique (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.value}}" data-dtype="Number" />
+            <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.displayValue}}" data-dtype="Number" />
             {{#if system.attributes.physique.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.physique.speciesBonus}}</span>
             {{/if}}
             {{#if system.attributes.physique.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.physique.flexibleBonus}}</span>
             {{/if}}
-            {{#unless (eq system.attributes.physique.total system.attributes.physique.value)}}
+            {{#unless (eq system.attributes.physique.total system.attributes.physique.displayValue)}}
             <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.physique.total}}</span>
             {{/unless}}
         </div>
@@ -42,14 +42,14 @@
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="finesse" data-label="Finesse" title="Edit Finesse (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.value}}" data-dtype="Number" />
+            <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.displayValue}}" data-dtype="Number" />
             {{#if system.attributes.finesse.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.finesse.speciesBonus}}</span>
             {{/if}}
             {{#if system.attributes.finesse.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.finesse.flexibleBonus}}</span>
             {{/if}}
-            {{#unless (eq system.attributes.finesse.total system.attributes.finesse.value)}}
+            {{#unless (eq system.attributes.finesse.total system.attributes.finesse.displayValue)}}
             <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.finesse.total}}</span>
             {{/unless}}
         </div>
@@ -60,14 +60,14 @@
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="mind" data-label="Mind" title="Edit Mind (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.value}}" data-dtype="Number" />
+            <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.displayValue}}" data-dtype="Number" />
             {{#if system.attributes.mind.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.mind.speciesBonus}}</span>
             {{/if}}
             {{#if system.attributes.mind.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.mind.flexibleBonus}}</span>
             {{/if}}
-            {{#unless (eq system.attributes.mind.total system.attributes.mind.value)}}
+            {{#unless (eq system.attributes.mind.total system.attributes.mind.displayValue)}}
             <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.mind.total}}</span>
             {{/unless}}
         </div>
@@ -78,14 +78,14 @@
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="presence" data-label="Presence" title="Edit Presence (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.value}}" data-dtype="Number" />
+            <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.displayValue}}" data-dtype="Number" />
             {{#if system.attributes.presence.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.presence.speciesBonus}}</span>
             {{/if}}
             {{#if system.attributes.presence.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.presence.flexibleBonus}}</span>
             {{/if}}
-            {{#unless (eq system.attributes.presence.total system.attributes.presence.value)}}
+            {{#unless (eq system.attributes.presence.total system.attributes.presence.displayValue)}}
             <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.presence.total}}</span>
             {{/unless}}
         </div>
@@ -96,14 +96,14 @@
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="soul" data-label="Soul" title="Edit Soul (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.value}}" data-dtype="Number" />
+            <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.displayValue}}" data-dtype="Number" />
             {{#if system.attributes.soul.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.soul.speciesBonus}}</span>
             {{/if}}
             {{#if system.attributes.soul.flexibleBonus}}
             <span class="flexible-bonus" title="Flexible Species Bonus">+{{system.attributes.soul.flexibleBonus}}</span>
             {{/if}}
-            {{#unless (eq system.attributes.soul.total system.attributes.soul.value)}}
+            {{#unless (eq system.attributes.soul.total system.attributes.soul.displayValue)}}
             <span class="attribute-total" title="Effective total (base + bonuses, or override)">→ {{system.attributes.soul.total}}</span>
             {{/unless}}
         </div>

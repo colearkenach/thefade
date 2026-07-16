@@ -86,6 +86,20 @@
       "type": "Item"
     },
 	{
+      "name": "traits",
+      "label": "Traits",
+      "system": "thefade",
+      "path": "./packs/traits.db",
+      "type": "Item"
+    },
+	{
+      "name": "precepts",
+      "label": "Precepts",
+      "system": "thefade",
+      "path": "./packs/precepts.db",
+      "type": "Item"
+    },
+	{
       "name": "lore",
       "label": "Lore Entries",
       "system": "thefade",
@@ -121,19 +135,21 @@
   "primaryTokenAttribute": "hp",
   "secondaryTokenAttribute": "sanity",
   "url": "https://github.com/colearkenach/thefade-foundry",
-  "manifest": "https://github.com/colearkenach/thefade-foundry/releases/download/v13/system.json",
-  "download": "https://github.com/colearkenach/thefade-foundry/archive/refs/tags/v13.zip",
+  "manifest": "https://github.com/colearkenach/thefade-foundry/releases/download/v2/system.json",
+  "download": "https://github.com/colearkenach/thefade-foundry/archive/refs/tags/v2.zip",
   "license": "LICENSE.txt",
   "itemTypes": [
     "weapon",
     "armor",
     "skill",
     "path",
+    "monsterpath",
     "spell",
     "talent",
     "trait",
     "precept",
     "species",
+    "monsterspecies",
     "drug",
     "poison",
     "disease",
@@ -153,6 +169,11 @@
     "fleshcraft",
     "magicitem",
     "clothing",
+    "mutation",
+    "heritage",
+    "trap",
+    "hazard",
+    "downtime",
     "item"
   ]
 }

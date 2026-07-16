@@ -1,15 +1,76 @@
 <section class="paths-section">
+    {{#if temporaryAbilityBonuses.length}}
+    <section class="temporary-ability-bonuses">
+        <header><i class="fas fa-hourglass-half"></i> Active Temporary Bonuses</header>
+        {{#each temporaryAbilityBonuses as |entry|}}
+        <div class="temporary-ability-bonus">
+            <span><strong>{{entry.ability}}</strong> · {{entry.source}}</span>
+            <span>{{entry.remainingRounds}} round(s) remaining</span>
+            <button type="button" class="temporary-ability-bonus-remove" data-temporary-bonus-id="{{entry.id}}" title="End this temporary bonus"><i class="fas fa-times"></i></button>
+        </div>
+        {{/each}}
+    </section>
+    {{/if}}
+
+    {{#if creatureRuleAbilityView.sources.length}}
+    <details class="abilities-block creature-rule-abilities-block sheet-state-section"
+             data-section-key="abilities-creature-rules"
+             {{#if abilitySectionStates.creatureRules}}open{{/if}}>
+        <summary class="abilities-heading sheet-section-summary">
+            <i class="fas fa-paw"></i>
+            <span class="abilities-title">Type &amp; Subtype Abilities</span>
+            <span class="abilities-count">{{creatureRuleAbilityView.sources.length}}</span>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
+        {{> "systems/thefade/templates/actor/parts/creature-rule-abilities.html" creatureRuleAbilityView}}
+    </details>
+    {{/if}}
+
+    {{#if linkedAbilitySources.species}}
+    <details class="abilities-block linked-abilities-block sheet-state-section"
+             data-section-key="abilities-species"
+             {{#if abilitySectionStates.speciesAbilities}}open{{/if}}>
+        <summary class="abilities-heading sheet-section-summary">
+            <i class="fas fa-dna"></i>
+            <span class="abilities-title">Species Abilities</span>
+            <span class="abilities-count">{{linkedAbilitySources.species.abilityCount}}</span>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
+        {{> "systems/thefade/templates/actor/parts/linked-ability-source.html" linkedAbilitySources.species}}
+    </details>
+    {{/if}}
+
+    {{#if linkedAbilitySources.paths.length}}
+    <details class="abilities-block linked-abilities-block sheet-state-section"
+             data-section-key="abilities-path-abilities"
+             {{#if abilitySectionStates.pathAbilities}}open{{/if}}>
+        <summary class="abilities-heading sheet-section-summary">
+            <i class="fas fa-bolt"></i>
+            <span class="abilities-title">Path Abilities</span>
+            <span class="abilities-count">{{linkedAbilitySources.pathAbilityCount}}</span>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
+        <div class="linked-path-ability-sources">
+            {{#each linkedAbilitySources.paths as |source|}}
+                {{> "systems/thefade/templates/actor/parts/linked-ability-source.html" source}}
+            {{/each}}
+        </div>
+    </details>
+    {{/if}}
+
     <!-- Paths -->
-    <div class="paths abilities-block">
-        <h2 class="abilities-heading">
+    <details class="paths abilities-block sheet-state-section" data-section-key="abilities-paths" {{#if abilitySectionStates.paths}}open{{/if}}>
+        <summary class="abilities-heading sheet-section-summary">
             <i class="fas fa-road"></i>
             <span class="abilities-title">Paths</span>
             <span class="abilities-count">{{actor.paths.length}}</span>
             <span class="abilities-actions">
                 <a class="item-create" title="Add Path" data-type="path"><i class="fas fa-plus"></i></a>
+                <a class="item-create" title="Add Monster Path" data-type="monsterpath"><i class="fas fa-skull"></i></a>
                 <a class="path-browse" title="Browse Paths"><i class="fas fa-search"></i></a>
             </span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
 
         <div class="paths-list abilities-list">
             {{#each actor.paths as |path id|}}
@@ -18,7 +79,7 @@
                 <label for="toggle-path-{{path._id}}" class="path-header ability-header">
                     <div class="path-name-container ability-name-container">
                         <span class="path-name ability-name">{{path.name}}</span>
-                        <span class="path-tier ability-meta">Tier {{path.system.tier}}</span>
+                        <span class="path-tier ability-meta">{{#if path.system.isMonsterPath}}Monster{{else}}Tier {{path.system.tier}}{{/if}}</span>
                     </div>
                     <div class="path-controls ability-controls">
                         <a class="item-edit" title="Edit Path"><i class="fas fa-edit"></i></a>
@@ -31,25 +92,15 @@
                     {{#if path.system.description}}
                     <p>{{path.system.description}}</p>
                     {{/if}}
-                    {{#if path.system.abilities}}
-                    <div class="path-abilities">
-                        <p><strong>Path Abilities:</strong></p>
-                        {{#each path.system.abilities as |ability|}}
-                        <div class="path-ability">
-                            <strong>{{ability.name}}:</strong> {{ability.description}}
-                        </div>
-                        {{/each}}
-                    </div>
-                    {{/if}}
                 </div>
             </div>
             {{/each}}
         </div>
-    </div>
+    </details>
 
     <!-- Talents -->
-    <div class="talents abilities-block">
-        <h2 class="abilities-heading">
+    <details class="talents abilities-block sheet-state-section" data-section-key="abilities-talents" {{#if abilitySectionStates.talents}}open{{/if}}>
+        <summary class="abilities-heading sheet-section-summary">
             <i class="fas fa-star"></i>
             <span class="abilities-title">Talents</span>
             <span class="abilities-count">{{actor.talents.length}}</span>
@@ -57,7 +108,8 @@
                 <a class="item-create" title="Add Talent" data-type="talent"><i class="fas fa-plus"></i></a>
                 <a class="talent-browse" title="Browse Talents"><i class="fas fa-search"></i></a>
             </span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
 
         <div class="talents-list abilities-list">
             {{#each actor.talents as |talent id|}}
@@ -85,11 +137,11 @@
             </div>
             {{/each}}
         </div>
-    </div>
+    </details>
 
     <!-- Precepts -->
-    <div class="precepts abilities-block">
-        <h2 class="abilities-heading">
+    <details class="precepts abilities-block sheet-state-section" data-section-key="abilities-precepts" {{#if abilitySectionStates.precepts}}open{{/if}}>
+        <summary class="abilities-heading sheet-section-summary">
             <i class="fas fa-book"></i>
             <span class="abilities-title">Precepts</span>
             <span class="abilities-count">{{actor.precepts.length}}</span>
@@ -97,7 +149,8 @@
                 <a class="item-create" title="Add Precept" data-type="precept"><i class="fas fa-plus"></i></a>
                 <a class="precept-browse" title="Browse Precepts"><i class="fas fa-search"></i></a>
             </span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
 
         <div class="precepts-list abilities-list">
             {{#each actor.precepts as |precept id|}}
@@ -128,11 +181,11 @@
             </div>
             {{/each}}
         </div>
-    </div>
+    </details>
 
     <!-- Traits -->
-    <div class="traits abilities-block">
-        <h2 class="abilities-heading">
+    <details class="traits abilities-block sheet-state-section" data-section-key="abilities-traits" {{#if abilitySectionStates.traits}}open{{/if}}>
+        <summary class="abilities-heading sheet-section-summary">
             <i class="fas fa-feather"></i>
             <span class="abilities-title">Traits</span>
             <span class="abilities-count">{{actor.traits.length}}</span>
@@ -140,7 +193,8 @@
                 <a class="item-create" title="Add Trait" data-type="trait"><i class="fas fa-plus"></i></a>
                 <a class="trait-browse" title="Browse Traits"><i class="fas fa-search"></i></a>
             </span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
 
         <div class="traits-list abilities-list">
             {{#each actor.traits as |trait id|}}
@@ -168,5 +222,5 @@
             </div>
             {{/each}}
         </div>
-    </div>
+    </details>
 </section>

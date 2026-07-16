@@ -9,10 +9,53 @@ import {
     ARMOR_STRENGTHENING_OPTIONS,
     WEAPON_MOD_SLOTS,
     ARMOR_MOD_SLOTS,
-    DAMAGE_TYPE_LABELS
+    DAMAGE_TYPE_LABELS,
+    COMBAT_DAMAGE_TYPES,
+    COMBAT_IMMUNITY_DAMAGE_TYPES,
+    COMBAT_IMMUNITY_EFFECTS,
+    COMBAT_STATUS_IMMUNITIES,
+    UNIVERSAL_ABILITY_CATEGORIES
 } from './constants.js';
 import { getRankValue, openCompendiumBrowser, applyPathSkillModifications } from './helpers.js';
 import { getSkill, calculateSkillDice } from './skills.js';
+import { CROSSBREED_OUTCOMES, MUTATION_SEVERITIES } from './rules.js';
+import {
+    CREATURE_TYPE_OPTIONS,
+    buildCreatureSubtypeSelector,
+    getCreatureRuleSources,
+    normalizeCreatureType
+} from './creature-rules.js';
+import {
+    addMechanicalBonusSheetOptions,
+    readMechanicalBonusRow,
+    updateMechanicalBonusRow
+} from './mechanical-bonuses.js';
+import {
+    WEAPON_DAMAGE_ATTRIBUTE_OPTIONS,
+    buildWeaponDamageProfile,
+    buildWeaponQualitySelector,
+    getWeaponAttackAttributeOverride,
+    isNaturalWeapon,
+    resolveWeaponDamageAttribute,
+    weaponQualityDisplay
+} from './weapon-rules.js';
+import {
+    ITEM_POWER_OVERLAP_OPTIONS,
+    countAttunements,
+    getDarkMagicItemCorruptionValue,
+    getItemPowerSlotOptions,
+    isAttunementRemoved,
+    isDarkMagicItem
+} from './item-power-rules.js';
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
 
 /**
 * Item Sheet class for The Fade system
@@ -39,9 +82,18 @@ export class TheFadeItemSheet extends ItemSheet {
     */
     get template() {
         const path = "systems/thefade/templates/item";
+        if (["mutation", "heritage", "trap", "hazard", "downtime"].includes(this.item.type)) {
+            return `${path}/rules-item-sheet.html`;
+        }
         // Magic items use the generic item sheet (they already have conditional sections in item-sheet.html)
         if (this.item.type === "magicitem") {
             return `${path}/item-sheet.html`;
+        }
+        if (this.item.type === "monsterpath") {
+            return `${path}/path-sheet.html`;
+        }
+        if (this.item.type === "monsterspecies") {
+            return `${path}/species-sheet.html`;
         }
         return `${path}/${this.item.type}-sheet.html`;
     }
@@ -58,6 +110,7 @@ export class TheFadeItemSheet extends ItemSheet {
         data = {
             item: this.item || {},
             system: this.item?.system || {},
+            isEmbeddedSpecies: (this.item?.type === "species" || this.item?.type === "monsterspecies") && this.item?.parent?.documentName === "Actor",
             dtypes: ["String", "Number", "Boolean"],
             itemTypes: {}
         };
@@ -108,6 +161,46 @@ export class TheFadeItemSheet extends ItemSheet {
                 "fleshcraft": "Flesh Craft",
                 "clothing": "Clothing"
             };
+
+            data.itemTypeLabel = CONFIG.Item.typeLabels?.[this.item.type]
+                ? game.i18n.localize(CONFIG.Item.typeLabels[this.item.type])
+                : this.item.type;
+            data.itemPowerSlotRule = game.settings?.get("thefade", "itemPowerSlotRule") || "standard";
+            data.itemPowerAttunementRule = game.settings?.get("thefade", "itemPowerAttunementRule") || "standard";
+            data.attunementRemoved = isAttunementRemoved(data.itemPowerAttunementRule);
+            data.techAttunementEnabled = data.itemPowerAttunementRule === "technology";
+            data.itemPowerSlotOptions = getItemPowerSlotOptions(data.itemPowerSlotRule, this.item?.system?.slot);
+            data.itemPowerOverlapOptions = ITEM_POWER_OVERLAP_OPTIONS;
+            data.isDarkMagicItem = isDarkMagicItem(this.item);
+            data.darkMagicRetroactive = data.isDarkMagicItem && this.item?.system?.darkMagic !== true;
+            data.darkMagicCorruptionValue = getDarkMagicItemCorruptionValue(this.item);
+            data.darkMagicCorruptionOptions = {
+                0: "Automatic from price",
+                1: "1",
+                2: "2",
+                3: "3",
+                4: "4"
+            };
+            data.mutationSeverityOptions = MUTATION_SEVERITIES;
+            data.heritageTypeOptions = Object.fromEntries(
+                Object.values(CROSSBREED_OUTCOMES).map(outcome => [outcome.key, outcome.label])
+            );
+            data.trapCategoryOptions = { mechanical:"Mechanical", magical:"Magical", environmental:"Environmental" };
+            data.hazardCategoryOptions = { hazard:"Hazard", atmosphere:"Atmosphere", terrain:"Terrain", weather:"Weather" };
+            data.downtimeTypeOptions = { crafting:"Crafting", training:"Training", social:"Social & Political", exploration:"Exploration", commerce:"Commerce", leisure:"Leisure", magic:"Magical Pursuit", other:"Other" };
+            data.downtimeStatusOptions = { planned:"Planned", active:"Active", completed:"Completed", abandoned:"Abandoned" };
+            data.defenseOptions = { none:"No attack roll", resilience:"Resilience", avoid:"Avoid", grit:"Grit" };
+            data.damageTypeOptions = DAMAGE_TYPE_LABELS;
+            data.damageTrackOptions = { hp:"Health (HP)", sanity:"Sanity" };
+            data.combatDamageTypes = COMBAT_DAMAGE_TYPES;
+            data.combatImmunityDamageTypes = COMBAT_IMMUNITY_DAMAGE_TYPES;
+            data.combatImmunityEffects = COMBAT_IMMUNITY_EFFECTS;
+            data.combatStatusImmunities = COMBAT_STATUS_IMMUNITIES;
+            const openGrantCategories = this._itemPowerGrantOpenCategories;
+            data.universalAbilityCategories = UNIVERSAL_ABILITY_CATEGORIES.map(category => ({
+                ...category,
+                isOpen: openGrantCategories?.has(category.key) === true
+            }));
 
             data.spellSchoolOptions = {
                 "General": "General",
@@ -235,7 +328,8 @@ export class TheFadeItemSheet extends ItemSheet {
             data.weaponHandednessOptions = {
                 "Light": "Light",
                 "One-Handed": "One-Handed",
-                "Two-Handed": "Two-Handed"
+                "Two-Handed": "Two-Handed",
+                "Natural Weapon": "Natural Weapon"
             };
 
             data.weaponSkillOptions = {
@@ -251,14 +345,8 @@ export class TheFadeItemSheet extends ItemSheet {
                 "Spellcasting": "Spellcasting"
             };
 
-            data.weaponAttributeOptions = {
-                "N/A": "N/A",
-                "physique": "Physique",
-                "finesse": "Finesse",
-                "mind": "Mind",
-                "presence": "Presence",
-                "soul": "Soul"
-            };
+            data.weaponAttributeOptions = WEAPON_DAMAGE_ATTRIBUTE_OPTIONS;
+            data.weaponDamageAttributeOptions = WEAPON_DAMAGE_ATTRIBUTE_OPTIONS;
 
             data.skillRankOptions = {
                 "untrained": "Untrained",
@@ -292,16 +380,7 @@ export class TheFadeItemSheet extends ItemSheet {
                 "physique_mind": "Physique & Mind (Average)"
             };
 
-            data.creatureTypeOptions = {
-                "artificial": "Artificial",
-                "beast": "Beast",
-                "dragon": "Dragon",
-                "extraplanar": "Extraplanar",
-                "fey": "Fey",
-                "plant": "Plant",
-                "sapient": "Sapient",
-                "undead": "Undead"
-            };
+            data.creatureTypeOptions = CREATURE_TYPE_OPTIONS;
 
             data.spellAttackOptions = {
                 "": "None",
@@ -338,6 +417,31 @@ export class TheFadeItemSheet extends ItemSheet {
                 "3": "Tier 3"
             };
 
+            data.naturalDeflectionRatingOptions = {
+                "fragile": "Fragile",
+                "average": "Average",
+                "tough": "Tough"
+            };
+
+            data.naturalDeflectionMultiplierOptions = {
+                "0.25": "1/4",
+                "0.3333333333": "1/3",
+                "0.5": "1/2",
+                "0.6666666667": "2/3",
+                "1": "Unmodified",
+                "2": "Double"
+            };
+
+            data.standardAttackGrantModeOptions = {
+                "grant": "Grant",
+                "choice": "Choice"
+            };
+
+            data.standardAttackTypeOptions = {
+                "natural": "Natural Attack",
+                "weapon": "Weapon"
+            };
+
             data.sizeOptions = SIZE_OPTIONS;
         } catch (error) {
             console.error("Error setting options:", error);
@@ -345,10 +449,22 @@ export class TheFadeItemSheet extends ItemSheet {
 
         // Handle special item types
         try {
-            if (this.item?.type === 'path') {
+            if (this.item?.type === 'path' || this.item?.type === 'monsterpath') {
                 if (this._preparePathSkills) {
                     this._preparePathSkills(data);
                 }
+            }
+
+            if (this.item?.type === 'monsterspecies') {
+                data.isMonsterSpecies = true;
+                data.standardAttacks = Array.isArray(this.item.system.standardAttacks)
+                    ? this.item.system.standardAttacks
+                    : [];
+                data.sizeRuleRows = Object.entries(SIZE_OPTIONS).map(([key, label]) => ({
+                    key,
+                    label,
+                    rule: this.item.system.sizeRules?.[key] || {}
+                }));
             }
 
             if (this.item?.type === 'talent') {
@@ -370,7 +486,9 @@ export class TheFadeItemSheet extends ItemSheet {
                 const actor = this.item.parent;
                 const sys = this.item.system;
                 const skill = getSkill(actor, sys.skill);
-                const skillDice = skill ? calculateSkillDice(actor, skill) : 0;
+                const attackOverride = getWeaponAttackAttributeOverride(sys);
+                const effectiveSkill = skill && attackOverride ? { ...skill, attribute: attackOverride.key } : skill;
+                const skillDice = effectiveSkill ? calculateSkillDice(actor, effectiveSkill) : 0;
                 const weaponMisc = Number(sys.miscBonus) || 0;
                 const eb = actor.system?.equippedBonuses;
                 const skillKey = (sys.skill || "").toLowerCase();
@@ -384,7 +502,14 @@ export class TheFadeItemSheet extends ItemSheet {
             // Magic + modification data for weapons
             if (this.item?.type === 'weapon') {
                 const sys = this.item.system;
-                const dmgInc = Number(sys.damageIncrease) || 0;
+                data.isNaturalWeapon = isNaturalWeapon(sys);
+                data.weaponHandednessSelection = data.isNaturalWeapon ? "Natural Weapon" : sys.handedness;
+                data.weaponQualitySelector = buildWeaponQualitySelector(sys);
+                data.weaponQualitiesDisplay = weaponQualityDisplay(sys);
+                const resolvedDamageAttribute = resolveWeaponDamageAttribute(sys);
+                data.weaponDamageAttributeSelection = resolvedDamageAttribute.key;
+                data.weaponDamageAttributeSource = resolvedDamageAttribute.source;
+                data.weaponDamageAttributeLockedByQuality = !!resolvedDamageAttribute.source;
 
                 // Lazy persistent migration: if a legacy weapon has damage/damageType
                 // but no damageComponents, persist a single component on first sheet
@@ -414,72 +539,37 @@ export class TheFadeItemSheet extends ItemSheet {
                     type: c.type
                 }));
 
-                // Damage attribute bonus from the parent actor, mirroring the
-                // logic in character-sheet.js attack rolls (Agile/Brutish/attribute).
-                let attrBonus = 0;
-                let attrLabel = "";
-                if (this.item.parent?.system?.attributes) {
-                    const attrs = this.item.parent.system.attributes;
-                    const qualities = sys.qualities || "";
-                    const attrTotal = (k) => attrs[k]?.total ?? attrs[k]?.value ?? 0;
-                    // Explicit attribute dropdown wins over Brutish/Agile defaults.
-                    if (sys.attribute && sys.attribute !== "none" && attrs[sys.attribute]) {
-                        attrBonus = Math.floor(attrTotal(sys.attribute) / 2);
-                        attrLabel = sys.attribute.charAt(0).toUpperCase() + sys.attribute.slice(1);
-                    } else if (qualities.includes("Agile") && attrs.finesse) {
-                        attrBonus = Math.floor(attrTotal("finesse") / 2);
-                        attrLabel = "Finesse";
-                    } else if (qualities.includes("Brutish") && attrs.physique) {
-                        attrBonus = Math.floor(attrTotal("physique") / 2);
-                        attrLabel = "Physique";
-                    }
-                }
-
-                // Equipped damage bonuses (global + per-skill from talents/paths/etc.)
-                let equipDmgBonus = 0;
-                if (this.item.parent?.system?.equippedBonuses) {
-                    const eb = this.item.parent.system.equippedBonuses;
-                    const skillKey = (sys.skill || "").toLowerCase();
-                    equipDmgBonus = (eb.damage || 0) + (eb[`damage_${skillKey}`] || 0);
-                }
-
-                // Build the typed breakdown with labels for every part
-                const parts = [];
-                let typedTotal = 0;
-                for (const c of components) {
-                    const amt = Number(c.amount) || 0;
-                    if (amt <= 0) continue;
-                    typedTotal += amt;
-                    const label = DAMAGE_TYPE_LABELS[c.type] || c.type || "Untyped";
-                    parts.push(`${amt} ${label}`);
-                }
-                if (dmgInc > 0) parts.push(`${dmgInc} Strengthening`);
-                if (attrBonus > 0) parts.push(`${attrBonus} ${attrLabel}`);
-                if (equipDmgBonus > 0) parts.push(`${equipDmgBonus} Bonus`);
-
-                data.effectiveDamage = typedTotal + dmgInc + attrBonus + equipDmgBonus;
-                data.effectiveDamageBreakdown = parts.length > 1 ? parts.join(" + ") : null;
-                data.weaponAttrBonus = attrBonus;
-                data.weaponAttrLabel = attrLabel;
+                const damageProfile = buildWeaponDamageProfile(this.item.parent, sys);
+                data.effectiveDamage = damageProfile.total;
+                data.effectiveDamageBreakdown = damageProfile.display;
+                data.weaponAttrBonus = damageProfile.attributeBonus;
+                data.weaponAttrLabel = WEAPON_DAMAGE_ATTRIBUTE_OPTIONS[damageProfile.attributeKey] || "";
 
                 data.weaponEnchantBasePrice = WEAPON_ENCHANT_BASE_PRICES[sys.skill] ?? WEAPON_ENCHANT_BASE_PRICES.default;
                 data.weaponImmuneToRadiation = sys.skill === "Bow" || sys.skill === "Firearm" || sys.skill === "Heavy Weaponry";
                 data.weaponStrengtheningOptions = WEAPON_STRENGTHENING_OPTIONS;
-                data.totalMagicCost = (Number(sys.enchantmentPrice) || 0) + (Number(sys.strengtheningPrice) || 0);
+                data.totalMagicCost = data.isNaturalWeapon
+                    ? 0
+                    : (Number(sys.enchantmentPrice) || 0) + (Number(sys.strengtheningPrice) || 0);
 
-                const slotsMax = WEAPON_MOD_SLOTS[sys.handedness] ?? 0;
+                const slotsMax = data.isNaturalWeapon ? 0 : (WEAPON_MOD_SLOTS[sys.handedness] ?? 0);
                 const slotsUsed = Array.isArray(sys.modifications) ? sys.modifications.length : 0;
                 data.modSlotsMax = slotsMax;
                 data.modSlotsUsed = slotsUsed;
                 data.modSlotsOverCapacity = slotsUsed > slotsMax;
             }
 
-            // Magic + modification data for armor
-            if (this.item?.type === 'armor') {
+            // AP data for armor and armor-like Items of Power.
+            if (this.item?.type === 'armor' || (this.item?.type === 'magicitem' && this.item.system?.conflictsArmor)) {
                 const sys = this.item.system;
                 const baseAP = Number(sys.ap) || 0;
                 const apInc = Number(sys.apIncrease) || 0;
                 data.effectiveAP = baseAP + apInc;
+            }
+
+            // Magic + modification data exclusive to ordinary armor.
+            if (this.item?.type === 'armor') {
+                const sys = this.item.system;
                 data.armorEnchantBasePrice = ARMOR_ENCHANT_BASE_PRICE;
                 data.armorStrengtheningOptions = ARMOR_STRENGTHENING_OPTIONS;
                 data.totalMagicCost = (Number(sys.enchantmentPrice) || 0) + (Number(sys.strengtheningPrice) || 0);
@@ -504,6 +594,15 @@ export class TheFadeItemSheet extends ItemSheet {
         } catch (error) {
             console.error("Error in special item type handling:", error);
         }
+        if (this.item?.type === "species" || this.item?.type === "monsterspecies") {
+            data.creatureSubtypeSelector = buildCreatureSubtypeSelector(this.item.system, "species");
+            data.selectedCreatureType = normalizeCreatureType(this.item.system.creatureType);
+            data.creatureRuleAbilityView = {
+                sources: getCreatureRuleSources(this.item.system, "species"),
+                canActivate: false
+            };
+        }
+        addMechanicalBonusSheetOptions(data);
         return data;
     }
 
@@ -514,11 +613,25 @@ export class TheFadeItemSheet extends ItemSheet {
     activateListeners(html) {
         super.activateListeners(html);
 
+        // Item updates re-render the sheet. Remember the native <details>
+        // state so editing a grant does not collapse the category the user is
+        // currently working in.
+        html.find('.item-power-grants .universal-ability-category').on('toggle', ev => {
+            const details = ev.currentTarget;
+            const category = details.dataset.category;
+            if (!category) return;
+            if (!this._itemPowerGrantOpenCategories) this._itemPowerGrantOpenCategories = new Set();
+            if (details.open) this._itemPowerGrantOpenCategories.add(category);
+            else this._itemPowerGrantOpenCategories.delete(category);
+        });
+
         // Everything below here is only needed if the sheet is editable
         if (!this.options.editable) return;
 
+        html.find('.roll-hazard').click(event => this._onRollHazard(event));
+
         // Add drag-and-drop highlighting when dragging over the skills tab
-        if (this.item.type === 'path') {
+        if (this.item.type === 'path' || this.item.type === 'monsterpath') {
             // Get the skills tab and skills list
             const skillsTab = html.find('.tab[data-tab="skills"]');
             const skillsList = html.find('.skills-list');
@@ -586,9 +699,12 @@ export class TheFadeItemSheet extends ItemSheet {
         // For all other fields, use this approach:
         html.find('input[name], select[name]:not([name="type"]), textarea[name]').change(ev => {
             const input = ev.currentTarget;
+            if ((this.item.type === 'species' || this.item.type === 'monsterspecies') && !input.closest('.bonus-section')) {
+                return;
+            }
             const fieldName = input.name;
 
-            let value = input.value;
+            let value = input.type === 'checkbox' ? input.checked : input.value;
 
             // Convert to number for numeric inputs
             if (input.dataset.dtype === 'Number') {
@@ -598,12 +714,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
             // Handle system data updates
             if (fieldName.startsWith('system.')) {
-                const path = fieldName.replace('system.', '');
-                this.item.update({
-                    "system": {
-                        [path]: value
-                    }
-                });
+                this.item.update({ [fieldName]: value });
             } else if (fieldName !== 'type') { // Skip type field
                 // For other updates
                 this.item.update({
@@ -616,7 +727,7 @@ export class TheFadeItemSheet extends ItemSheet {
         html.find('.path-skill-create').click(async ev => {
             ev.preventDefault();
 
-            if (this.item.type !== 'path') return;
+            if (this.item.type !== 'path' && this.item.type !== 'monsterpath') return;
 
             await this._showPathSkillCreationDialog();
         });
@@ -635,6 +746,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
                     // Disable edit for choice entries
                     if (entryType === PATH_SKILL_TYPES.CHOOSE_CATEGORY ||
+                        entryType === PATH_SKILL_TYPES.CHOOSE_ANY ||
                         entryType === PATH_SKILL_TYPES.CHOOSE_LORE ||
                         entryType === PATH_SKILL_TYPES.CHOOSE_PERFORM ||
                         entryType === PATH_SKILL_TYPES.CHOOSE_CRAFT) {
@@ -716,14 +828,14 @@ export class TheFadeItemSheet extends ItemSheet {
         html.find('.skill-browse').off('click').click(ev => {
             ev.preventDefault();
 
-            if (this.item.type !== 'path') return;
+            if (this.item.type !== 'path' && this.item.type !== 'monsterpath') return;
 
             this._showPathSkillBrowserDialog();
         });
 
         // Path: header mirror fields (Tier + Base HP also appear in Attributes tab).
         // Removed name= attributes on mirrors to avoid duplicate form-field collision; wire change handlers manually.
-        if (this.item.type === 'path') {
+        if (this.item.type === 'path' || this.item.type === 'monsterpath') {
             html.find('.path-tier-mirror').change(async ev => {
                 ev.preventDefault();
                 await this.item.update({ "system.tier": ev.currentTarget.value });
@@ -736,7 +848,7 @@ export class TheFadeItemSheet extends ItemSheet {
         }
 
         // Add a button to handle adding path skills to a character
-        if (this.item.type === 'path') {
+        if (this.item.type === 'path' || this.item.type === 'monsterpath') {
             // Add apply to character button if it doesn't exist
             if (html.find('.skill-apply-to-character').length === 0) {
                 html.find('.skill-browse').parent().append('<a class="skill-apply-to-character" title="Add Skills to Character"><i class="fas fa-user-plus"></i></a>');
@@ -801,7 +913,7 @@ export class TheFadeItemSheet extends ItemSheet {
         }
 
         // Handle input changes for species sheets
-        if (this.item.type === 'species') {
+        if (this.item.type === 'species' || this.item.type === 'monsterspecies') {
             html.find('input, select, textarea').change(async (ev) => {
                 const element = ev.currentTarget;
                 // Skip bonus-row controls — they're persisted by the dedicated
@@ -815,11 +927,34 @@ export class TheFadeItemSheet extends ItemSheet {
                 const field = element.name;
                 let value = element.value;
 
+                if (element.type === 'checkbox') {
+                    value = element.checked;
+                }
                 if (element.dataset.dtype === 'Number') {
                     value = Number(value);
                 }
+                if (element.dataset.dtype === 'NumberOrEmpty') {
+                    value = value === "" ? "" : Number(value);
+                    if (Number.isNaN(value)) value = "";
+                }
 
                 await this.item.update({ [field]: value });
+            });
+
+            html.find('.creature-subtype-add').click(async ev => {
+                ev.preventDefault();
+                const selector = $(ev.currentTarget).closest('.creature-subtype-selector');
+                const id = selector.find('.creature-subtype-choice').val();
+                if (!id) return;
+                const subtypes = [...new Set([...(this.item.system.creatureSubtypes || []), id])];
+                await this.item.update({ "system.creatureSubtypes": subtypes });
+            });
+
+            html.find('.creature-subtype-remove').click(async ev => {
+                ev.preventDefault();
+                const id = ev.currentTarget.dataset.subtypeId;
+                const subtypes = (this.item.system.creatureSubtypes || []).filter(value => value !== id);
+                await this.item.update({ "system.creatureSubtypes": subtypes });
             });
         }
 
@@ -827,16 +962,16 @@ export class TheFadeItemSheet extends ItemSheet {
         html.find('.ability-add').click(event => {
             event.preventDefault();
 
-            if (this.item.type === 'path') {
+            if (this.item.type === 'path' || this.item.type === 'monsterpath') {
                 const abilities = foundry.utils.deepClone(this.item.system.abilities || {});
                 const id = foundry.utils.randomID(16);
-                abilities[id] = { name: "New Ability", description: "" };
+                abilities[id] = { name: "New Ability", description: "", activation: "passive", actionCost: "", durationRounds: 1, bonuses: [] };
                 this.item.update({ "system.abilities": abilities });
             }
-            else if (this.item.type === 'species') {
+            else if (this.item.type === 'species' || this.item.type === 'monsterspecies') {
                 const abilities = foundry.utils.deepClone(this.item.system.speciesAbilities || {});
                 const id = foundry.utils.randomID(16);
-                abilities[id] = { name: "New Ability", description: "" };
+                abilities[id] = { name: "New Ability", description: "", activation: "passive", actionCost: "", durationRounds: 1, bonuses: [] };
                 this.item.update({ "system.speciesAbilities": abilities });
             }
         });
@@ -853,10 +988,10 @@ export class TheFadeItemSheet extends ItemSheet {
             // Create a deletion update using Foundry's special -=null syntax
             let updateData = {};
 
-            if (this.item.type === 'path') {
+            if (this.item.type === 'path' || this.item.type === 'monsterpath') {
                 updateData = { [`system.abilities.-=${abilityId}`]: null };
             }
-            else if (this.item.type === 'species') {
+            else if (this.item.type === 'species' || this.item.type === 'monsterspecies') {
                 updateData = { [`system.speciesAbilities.-=${abilityId}`]: null };
             }
 
@@ -925,39 +1060,8 @@ export class TheFadeItemSheet extends ItemSheet {
             }
         });
 
-        // Weapon: roll attack from item sheet
-        if (this.item.type === 'weapon') {
-            html.find('.roll-weapon-attack').click(async ev => {
-                ev.preventDefault();
-                const actor = this.item.parent;
-                if (!actor) return ui.notifications.warn("Equip this weapon to a character to roll.");
-                const sys = this.item.system;
-                const skill = getSkill(actor, sys.skill);
-                const rank = skill ? getRankValue(skill.rank) : 0;
-                const miscBonus = sys.miscBonus ?? 0;
-                const dice = rank + miscBonus;
-                if (dice <= 0) return ui.notifications.warn("No dice to roll — assign a skill rank first.");
-                const roll = await new Roll(`${dice}d10`).evaluate();
-                const baseDmg = Number(sys.damage) || 0;
-                const dmgInc = Number(sys.damageIncrease) || 0;
-                const effDmg = baseDmg + dmgInc;
-                const dmgDisplay = dmgInc > 0 ? `${effDmg} (${baseDmg} + ${dmgInc})` : (baseDmg || "—");
-                const enchantLabel = sys.isEnchanted ? ` <em class="enchanted-tag">Enchanted</em>` : "";
-                ChatMessage.create({
-                    speaker: ChatMessage.getSpeaker({ actor }),
-                    flavor: `${this.item.name} — Attack (${sys.skill})`,
-                    content: `<div class="thefade chat-card">
-                        <h3>${this.item.name}${enchantLabel}</h3>
-                        <p><strong>Damage:</strong> ${dmgDisplay} (${sys.damageType || "—"})</p>
-                        ${sys.critical ? `<p><strong>Critical:</strong> ${sys.critical}</p>` : ""}
-                        ${await roll.render()}
-                    </div>`
-                });
-            });
-        }
-
-        // Armor: AP reduce/reset buttons
-        if (this.item.type === 'armor') {
+        // Armor: AP reduce/reset buttons (including armor-like Items of Power)
+        if (this.item.type === 'armor' || (this.item.type === 'magicitem' && this.item.system?.conflictsArmor)) {
             html.find('.ap-current').change(async ev => {
                 ev.preventDefault();
                 const val = Number(ev.currentTarget.value);
@@ -973,7 +1077,13 @@ export class TheFadeItemSheet extends ItemSheet {
                 ev.preventDefault();
                 const baseAP = Number(this.item.system.ap) || 0;
                 const apInc = Number(this.item.system.apIncrease) || 0;
-                await this.item.update({ "system.currentAP": baseAP + apInc });
+                const maxAP = baseAP + apInc;
+                const updates = { "system.currentAP": maxAP };
+                if (["Arms", "Arms+", "Legs", "Legs+"].includes(this.item.system.location)) {
+                    updates["system.derivedLeftAP"] = maxAP;
+                    updates["system.derivedRightAP"] = maxAP;
+                }
+                await this.item.update(updates);
             });
         }
 
@@ -1213,10 +1323,21 @@ export class TheFadeItemSheet extends ItemSheet {
         }
 
         // Checkbox for attuned items of power
-        if (this.item.type === 'magicitem') {
-            html.find('input[name="system.attunement"]').change(ev => {
+        if (this.item.type === 'magicitem' && !isAttunementRemoved(game.settings?.get("thefade", "itemPowerAttunementRule"))) {
+            html.find('input[name="system.attunement"]').change(async ev => {
                 const isAttuned = ev.currentTarget.checked;
-                this.item.update({ "system.attunement": isAttuned });
+                if (isAttuned && this.item.parent?.documentName === "Actor") {
+                    const current = countAttunements([...this.item.parent.items], game.settings.get("thefade", "itemPowerAttunementRule"));
+                    const level = Number(this.item.parent.system.level) || 1;
+                    const soul = Number(this.item.parent.system.attributes?.soul?.total ?? this.item.parent.system.attributes?.soul?.value ?? 1);
+                    const maximum = Math.max(0, Math.floor(level / 4) + soul);
+                    if (current >= maximum) {
+                        ev.currentTarget.checked = false;
+                        ui.notifications.warn(`Cannot attune to more items. Limit: ${maximum}.`);
+                        return;
+                    }
+                }
+                await this.item.update({ "system.attunement": isAttuned });
 
                 if (isAttuned) {
                     ui.notifications.info(`${this.item.name} is now attuned to its owner.`);
@@ -1226,22 +1347,25 @@ export class TheFadeItemSheet extends ItemSheet {
             });
         }
 
+        if (game.settings?.get("thefade", "itemPowerAttunementRule") === "technology") {
+            html.find('input[name="system.technologyAttunement"]').change(async ev => {
+                if (!ev.currentTarget.checked || this.item.parent?.documentName !== "Actor") return;
+                const current = countAttunements([...this.item.parent.items], "technology");
+                const level = Number(this.item.parent.system.level) || 1;
+                const soul = Number(this.item.parent.system.attributes?.soul?.total ?? this.item.parent.system.attributes?.soul?.value ?? 1);
+                const maximum = Math.max(0, Math.floor(level / 4) + soul);
+                if (current >= maximum) {
+                    ev.currentTarget.checked = false;
+                    await this.item.update({ "system.technologyAttunement": false });
+                    ui.notifications.warn(`Cannot attune to more items. Limit: ${maximum}.`);
+                }
+            });
+        }
+
         // Bonuses UI — supports magicitem, talent, precept (top-level)
         // and path/species (per-ability). Each .bonus-section carries
         // its own data-bonus-path identifying where to persist the array.
-        if (['magicitem', 'talent', 'precept', 'path', 'species'].includes(this.item.type)) {
-            const NO_TARGET_TYPES = new Set(["avoid", "resilience", "grit", "hp"]);
-
-            const updateTargetVisibility = (row) => {
-                const type = row.find('.bonus-type').val();
-                const targetInput = row.find('.bonus-target');
-                if (NO_TARGET_TYPES.has(type)) {
-                    targetInput.val("").prop('disabled', true).css('visibility', 'hidden');
-                } else {
-                    targetInput.prop('disabled', false).css('visibility', 'visible');
-                }
-            };
-
+        if (['magicitem', 'talent', 'precept', 'path', 'monsterpath', 'species', 'monsterspecies'].includes(this.item.type)) {
             // Read the array currently stored at a dotted path on the item.
             const getBonusesAt = (path) => {
                 const parts = path.split('.');
@@ -1259,19 +1383,12 @@ export class TheFadeItemSheet extends ItemSheet {
                 if (!path) return;
                 const bonuses = [];
                 $section.find('.bonus-row').each((i, el) => {
-                    const $row = $(el);
-                    const type = $row.find('.bonus-type').val();
-                    bonuses.push({
-                        id: $row.data('bonus-id'),
-                        type,
-                        target: NO_TARGET_TYPES.has(type) ? "" : ($row.find('.bonus-target').val() || ""),
-                        value: parseInt($row.find('.bonus-value').val()) || 0
-                    });
+                    bonuses.push(readMechanicalBonusRow($(el)));
                 });
                 this.item.update({ [path]: bonuses });
             };
 
-            html.find('.bonus-row').each((i, el) => updateTargetVisibility($(el)));
+            html.find('.bonus-row').each((i, el) => updateMechanicalBonusRow($(el)));
 
             html.find('.bonus-add').click(ev => {
                 ev.preventDefault();
@@ -1295,17 +1412,36 @@ export class TheFadeItemSheet extends ItemSheet {
 
             html.find('.bonus-type').change(ev => {
                 const $row = $(ev.currentTarget).closest('.bonus-row');
-                updateTargetVisibility($row);
+                updateMechanicalBonusRow($row, { resetAmount: true });
                 saveBonusesForSection($row.closest('.bonus-section'));
             });
 
-            html.find('.bonus-target, .bonus-value').change(ev => {
-                saveBonusesForSection($(ev.currentTarget).closest('.bonus-section'));
+            html.find('.bonus-target-control, .bonus-vulnerability-severity, .bonus-value').change(ev => {
+                const $row = $(ev.currentTarget).closest('.bonus-row');
+                if ($(ev.currentTarget).hasClass('bonus-universal-ability-target')) {
+                    updateMechanicalBonusRow($row, { resetAmount: true });
+                }
+                saveBonusesForSection($row.closest('.bonus-section'));
             });
         }
 
         // Damage components (weapons only)
         if (this.item.type === 'weapon') {
+            html.find('.weapon-quality-add').on('click', async ev => {
+                ev.preventDefault();
+                const id = $(ev.currentTarget).closest('.weapon-quality-selector').find('.weapon-quality-choice').val();
+                if (!id) return;
+                const qualityIds = [...new Set([...(this.item.system.qualityIds || []), id])];
+                await this.item.update({ "system.qualityIds": qualityIds });
+            });
+
+            html.find('.weapon-quality-remove').on('click', async ev => {
+                ev.preventDefault();
+                const id = ev.currentTarget.dataset.qualityId;
+                const qualityIds = (this.item.system.qualityIds || []).filter(value => value !== id);
+                await this.item.update({ "system.qualityIds": qualityIds });
+            });
+
             const saveDamageComponents = () => {
                 const comps = [];
                 html.find('.dmg-comp-row').each((i, el) => {
@@ -1445,34 +1581,24 @@ export class TheFadeItemSheet extends ItemSheet {
             });
         }
 
-        // Add general input change handler for all item sheets
-        html.find('input[name], select[name], textarea[name]').change(ev => {
-            const input = ev.currentTarget;
-            const fieldName = input.name;
+        // Species fields bypass the shared handler above because those sheets
+        // manage their main form separately. Preserve their direct-save path
+        // without binding every other item sheet twice.
+        if (this.item.type === 'species' || this.item.type === 'monsterspecies') {
+            html.find('input[name], select[name]:not([name="type"]), textarea[name]').change(ev => {
+                const input = ev.currentTarget;
+                if (input.closest('.bonus-section')) return;
+                const fieldName = input.name;
+                let value = input.type === 'checkbox' ? input.checked : input.value;
 
-            let value = input.value;
+                if (input.dataset.dtype === 'Number') {
+                    value = Number(value);
+                    if (isNaN(value)) value = 0;
+                }
 
-            // Convert to number for numeric inputs
-            if (input.dataset.dtype === 'Number') {
-                value = Number(value);
-                if (isNaN(value)) value = 0;
-            }
-
-            // Handle system data updates
-            if (fieldName.startsWith('system.')) {
-                const path = fieldName.replace('system.', '');
-                this.item.update({
-                    "system": {
-                        [path]: value
-                    }
-                });
-            } else {
-                // For other updates
-                this.item.update({
-                    [fieldName]: value
-                });
-            }
-        });
+                this.item.update({ [fieldName]: value });
+            });
+        }
 
         // Reset armor AP
         html.find('.reset-armor-ap').click(async ev => {
@@ -1528,7 +1654,7 @@ export class TheFadeItemSheet extends ItemSheet {
         // so they work after every re-render, unlike DOMContentLoaded).
         html.find('.quick-add-btn').on('click', async (ev) => {
             ev.preventDefault();
-            if (this.item.type !== 'path') return;
+            if (this.item.type !== 'path' && this.item.type !== 'monsterpath') return;
 
             const type = ev.currentTarget.dataset.type;
             let skillEntry;
@@ -1595,6 +1721,22 @@ export class TheFadeItemSheet extends ItemSheet {
                         }
                     };
                     break;
+
+                case 'choose-any-1':
+                    skillEntry = {
+                        _id: foundry.utils.randomID(16),
+                        name: "Choose 1 Any Skill",
+                        type: "skill",
+                        system: {
+                            rank: "learned",
+                            category: "Any",
+                            attribute: "varies",
+                            entryType: PATH_SKILL_TYPES.CHOOSE_ANY,
+                            chooseCount: 1,
+                            chooseCategory: "Any"
+                        }
+                    };
+                    break;
             }
 
             if (skillEntry) {
@@ -1635,7 +1777,82 @@ export class TheFadeItemSheet extends ItemSheet {
             });
         });
 
-        if (this.item.type === 'species') {
+        if (this.item.type === 'monsterspecies') {
+            html.find('.standard-attack-add').click(async ev => {
+                ev.preventDefault();
+                const standardAttacks = foundry.utils.deepClone(this.item.system.standardAttacks || []);
+                standardAttacks.push({
+                    id: foundry.utils.randomID(16),
+                    mode: "grant",
+                    weapons: []
+                });
+                await this.item.update({ "system.standardAttacks": standardAttacks });
+                this.render(true);
+            });
+
+            html.find('.standard-attack-delete').click(async ev => {
+                ev.preventDefault();
+                const attackId = ev.currentTarget.closest('.standard-attack-entry')?.dataset.attackId;
+                if (!attackId) return;
+                const standardAttacks = (this.item.system.standardAttacks || []).filter(a => a.id !== attackId);
+                await this.item.update({ "system.standardAttacks": standardAttacks });
+                this.render(true);
+            });
+
+            html.find('.standard-attack-weapon-delete').click(async ev => {
+                ev.preventDefault();
+                const attackId = ev.currentTarget.closest('.standard-attack-entry')?.dataset.attackId;
+                const weaponId = ev.currentTarget.closest('.standard-attack-weapon')?.dataset.weaponId;
+                if (!attackId || !weaponId) return;
+                const standardAttacks = foundry.utils.deepClone(this.item.system.standardAttacks || []);
+                const attack = standardAttacks.find(a => a.id === attackId);
+                if (!attack) return;
+                attack.weapons = (attack.weapons || []).filter(w => w.id !== weaponId);
+                await this.item.update({ "system.standardAttacks": standardAttacks });
+                this.render(true);
+            });
+
+            html.find('.standard-attack-field').change(async ev => {
+                ev.preventDefault();
+                const entry = ev.currentTarget.closest('.standard-attack-entry');
+                const attackId = entry?.dataset.attackId;
+                const field = ev.currentTarget.dataset.field;
+                if (!attackId || !field) return;
+
+                const standardAttacks = foundry.utils.deepClone(this.item.system.standardAttacks || []);
+                const attack = standardAttacks.find(a => a.id === attackId);
+                if (!attack) return;
+
+                let value = ev.currentTarget.value;
+                if (ev.currentTarget.dataset.dtype === 'Number') {
+                    value = Number(value);
+                    if (!Number.isFinite(value)) value = 0;
+                }
+
+                foundry.utils.setProperty(attack, field, value);
+                await this.item.update({ "system.standardAttacks": standardAttacks });
+                this.render(false);
+            });
+
+            html.find('.standard-attack-drop-zone').on('dragover', ev => {
+                ev.preventDefault();
+                $(ev.currentTarget).addClass('drop-target');
+            });
+
+            html.find('.standard-attack-drop-zone').on('dragleave', ev => {
+                ev.preventDefault();
+                $(ev.currentTarget).removeClass('drop-target');
+            });
+
+            html.find('.standard-attack-drop-zone').on('drop', ev => {
+                ev.preventDefault();
+                $(ev.currentTarget).removeClass('drop-target');
+                const dragEvent = ev.originalEvent || ev;
+                this._onDrop(dragEvent);
+            });
+        }
+
+        if (this.item.type === 'species' || this.item.type === 'monsterspecies') {
             html.find('input[name="system.biologicallyImmortal"]').change((ev) => {
                 const isChecked = ev.currentTarget.checked;
                 const ageInputs = html.find('input[name="system.youngAge"], input[name="system.adultAge"], input[name="system.oldAge"], input[name="system.maximumAge"]');
@@ -1661,7 +1878,7 @@ export class TheFadeItemSheet extends ItemSheet {
     * @param {Object} sheetData - Sheet data object
     */
     _preparePathSkills(sheetData) {
-        if (this.item.type !== 'path') return;
+        if (this.item.type !== 'path' && this.item.type !== 'monsterpath') return;
 
         const pathSkills = [];
 
@@ -1676,7 +1893,7 @@ export class TheFadeItemSheet extends ItemSheet {
                 };
 
                 // Determine entry type and set display properties
-                const entryType = skillData.system.entryType || PATH_SKILL_TYPES.SPECIFIC_SKILL;
+                const entryType = skillData.system?.entryType || PATH_SKILL_TYPES.SPECIFIC_SKILL;
 
                 switch (entryType) {
                     case PATH_SKILL_TYPES.SPECIFIC_SKILL:
@@ -1695,6 +1912,13 @@ export class TheFadeItemSheet extends ItemSheet {
 
                     case PATH_SKILL_TYPES.CHOOSE_CATEGORY:
                         processedSkill.entryTypeDisplay = "Choose Category";
+                        processedSkill.entryTypeClass = "choice";
+                        processedSkill.isChoiceEntry = true;
+                        processedSkill.isCustomEntry = false;
+                        break;
+
+                    case PATH_SKILL_TYPES.CHOOSE_ANY:
+                        processedSkill.entryTypeDisplay = "Choose Any";
                         processedSkill.entryTypeClass = "choice";
                         processedSkill.isChoiceEntry = true;
                         processedSkill.isCustomEntry = false;
@@ -1909,6 +2133,24 @@ export class TheFadeItemSheet extends ItemSheet {
                 };
                 break;
 
+            case 'choose-any':
+                const anyCount = parseInt(html.find('#choose-count').val());
+
+                skillEntry = {
+                    _id: foundry.utils.randomID(16),
+                    name: `Choose ${anyCount} Any Skill${anyCount > 1 ? 's' : ''}`,
+                    type: "skill",
+                    system: {
+                        rank: targetRank,
+                        category: "Any",
+                        attribute: "varies",
+                        entryType: PATH_SKILL_TYPES.CHOOSE_ANY,
+                        chooseCount: anyCount,
+                        chooseCategory: "Any"
+                    }
+                };
+                break;
+
             case 'choose-lore':
                 const loreCount = parseInt(html.find('#choose-count').val());
 
@@ -1988,6 +2230,7 @@ export class TheFadeItemSheet extends ItemSheet {
                         <option value="custom-lore">Lore Skill</option>
                         <option value="custom-perform">Perform Skill</option>
                         <option value="choose-category">Choose from Category</option>
+                        <option value="choose-any">Choose Any Skills</option>
                         <option value="choose-lore">Choose Lore Skills</option>
                         <option value="choose-perform">Choose Perform Skills</option>
                         <option value="choose-craft">Choose Custom Craft Skills</option>
@@ -2015,6 +2258,8 @@ export class TheFadeItemSheet extends ItemSheet {
                         <option value="Social">Social</option>
                         <option value="Physical">Physical</option>
                         <option value="Knowledge">Knowledge</option>
+                        <option value="Magical">Magical</option>
+                        <option value="Sense">Sense</option>
                         <option value="Craft">Craft</option>
                     </select>
                 </div>
@@ -2028,6 +2273,11 @@ export class TheFadeItemSheet extends ItemSheet {
                         <option value="3">3</option>
                         <option value="4">4</option>
                         <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
                     </select>
                 </div>
 
@@ -2121,7 +2371,7 @@ export class TheFadeItemSheet extends ItemSheet {
         // Determine whether we're dealing with path or species
         let updateData = {};
 
-        if (this.item.type === 'path') {
+        if (this.item.type === 'path' || this.item.type === 'monsterpath') {
             const abilities = foundry.utils.deepClone(this.item.system.abilities || {});
             if (abilities[abilityId]) {
                 delete abilities[abilityId];
@@ -2130,7 +2380,7 @@ export class TheFadeItemSheet extends ItemSheet {
                 };
             }
         }
-        else if (this.item.type === 'species') {
+        else if (this.item.type === 'species' || this.item.type === 'monsterspecies') {
             const abilities = foundry.utils.deepClone(this.item.system.speciesAbilities || {});
             if (abilities[abilityId]) {
                 delete abilities[abilityId];
@@ -2145,6 +2395,143 @@ export class TheFadeItemSheet extends ItemSheet {
             await this.item.update(updateData);
             this.render(true);
         }
+    }
+
+    async _resolveDroppedItem(dragData) {
+        let itemDoc;
+
+        try {
+            if (dragData.uuid) {
+                itemDoc = await fromUuid(dragData.uuid);
+            } else if (dragData.pack && dragData.id) {
+                const pack = game.packs.get(dragData.pack);
+                if (pack) itemDoc = await pack.getDocument(dragData.id);
+            } else if (dragData.data) {
+                itemDoc = dragData.data;
+            }
+        } catch (err) {
+            console.error("Error loading dropped item:", err);
+        }
+
+        return itemDoc || null;
+    }
+
+    _weaponDropToStandardAttackWeapon(itemDoc) {
+        const itemData = itemDoc?.toObject
+            ? itemDoc.toObject()
+            : foundry.utils.deepClone(itemDoc);
+
+        if (!itemData || itemData.type !== "weapon") return null;
+
+        return {
+            id: foundry.utils.randomID(16),
+            name: itemData.name,
+            img: itemData.img || "icons/svg/sword.svg",
+            type: "weapon",
+            system: foundry.utils.deepClone(itemData.system || {})
+        };
+    }
+
+    async _addWeaponToStandardAttackGroup(attackId, weaponData) {
+        let standardAttacks = foundry.utils.deepClone(this.item.system.standardAttacks || []);
+        if (!Array.isArray(standardAttacks)) standardAttacks = [];
+
+        let attack = attackId ? standardAttacks.find(a => a.id === attackId) : null;
+        if (!attack) {
+            attack = {
+                id: foundry.utils.randomID(16),
+                mode: "grant",
+                weapons: []
+            };
+            standardAttacks.push(attack);
+        }
+
+        if (!Array.isArray(attack.weapons)) attack.weapons = [];
+        const exists = attack.weapons.some(w => w.name === weaponData.name);
+        if (exists) {
+            ui.notifications.warn(`${weaponData.name} is already in this standard attack group.`);
+            return;
+        }
+
+        attack.weapons.push(weaponData);
+        await this.item.update({ "system.standardAttacks": standardAttacks });
+        this.render(true);
+        ui.notifications.info(`Added ${weaponData.name} to ${this.item.name} standard attacks.`);
+    }
+
+    async _onRollHazard(event) {
+        event.preventDefault();
+        const targetToken = Array.from(game.user?.targets || [])[0] || canvas.tokens?.controlled?.[0];
+        const targetActor = targetToken?.actor;
+        if (!targetActor) {
+            ui.notifications.warn("Target one token (or control one token) before triggering this trap or hazard.");
+            return;
+        }
+
+        const system = this.item.system;
+        const attackDice = Math.max(0, Number(system.attackDice) || 0);
+        const defenseKey = system.defense || "none";
+        const defense = defenseKey === "none"
+            ? 0
+            : Number(targetActor.system?.[`total${defenseKey.charAt(0).toUpperCase()}${defenseKey.slice(1)}`]
+                ?? targetActor.system?.defenses?.[defenseKey]
+                ?? 0);
+
+        let attackRoll = null;
+        let successes = 0;
+        let hit = attackDice <= 0 || defenseKey === "none";
+        if (attackDice > 0 && defenseKey !== "none") {
+            attackRoll = await new Roll(`${attackDice}d12`).evaluate();
+            for (const die of attackRoll.dice[0]?.results || []) {
+                if (die.result === 12) successes += 2;
+                else if (die.result >= 8) successes += 1;
+            }
+            hit = successes >= defense;
+        }
+
+        let damage = 0;
+        let damageRoll = null;
+        if (hit && String(system.damage ?? "0").trim() !== "0") {
+            try {
+                damageRoll = await new Roll(String(system.damage)).evaluate();
+                damage = Math.max(0, Number(damageRoll.total) || 0);
+            } catch (error) {
+                console.error("The Fade | Invalid trap/hazard damage formula", error);
+                ui.notifications.error(`Invalid damage formula: ${system.damage}`);
+                return;
+            }
+        }
+
+        const targetUuid = targetToken.document?.uuid || targetActor.uuid;
+        const rollHTML = attackRoll ? await attackRoll.render() : "";
+        const damageHTML = damageRoll && String(system.damage) !== String(damage) ? `<p>Damage roll: ${await damageRoll.render()}</p>` : "";
+        const resultLabel = hit ? "Hit" : "Miss";
+        const itemName = escapeHTML(this.item.name);
+        const targetName = escapeHTML(targetActor.name);
+        const damageType = escapeHTML(system.damageType || "Ut");
+        const damageTrack = system.damageTrack === "sanity" ? "sanity" : "hp";
+        const effect = escapeHTML(system.effect || "");
+        const applyButton = hit && damage > 0
+            ? `<button type="button" class="apply-damage-btn"><i class="fas fa-heart-broken"></i> Apply ${damage} Damage</button>`
+            : "";
+        const content = `
+            <div class="thefade attack-card hazard-card"
+                data-target-uuid="${escapeHTML(targetUuid)}"
+                data-hit-location="body"
+                data-called-shot="0"
+                data-base-damage="${damage}"
+                data-damage-type="${damageType}"
+                data-damage-track="${damageTrack}"
+                data-bypass-armor="${system.bypassArmor ? "1" : "0"}"
+                data-weapon-name="${itemName}">
+                <h3>${itemName}</h3>
+                <p><strong>${targetName}</strong> - ${resultLabel}${attackRoll ? ` (${successes} successes vs. ${escapeHTML(defenseKey)} ${defense})` : " (automatic)"}</p>
+                ${rollHTML}${damageHTML}
+                ${hit ? `<p>Damage: <strong class="base-damage-value">${damage}</strong> ${damageType} to ${damageTrack === "sanity" ? "Sanity" : "HP"}</p>` : ""}
+                ${effect ? `<p><strong>Effect:</strong> ${effect}</p>` : ""}
+                ${applyButton}
+            </div>`;
+        await ChatMessage.create({ speaker:ChatMessage.getSpeaker({ actor:targetActor }), content });
     }
 
     /**
@@ -2177,36 +2564,29 @@ export class TheFadeItemSheet extends ItemSheet {
             return false;
         }
 
+        if (this.item.type === "monsterspecies") {
+            if (dragData.type !== "Item") return super._onDrop(event);
+
+            const itemDoc = await this._resolveDroppedItem(dragData);
+            const weaponData = this._weaponDropToStandardAttackWeapon(itemDoc);
+            if (!weaponData) {
+                ui.notifications.warn("Only weapons can be dropped into Standard Attacks.");
+                return false;
+            }
+
+            const attackId = event.target?.closest?.('.standard-attack-entry')?.dataset?.attackId || null;
+            await this._addWeaponToStandardAttackGroup(attackId, weaponData);
+            return true;
+        }
+
         // Only process if this is a path sheet
-        if (this.item.type !== 'path') {
+        if (this.item.type !== 'path' && this.item.type !== 'monsterpath') {
             return super._onDrop(event);
         }
 
         // Handle dropping a skill
         if (dragData.type === "Item") {
-            let skillDoc;
-
-            // Try to load the item from various sources
-            try {
-                // From UUID
-                if (dragData.uuid) {
-                    skillDoc = await fromUuid(dragData.uuid);
-                }
-                // From compendium
-                else if (dragData.pack && dragData.id) {
-                    const pack = game.packs.get(dragData.pack);
-                    if (pack) {
-                        skillDoc = await pack.getDocument(dragData.id);
-                    }
-                }
-                // Directly from data
-                else if (dragData.data) {
-                    skillDoc = dragData.data;
-                }
-            } catch (err) {
-                console.error("Error loading item:", err);
-                return false;
-            }
+            let skillDoc = await this._resolveDroppedItem(dragData);
 
             // Check if we got a skill
             if (!skillDoc) {

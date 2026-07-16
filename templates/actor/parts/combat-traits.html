@@ -1,0 +1,181 @@
+<div class="combat-traits panel">
+    <div class="combat-traits-header">
+        <h2>Combat Traits</h2>
+    </div>
+
+    <section class="combat-trait-section universal-abilities-section">
+        <h3>Universal Abilities</h3>
+        <div class="universal-ability-categories">
+            {{#each universalAbilityCategories as |category|}}
+            <details class="universal-ability-category" data-category="{{category.key}}" {{#if category.isOpen}}open{{/if}}>
+                <summary>
+                    <span>{{category.label}}</span>
+                    <span class="trait-count">{{category.abilities.length}}</span>
+                </summary>
+                <div class="universal-ability-list">
+                    {{#each category.abilities as |ability|}}
+                    <div class="combat-trait-option-row">
+                        <label class="combat-trait-option" title="{{ability.description}}">
+                            <input type="checkbox"
+                                   class="combat-trait-toggle"
+                                   name="system.combatTraits.abilities.{{../key}}.{{ability.key}}"
+                                   {{checked (lookup (lookup ../../system.combatTraits.abilities ../key) ability.key)}}
+                                   {{#if (lookup (lookup ../../system.combatTraits.granted.abilities ../key) ability.key)}}disabled title="Granted automatically"{{/if}} />
+                            <span>
+                                <strong>{{ability.label}}</strong>
+                                <small>{{ability.description}}</small>
+                            </span>
+                        </label>
+                        {{#if (eq ability.key "spellResistance")}}
+                        <label class="spell-resistance-percent">
+                            <span>SR %</span>
+                            <input type="number"
+                                   name="system.combatTraits.spellResistancePercent"
+                                   value="{{../../system.combatTraits.spellResistancePercent}}"
+                                   data-dtype="Number"
+                                   min="1"
+                                   max="100"
+                                   {{#if (lookup (lookup ../../system.combatTraits.granted.abilities "defensive") "spellResistance")}}disabled title="Granted automatically"{{/if}}
+                                   {{#unless (lookup (lookup ../../system.combatTraits.abilities "defensive") "spellResistance")}}disabled{{/unless}} />
+                        </label>
+                        {{else}}
+                            {{#if ability.amount}}
+                            <label class="spell-resistance-percent universal-ability-amount">
+                                <span>{{ability.amount.label}}</span>
+                                <input type="number"
+                                       name="system.combatTraits.abilityValues.{{../key}}.{{ability.key}}"
+                                       value="{{lookup (lookup ../../system.combatTraits.abilityValues ../key) ability.key}}"
+                                       data-dtype="Number"
+                                       min="{{ability.amount.min}}"
+                                       {{#if ability.amount.max}}max="{{ability.amount.max}}"{{/if}}
+                                       {{#if (lookup (lookup ../../system.combatTraits.granted.abilities ../key) ability.key)}}disabled title="Granted automatically"{{/if}}
+                                       {{#unless (lookup (lookup ../../system.combatTraits.abilities ../key) ability.key)}}disabled{{/unless}} />
+                            </label>
+                            {{/if}}
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+            </details>
+            {{/each}}
+        </div>
+        <textarea class="combat-trait-text" name="system.combatTraits.abilityNotes" rows="2" placeholder="Ability details, ranges, values, exceptions, or source notes">{{system.combatTraits.abilityNotes}}</textarea>
+    </section>
+
+    <div class="combat-trait-grid">
+        <section class="combat-trait-section">
+            <h3>Resistances</h3>
+            <div class="trait-chip-grid">
+                {{#each combatDamageTypes as |type|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           class="combat-trait-toggle"
+                           name="system.combatTraits.resistances.{{type.key}}"
+                           {{checked (lookup ../system.combatTraits.resistances type.key)}}
+                           {{#if (lookup ../system.combatTraits.granted.resistances type.key)}}disabled title="Granted automatically"{{/if}} />
+                    <span>{{type.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+        </section>
+
+        <section class="combat-trait-section">
+            <h3>Immunities</h3>
+            <h4>Damage Types</h4>
+            <div class="trait-chip-grid">
+                {{#each combatImmunityDamageTypes as |type|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           class="combat-trait-toggle"
+                           name="system.combatTraits.immunities.damageTypes.{{type.key}}"
+                           {{checked (lookup ../system.combatTraits.immunities.damageTypes type.key)}}
+                           {{#if (lookup ../system.combatTraits.granted.immunities.damageTypes type.key)}}disabled title="Granted automatically"{{/if}} />
+                    <span>{{type.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+
+            <h4>Status Effects</h4>
+            <div class="trait-chip-grid">
+                {{#each combatStatusImmunities as |status|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           class="combat-trait-toggle"
+                           name="system.combatTraits.immunities.statuses.{{status.key}}"
+                           {{checked (lookup ../system.combatTraits.immunities.statuses status.key)}}
+                           {{#if (lookup ../system.combatTraits.granted.immunities.statuses status.key)}}disabled title="Granted automatically"{{/if}} />
+                    <span>{{status.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+
+            <h4>Other Effects</h4>
+            <div class="trait-chip-grid">
+                {{#each combatImmunityEffects as |effect|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           class="combat-trait-toggle"
+                           name="system.combatTraits.immunities.effects.{{effect.key}}"
+                           {{checked (lookup ../system.combatTraits.immunities.effects effect.key)}}
+                           {{#if (lookup ../system.combatTraits.granted.immunities.effects effect.key)}}disabled title="Granted automatically"{{/if}} />
+                    <span>{{effect.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+
+            {{#if system.combatTraits.itemGrantedCustomImmunities.length}}
+            <h4>Item-Granted Custom Immunities</h4>
+            <div class="trait-chip-grid">
+                {{#each system.combatTraits.itemGrantedCustomImmunities as |immunity|}}
+                <div class="trait-chip item-granted-trait" title="Granted by {{immunity.source}}">
+                    <i class="fas fa-gem"></i>
+                    <span>{{immunity.label}}</span>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </section>
+
+        <section class="combat-trait-section">
+            <h3>Absorption</h3>
+            <div class="trait-chip-grid">
+                {{#each combatImmunityDamageTypes as |type|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           class="combat-trait-toggle"
+                           name="system.combatTraits.absorption.{{type.key}}"
+                           {{checked (lookup ../system.combatTraits.absorption type.key)}}
+                           {{#if (lookup ../system.combatTraits.granted.absorption type.key)}}disabled title="Granted automatically"{{/if}} />
+                    <span>{{type.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+        </section>
+
+        <section class="combat-trait-section">
+            <h3>Vulnerabilities</h3>
+            <div class="vulnerability-list">
+                {{#each combatDamageTypes as |type|}}
+                <div class="vulnerability-row">
+                    <label class="trait-chip">
+                        <input type="checkbox"
+                               class="combat-trait-toggle"
+                               name="system.combatTraits.vulnerabilities.{{type.key}}"
+                               {{checked (lookup ../system.combatTraits.vulnerabilities type.key)}}
+                               {{#if (lookup ../system.combatTraits.granted.vulnerabilities type.key)}}disabled title="Granted automatically"{{/if}} />
+                        <span>{{type.label}}</span>
+                    </label>
+                    <select name="system.combatTraits.vulnerabilitySeverity.{{type.key}}" {{#if (lookup ../system.combatTraits.granted.vulnerabilities type.key)}}disabled{{/if}}>
+                        {{selectOptions ../vulnerabilitySeverityOptions selected=(lookup ../system.combatTraits.vulnerabilitySeverity type.key)}}
+                    </select>
+                </div>
+                {{/each}}
+            </div>
+        </section>
+    </div>
+
+    <section class="combat-trait-section combat-trait-notes">
+        <h3>Trait Notes</h3>
+        <textarea class="combat-trait-text" name="system.combatTraits.notes" rows="3" placeholder="Special conditions, temporary effects, suppressed regeneration, or custom rulings">{{system.combatTraits.notes}}</textarea>
+    </section>
+</div>

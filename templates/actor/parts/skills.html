@@ -1,13 +1,14 @@
 <section class="skills-section">
     {{!-- Custom skill creation bar --}}
-    <div class="custom-skills-bar inv-block">
-        <h2 class="inv-heading">
+    <details class="custom-skills-bar inv-block sheet-state-section" data-section-key="skills-custom" {{#if skillCustomSectionOpen}}open{{/if}}>
+        <summary class="inv-heading sheet-section-summary">
             <i class="fas fa-plus-circle"></i>
             <span class="inv-title">Add Custom Skill</span>
             <span class="inv-actions">
                 <a class="initialize-skills" title="Reset core skill ranks to defaults"><i class="fas fa-sync"></i></a>
             </span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
         <div class="inv-block-body custom-skills-bar-body">
             <button type="button" class="add-custom-craft" title="Add Custom Craft Skill">
                 <i class="fas fa-hammer"></i> Craft
@@ -19,16 +20,17 @@
                 <i class="fas fa-theater-masks"></i> Perform
             </button>
         </div>
-    </div>
+    </details>
 
     {{#each skillCategoryGroups as |group|}}
-    <div class="skill-category inv-block">
-        <h2 class="inv-heading">
+    <section class="skill-category inv-block">
+        <header class="inv-heading skill-category-heading">
             <i class="fas {{group.icon}}"></i>
             <span class="inv-title">{{group.label}} Skills</span>
-            <span class="inv-count">{{group.skills.length}}</span>
-        </h2>
+            <span class="inv-count" title="{{group.trainedCount}} trained, {{group.untrainedCount}} untrained">{{group.trainedCount}} / {{group.skills.length}}</span>
+        </header>
 
+        {{#if group.trainedSkills.length}}
         <div class="skills-column-header">
             <div class="skill-name-cell">Name</div>
             <div class="skill-rank-cell">Rank</div>
@@ -38,13 +40,43 @@
             <div class="skill-controls"></div>
         </div>
 
-        <div class="skills-list abilities-list">
-            {{#each group.skills as |skill|}}
+        <div class="skills-list trained-skills-list abilities-list">
+            {{#each group.trainedSkills as |skill|}}
             {{> "systems/thefade/templates/actor/parts/skill-row.html" this
                 skillRankOptions=../../skillRankOptions
                 skillAttributeOptions=../../skillAttributeOptions}}
             {{/each}}
         </div>
-    </div>
+        {{/if}}
+
+        {{#if group.untrainedSkills.length}}
+        <details class="untrained-skills sheet-state-section"
+                 data-section-key="skills-untrained-{{group.key}}"
+                 {{#if group.untrainedOpen}}open{{/if}}>
+            <summary class="untrained-skills-summary sheet-section-summary">
+                <span><i class="fas fa-eye-slash"></i> Untrained</span>
+                <span class="inv-count">{{group.untrainedCount}}</span>
+                <i class="fas fa-chevron-down section-toggle-icon"></i>
+            </summary>
+
+            <div class="skills-column-header">
+                <div class="skill-name-cell">Name</div>
+                <div class="skill-rank-cell">Rank</div>
+                <div class="skill-attribute-cell">Attr</div>
+                <div class="skill-bonus-cell">Bonus</div>
+                <div class="skill-total-cell">Dice</div>
+                <div class="skill-controls"></div>
+            </div>
+
+            <div class="skills-list abilities-list">
+                {{#each group.untrainedSkills as |skill|}}
+                {{> "systems/thefade/templates/actor/parts/skill-row.html" this
+                    skillRankOptions=../../skillRankOptions
+                    skillAttributeOptions=../../skillAttributeOptions}}
+                {{/each}}
+            </div>
+        </details>
+        {{/if}}
+    </section>
     {{/each}}
 </section>

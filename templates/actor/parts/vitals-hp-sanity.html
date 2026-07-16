@@ -6,7 +6,11 @@
             <span class="sep">/</span>
             <input type="text" {{#unless noName}}name="system.hp.max"{{/unless}} value="{{system.hp.max}}" data-dtype="Number" disabled title="{{system.hp.formula}}" />
         </div>
-        <input type="text" {{#unless noName}}name="system.hpMiscBonus"{{/unless}} value="{{system.hpMiscBonus}}" data-dtype="Number" title="HP Misc Bonus" class="vital-bonus" placeholder="+0" />
+        {{#if noName}}
+        <input type="text" data-vital-path="system.hpMiscBonus" value="{{system.hpMiscBonus}}" data-dtype="Number" data-default-value="0" title="HP Misc Bonus" class="vital-bonus" placeholder="+0" />
+        {{else}}
+        <input type="text" name="system.hpMiscBonus" data-vital-path="system.hpMiscBonus" value="{{system.hpMiscBonus}}" data-dtype="Number" data-default-value="0" title="HP Misc Bonus" class="vital-bonus" placeholder="+0" />
+        {{/if}}
         {{#if system.hp.stateLabel}}
         <span class="hp-state-badge hp-state-{{system.hp.state}}" title="HP State">{{system.hp.stateLabel}}</span>
         {{/if}}
@@ -20,6 +24,10 @@
             <span class="sep">/</span>
             <input type="text" {{#unless noName}}name="system.sanity.max"{{/unless}} value="{{system.sanity.max}}" data-dtype="Number" disabled title="{{system.sanity.formula}}" />
         </div>
-        <input type="text" {{#unless noName}}name="system.sanity.miscBonus"{{/unless}} value="{{system.sanity.miscBonus}}" data-dtype="Number" title="Sanity Misc Bonus" class="vital-bonus" placeholder="+0" />
+        {{#if noName}}
+        <input type="text" data-vital-path="system.sanity.miscBonus" value="{{system.sanity.miscBonus}}" data-dtype="Number" data-default-value="0" title="Sanity Misc Bonus" class="vital-bonus" placeholder="+0" />
+        {{else}}
+        <input type="text" name="system.sanity.miscBonus" data-vital-path="system.sanity.miscBonus" value="{{system.sanity.miscBonus}}" data-dtype="Number" data-default-value="0" title="Sanity Misc Bonus" class="vital-bonus" placeholder="+0" />
+        {{/if}}
     </div>
 </div>

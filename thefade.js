@@ -15,13 +15,59 @@ import { TheFadeNPCSheet } from './src/npc-sheet.js';
 import { TheFadePartySheet } from './src/party-sheet.js';
 import { TheFadeShopSheet } from './src/shop-sheet.js';
 import { computePerRoundDamage, CONDITION_EFFECTS } from './src/conditions.js';
+import { getActiveTemporaryBonusEntries } from './src/abilities.js';
+import { normalizeMechanicalBonus } from './src/mechanical-bonuses.js';
 import './src/token-facing.js';
 import { registerTokenActionHud } from './src/integrations/token-action-hud/index.js';
 import { migrateAllActorSkills } from './src/skills.js';
 import { registerIgnitionHooks } from './src/ignition.js';
+import {
+    getDefaultEncounterState, getDefaultSkillChallengeState, openGMToolkit
+} from './src/gm-tools.js';
 
 registerTokenActionHud();
 registerIgnitionHooks();
+
+async function refreshTemporaryAbilityBonuses(actors) {
+    const unique = [...new Map((actors || []).filter(Boolean).map(actor => [actor.id, actor])).values()];
+    for (const actor of unique) {
+        const stored = Array.isArray(actor.system?.temporaryBonuses) ? actor.system.temporaryBonuses : [];
+        if (!stored.length) continue;
+        const active = getActiveTemporaryBonusEntries(actor);
+        if (game.user?.isGM && active.length !== stored.length) {
+            await actor.update({ "system.temporaryBonuses": foundry.utils.deepClone(active) });
+        } else {
+            actor.reset();
+            if (actor.sheet?.rendered) actor.sheet.render(false);
+        }
+    }
+}
+
+Hooks.on("updateCombat", (combat, changes) => {
+    if (!("round" in (changes || {})) && !("turn" in (changes || {}))) return;
+    refreshTemporaryAbilityBonuses(combat.combatants.map(combatant => combatant.actor));
+});
+Hooks.on("deleteCombat", () => refreshTemporaryAbilityBonuses(game.actors?.contents || []));
+Hooks.on("updateWorldTime", () => refreshTemporaryAbilityBonuses(game.actors?.contents || []));
+
+// Keep the toolkit in one consistent GM-only location: directly below the
+// core Unconstrained Movement tool in the left Token Controls toolbar.
+Hooks.on("getSceneControlButtons", controls => {
+    const tools = controls?.tokens?.tools;
+    if (!tools) return;
+    tools.thefadeGMToolkit = {
+        name: "thefadeGMToolkit",
+        order: 5,
+        title: "THEFADE.GMToolkitLabel",
+        icon: "fa-solid fa-toolbox",
+        button: true,
+        visible: game.user?.isGM === true,
+        onChange: () => openGMToolkit()
+    };
+});
+
+const PATH_ITEM_TYPES = ["path", "monsterpath"];
+const SPECIES_ITEM_TYPES = ["species", "monsterspecies"];
 
 
 /**
@@ -30,10 +76,11 @@ registerIgnitionHooks();
 function registerItemSheets() {
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
-            "weapon", "armor", "skill", "path", "spell", "talent", "trait", "precept",
-            "species", "drug", "poison", "disease", "biological", "medical", "travel",
+            "weapon", "armor", "skill", "path", "monsterpath", "spell", "talent", "trait", "precept",
+            "species", "monsterspecies", "drug", "poison", "disease", "biological", "medical", "travel",
             "mount", "vehicle", "musical", "potion", "staff", "wand", "gate",
-            "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing"
+            "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing",
+            "mutation", "heritage", "trap", "hazard", "downtime"
         ],
         makeDefault: true
     });
@@ -118,10 +165,11 @@ Hooks.once('init', async function () {
 
     // Define all available item types (must match template.json)
     CONFIG.Item.types = [
-        "weapon", "armor", "skill", "path", "spell", "talent", "species",
+        "weapon", "armor", "skill", "path", "monsterpath", "spell", "talent", "species", "monsterspecies",
         "drug", "poison", "disease", "biological", "medical", "travel", "mount", "vehicle",
         "musical", "potion", "staff", "wand", "gate", "communication",
-        "containment", "dream", "fleshcraft", "magicitem", "clothing", "trait", "precept"
+        "containment", "dream", "fleshcraft", "magicitem", "clothing", "trait", "precept",
+        "mutation", "heritage", "trap", "hazard", "downtime", "item"
     ];
 
     // Define item type labels for display
@@ -130,11 +178,13 @@ Hooks.once('init', async function () {
         armor: "TYPES.Item.armor",
         skill: "TYPES.Item.skill",
         path: "TYPES.Item.path",
+        monsterpath: "TYPES.Item.monsterpath",
         spell: "TYPES.Item.spell",
         talent: "TYPES.Item.talent",
         trait: "TYPES.Item.trait",
         precept: "TYPES.Item.precept",
         species: "TYPES.Item.species",
+        monsterspecies: "TYPES.Item.monsterspecies",
         drug: "TYPES.Item.drug",
         poison: "TYPES.Item.poison",
         disease: "TYPES.Item.disease",
@@ -153,7 +203,13 @@ Hooks.once('init', async function () {
         dream: "TYPES.Item.dream",
         fleshcraft: "TYPES.Item.fleshcraft",
         magicitem: "TYPES.Item.magicitem",
-        clothing: "TYPES.Item.clothing"
+        clothing: "TYPES.Item.clothing",
+        mutation: "TYPES.Item.mutation",
+        heritage: "TYPES.Item.heritage",
+        trap: "TYPES.Item.trap",
+        hazard: "TYPES.Item.hazard",
+        downtime: "TYPES.Item.downtime",
+        item: "TYPES.Item.item"
     };
 
     // --------------------------------------------------------------------
@@ -199,6 +255,88 @@ Hooks.once('init', async function () {
         }
     });
 
+    game.settings.register("thefade", "alternateAnatomyEnabled", {
+        name: "THEFADE.SettingAlternateAnatomy",
+        hint: "THEFADE.SettingAlternateAnatomyHint",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false,
+        onChange: () => {
+            for (const app of Object.values(ui.windows)) {
+                if (["character", "npc"].includes(app?.actor?.type) && typeof app.render === "function") {
+                    app.render(false);
+                }
+            }
+        }
+    });
+
+    game.settings.register("thefade", "fatePointsEnabled", {
+        name: "THEFADE.SettingFatePoints",
+        hint: "THEFADE.SettingFatePointsHint",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false,
+        onChange: () => {
+            for (const app of Object.values(ui.windows)) {
+                if (app?.actor?.type === "character" && typeof app.render === "function") app.render(false);
+            }
+        }
+    });
+
+    game.settings.register("thefade", "itemPowerSlotRule", {
+        name: "THEFADE.SettingItemPowerSlots",
+        hint: "THEFADE.SettingItemPowerSlotsHint",
+        scope: "world",
+        config: true,
+        type: String,
+        choices: {
+            standard: "THEFADE.SettingItemPowerSlotsStandard",
+            alternate: "THEFADE.SettingItemPowerSlotsAlternate"
+        },
+        default: "standard",
+        onChange: () => {
+            for (const app of Object.values(ui.windows)) {
+                if ((app?.actor || app?.item?.type === "magicitem") && typeof app.render === "function") app.render(false);
+            }
+        }
+    });
+
+    game.settings.register("thefade", "itemPowerAttunementRule", {
+        name: "THEFADE.SettingItemPowerAttunement",
+        hint: "THEFADE.SettingItemPowerAttunementHint",
+        scope: "world",
+        config: true,
+        type: String,
+        choices: {
+            standard: "THEFADE.SettingItemPowerAttunementStandard",
+            removed: "THEFADE.SettingItemPowerAttunementRemoved",
+            technology: "THEFADE.SettingItemPowerAttunementTechnology"
+        },
+        default: "standard",
+        onChange: () => {
+            for (const actor of game.actors ?? []) actor?.reset?.();
+            for (const app of Object.values(ui.windows)) {
+                if ((app?.actor || app?.item) && typeof app.render === "function") app.render(false);
+            }
+        }
+    });
+
+    game.settings.register("thefade", "skillChallengeState", {
+        scope: "world",
+        config: false,
+        type: Object,
+        default: getDefaultSkillChallengeState()
+    });
+
+    game.settings.register("thefade", "encounterState", {
+        scope: "world",
+        config: false,
+        type: Object,
+        default: getDefaultEncounterState()
+    });
+
     // --------------------------------------------------------------------
     // SHEET REGISTRATION
     // --------------------------------------------------------------------
@@ -234,10 +372,11 @@ Hooks.once('init', async function () {
     // Register The Fade item sheet
     Items.registerSheet("thefade", TheFadeItemSheet, {
         types: [
-            "weapon", "armor", "skill", "path", "spell", "talent", "trait", "precept",
-            "species", "drug", "poison", "disease", "biological", "medical", "travel", "item",
+            "weapon", "armor", "skill", "path", "monsterpath", "spell", "talent", "trait", "precept",
+            "species", "monsterspecies", "drug", "poison", "disease", "biological", "medical", "travel", "item",
             "mount", "vehicle", "musical", "potion", "staff", "wand", "gate",
-            "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing"
+            "communication", "containment", "dream", "fleshcraft", "magicitem", "clothing",
+            "mutation", "heritage", "trap", "hazard", "downtime"
         ],
         makeDefault: true
     });
@@ -258,14 +397,22 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/actor/parts/paths.html",
         "systems/thefade/templates/actor/parts/spells.html",
         "systems/thefade/templates/actor/parts/combat-state.html",
+        "systems/thefade/templates/actor/parts/combat-traits.html",
+        "systems/thefade/templates/actor/parts/linked-ability-source.html",
+        "systems/thefade/templates/actor/parts/creature-subtypes.html",
+        "systems/thefade/templates/actor/parts/creature-rule-abilities.html",
+        "systems/thefade/templates/item/parts/weapon-qualities.html",
+        "systems/thefade/templates/actor/parts/protection.html",
         "systems/thefade/templates/actor/parts/injuries.html",
         "systems/thefade/templates/actor/parts/vitals-hp-sanity.html",
+        "systems/thefade/templates/actor/parts/heritage-downtime.html",
         "systems/thefade/templates/chat/attack-roll.html",
         "systems/thefade/templates/chat/skill-roll.html",
         "systems/thefade/templates/chat/spell-cast.html",
         "systems/thefade/templates/chat/ignition.html",
         "systems/thefade/templates/dialogs/ability-edit.html",
         "systems/thefade/templates/dialogs/character-select.html",
+        "systems/thefade/templates/apps/gm-toolkit.html",
 
         "systems/thefade/templates/item/communication-sheet.html",
         "systems/thefade/templates/item/containment-sheet.html",
@@ -278,7 +425,9 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/item/musical-sheet.html",
         "systems/thefade/templates/item/poison-sheet.html",
         "systems/thefade/templates/item/disease-sheet.html",
+        "systems/thefade/templates/item/path-sheet.html",
         "systems/thefade/templates/item/potion-sheet.html",
+        "systems/thefade/templates/item/species-sheet.html",
         "systems/thefade/templates/item/staff-sheet.html",
         "systems/thefade/templates/item/travel-sheet.html",
         "systems/thefade/templates/item/vehicle-sheet.html",
@@ -286,7 +435,11 @@ Hooks.once('init', async function () {
         "systems/thefade/templates/item/clothing-sheet.html",
         "systems/thefade/templates/item/trait-sheet.html",
         "systems/thefade/templates/item/precept-sheet.html",
-        "systems/thefade/templates/item/parts/bonuses.html"
+        "systems/thefade/templates/item/rules-item-sheet.html",
+        "systems/thefade/templates/item/parts/bonuses.html",
+        "systems/thefade/templates/item/parts/item-power-grants.html",
+        "systems/thefade/templates/item/parts/tech-attunement.html",
+        "systems/thefade/templates/item/parts/rules-attack-fields.html"
 
     ]);
 
@@ -371,6 +524,10 @@ Hooks.once('init', async function () {
         return (a === b) ? options.fn(this) : options.inverse(this);
     });
 
+    Handlebars.registerHelper('mechanicalBonusType', bonus => normalizeMechanicalBonus(bonus).type);
+    Handlebars.registerHelper('mechanicalBonusTarget', bonus => normalizeMechanicalBonus(bonus).target);
+    Handlebars.registerHelper('mechanicalBonusSeverity', bonus => normalizeMechanicalBonus(bonus).severity);
+
     Handlebars.registerHelper('lowercase', function (str) {
         return (str || '').toLowerCase();
     });
@@ -401,14 +558,17 @@ Hooks.once('init', async function () {
 });
 
 /**
- * Seed new armor with its starting AP on creation. prepareData no longer
+ * Seed new armor (including preconfigured armor-like Items of Power) with
+ * its starting AP on creation. prepareData no longer
  * refills currentAP when it hits 0 (that was the "broken armor refills
  * itself" bug), so freshly created armor needs currentAP populated once
  * here to avoid starting at 0.
  */
 Hooks.on("preCreateItem", (item, data, options, userId) => {
-    if (item.type !== "armor") return;
     const system = data.system || {};
+    const isArmorPiece = item.type === "armor"
+        || (item.type === "magicitem" && system.conflictsArmor === true);
+    if (!isArmorPiece) return;
     const ap = Number(system.ap) || 0;
     const apInc = Number(system.apIncrease) || 0;
     const effectiveMax = ap + apInc;
@@ -423,14 +583,332 @@ Hooks.on("preCreateItem", (item, data, options, userId) => {
     if (Object.keys(updates).length) item.updateSource(updates);
 });
 
+function chooseMonsterNaturalDeflectionRating(species) {
+    const options = species.system?.naturalDeflectionTypes || {};
+    const available = ["fragile", "average", "tough"].filter(key => options[key]);
+    if (!available.length) return Promise.resolve(null);
+
+    return new Promise(resolve => {
+        let resolved = false;
+        const optionHtml = available.map(key => {
+            const label = key.charAt(0).toUpperCase() + key.slice(1);
+            const selected = key === "average" ? "selected" : "";
+            return `<option value="${key}" ${selected}>${label}</option>`;
+        }).join("");
+
+        new Dialog({
+            title: `${species.name}: Natural Deflection`,
+            content: `<form>
+                <div class="form-group">
+                    <label>Natural Deflection Type</label>
+                    <select id="monster-nd-rating">${optionHtml}</select>
+                </div>
+            </form>`,
+            buttons: {
+                apply: {
+                    icon: '<i class="fas fa-check"></i>',
+                    label: "Apply",
+                    callback: html => {
+                        resolved = true;
+                        resolve(html.find("#monster-nd-rating").val() || "average");
+                    }
+                }
+            },
+            default: "apply",
+            close: () => {
+                if (!resolved) resolve(available.includes("average") ? "average" : available[0]);
+            }
+        }).render(true);
+    });
+}
+
+function getMonsterSizeRule(species) {
+    if (species.type !== "monsterspecies") return null;
+    const size = species.system?.size || "medium";
+    return species.system?.sizeRules?.[size] || null;
+}
+
+function getAttributeMapValues(map) {
+    const out = {};
+    for (const attr of ["physique", "finesse", "mind", "presence", "soul"]) {
+        const raw = map?.[attr];
+        out[attr] = raw !== null && raw !== undefined && raw !== "" && Number.isFinite(Number(raw))
+            ? Number(raw)
+            : null;
+    }
+    return out;
+}
+
+function getEffectiveMonsterAttribute(attributes, attr, caps = {}) {
+    const a = attributes?.[attr] || {};
+    const value = Number(a.value ?? 1) || 1;
+    const species = Number(a.speciesBonus ?? 0) || 0;
+    const flex = Number(a.flexibleBonus ?? 0) || 0;
+    const bonus = Number(a.bonus ?? 0) || 0;
+    const total = value + species + flex + bonus;
+    const cap = caps[attr];
+    return cap !== null && cap !== undefined && Number.isFinite(Number(cap))
+        ? Math.min(total, Number(cap))
+        : total;
+}
+
+function buildMonsterNaturalDeflectionUpdates(species, attributes, rating, statCaps = {}) {
+    const ndConfig = species.system?.naturalDeflectionTypes?.[rating];
+    if (!ndConfig) return {};
+
+    const physique = getEffectiveMonsterAttribute(attributes, "physique", statCaps) || 1;
+    const base = physique * (Number(ndConfig.baseMultiplier) || 0);
+    const parts = ndConfig.parts || {};
+    const partValue = (part) => Math.max(0, Math.floor(base * (Number(parts[part]) || 0)));
+    const values = {
+        head: partValue("head"),
+        body: partValue("body"),
+        leftarm: partValue("arms"),
+        rightarm: partValue("arms"),
+        leftleg: partValue("legs"),
+        rightleg: partValue("legs")
+    };
+
+    const updates = {
+        "system.species.naturalDeflectionRating": rating
+    };
+    for (const [part, value] of Object.entries(values)) {
+        updates[`system.naturalDeflection.${part}`] = {
+            current: value,
+            max: value,
+            stacks: false
+        };
+    }
+    return updates;
+}
+
+function legacyStandardAttackOptionToWeaponData(attack) {
+    if (!attack?.name) return null;
+    const isNatural = attack.type === "natural";
+    const qualities = attack.qualities || (isNatural ? "Natural" : "");
+    return {
+        name: attack.name,
+        type: "weapon",
+        system: {
+            damage: Number(attack.damage) || 0,
+            damageType: attack.damageType || "B",
+            critical: 4,
+            handedness: isNatural ? "Light" : "One-Handed",
+            range: "Melee",
+            integrity: 10,
+            qualities,
+            skill: attack.skill || (isNatural ? "Unarmed" : "Cudgel"),
+            attribute: "physique",
+            weight: isNatural ? 0 : 1,
+            price: 0,
+            quantity: 1,
+            equipped: true
+        }
+    };
+}
+
+function cloneStandardAttackWeapon(weapon) {
+    if (!weapon?.name) return null;
+    const system = foundry.utils.deepClone(weapon.system || {});
+    if (system.equipped === undefined) system.equipped = true;
+    return {
+        name: weapon.name,
+        type: "weapon",
+        img: weapon.img || "icons/svg/sword.svg",
+        system
+    };
+}
+
+function getStandardAttackWeapons(entry) {
+    if (Array.isArray(entry.weapons)) return entry.weapons;
+    return [legacyStandardAttackOptionToWeaponData(entry.optionA), legacyStandardAttackOptionToWeaponData(entry.optionB)].filter(Boolean);
+}
+
+function chooseStandardAttackWeapon(species, entry, weapons) {
+    if (weapons.length <= 1) return Promise.resolve(weapons[0] || null);
+    return new Promise(resolve => {
+        const options = weapons.map((weapon, index) =>
+            `<label><input type="radio" name="standard-attack-choice" value="${index}" ${index === 0 ? "checked" : ""}> ${weapon.name}</label>`
+        ).join("");
+
+        new Dialog({
+            title: `${species.name}: Standard Attack`,
+            content: `<p>Choose one standard attack.</p>
+                <div class="form-group">${options}</div>`,
+            buttons: {
+                choose: {
+                    icon: '<i class="fas fa-check"></i>',
+                    label: "Choose",
+                    callback: html => {
+                        const selected = Number(html.find('input[name="standard-attack-choice"]:checked').val()) || 0;
+                        resolve(weapons[selected] || weapons[0] || null);
+                    }
+                }
+            },
+            default: "choose",
+            close: () => resolve(weapons[0] || null)
+        }).render(true);
+    });
+}
+
+async function applyMonsterStandardAttacks(actor, species) {
+    const entries = Array.isArray(species.system?.standardAttacks) ? species.system.standardAttacks : [];
+    if (!entries.length) return;
+
+    const weapons = [];
+    for (const entry of entries) {
+        const entryWeapons = getStandardAttackWeapons(entry);
+        const selectedWeapons = entry.mode === "choice"
+            ? [await chooseStandardAttackWeapon(species, entry, entryWeapons)].filter(Boolean)
+            : entryWeapons;
+
+        for (const selected of selectedWeapons) {
+            const weaponData = cloneStandardAttackWeapon(selected);
+            if (!weaponData) continue;
+            const exists = actor.items.some(i => i.type === "weapon" && i.name === weaponData.name);
+            if (!exists) weapons.push(weaponData);
+        }
+    }
+
+    if (weapons.length) {
+        await actor.createEmbeddedDocuments("Item", weapons);
+    }
+}
+
+function getMonsterSpeciesSizing(species) {
+    const isMonsterSpecies = species.type === "monsterspecies";
+    const sizeRule = isMonsterSpecies ? getMonsterSizeRule(species) : null;
+    const sizeBonusHP = Number(sizeRule?.bonusHP) || 0;
+    const sizeLandMove = Number(sizeRule?.movement?.land) || 0;
+    const sizeStatBonuses = getAttributeMapValues(sizeRule?.bonuses);
+    const sizeStatCaps = getAttributeMapValues(sizeRule?.caps);
+    const statCaps = Object.fromEntries(
+        Object.entries(sizeStatCaps).filter(([, value]) => value !== null)
+    );
+
+    return { isMonsterSpecies, sizeRule, sizeBonusHP, sizeLandMove, sizeStatBonuses, statCaps };
+}
+
+function buildSpeciesActorUpdates(actor, species, sizing) {
+    const { isMonsterSpecies, sizeRule, sizeBonusHP, sizeLandMove, statCaps } = sizing;
+    return {
+        ...(isMonsterSpecies ? { "system.isMonster": true, "system.pathsAllowed": 0 } : {}),
+        "system.species": {
+            ...foundry.utils.deepClone(actor.system.species || {}),
+            name: species.name,
+            baseHP: (Number(species.system.baseHP) || 0) + sizeBonusHP,
+            size: species.system.size,
+            creatureType: species.system.creatureType || "sapient",
+            creatureSubtype: species.system.creatureSubtype || "",
+            creatureSubtypes: foundry.utils.deepClone(species.system.creatureSubtypes || []),
+            languages: species.system.languages || "",
+            attributeSpread: species.system.attributeSpread || "",
+            averageEL: sizeRule?.averageEL ?? "",
+            sizeRuleExample: sizeRule?.example || "",
+            statCaps,
+            speciesAbilities: species.system.speciesAbilities || {},
+            isMonsterSpecies,
+            naturalDeflectionRating: actor.system.species?.naturalDeflectionRating || "",
+            flexibleBonus: {
+                value: species.system.flexibleBonus?.value || 0,
+                selectedAttribute: actor.system.species?.flexibleBonus?.selectedAttribute || ""
+            }
+        },
+        "system.movement": {
+            land: (species.system.movement?.land || 4) + sizeLandMove,
+            fly: species.system.movement?.fly || 0,
+            swim: species.system.movement?.swim || 0,
+            climb: species.system.movement?.climb || 0,
+            burrow: species.system.movement?.burrow || 0
+        },
+        "system.overland-movement": {
+            landOverland: ((species.system.movement?.land || 4) + sizeLandMove) * 6,
+            flyOverland: species.system.movement?.fly * 6 || 0,
+            swimOverland: species.system.movement?.swim * 6 || 0,
+            climbOverland: species.system.movement?.climb * 6 || 0,
+            burrowOverland: species.system.movement?.burrow * 6 || 0
+        }
+    };
+}
+
+function buildSpeciesAttributeUpdates(actor, species, sizing) {
+    const { isMonsterSpecies, sizeStatBonuses, statCaps } = sizing;
+    const updatedAttributes = foundry.utils.deepClone(actor.system.attributes || {});
+
+    for (const attr of ["physique", "finesse", "mind", "presence", "soul"]) {
+        if (!updatedAttributes[attr]) updatedAttributes[attr] = { value: 1, speciesBonus: 0 };
+
+        if (isMonsterSpecies && species.system.attributeSet) {
+            const setValue = Number(species.system.attributeSet[attr]);
+            if (Number.isFinite(setValue) && setValue > 0) {
+                updatedAttributes[attr].value = setValue;
+            }
+        }
+
+        const abilityBonus = Number(species.system.abilityBonuses?.[attr]) || 0;
+        const sizeBonus = Number(sizeStatBonuses?.[attr]) || 0;
+        updatedAttributes[attr].speciesBonus = abilityBonus + sizeBonus;
+
+        const cap = statCaps[attr];
+        if (Number.isFinite(Number(cap))) {
+            updatedAttributes[attr].value = Math.min(Number(updatedAttributes[attr].value) || 1, Number(cap));
+        }
+    }
+
+    return updatedAttributes;
+}
+
+function buildMonsterNaturalDeflectionSyncUpdates(actor, species, attributes, rating, statCaps = {}) {
+    const updates = buildMonsterNaturalDeflectionUpdates(species, attributes, rating, statCaps);
+    for (const [path, value] of Object.entries(updates)) {
+        if (!path.startsWith("system.naturalDeflection.") || !value || typeof value !== "object") continue;
+        const part = path.split(".").pop();
+        const previous = actor.system.naturalDeflection?.[part];
+        const previousCurrent = Number(previous?.current);
+        const previousMax = Number(previous?.max);
+        const wasFull = !Number.isFinite(previousCurrent) || !Number.isFinite(previousMax) || previousCurrent >= previousMax;
+        value.current = wasFull ? value.max : Math.min(Math.max(0, previousCurrent), value.max);
+    }
+    return updates;
+}
+
+async function syncEmbeddedSpeciesToActor(actor, species, { syncStandardAttacks = false } = {}) {
+    if (!actor || actor.type !== "character" || !SPECIES_ITEM_TYPES.includes(species?.type)) return;
+
+    const sizing = getMonsterSpeciesSizing(species);
+    const updates = buildSpeciesActorUpdates(actor, species, sizing);
+    const updatedAttributes = buildSpeciesAttributeUpdates(actor, species, sizing);
+    updates["system.attributes"] = updatedAttributes;
+
+    const rating = sizing.isMonsterSpecies
+        ? (actor.system.species?.naturalDeflectionRating || "average")
+        : "";
+    if (sizing.isMonsterSpecies && rating) {
+        Object.assign(
+            updates,
+            buildMonsterNaturalDeflectionSyncUpdates(actor, species, updatedAttributes, rating, sizing.statCaps)
+        );
+    }
+
+    await actor.update(updates);
+
+    if (syncStandardAttacks && sizing.isMonsterSpecies) {
+        await applyMonsterStandardAttacks(actor, species);
+    }
+}
+
 /**
 * Item creation hook - handle path and species application
 */
 Hooks.on("createItem", async (item, options, userId) => {
     // Handle Path addition to characters - use new skill modification system
-    if (item.type === 'path' && item.parent && item.parent.type === 'character' && game.user.id === userId) {
+    if (PATH_ITEM_TYPES.includes(item.type) && item.parent && item.parent.type === 'character' && game.user.id === userId) {
         const actor = item.parent;
         const path = item;
+
+        if (item.type === "monsterpath" && !actor.system?.isMonster) {
+            await actor.update({ "system.isMonster": true, "system.pathsAllowed": 0 });
+        }
 
         if (actor.getFlag("thefade", "addingSkills")) return;
         await actor.setFlag("thefade", "addingSkills", true);
@@ -443,9 +921,21 @@ Hooks.on("createItem", async (item, options, userId) => {
     }
 
     // Handle Species addition to characters
-    if (item.type === 'species' && item.parent && item.parent.type === 'character' && game.user.id === userId) {
+    if (SPECIES_ITEM_TYPES.includes(item.type) && item.parent && item.parent.type === 'character' && game.user.id === userId) {
         const actor = item.parent;
         const species = item;
+        const isMonsterSpecies = item.type === "monsterspecies";
+        const selectedNDRating = isMonsterSpecies
+            ? await chooseMonsterNaturalDeflectionRating(species)
+            : null;
+        const sizeRule = isMonsterSpecies ? getMonsterSizeRule(species) : null;
+        const sizeBonusHP = Number(sizeRule?.bonusHP) || 0;
+        const sizeLandMove = Number(sizeRule?.movement?.land) || 0;
+        const sizeStatBonuses = getAttributeMapValues(sizeRule?.bonuses);
+        const sizeStatCaps = getAttributeMapValues(sizeRule?.caps);
+        const statCaps = Object.fromEntries(
+            Object.entries(sizeStatCaps).filter(([, value]) => value !== null)
+        );
 
         // Clear existing species bonuses
         const deletions = {};
@@ -466,28 +956,36 @@ Hooks.on("createItem", async (item, options, userId) => {
 
         // Apply new species data
         await actor.update({
+            ...(isMonsterSpecies ? { "system.isMonster": true, "system.pathsAllowed": 0 } : {}),
             "system.species": {
                 name: species.name,
-                baseHP: species.system.baseHP,
+                baseHP: (Number(species.system.baseHP) || 0) + sizeBonusHP,
                 size: species.system.size,
-                creatureType: species.system.creatureType || "humanoid",
+                creatureType: species.system.creatureType || "sapient",
                 creatureSubtype: species.system.creatureSubtype || "",
+                creatureSubtypes: foundry.utils.deepClone(species.system.creatureSubtypes || []),
                 languages: species.system.languages || "",
+                attributeSpread: species.system.attributeSpread || "",
+                averageEL: sizeRule?.averageEL ?? "",
+                sizeRuleExample: sizeRule?.example || "",
+                statCaps,
                 speciesAbilities: species.system.speciesAbilities || {},
+                isMonsterSpecies,
+                naturalDeflectionRating: selectedNDRating || "",
                 flexibleBonus: {
                     value: species.system.flexibleBonus?.value || 0,
                     selectedAttribute: ""
                 }
             },
             "system.movement": {
-                land: species.system.movement?.land || 4,
+                land: (species.system.movement?.land || 4) + sizeLandMove,
                 fly: species.system.movement?.fly || 0,
                 swim: species.system.movement?.swim || 0,
                 climb: species.system.movement?.climb || 0,
                 burrow: species.system.movement?.burrow || 0
             },
             "system.overland-movement": {
-                landOverland: species.system.movement?.land * 6 || 0,
+                landOverland: ((species.system.movement?.land || 4) + sizeLandMove) * 6,
                 flyOverland: species.system.movement?.fly * 6 || 0,
                 swimOverland: species.system.movement?.swim * 6 || 0,
                 climbOverland: species.system.movement?.climb * 6 || 0,
@@ -497,15 +995,46 @@ Hooks.on("createItem", async (item, options, userId) => {
 
         // Apply ability bonuses
         const updatedAttributes = foundry.utils.deepClone(actor.system.attributes);
+        if (isMonsterSpecies && species.system.attributeSet) {
+            for (const attr of Object.keys(updatedAttributes)) {
+                const setValue = Number(species.system.attributeSet[attr]);
+                if (Number.isFinite(setValue) && setValue > 0) {
+                    updatedAttributes[attr].value = setValue;
+                    updatedAttributes[attr].speciesBonus = 0;
+                }
+            }
+        }
+
         for (const [attr, bonus] of Object.entries(species.system.abilityBonuses)) {
             if (updatedAttributes[attr] && bonus !== 0) {
                 updatedAttributes[attr].speciesBonus = bonus;
             }
         }
 
+        for (const [attr, bonus] of Object.entries(sizeStatBonuses)) {
+            if (updatedAttributes[attr] && bonus !== null && bonus !== 0) {
+                updatedAttributes[attr].speciesBonus = (Number(updatedAttributes[attr].speciesBonus) || 0) + bonus;
+            }
+        }
+
+        for (const [attr, cap] of Object.entries(statCaps)) {
+            if (updatedAttributes[attr] && Number.isFinite(Number(cap))) {
+                updatedAttributes[attr].value = Math.min(Number(updatedAttributes[attr].value) || 1, Number(cap));
+            }
+        }
+
         await actor.update({
             "system.attributes": updatedAttributes
         });
+
+        if (isMonsterSpecies && selectedNDRating) {
+            const ndUpdates = buildMonsterNaturalDeflectionUpdates(species, updatedAttributes, selectedNDRating, statCaps);
+            if (Object.keys(ndUpdates).length) await actor.update(ndUpdates);
+        }
+
+        if (isMonsterSpecies) {
+            await applyMonsterStandardAttacks(actor, species);
+        }
 
         // Update abilities text
         let abilitiesText = "";
@@ -542,6 +1071,25 @@ Hooks.on("createItem", async (item, options, userId) => {
             ui.notifications.warn(`${item.name} removed: prerequisites not met.`);
         }
     }
+});
+
+Hooks.on("updateItem", async (item, changes, options, userId) => {
+    if (game.user.id !== userId) return;
+    if (!SPECIES_ITEM_TYPES.includes(item.type)) return;
+
+    const actor = item.parent;
+    if (!actor || actor.type !== "character") return;
+    const changeKeys = Object.keys(changes || {});
+    const hasSpeciesChange = Object.prototype.hasOwnProperty.call(changes || {}, "name")
+        || changeKeys.some(key => key === "system" || key.startsWith("system."));
+    const syncToggleChanged = foundry.utils.hasProperty(changes, "system.syncToActor")
+        || changeKeys.includes("system.syncToActor")
+        || (changes?.system && Object.prototype.hasOwnProperty.call(changes.system, "syncToActor"));
+    const shouldSync = syncToggleChanged || item.system?.syncToActor === true;
+    if (!hasSpeciesChange) return;
+    if (!shouldSync) return;
+
+    await syncEmbeddedSpeciesToActor(actor, item);
 });
 
 Hooks.on("createActor", async (actor, options, userId) => {
@@ -584,6 +1132,8 @@ async function clearLegacyTraitSource() {
  * System ready hook - final setup after all systems loaded
  */
 Hooks.once('ready', async function () {
+    game.thefade = foundry.utils.mergeObject(game.thefade || {}, { openGMToolkit }, { inplace: false });
+
     // One-shot migration: convert legacy skill items into actor.system.skills.
     if (game.user.isGM) {
         try { await migrateAllActorSkills(); }

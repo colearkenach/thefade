@@ -1,0 +1,114 @@
+<div class="combat-traits panel item-power-grants">
+    <div class="combat-traits-header">
+        <h2>Granted Combat Traits</h2>
+        <span class="hint-inline">Active while equipped{{#unless attunementRemoved}} and attuned{{/unless}}</span>
+    </div>
+
+    <section class="combat-trait-section universal-abilities-section">
+        <h3>Universal Abilities</h3>
+        <div class="universal-ability-categories">
+            {{#each universalAbilityCategories as |category|}}
+            <details class="universal-ability-category" data-category="{{category.key}}" {{#if category.isOpen}}open{{/if}}>
+                <summary>
+                    <span>{{category.label}}</span>
+                    <span class="trait-count">{{category.abilities.length}}</span>
+                </summary>
+                <div class="universal-ability-list">
+                    {{#each category.abilities as |ability|}}
+                    <div class="combat-trait-option-row">
+                        <label class="combat-trait-option" title="{{ability.description}}">
+                            <input type="checkbox"
+                                   name="system.traitGrants.abilities.{{../key}}.{{ability.key}}"
+                                   {{checked (lookup (lookup ../../system.traitGrants.abilities ../key) ability.key)}} />
+                            <span>
+                                <strong>{{ability.label}}</strong>
+                                <small>{{ability.description}}</small>
+                            </span>
+                        </label>
+                        {{#if (eq ability.key "spellResistance")}}
+                        <label class="spell-resistance-percent">
+                            <span>SR %</span>
+                            <input type="number"
+                                   name="system.traitGrants.spellResistancePercent"
+                                   value="{{../../system.traitGrants.spellResistancePercent}}"
+                                   data-dtype="Number"
+                                   min="1"
+                                   max="100" />
+                        </label>
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+            </details>
+            {{/each}}
+        </div>
+    </section>
+
+    <div class="combat-trait-grid">
+        <section class="combat-trait-section">
+            <h3>Resistances</h3>
+            <div class="trait-chip-grid">
+                {{#each combatDamageTypes as |type|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           name="system.traitGrants.resistances.{{type.key}}"
+                           {{checked (lookup ../system.traitGrants.resistances type.key)}} />
+                    <span>{{type.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+        </section>
+
+        <section class="combat-trait-section">
+            <h3>Immunities</h3>
+            <h4>Damage Types</h4>
+            <div class="trait-chip-grid">
+                {{#each combatImmunityDamageTypes as |type|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           name="system.traitGrants.immunities.damageTypes.{{type.key}}"
+                           {{checked (lookup ../system.traitGrants.immunities.damageTypes type.key)}} />
+                    <span>{{type.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+
+            <h4>Status Effects</h4>
+            <div class="trait-chip-grid">
+                {{#each combatStatusImmunities as |status|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           name="system.traitGrants.immunities.statuses.{{status.key}}"
+                           {{checked (lookup ../system.traitGrants.immunities.statuses status.key)}} />
+                    <span>{{status.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+
+            <h4>Other Effects</h4>
+            <div class="trait-chip-grid">
+                {{#each combatImmunityEffects as |effect|}}
+                <label class="trait-chip">
+                    <input type="checkbox"
+                           name="system.traitGrants.immunities.effects.{{effect.key}}"
+                           {{checked (lookup ../system.traitGrants.immunities.effects effect.key)}} />
+                    <span>{{effect.label}}</span>
+                </label>
+                {{/each}}
+            </div>
+        </section>
+    </div>
+
+    <section class="combat-trait-section custom-immunity-section">
+        <h3>Immune to…</h3>
+        <textarea name="system.traitGrants.customImmunities"
+                  rows="3"
+                  placeholder="One or more custom immunities, separated by commas or new lines">{{system.traitGrants.customImmunities}}</textarea>
+        <p class="hint">Custom entries are displayed on the character as reference text; named damage and status immunities above are applied automatically.</p>
+    </section>
+
+    <section class="combat-trait-section combat-trait-notes">
+        <h3>Grant Notes</h3>
+        <textarea name="system.traitGrants.notes" rows="3" placeholder="Ranges, values, exceptions, activation requirements, or special rulings">{{system.traitGrants.notes}}</textarea>
+    </section>
+</div>

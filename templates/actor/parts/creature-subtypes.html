@@ -1,0 +1,22 @@
+<div class="creature-subtype-selector" data-subtype-path="{{path}}">
+    <div class="creature-subtype-picker">
+        <select class="creature-subtype-choice" aria-label="Rules-backed creature subtype">
+            <option value="">Choose a rules-backed subtype…</option>
+            {{#each selector.available as |subtype|}}
+            <option value="{{subtype.id}}">{{subtype.label}}</option>
+            {{/each}}
+        </select>
+        <button type="button" class="creature-subtype-add" title="Add the selected subtype"><i class="fas fa-plus"></i> Add</button>
+    </div>
+    {{#if selector.selected.length}}
+    <div class="creature-subtype-chips">
+        {{#each selector.selected as |subtype|}}
+        <span class="creature-subtype-chip">
+            {{subtype.label}}
+            <button type="button" class="creature-subtype-remove" data-subtype-id="{{subtype.id}}" title="Remove {{subtype.label}}"><i class="fas fa-times"></i></button>
+        </span>
+        {{/each}}
+    </div>
+    {{/if}}
+    <p class="hint">Rules-backed subtypes grant their listed abilities and mechanics automatically. Use the custom field for setting-specific or homebrew subtypes.</p>
+</div>

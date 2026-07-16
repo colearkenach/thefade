@@ -22,13 +22,13 @@
   --border-accent:   #7a1b1b;
 
   --text-primary:    #e8dfd3;
-  --text-muted:      #8a7f7b;
-  --text-dim:        #5d5450;
+  --text-muted:      #b8aaa5;
+  --text-dim:        #877b77;
 
   --accent-crimson:  #7a1b1b;
   --accent-hot:      #a82828;
   --accent-ghost:    #4a3333;
-  --accent-gold:     #a88a4c;
+  --accent-gold:     #c5a45d;
 
   /* Legacy aliases — keep so old rules continue to work */
   --primary-color:    var(--bg-surface);
@@ -349,6 +349,49 @@
 
 .thefade .grid-5col {
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+.thefade .grid-6col {
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+}
+
+.thefade .size-rule-entry,
+.thefade .standard-attack-entry,
+.thefade .standard-attack-drop-zone {
+  border: 1px solid rgba(0, 0, 0, 0.18);
+  padding: 8px;
+  margin-bottom: 8px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.thefade .size-rule-entry h3 {
+  margin: 0 0 6px 0;
+}
+
+.thefade .standard-attack-drop-zone.drop-target,
+.thefade .tab.drop-target {
+  outline: 2px dashed #5a7fb8;
+  outline-offset: -4px;
+}
+
+.thefade .standard-attack-weapons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 34px;
+}
+
+.thefade .standard-attack-weapon {
+  display: grid;
+  grid-template-columns: 24px 1fr auto 24px;
+  align-items: center;
+  gap: 6px;
+}
+
+.thefade .standard-attack-weapon img {
+  width: 24px;
+  height: 24px;
+  border: 0;
 }
 
 .thefade .flexrow {
@@ -2485,6 +2528,15 @@ input[readonly] {
   background: rgba(0, 100, 0, 0.3);
 }
 
+.thefade .spell-school.dark-school {
+  color: #f3d5d8;
+  background: linear-gradient(135deg, rgba(35, 8, 13, 0.96), rgba(107, 16, 30, 0.7));
+  border: 1px solid rgba(185, 47, 66, 0.72);
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.38), 0 0 5px rgba(142, 24, 43, 0.2);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
 /* ===== CHARACTER ADVANCEMENT ===== */
 .character-level {
   display: flex;
@@ -2878,9 +2930,13 @@ select[name="system.aura.color"] option[value="white"] {
   background: rgba(0, 0, 0, 0.35);
   border: 1px solid var(--border-color);
   border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 14px;
 }
 
 .character-details-section h3 {
+  grid-column: 1 / -1;
   margin: 0 0 15px 0;
   font-size: 1.1em;
   font-weight: bold;
@@ -2889,7 +2945,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .detail-row {
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .detail-row label {
@@ -4006,6 +4062,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 @media (max-width: 600px) {
+  .thefade .grid-6col,
   .thefade .grid-5col {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -4033,6 +4090,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 @media (max-width: 400px) {
+  .thefade .grid-6col,
   .thefade .grid-5col,
   .thefade .grid-3col,
   .thefade .grid-2col {
@@ -4367,6 +4425,10 @@ select[name="system.aura.color"] option[value="white"] {
     grid-template-columns: repeat(5, 1fr);
 }
 
+.thefade .grid-6col {
+    grid-template-columns: repeat(6, 1fr);
+}
+
 /* ===== CHARACTER PROGRESSION - CLEANER ===== */
 .thefade .character-progression {
     background: rgba(0, 0, 0, 0.02);
@@ -4554,6 +4616,7 @@ select[name="system.aura.color"] option[value="white"] {
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
 @media (max-width: 700px) {
+    .thefade .grid-6col,
     .thefade .grid-3col,
     .thefade .grid-5col {
         grid-template-columns: repeat(2, 1fr);
@@ -4954,6 +5017,10 @@ select[name="system.aura.color"] option[value="white"] {
 
 .thefade .grid-5col {
     grid-template-columns: repeat(5, 1fr);
+}
+
+.thefade .grid-6col {
+    grid-template-columns: repeat(6, 1fr);
 }
 
 /* ===== FORM GROUPS ===== */
@@ -6884,10 +6951,10 @@ select[name="system.aura.color"] option[value="white"] {
     font-size: 0.9em;
 }
 
-/* ----- Minor footer (Carrying + Religion) ----- */
+/* ----- Compact Stats footer (Carrying + Character Profile) ----- */
 .thefade .minor-stats-row {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: minmax(0, 3fr) minmax(280px, 2fr);
     gap: 12px;
     margin-bottom: 12px;
 }
@@ -6899,7 +6966,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .minor-stats-row .capacity-card,
-.thefade .minor-stats-row .religion-card {
+.thefade .minor-stats-row .stats-profile-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-faint);
     border-radius: 4px;
@@ -6907,7 +6974,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .minor-stats-row .capacity-card h3,
-.thefade .minor-stats-row .religion-card h3 {
+.thefade .minor-stats-row .stats-profile-card h3 {
     margin: 0 0 8px !important;
     font-size: 0.75em !important;
     text-transform: uppercase;
@@ -6969,7 +7036,7 @@ select[name="system.aura.color"] option[value="white"] {
 }
 
 .thefade .minor-stats-row .capacity-grid.capacity-grid-full {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     row-gap: 6px;
 }
 
@@ -7005,6 +7072,164 @@ select[name="system.aura.color"] option[value="white"] {
     border: 1px solid var(--border-faint);
     color: var(--text-primary);
     text-align: center;
+}
+
+.thefade .stats-profile-fields {
+    display: grid;
+    gap: 6px;
+}
+
+.thefade .stats-profile-demographics {
+    display: grid;
+    grid-template-columns: minmax(76px, 0.7fr) minmax(0, 1.3fr);
+    gap: 8px;
+}
+
+.thefade .stats-profile-field {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.thefade .stats-profile-field span {
+    color: var(--text-muted);
+    font-size: 0.72em;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+}
+
+.thefade .stats-profile-field-wide {
+    grid-template-columns: 72px minmax(0, 1fr);
+}
+
+.thefade .stats-profile-field input,
+.thefade .stats-profile-field select {
+    width: 100%;
+    min-width: 0;
+    height: 24px;
+}
+
+@media (max-width: 720px) {
+    .thefade .minor-stats-row .capacity-grid.capacity-grid-full {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Rules-backed creature types, subtypes, and active abilities */
+.thefade .creature-subtype-selector,
+.thefade .weapon-quality-selector { width: 100%; }
+.thefade .creature-subtype-picker,
+.thefade .weapon-quality-picker { display: flex; gap: 6px; align-items: center; }
+.thefade .creature-subtype-picker select,
+.thefade .weapon-quality-picker select { flex: 1 1 auto; min-width: 0; }
+.thefade .creature-subtype-picker button,
+.thefade .weapon-quality-picker button { flex: 0 0 auto; width: auto; padding: 3px 9px; }
+.thefade .creature-subtype-chips,
+.thefade .weapon-quality-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.thefade .creature-subtype-chip,
+.thefade .weapon-quality-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 7px;
+    border: 1px solid var(--accent-gold, #c5a45d);
+    border-radius: 999px;
+    color: var(--accent-gold, #c5a45d);
+    background: color-mix(in srgb, var(--accent-gold, #c5a45d) 10%, transparent);
+}
+.thefade .creature-subtype-chip button,
+.thefade .weapon-quality-chip button {
+    width: 18px;
+    height: 18px;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    color: inherit;
+    background: transparent;
+}
+.thefade .weapon-quality-chip small {
+    color: var(--text-muted);
+    font-size: 0.72em;
+    text-transform: uppercase;
+}
+.thefade .weapon-quality-rule-list {
+    margin-top: 7px;
+    padding: 6px 8px;
+    border-left: 2px solid var(--accent-gold, #c5a45d);
+    background: var(--bg-surface-alt);
+}
+.thefade .weapon-quality-rule-list p { margin: 3px 0; font-size: 0.82em; line-height: 1.35; }
+.thefade .natural-weapon-note {
+    padding: 8px 10px;
+    border: 1px dashed var(--accent-gold, #c5a45d);
+    color: var(--text-muted);
+    background: var(--bg-surface-alt);
+}
+.thefade .natural-weapon-note i { color: var(--accent-gold, #c5a45d); margin-right: 6px; }
+.thefade.chat-card .damage-component-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 5px 0 9px;
+}
+.thefade.chat-card .damage-component {
+    padding: 3px 7px;
+    border: 1px solid var(--border-faint, #666);
+    border-radius: 999px;
+    background: var(--bg-surface-alt, rgba(0, 0, 0, 0.12));
+}
+.thefade.chat-card .attack-quality-rules { margin-top: 6px; }
+.thefade.chat-card .attack-quality-rules p { margin: 4px 0; }
+.thefade .creature-rule-sources { display: grid; gap: 9px; padding: 8px; }
+.thefade .creature-rule-source { border: 1px solid var(--border-faint); border-radius: 4px; overflow: hidden; }
+.thefade .creature-rule-source > header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 9px;
+    background: var(--bg-surface-alt);
+}
+.thefade .creature-rule-ability { padding: 7px 9px; border-top: 1px solid var(--border-faint); }
+.thefade .creature-rule-ability-heading { display: flex; align-items: center; gap: 7px; }
+.thefade .creature-rule-ability-heading > strong { margin-right: auto; }
+.thefade .creature-rule-ability p { margin: 4px 0; color: var(--text-secondary, #d4cbc8); }
+.thefade .creature-rule-ability-use,
+.thefade .linked-ability-use { width: auto; min-height: 24px; padding: 2px 8px; }
+.thefade .active-ability-badge { color: var(--accent-gold, #c5a45d); }
+.thefade .creature-rule-mechanics { color: var(--text-muted, #b8aaa5); }
+.thefade .ability-activation-fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+    margin: 7px 0;
+}
+.thefade .ability-activation-fields label { display: grid; gap: 3px; color: var(--text-muted, #b8aaa5); font-size: 0.82em; }
+.thefade .ability-activation-fields input,
+.thefade .ability-activation-fields select { width: 100%; }
+.thefade .npc-creature-identity,
+.thefade .npc-creature-abilities { margin: 10px 0; padding: 10px; }
+.thefade .temporary-ability-bonuses {
+    margin-bottom: 9px;
+    padding: 8px;
+    border: 1px solid var(--accent-gold, #c5a45d);
+    border-radius: 4px;
+    background: color-mix(in srgb, var(--accent-gold, #c5a45d) 7%, transparent);
+}
+.thefade .temporary-ability-bonuses > header { margin-bottom: 5px; color: var(--accent-gold, #c5a45d); font-weight: 700; }
+.thefade .temporary-ability-bonus { display: grid; grid-template-columns: 1fr auto 26px; align-items: center; gap: 7px; padding: 3px 0; }
+.thefade .temporary-ability-bonus button { width: 24px; min-height: 24px; padding: 0; }
+
+@media (max-width: 720px) {
+    .thefade .ability-activation-fields { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 560px) {
+    .character-details-section {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ----- Panel / input polish on dark theme ----- */
@@ -8944,6 +9169,13 @@ select[name="system.aura.color"] option[value="white"] {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 6px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.conditions-grid:disabled {
+    opacity: 0.55;
 }
 
 .condition-card {
@@ -8960,6 +9192,20 @@ select[name="system.aura.color"] option[value="white"] {
 .condition-card.is-active {
     border-color: #aa4444;
     background: rgba(170, 60, 60, 0.2);
+}
+
+.condition-card.is-immune {
+    border-color: rgba(90, 140, 190, 0.55);
+    background: rgba(70, 110, 180, 0.14);
+}
+
+.condition-card.is-immune .condition-name::after {
+    content: "Immune";
+    margin-left: 6px;
+    color: #9fc4ff;
+    font-size: 0.72em;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .condition-toggle {
@@ -9011,6 +9257,263 @@ select[name="system.aura.color"] option[value="white"] {
 
 .condition-card.condition-binary {
     justify-content: center;
+}
+
+/* ==========================================================================
+   Combat traits panel (universal abilities, resistances, immunities)
+   ========================================================================== */
+
+.combat-traits.panel {
+    border: 1px solid rgba(184, 144, 44, 0.55);
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 10px 0;
+    background: rgba(0, 0, 0, 0.14);
+}
+
+.combat-traits-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(184, 144, 44, 0.3);
+}
+
+.combat-traits-header h2 {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--accent-gold, #b8902c);
+}
+
+.combat-trait-section {
+    margin-bottom: 12px;
+}
+
+.combat-trait-section:last-child {
+    margin-bottom: 0;
+}
+
+.combat-trait-section h3 {
+    margin: 0 0 8px;
+    font-size: 0.92em;
+    color: var(--accent-gold, #b8902c);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.combat-trait-section h4 {
+    margin: 8px 0 5px;
+    font-size: 0.82em;
+    color: var(--text-muted, #aaa);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.combat-trait-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.combat-trait-grid .combat-trait-section {
+    padding: 10px;
+    border: 1px solid rgba(184, 144, 44, 0.22);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.universal-ability-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.universal-ability-category {
+    border: 1px solid rgba(184, 144, 44, 0.22);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.16);
+    overflow: hidden;
+}
+
+.universal-ability-category summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 7px 9px;
+    cursor: pointer;
+    color: var(--text-primary, #eee);
+    font-weight: 700;
+    list-style: none;
+}
+
+.universal-ability-category summary::-webkit-details-marker {
+    display: none;
+}
+
+.universal-ability-category summary::before {
+    content: "\f078";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    color: var(--accent-crimson, #9b2d2d);
+    font-size: 0.75em;
+    transition: transform 0.15s ease;
+}
+
+.universal-ability-category:not([open]) summary::before {
+    transform: rotate(-90deg);
+}
+
+.trait-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 6px;
+    border: 1px solid rgba(184, 144, 44, 0.32);
+    border-radius: 9px;
+    color: var(--text-muted, #aaa);
+    font-size: 0.75em;
+}
+
+.universal-ability-list {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid rgba(184, 144, 44, 0.18);
+}
+
+.combat-trait-option-row {
+    border-bottom: 1px solid rgba(184, 144, 44, 0.14);
+}
+
+.combat-trait-option-row:last-child {
+    border-bottom: none;
+}
+
+.combat-trait-option {
+    display: grid;
+    grid-template-columns: 18px 1fr;
+    gap: 7px;
+    align-items: start;
+    padding: 7px 9px;
+    cursor: pointer;
+}
+
+.combat-trait-option:hover {
+    background: rgba(184, 144, 44, 0.08);
+}
+
+.combat-trait-option input,
+.trait-chip input {
+    margin: 2px 0 0;
+}
+
+.combat-trait-option strong {
+    display: block;
+    color: var(--text-primary, #eee);
+    font-size: 0.92em;
+}
+
+.combat-trait-option small {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-muted, #aaa);
+    line-height: 1.25;
+}
+
+.spell-resistance-percent {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 9px 8px 34px;
+    color: var(--text-muted, #aaa);
+    font-size: 0.82em;
+}
+
+.spell-resistance-percent input {
+    width: 64px;
+    height: 26px;
+    text-align: center;
+}
+
+.trait-chip-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(116px, 1fr));
+    gap: 5px;
+}
+
+.trait-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 30px;
+    padding: 4px 7px;
+    border: 1px solid rgba(184, 144, 44, 0.26);
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.18);
+    cursor: pointer;
+    font-size: 0.86em;
+}
+
+.trait-chip:has(input:checked) {
+    border-color: var(--accent-gold, #b8902c);
+    background: rgba(184, 144, 44, 0.2);
+    color: #fff;
+}
+
+.vulnerability-list {
+    display: grid;
+    gap: 5px;
+}
+
+.vulnerability-row {
+    display: grid;
+    grid-template-columns: minmax(130px, 1fr) 118px;
+    gap: 6px;
+    align-items: center;
+}
+
+.vulnerability-row .trait-chip {
+    min-width: 0;
+}
+
+.vulnerability-row select {
+    width: 100%;
+    height: 30px;
+    font-size: 0.82em;
+}
+
+.combat-traits textarea {
+    width: 100%;
+    min-height: 58px;
+    resize: vertical;
+}
+
+.item-power-grants .combat-traits-header {
+    gap: 12px;
+}
+
+.item-power-grants .hint-inline {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.78em;
+    text-align: right;
+}
+
+.item-power-grants .universal-ability-category:not([open]) {
+    margin-bottom: 5px;
+}
+
+.trait-chip.item-granted-trait {
+    cursor: default;
+    border-color: rgba(184, 144, 44, 0.6);
+    background: rgba(184, 144, 44, 0.12);
+}
+
+.trait-chip.item-granted-trait i {
+    color: var(--accent-gold, #b8902c);
 }
 
 /* ==========================================================================
@@ -9812,6 +10315,214 @@ select[name="system.aura.color"] option[value="white"] {
     margin: 3px 0;
     padding-left: 10px;
     border-left: 2px solid var(--border-faint);
+}
+
+/* ----- Remembered, collapsible sheet sections ----- */
+.thefade .sheet-state-section > summary {
+    list-style: none;
+    cursor: pointer;
+}
+
+.thefade .sheet-state-section > summary::-webkit-details-marker {
+    display: none;
+}
+
+.thefade .sheet-state-section:not([open]) > .abilities-heading,
+.thefade .sheet-state-section:not([open]) > .inv-heading {
+    border-bottom-width: 0 !important;
+}
+
+.thefade .sheet-section-summary > .section-toggle-icon {
+    margin-left: auto;
+    color: var(--text-muted);
+    font-size: 0.82em;
+    transition: transform var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+.thefade .sheet-section-summary .abilities-actions + .section-toggle-icon,
+.thefade .sheet-section-summary .inv-actions + .section-toggle-icon {
+    margin-left: 2px;
+}
+
+.thefade .sheet-state-section[open] > .sheet-section-summary > .section-toggle-icon,
+.thefade .sheet-state-section[open] > summary .section-toggle-icon {
+    transform: rotate(180deg);
+    color: var(--accent-crimson);
+}
+
+/* ----- Linked Species / Path ability editors ----- */
+.thefade .linked-path-ability-sources {
+    display: grid;
+    gap: 10px;
+    padding: 10px;
+}
+
+.thefade .linked-ability-source {
+    background: var(--bg-surface);
+}
+
+.thefade .linked-path-ability-sources .linked-ability-source {
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.thefade .linked-ability-source-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg-surface-deep);
+    border-bottom: 1px solid var(--border-faint);
+}
+
+.thefade .linked-ability-source-header > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.thefade .linked-ability-source-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    flex: 0 0 auto;
+}
+
+.thefade .linked-ability-source-actions button {
+    padding: 3px 8px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-faint);
+    color: var(--text-primary);
+    font-size: 0.78em;
+}
+
+.thefade .linked-ability-source-actions a {
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+.thefade .linked-ability-source-actions a:hover {
+    color: var(--accent-gold);
+}
+
+.thefade .linked-ability-editors {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 8px;
+    padding: 10px;
+}
+
+.thefade .linked-ability-editor {
+    min-width: 0;
+    padding: 8px;
+    border: 1px solid var(--border-faint);
+    border-left: 2px solid var(--accent-crimson);
+    border-radius: 3px;
+    background: var(--bg-surface-deep);
+}
+
+.thefade .linked-ability-editor-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 28px;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.thefade .linked-ability-editor-header input,
+.thefade .linked-ability-editor textarea {
+    width: 100%;
+    min-width: 0;
+}
+
+.thefade .linked-ability-editor textarea {
+    min-height: 52px;
+    resize: vertical;
+}
+
+.thefade .linked-ability-delete {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.thefade .linked-ability-delete:hover {
+    color: var(--accent-hot);
+}
+
+.thefade .linked-abilities-empty {
+    margin: 0;
+    padding: 10px 12px;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.thefade .linked-ability-bonuses {
+    margin-top: 7px;
+    border: 1px solid var(--border-faint);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.thefade .linked-ability-bonuses > summary {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 8px;
+    background: var(--bg-surface);
+    color: var(--text-muted);
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.thefade .linked-ability-bonuses > summary .section-toggle-icon {
+    margin-left: auto;
+}
+
+.thefade .linked-ability-bonuses .bonus-section {
+    padding: 7px;
+    border-top: 1px solid var(--border-faint);
+}
+
+.thefade .linked-ability-bonuses .bonus-section-header,
+.thefade .linked-ability-bonuses .bonus-row {
+    display: grid;
+    grid-template-columns: minmax(95px, 1fr) minmax(90px, 1.2fr) 58px 26px;
+    gap: 5px;
+    align-items: center;
+}
+
+.thefade .linked-ability-bonuses .bonus-section-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.thefade .linked-ability-bonuses .bonus-section-header button,
+.thefade .linked-ability-bonuses .bonus-delete {
+    padding: 2px 6px;
+    font-size: 0.78em;
+}
+
+.thefade .linked-ability-bonuses .bonus-row + .bonus-row {
+    margin-top: 5px;
+}
+
+.thefade .linked-ability-bonuses .bonus-row select,
+.thefade .linked-ability-bonuses .bonus-row input {
+    width: 100%;
+    min-width: 0;
+    height: 25px;
+}
+
+.thefade .linked-ability-bonuses .bonus-empty {
+    color: var(--text-muted);
+    font-size: 0.82em;
 }
 
 /* ============================================================
@@ -10765,9 +11476,35 @@ select[name="system.aura.color"] option[value="white"] {
     text-transform: uppercase;
     letter-spacing: 0.9px;
     font-weight: 600;
-    padding: 7px 0;
-    display: flex;
-    gap: 6px;
+    padding: 7px 8px;
+}
+
+.thefade .spells-block {
+    --spell-table-columns: minmax(150px, 2.5fr) minmax(90px, 1.5fr) minmax(62px, 1fr) minmax(105px, 1.75fr) minmax(74px, 1.2fr) minmax(90px, 1.5fr) 76px;
+}
+
+.thefade .spells-block .spell-header,
+.thefade .spells-block .spell-item {
+    display: grid !important;
+    grid-template-columns: var(--spell-table-columns) !important;
+    align-items: center;
+    gap: 8px;
+}
+
+.thefade .spells-block .spell-header > div,
+.thefade .spells-block .spell-item > div {
+    min-width: 0;
+}
+
+.thefade .spells-block .spell-item {
+    padding: 7px 8px;
+}
+
+.thefade .spells-block .spell-name-container {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .thefade .spells-block .spells-list { margin: 0 14px 12px; }
@@ -10881,6 +11618,38 @@ select[name="system.aura.color"] option[value="white"] {
 .thefade .skills-section .custom-skills-bar-body button:hover {
     border-color: var(--accent-gold);
     color: var(--accent-gold);
+}
+
+.thefade .skill-category-heading {
+    cursor: default;
+}
+
+.thefade .skill-category-heading .inv-count {
+    margin-left: auto;
+}
+
+.thefade .untrained-skills {
+    border-top: 1px solid var(--border-faint);
+}
+
+.thefade .untrained-skills-summary {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 9px;
+    min-height: 30px;
+    padding: 5px 14px;
+    color: var(--text-muted);
+    background: rgba(0, 0, 0, 0.16);
+    cursor: pointer;
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.thefade .untrained-skills-summary:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.035);
 }
 
 .thefade .skill-category .skills-column-header,
@@ -11028,5 +11797,759 @@ select[name="system.aura.color"] option[value="white"] {
     border-radius: 2px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+}
+
+/* ============================================================
+   READABILITY + COMPONENT COLLISION FIXES
+   Older compact-theme rules are intentionally retained above for
+   legacy sheets. These scoped rules prevent them from leaking into
+   the redesigned character-sheet components.
+   ============================================================ */
+
+.thefade .defenses-band .defense-label {
+    justify-content: center;
+    min-height: 24px;
+    margin: 0;
+    padding: 4px 5px;
+    background: var(--bg-surface-alt);
+    color: var(--accent-gold);
+}
+
+.thefade .combat-state-header h2,
+.thefade .combat-traits-header h2,
+.thefade .injuries-panel h2 {
+    flex: 0 1 auto;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    white-space: nowrap;
+}
+
+.thefade .combat-state-header h2::before,
+.thefade .combat-traits-header h2::before,
+.thefade .injuries-panel h2::before {
+    display: none;
+}
+
+.thefade .combat-state-clear {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 30px;
+    margin: 0;
+}
+
+.thefade .condition-intensity-legend {
+    margin: 0 0 7px;
+    color: var(--text-muted);
+    font-size: 0.78em;
+    letter-spacing: 0.2px;
+}
+
+.thefade .condition-intensity-legend strong {
+    color: var(--text-primary);
+}
+
+/* Keep every inventory category discoverable without a horizontal scroll. */
+.thefade .inventory-tabs .tab-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    overflow-x: visible;
+}
+
+.thefade .inventory-tabs .tab-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 34px;
+    white-space: normal;
+    line-height: 1.15;
+}
+
+/* ==========================================================================
+   GM TOOLKIT, HERITAGE, MUTATIONS, HAZARDS, AND DOWNTIME
+   ========================================================================== */
+
+.gm-toolkit .window-content,
+.thefade.rules-item-sheet {
+    background: var(--bg-deep, #171214);
+    color: var(--text-primary, #eadfda);
+}
+
+.thefade .gm-tool-tabs {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 4px;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-muted, #58484a);
+    background: var(--bg-surface-alt, #2e2528);
+}
+
+.thefade .gm-tool-tabs .item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 6px;
+    border: 1px solid transparent;
+    color: var(--text-muted, #b8aaa5);
+    text-align: center;
+}
+
+.thefade .gm-tool-tabs .item.active {
+    border-color: var(--accent-gold, #c5a45d);
+    background: rgba(197, 164, 93, 0.12);
+    color: var(--accent-gold, #c5a45d);
+}
+
+.thefade .gm-tool-body {
+    height: calc(100% - 54px);
+    overflow: auto;
+    padding: 14px;
+}
+
+.thefade .gm-tool-heading,
+.thefade .rules-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.thefade .gm-tool-heading h2,
+.thefade .rules-card-header h2 {
+    margin: 0;
+    color: var(--accent-gold, #c5a45d);
+    line-height: 1.15;
+}
+
+.thefade .gm-tool-heading p,
+.thefade .rules-card-header p {
+    margin: 3px 0 0;
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.82rem;
+}
+
+.thefade .gm-form-grid,
+.thefade .rules-item-grid,
+.thefade .heritage-parent-grid,
+.thefade .motivation-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.thefade .rules-item-grid-3,
+.thefade .quick-monster-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.thefade .gm-form-grid label,
+.thefade .rules-item-body label,
+.thefade .heritage-rules-panel label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.78rem;
+}
+
+.thefade .gm-form-grid .span-2,
+.thefade .rules-item-grid .span-2 {
+    grid-column: span 2;
+}
+
+.thefade .gm-tool-body input,
+.thefade .gm-tool-body select,
+.thefade .gm-tool-body textarea,
+.thefade .rules-item-body input,
+.thefade .rules-item-body select,
+.thefade .rules-item-body textarea,
+.thefade .heritage-rules-panel input,
+.thefade .heritage-rules-panel select,
+.thefade .heritage-rules-panel textarea {
+    min-height: 30px;
+    border: 1px solid var(--border-muted, #58484a);
+    background: var(--bg-input, #211a1c);
+    color: var(--text-primary, #eadfda);
+}
+
+.thefade .gm-tool-body textarea,
+.thefade .rules-item-body textarea,
+.thefade .heritage-rules-panel textarea {
+    min-height: auto;
+    resize: vertical;
+}
+
+.thefade .primary-action {
+    border-color: var(--accent-gold, #c5a45d);
+    background: rgba(197, 164, 93, 0.17);
+    color: var(--accent-gold, #c5a45d);
+    font-weight: 700;
+}
+
+.thefade .encounter-controls {
+    grid-template-columns: 1.2fr 1.8fr 0.7fr 1fr;
+    align-items: end;
+}
+
+.thefade .encounter-escalation {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 8px;
+    min-height: 50px;
+    padding: 7px 9px;
+}
+
+.thefade .encounter-escalation strong {
+    color: var(--accent-gold, #c5a45d);
+    font-size: 1.4rem;
+}
+
+.thefade .encounter-roll {
+    width: 100%;
+    margin: 12px 0;
+}
+
+.thefade .rules-note,
+.thefade .quick-results {
+    margin-top: 12px;
+    padding: 10px;
+}
+
+.thefade .rules-note h3 {
+    margin: 0 0 6px;
+    color: var(--accent-gold, #c5a45d);
+}
+
+.thefade .rules-note table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.thefade .rules-note td {
+    padding: 4px 7px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.thefade .challenge-status {
+    display: grid;
+    grid-template-columns: 1.2fr repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 9px 11px;
+    border: 1px solid var(--border-muted, #58484a);
+    background: var(--bg-surface-alt, #2e2528);
+    font-size: 0.82rem;
+}
+
+.thefade .challenge-status-success { border-color: #5a9e68; }
+.thefade .challenge-status-failure { border-color: #b45b5b; }
+.thefade .challenge-status strong { color: var(--accent-gold, #c5a45d); }
+
+.thefade .challenge-core-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.thefade .challenge-core-grid .span-2 { grid-column: span 2; }
+.thefade .checkbox-label { flex-direction: row !important; align-items: center; }
+.thefade .checkbox-label input { min-height: 0; width: auto; }
+
+.thefade .skill-challenge-panel > label,
+.thefade .challenge-outcomes {
+    margin-top: 10px;
+}
+
+.thefade .challenge-actions,
+.thefade .quick-actions,
+.thefade .fate-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.thefade .challenge-actions button,
+.thefade .quick-actions button {
+    flex: 1 1 130px;
+}
+
+.thefade .challenge-actions .danger { border-color: #a75151; color: #efb2b2; }
+
+.thefade .rules-item-body {
+    overflow: auto;
+    padding: 14px;
+}
+
+.thefade .rules-item-body > label,
+.thefade .rules-attack-fields {
+    margin-top: 12px;
+}
+
+.thefade .rules-attack-fields {
+    padding: 10px;
+    border: 1px solid var(--border-muted, #58484a);
+}
+
+.thefade .rules-attack-fields legend { padding: 0 6px; color: var(--accent-gold, #c5a45d); }
+
+.thefade .protection-panel {
+    margin: 10px 0 16px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.thefade .protection-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 14px;
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border-muted, #58484a);
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.thefade .protection-heading h3 {
+    margin: 0;
+    color: var(--accent-gold, #c5a45d);
+    font-size: 0.94rem;
+}
+
+.thefade .protection-heading p {
+    margin: 3px 0 0;
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.7rem;
+}
+
+.thefade .anatomy-controls {
+    display: flex;
+    align-items: end;
+    gap: 7px;
+}
+
+.thefade .anatomy-controls label {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.68rem;
+}
+
+.thefade .anatomy-controls select {
+    min-width: 120px;
+    height: 27px;
+}
+
+.thefade .anatomy-controls label:first-child select {
+    min-width: 170px;
+}
+
+.thefade .anatomy-controls button {
+    width: auto;
+    min-height: 27px;
+    padding: 3px 9px;
+    white-space: nowrap;
+}
+
+.thefade .protection-row {
+    display: grid;
+    grid-template-columns: minmax(125px, 1.2fr) minmax(145px, 1.15fr) minmax(250px, 1.85fr) minmax(105px, 0.85fr);
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 5px 12px;
+    border-bottom: 1px solid var(--border-faint, rgba(255, 255, 255, 0.08));
+}
+
+.thefade .protection-row:last-child {
+    border-bottom: 0;
+}
+
+.thefade .protection-column-header {
+    min-height: 27px;
+    color: var(--text-muted, #b8aaa5);
+    background: var(--bg-surface-deep, rgba(0, 0, 0, 0.22));
+    font-size: 0.67rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.thefade .protection-location {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.thefade .protection-pool-note {
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.65rem;
+}
+
+.thefade .protection-value {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+.thefade .protection-value input[type="number"] {
+    width: 45px;
+    height: 25px;
+    text-align: center;
+}
+
+.thefade .protection-stacks {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-left: 3px;
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.68rem;
+    white-space: nowrap;
+}
+
+.thefade .protection-stacks input {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+}
+
+.thefade .protection-pool-actions {
+    display: inline-flex;
+    gap: 3px;
+    margin-left: auto;
+}
+
+.thefade .protection-pool-actions button {
+    display: inline-grid;
+    place-items: center;
+    width: 22px;
+    min-width: 22px;
+    height: 22px;
+    min-height: 22px;
+    padding: 0;
+    border: 1px solid var(--border-faint, rgba(255, 255, 255, 0.12));
+    border-radius: 3px;
+    background: var(--bg-surface-deep, rgba(0, 0, 0, 0.22));
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.66rem;
+}
+
+.thefade .protection-pool-actions button:hover:not(:disabled) {
+    border-color: var(--accent-gold, #c5a45d);
+    color: var(--accent-gold, #c5a45d);
+}
+
+.thefade .protection-pool-actions button:disabled {
+    cursor: default;
+    opacity: 0.35;
+}
+
+.thefade .total-protection-value {
+    color: var(--accent-gold, #c5a45d);
+    font-size: 0.92rem;
+}
+
+.thefade .shared-protection-pool {
+    color: var(--text-muted, #b8aaa5);
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.thefade .shared-protection-pool .protection-value {
+    opacity: 0.62;
+}
+
+.thefade .shared-pool-label {
+    margin-left: 4px;
+    padding: 1px 5px;
+    border: 1px solid var(--border-faint, rgba(255, 255, 255, 0.08));
+    border-radius: 8px;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+}
+
+.thefade-hit-location-roll {
+    padding: 8px 10px;
+    border-left: 3px solid #8d2638;
+}
+
+.thefade-hit-location-roll span {
+    color: #b8aaa5;
+    font-size: 0.85em;
+}
+
+@media (max-width: 760px) {
+    .thefade .protection-heading,
+    .thefade .anatomy-controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .thefade .protection-row {
+        grid-template-columns: minmax(110px, 1.2fr) repeat(3, minmax(95px, 1fr));
+    }
+}
+
+.thefade .heritage-rules-panel {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.thefade .heritage-rules-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.thefade .heritage-rules-panel .panel { padding: 11px; }
+.thefade .rules-card-header a { color: var(--accent-gold, #c5a45d); font-size: 1.05rem; }
+.thefade .heritage-xenochild { margin-bottom: 8px; }
+.thefade .xenochild-modifiers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 10px;
+    margin: 8px 0;
+    padding: 8px;
+    border: 1px solid var(--border-muted, #58484a);
+    background: rgba(255,255,255,0.025);
+}
+.thefade .xenochild-modifiers legend {
+    padding: 0 5px;
+    color: var(--accent-gold, #c5a45d);
+    font-size: 0.75rem;
+}
+.thefade .xenochild-modifiers .checkbox-label { font-size: 0.72rem; }
+.thefade .heritage-calculate { width: 100%; margin-top: 8px; }
+
+.thefade .heritage-result {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    margin: 8px 0;
+    padding: 8px;
+    border-left: 3px solid var(--accent-gold, #c5a45d);
+    background: rgba(197,164,93,0.09);
+    font-size: 0.78rem;
+}
+
+.thefade .heritage-result strong { width: 100%; color: var(--accent-gold, #c5a45d); }
+
+.thefade .mutation-tools {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 7px;
+    margin-bottom: 8px;
+}
+
+.thefade .rules-embedded-list {
+    display: grid;
+    gap: 6px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.thefade .rules-embedded-list > li {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.16);
+}
+
+.thefade .rules-embedded-list li > div:first-child { min-width: 0; flex: 1; }
+.thefade .rules-embedded-list strong { color: var(--text-primary, #eadfda); }
+.thefade .rules-embedded-list span,
+.thefade .rules-embedded-list small { display: block; color: var(--text-muted, #b8aaa5); font-size: 0.72rem; }
+.thefade .rules-embedded-list p { margin: 4px 0 0; color: var(--text-muted, #b8aaa5); font-size: 0.76rem; }
+
+.thefade .rules-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 0 0 auto;
+}
+
+.thefade .rules-item-controls a { color: var(--text-muted, #b8aaa5); }
+.thefade .rules-item-controls button { width: 28px; min-height: 26px; padding: 2px; }
+.thefade .mutation-severity { text-transform: capitalize; color: var(--accent-gold, #c5a45d) !important; }
+
+.thefade .fate-total {
+    display: grid;
+    grid-template-columns: auto 54px auto;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent-gold, #c5a45d);
+}
+
+.thefade .fate-total input { text-align: center; font-size: 1.1rem; }
+.thefade .motivation-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.thefade .fate-actions button { flex: 1 1 120px; }
+.thefade .fate-actions button span { float: right; color: var(--accent-gold, #c5a45d); }
+.thefade .fate-awards { display: flex; align-items: center; gap: 4px; width: 100%; color: var(--text-muted, #b8aaa5); }
+.thefade .fate-awards button { flex: 0 0 42px; }
+
+.thefade .downtime-project-title { display: flex; justify-content: space-between; gap: 8px; }
+.thefade .downtime-progress-bar { height: 7px; margin: 5px 0; overflow: hidden; border-radius: 99px; background: #171214; }
+.thefade .downtime-progress-bar span { display: block; height: 100%; background: var(--accent-gold, #c5a45d); }
+
+.thefade .hazard-card .apply-damage-btn { width: 100%; margin-top: 8px; }
+
+/* Rules-backed Item of Power slots, corruption, and Unique Gear tools. */
+.thefade .item-power-slot-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.thefade .item-power-slot-grid .slot-container {
+    min-width: 0;
+    background: rgba(255, 255, 255, 0.025);
+}
+
+.thefade .item-power-slot-grid .slot-label {
+    display: flex;
+    justify-content: space-between;
+    color: var(--accent-gold, #c5a45d);
+}
+
+.thefade .item-power-slot-grid .slot-capacity {
+    color: var(--text-muted, #b8aaa5);
+    font-size: 0.72rem;
+}
+
+.thefade .item-power-slot-grid .empty-slot span {
+    display: block;
+    margin-top: 3px;
+    font-size: 0.68rem;
+}
+
+.thefade .item-power-slot-grid .equipped-item + .equipped-item {
+    margin-top: 5px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.thefade .dark-magic-badge,
+.thefade .rules-badge {
+    display: inline-flex;
+    width: fit-content;
+    padding: 1px 6px;
+    border: 1px solid #78627e;
+    border-radius: 99px;
+    background: rgba(61, 43, 67, 0.65);
+    color: #ddc4e5;
+    font-size: 0.66rem;
+    line-height: 1.4;
+}
+
+.thefade .dark-magic-equipped {
+    box-shadow: inset 3px 0 0 #69506f;
+}
+
+.thefade .dark-item-corruption {
+    border-color: #78627e;
+    color: #ddc4e5;
+}
+
+.thefade .dark-magic-item,
+.thefade .tech-attunement-panel {
+    margin: 10px 0;
+    padding: 10px;
+}
+
+.thefade .dark-magic-item.is-dark {
+    border-color: #78627e;
+    background: linear-gradient(135deg, rgba(39,30,43,0.92), rgba(14,12,16,0.92));
+}
+
+.thefade .dark-magic-summary,
+.thefade .tech-attunement-panel {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.thefade .quality-damage-notes {
+    margin: 6px 0;
+    padding: 5px 8px;
+    border-left: 3px solid var(--accent-gold, #c5a45d);
+    background: rgba(197,164,93,0.08);
+}
+
+.thefade .quality-damage-notes p { margin: 2px 0; }
+
+.thefade .access-level-calculator,
+.thefade .item-power-world-settings {
+    padding: 11px;
+}
+
+.thefade .access-level-calculator h3,
+.thefade .item-power-world-settings h3 {
+    margin: 0 0 9px;
+    color: var(--accent-gold, #c5a45d);
+}
+
+.thefade .access-modifier-grid,
+.thefade .gear-skill-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px 12px;
+    margin-top: 10px;
+}
+
+.thefade .access-modifier-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    font-size: 0.76rem;
+}
+
+.thefade .access-modifier-row label { display: flex; align-items: center; gap: 5px; }
+.thefade .access-modifier-row input { min-height: 0; width: auto; }
+.thefade .access-modifier-variable { flex: 0 0 64px; }
+
+.thefade .access-level-result {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 4px 12px;
+    margin: 10px 0;
+    padding: 9px 11px;
+    border: 1px solid var(--accent-gold, #c5a45d);
+}
+
+.thefade .access-level-result strong { color: var(--accent-gold, #c5a45d); font-size: 1.55rem; }
+.thefade .access-level-result small { grid-column: 1 / -1; color: var(--text-muted, #b8aaa5); }
+
+.thefade .gm-reference-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.thefade .gear-skill-grid > div { display: flex; flex-direction: column; gap: 2px; }
+.thefade .gear-skill-grid span { color: var(--text-muted, #b8aaa5); font-size: 0.73rem; }
+.thefade .rules-note th { padding: 5px 7px; text-align: left; color: var(--accent-gold, #c5a45d); }
+.thefade .dark-magic-reference { border-color: #69506f; }
+
+@media (max-width: 720px) {
+    .thefade .gm-tool-tabs { grid-template-columns: repeat(2, 1fr); }
+    .thefade .encounter-controls,
+    .thefade .challenge-core-grid,
+    .thefade .rules-item-grid-3,
+    .thefade .quick-monster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .thefade .heritage-rules-grid,
+    .thefade .motivation-grid,
+    .thefade .item-power-slot-grid,
+    .thefade .gm-reference-grid,
+    .thefade .access-modifier-grid,
+    .thefade .gear-skill-grid { grid-template-columns: 1fr; }
+    .thefade .challenge-status { grid-template-columns: repeat(2, 1fr); }
 }
 

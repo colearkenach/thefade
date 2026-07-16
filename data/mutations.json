@@ -1,0 +1,2334 @@
+{
+  "minor": [
+    {
+      "id": "minor-1-2",
+      "severity": "minor",
+      "roll": "1-2",
+      "min": 1,
+      "max": 2,
+      "name": "Asymmetric Face",
+      "description": "The Character’s face is noticeably unbalanced, often by an inch or more.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-3-4",
+      "severity": "minor",
+      "roll": "3-4",
+      "min": 3,
+      "max": 4,
+      "name": "Balljoint Fingers",
+      "description": "The Character is able to bend all of their fingers perfectly backwards with no pain.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-5-6",
+      "severity": "minor",
+      "roll": "5-6",
+      "min": 5,
+      "max": 6,
+      "name": "Barrel Chest",
+      "description": "The Character’s chest is larger than normal, great for some, strange for others.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-7-8",
+      "severity": "minor",
+      "roll": "7-8",
+      "min": 7,
+      "max": 8,
+      "name": "Big Head",
+      "description": "The Character’s head is 50% larger than normal for their species.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-9-10",
+      "severity": "minor",
+      "roll": "9-10",
+      "min": 9,
+      "max": 10,
+      "name": "Big Snozz",
+      "description": "The Character’s nose is 50% larger than normal for their species.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-11-12",
+      "severity": "minor",
+      "roll": "11-12",
+      "min": 11,
+      "max": 12,
+      "name": "Colorblind",
+      "description": "The Character is completely colorblind, all colors to them are various greys.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-13-14",
+      "severity": "minor",
+      "roll": "13-14",
+      "min": 13,
+      "max": 14,
+      "name": "Completely Bald",
+      "description": "The Character has no hair, eyebrows, chitin bristles or any other kind of hair. Smooth.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-15-16",
+      "severity": "minor",
+      "roll": "15-16",
+      "min": 15,
+      "max": 16,
+      "name": "Deathly Pale",
+      "description": "The Character has the pallor of a corpse regardless of their Species.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-17-18",
+      "severity": "minor",
+      "roll": "17-18",
+      "min": 17,
+      "max": 18,
+      "name": "Distinctive Birthmark",
+      "description": "The Character has a large, distinctive, birthmark somewhere on their body.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-19-20",
+      "severity": "minor",
+      "roll": "19-20",
+      "min": 19,
+      "max": 20,
+      "name": "Double Jointed",
+      "description": "The Character is double jointed in their [D6: 1-3 Legs / 4-6 Arms]. Able to bend them in different angles than normal.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-21-22",
+      "severity": "minor",
+      "roll": "21-22",
+      "min": 21,
+      "max": 22,
+      "name": "Dumbo Ears",
+      "description": "The Character has ears or antennae that are 50 to 100% larger than normal for their Species.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-23-24",
+      "severity": "minor",
+      "roll": "23-24",
+      "min": 23,
+      "max": 24,
+      "name": "Enlarged Nethers",
+      "description": "The Character’s…nether regions are 50% larger than normal.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-25-26",
+      "severity": "minor",
+      "roll": "25-26",
+      "min": 25,
+      "max": 26,
+      "name": "Extra Teeth",
+      "description": "The Character has an extra 1d12 teeth in their mouth.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-27-28",
+      "severity": "minor",
+      "roll": "27-28",
+      "min": 27,
+      "max": 28,
+      "name": "Extra Toes",
+      "description": "The Character has 1d6 extra toes between both of their feet.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-29-30",
+      "severity": "minor",
+      "roll": "29-30",
+      "min": 29,
+      "max": 30,
+      "name": "Fewer Toes",
+      "description": "The Character does not have 1d6 toes between both of their feet.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-31-32",
+      "severity": "minor",
+      "roll": "31-32",
+      "min": 31,
+      "max": 32,
+      "name": "Flat Teeth",
+      "description": "The Character’s teeth are completely flat with no edges or canines.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-33-34",
+      "severity": "minor",
+      "roll": "33-34",
+      "min": 33,
+      "max": 34,
+      "name": "Herculean Chin",
+      "description": "The Character’s chin is quite impressive, some would say it would be handsome if it was so prominent.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-35-36",
+      "severity": "minor",
+      "roll": "35-36",
+      "min": 35,
+      "max": 36,
+      "name": "Heterochromia",
+      "description": "The Character’s eyes are two different colors - often radically different.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-37-38",
+      "severity": "minor",
+      "roll": "37-38",
+      "min": 37,
+      "max": 38,
+      "name": "Huge Guts",
+      "description": "The Character’s guts (lower and upper intestines) are larger than most, causing a bloated look in their lower torso.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-39-40",
+      "severity": "minor",
+      "roll": "39-40",
+      "min": 39,
+      "max": 40,
+      "name": "Hunched Spine",
+      "description": "The Character’s spine has a natural curve, making them appear hunched over at all times.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-41-42",
+      "severity": "minor",
+      "roll": "41-42",
+      "min": 41,
+      "max": 42,
+      "name": "Large Ears",
+      "description": "The Character’s ears are 50% larger than normal for their Species.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-43-44",
+      "severity": "minor",
+      "roll": "43-44",
+      "min": 43,
+      "max": 44,
+      "name": "Long Nose",
+      "description": "The Character’s nose is 50% longer than normal for their Species.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-45-46",
+      "severity": "minor",
+      "roll": "45-46",
+      "min": 45,
+      "max": 46,
+      "name": "Lucky Sixth Finger",
+      "description": "On the [D6: 1-3 Left / 4-6 Right] Hand, there is an additional finger that functions normally but does little else.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-47-48",
+      "severity": "minor",
+      "roll": "47-48",
+      "min": 47,
+      "max": 48,
+      "name": "Missized Arms",
+      "description": "The Character’s arms are two to four inches different in size.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-49-50",
+      "severity": "minor",
+      "roll": "49-50",
+      "min": 49,
+      "max": 50,
+      "name": "Missized Ears",
+      "description": "The Character’s ears are 50% larger and smaller than normal for their species, choose which ear is the large / small one.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-51-52",
+      "severity": "minor",
+      "roll": "51-52",
+      "min": 51,
+      "max": 52,
+      "name": "Oblong Legs",
+      "description": "The Character’s legs are 1d4 Inches different in height, looking like their limping on one leg normally.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-53-54",
+      "severity": "minor",
+      "roll": "53-54",
+      "min": 53,
+      "max": 54,
+      "name": "Overly Thick Hair",
+      "description": "The Character’s hair, or hair-like substance, is thick and difficult to cut in most circumstances.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-55-56",
+      "severity": "minor",
+      "roll": "55-56",
+      "min": 55,
+      "max": 56,
+      "name": "Patches",
+      "description": "The Character has patches of different colorations across their skin, easily covered by makeup but always present.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-57-58",
+      "severity": "minor",
+      "roll": "57-58",
+      "min": 57,
+      "max": 58,
+      "name": "Protruding Jaw",
+      "description": "The Character’s jaw juts forward, making them appear slackjawed should they not be focusing.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-59-60",
+      "severity": "minor",
+      "roll": "59-60",
+      "min": 59,
+      "max": 60,
+      "name": "Scleral Coloration",
+      "description": "The Character’s Scleral Coloration is different from normal. White is normal for humans and humanoids.",
+      "sourcePage": 22
+    },
+    {
+      "id": "minor-61-62",
+      "severity": "minor",
+      "roll": "61-62",
+      "min": 61,
+      "max": 62,
+      "name": "Sharp Teeth",
+      "description": "The Character has no flat teeth, instead a full mouth of sharp incisors for cutting. Useless except for eating.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-63-64",
+      "severity": "minor",
+      "roll": "63-64",
+      "min": 63,
+      "max": 64,
+      "name": "Shrunken Nethers",
+      "description": "The Character’s nethers have been shrunk to half the normal size for their Species. Tragic.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-65-66",
+      "severity": "minor",
+      "roll": "65-66",
+      "min": 65,
+      "max": 66,
+      "name": "Skin Patches",
+      "description": "The Character has large discolorations on their body, making them appear as if they are two separate skin tones.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-67-68",
+      "severity": "minor",
+      "roll": "67-68",
+      "min": 67,
+      "max": 68,
+      "name": "Slobberful Tongue",
+      "description": "The Character’s tongue is large and often slides out if not paying attention, making them appear to be “Slobbering.”",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-69-70",
+      "severity": "minor",
+      "roll": "69-70",
+      "min": 69,
+      "max": 70,
+      "name": "Small Head",
+      "description": "The Character’s head is 50% smaller than normal for their species.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-71-72",
+      "severity": "minor",
+      "roll": "71-72",
+      "min": 71,
+      "max": 72,
+      "name": "Small Snozz",
+      "description": "The Character’s nose is 50% smaller than normal for their species.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-73-74",
+      "severity": "minor",
+      "roll": "73-74",
+      "min": 73,
+      "max": 74,
+      "name": "Staggered Heartbeat",
+      "description": "The Character’s heart beats in a different rhythm from normal. Unnoticeable and untreatable.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-75-76",
+      "severity": "minor",
+      "roll": "75-76",
+      "min": 75,
+      "max": 76,
+      "name": "Strange Colored Eyes",
+      "description": "The Character’s eye color is an unnatural shade, often one that is uncomfortable to maintain eye contact with for long.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-77-78",
+      "severity": "minor",
+      "roll": "77-78",
+      "min": 77,
+      "max": 78,
+      "name": "Stretched Head",
+      "description": "The Character’s head is stretched out, making them appear to have a taller head than normal.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-79-80",
+      "severity": "minor",
+      "roll": "79-80",
+      "min": 79,
+      "max": 80,
+      "name": "Stretched Skin",
+      "description": "The Character’s skin didn’t grow and fold naturally, instead it appears poorly stretched over their muscles and may even tear if not careful.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-81-82",
+      "severity": "minor",
+      "roll": "81-82",
+      "min": 81,
+      "max": 82,
+      "name": "Stripes",
+      "description": "The Character has a set of “Stripes” on their body running either in rings or staggered lines. Often these are different shades of their skin tone but may be more exotic.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-83-84",
+      "severity": "minor",
+      "roll": "83-84",
+      "min": 83,
+      "max": 84,
+      "name": "Tailbone",
+      "description": "The Character has a vestigial tail (or second tail) growing near or around the spine. Often it is nipped in childhood, but the scars and bone may remain.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-85-86",
+      "severity": "minor",
+      "roll": "85-86",
+      "min": 85,
+      "max": 86,
+      "name": "Terrible Breath",
+      "description": "The Character’s breath is wretched, leaving others gagging if not adequately prepared.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-87-88",
+      "severity": "minor",
+      "roll": "87-88",
+      "min": 87,
+      "max": 88,
+      "name": "Terrible Stench",
+      "description": "The Character gives off a terrible odor, something about being unnatural and atrocious for their Species to be around.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-89-90",
+      "severity": "minor",
+      "roll": "89-90",
+      "min": 89,
+      "max": 90,
+      "name": "Two Foot",
+      "description": "The Character has two [D6: 1-3 Left / 4-6 Right] Feet instead of a Left and Right Foot.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-91-92",
+      "severity": "minor",
+      "roll": "91-92",
+      "min": 91,
+      "max": 92,
+      "name": "Uncomfortable Nails",
+      "description": "The Character’s nails are strange, either growing larger, not growing at all, or growing wrong to cause a vague discomfort if not clipped properly.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-93-94",
+      "severity": "minor",
+      "roll": "93-94",
+      "min": 93,
+      "max": 94,
+      "name": "Unlucky Four Fingers",
+      "description": "The Character doesn’t have a finger on their hands [1d10: 1-2 Thumb / 3-4 Index / 5-6 Middle / 7-8 Ring / 9-10 Pinkie]",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-95-96",
+      "severity": "minor",
+      "roll": "95-96",
+      "min": 95,
+      "max": 96,
+      "name": "Veiny",
+      "description": "The Character has protruding veins of a strange color, difficult to view without bringing attention to it.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-97-98",
+      "severity": "minor",
+      "roll": "97-98",
+      "min": 97,
+      "max": 98,
+      "name": "Wheezing",
+      "description": "When breathing, the Character lets out a wheeze instead of silent breaths. They can control this, but it is “Natural” for them.",
+      "sourcePage": 23
+    },
+    {
+      "id": "minor-99-00",
+      "severity": "minor",
+      "roll": "99-00",
+      "min": 99,
+      "max": 100,
+      "name": "Wyrd Lip Color",
+      "description": "The Character’s lips are a strange color naturally.",
+      "sourcePage": 23
+    }
+  ],
+  "major": [
+    {
+      "id": "major-1-2",
+      "severity": "major",
+      "roll": "1-2",
+      "min": 1,
+      "max": 2,
+      "name": "Albino",
+      "description": "The Character is entirely pale as if the color had been drained from them, their eyes have a distinctive reddish-pink hue.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-3-4",
+      "severity": "major",
+      "roll": "3-4",
+      "min": 3,
+      "max": 4,
+      "name": "Big Sniffer",
+      "description": "The Character’s nose is easily three times the size it should be.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-5-6",
+      "severity": "major",
+      "roll": "5-6",
+      "min": 5,
+      "max": 6,
+      "name": "Bizarre Coloration",
+      "description": "The Character has a strange skin tone or appearance, often a brighter or strange color that draws the eye.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-7-8",
+      "severity": "major",
+      "roll": "7-8",
+      "min": 7,
+      "max": 8,
+      "name": "Black Blood",
+      "description": "The Character’s blood is pitch black.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-9-10",
+      "severity": "major",
+      "roll": "9-10",
+      "min": 9,
+      "max": 10,
+      "name": "Bugged Out Eyes",
+      "description": "The Character’s eyes are “bugged out” seeming to protrude from their head.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-11-12",
+      "severity": "major",
+      "roll": "11-12",
+      "min": 11,
+      "max": 12,
+      "name": "Burning Hot",
+      "description": "The Character is really hot, as in they feel like they are feverish but are fine.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-13-14",
+      "severity": "major",
+      "roll": "13-14",
+      "min": 13,
+      "max": 14,
+      "name": "Cyclops",
+      "description": "The Character has only one massive eye, often centrally located on their head.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-15-16",
+      "severity": "major",
+      "roll": "15-16",
+      "min": 15,
+      "max": 16,
+      "name": "Digitigrade",
+      "description": "The Character’s legs are digitigrade, bent backwards at the kneecap.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-17-18",
+      "severity": "major",
+      "roll": "17-18",
+      "min": 17,
+      "max": 18,
+      "name": "Diurnal Vomiting",
+      "description": "The Character must vent a buildup of fluids in their body by vomiting it out. Daily.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-19-20",
+      "severity": "major",
+      "roll": "19-20",
+      "min": 19,
+      "max": 20,
+      "name": "Elongated",
+      "description": "The Character’s limbs are 1d4+1 Inches longer than normal.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-21-22",
+      "severity": "major",
+      "roll": "21-22",
+      "min": 21,
+      "max": 22,
+      "name": "Elven Features",
+      "description": "The Character has faerie features, pointed face, slanted eyes appearing to be almost closed, and fair complexion. Often extremely thin and tall.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-23-24",
+      "severity": "major",
+      "roll": "23-24",
+      "min": 23,
+      "max": 24,
+      "name": "Evil Eye",
+      "description": "The [D6: 1-3 Left / 4-6 Right] Eye is entirely black with the pupil being either Red, Orange, or Green. It twitches a lot.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-25-26",
+      "severity": "major",
+      "roll": "25-26",
+      "min": 25,
+      "max": 26,
+      "name": "Exotic Beauty",
+      "description": "The Character has distinctive, noticeable, and “Attractive” Features taken up to 11.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-27-28",
+      "severity": "major",
+      "roll": "27-28",
+      "min": 27,
+      "max": 28,
+      "name": "Extra Mouth",
+      "description": "The Character has an extra mouth located on their [D10: 1-2 Torso / 3-4 Arms / 5-6 Legs / 7-8 Back / 9-10 Head]. It cannot speak but is connected to the stomach.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-29-30",
+      "severity": "major",
+      "roll": "29-30",
+      "min": 29,
+      "max": 30,
+      "name": "Five Joint Fingers",
+      "description": "The Character has five joints in each of their fingers, allowing for uncomfortable looking bending and twisting.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-31-32",
+      "severity": "major",
+      "roll": "31-32",
+      "min": 31,
+      "max": 32,
+      "name": "Flesh Crown",
+      "description": "The Character has a series of protrusions on their forehead and around their cranium, appearing as if they have a “Flesh Crown.”",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-33-34",
+      "severity": "major",
+      "roll": "33-34",
+      "min": 33,
+      "max": 34,
+      "name": "Freezing Cold",
+      "description": "The Character feels terribly cold, as if they are suffering from hypothermia.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-35-36",
+      "severity": "major",
+      "roll": "35-36",
+      "min": 35,
+      "max": 36,
+      "name": "Goop Blood",
+      "description": "The Character’s blood, once out of their body, is goopy - similar in feeling and appearance to gelatin.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-37-38",
+      "severity": "major",
+      "roll": "37-38",
+      "min": 37,
+      "max": 38,
+      "name": "Hair Everywhere",
+      "description": "The Character grows hair everywhere, including where hair shouldn’t grow. Inside and out.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-39-40",
+      "severity": "major",
+      "roll": "39-40",
+      "min": 39,
+      "max": 40,
+      "name": "Hermaphrodite",
+      "description": "The Character has sexual and physical characteristics for both male and female members of their Species.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-41-42",
+      "severity": "major",
+      "roll": "41-42",
+      "min": 41,
+      "max": 42,
+      "name": "Hooves",
+      "description": "The Character’s feet bones have fused together to create a set of pseudo hooves instead of regular feet.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-43-44",
+      "severity": "major",
+      "roll": "43-44",
+      "min": 43,
+      "max": 44,
+      "name": "Hunchback",
+      "description": "The Character has a sack of fat and muscle on their back, creating a hunchback look.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-45-46",
+      "severity": "major",
+      "roll": "45-46",
+      "min": 45,
+      "max": 46,
+      "name": "Leathery Skin",
+      "description": "The Character’s skin is coarse and uncomfortable to touch.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-47-48",
+      "severity": "major",
+      "roll": "47-48",
+      "min": 47,
+      "max": 48,
+      "name": "Long Neck",
+      "description": "The Character’s neck is twice as long as normal, standing tall among others.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-49-50",
+      "severity": "major",
+      "roll": "49-50",
+      "min": 49,
+      "max": 50,
+      "name": "Massive Head",
+      "description": "The Character’s head is bulbous and twice the size as normal.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-51-52",
+      "severity": "major",
+      "roll": "51-52",
+      "min": 51,
+      "max": 52,
+      "name": "Misplaced Facial Features",
+      "description": "The Character’s facial features, eyes, ears, nose, mouth, etc. - are jumbled up on their face, but still serve their purpose.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-53-54",
+      "severity": "major",
+      "roll": "53-54",
+      "min": 53,
+      "max": 54,
+      "name": "Mono Colored Eye",
+      "description": "The Character’s eyes are a single, uncomfortable, color with no visible pupils.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-55-56",
+      "severity": "major",
+      "roll": "55-56",
+      "min": 55,
+      "max": 56,
+      "name": "New Ear",
+      "description": "The Character has an ear growing on their [D10: 1-2 Torso / 3-4 Arms / 5-6 Legs / 7-8 Back / 9-10 Head]. It still functions.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-57-58",
+      "severity": "major",
+      "roll": "57-58",
+      "min": 57,
+      "max": 58,
+      "name": "Predator Teeth",
+      "description": "The Character has two incisors sticking out of their jaw, appearing as tusks.",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-59-60",
+      "severity": "major",
+      "roll": "59-60",
+      "min": 59,
+      "max": 60,
+      "name": "Primal Form",
+      "description": "The Character looks “regressed” larger build with sloped features. Many would",
+      "sourcePage": 24
+    },
+    {
+      "id": "major-61-62",
+      "severity": "major",
+      "roll": "61-62",
+      "min": 61,
+      "max": 62,
+      "name": "Pulsating Veins",
+      "description": "The Character’s veins can be seen visibly pumping blood through their body. Why is it a different color depending on the light?",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-63-64",
+      "severity": "major",
+      "roll": "63-64",
+      "min": 63,
+      "max": 64,
+      "name": "Shark Teeth",
+      "description": "The Character’s teeth are constantly growing, leading to many being popped out on a regular basis only to be replaced soon after.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-65-66",
+      "severity": "major",
+      "roll": "65-66",
+      "min": 65,
+      "max": 66,
+      "name": "Slimy",
+      "description": "The Character is slimy. Literally. Gross.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-67-68",
+      "severity": "major",
+      "roll": "67-68",
+      "min": 67,
+      "max": 68,
+      "name": "Strange Voice",
+      "description": "The Character’s vocal cords are wrong, giving them a [D10: 1-2 Higher Pitch / 3-4 Lower Pitch / 5-6 Husky / 7-8 Rattly / 9-10 Sing Song]",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-69-70",
+      "severity": "major",
+      "roll": "69-70",
+      "min": 69,
+      "max": 70,
+      "name": "Third Eye",
+      "description": "The Character has a useless third eye (including socket) on their [D10: 1-2 Torso / 3-4 Arms / 5-6 Legs / 7-8 Back / 9-10 Head]. It will twitch.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-71-72",
+      "severity": "major",
+      "roll": "71-72",
+      "min": 71,
+      "max": 72,
+      "name": "Three Fingered",
+      "description": "The Character has three fingers (Index, Ring, and Thumb)",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-73-74",
+      "severity": "major",
+      "roll": "73-74",
+      "min": 73,
+      "max": 74,
+      "name": "Two Tongues",
+      "description": "The Character has two tongues in their mouth, stacked on top of one another.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-75-76",
+      "severity": "major",
+      "roll": "75-76",
+      "min": 75,
+      "max": 76,
+      "name": "Uncomfortably Tall",
+      "description": "The Character is uncomfortably tall; they stand 50% taller than others of their Species.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-77-78",
+      "severity": "major",
+      "roll": "77-78",
+      "min": 77,
+      "max": 78,
+      "name": "Unfortunate Nose",
+      "description": "The Character’s nose is…wrong, wrong in a variety of ways that is disturbing to look at but not strange enough to comment on.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-79-80",
+      "severity": "major",
+      "roll": "79-80",
+      "min": 79,
+      "max": 80,
+      "name": "Unnaturally Heavy",
+      "description": "The Character is built heavy; they weigh 50% more than average for their species.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-81-82",
+      "severity": "major",
+      "roll": "81-82",
+      "min": 81,
+      "max": 82,
+      "name": "Unnaturally Light",
+      "description": "The Character is light as a feather, for some reason, they weigh 50% less than average for their species.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-83-84",
+      "severity": "major",
+      "roll": "83-84",
+      "min": 83,
+      "max": 84,
+      "name": "Vestigial Horns",
+      "description": "The Character has 1d4 Vestigial Horns growing from their head, they may, or may not, be poking out as bone protrusions.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-85-86",
+      "severity": "major",
+      "roll": "85-86",
+      "min": 85,
+      "max": 86,
+      "name": "Vestigial Wings",
+      "description": "The Character has 1d4 Vestigial Wings growing out of their back, they cannot be used and are little more than flesh and bone.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-87-88",
+      "severity": "major",
+      "roll": "87-88",
+      "min": 87,
+      "max": 88,
+      "name": "Visible Organs",
+      "description": "The Character’s skin is thin enough to see through, viewing their organs perform the essential functions for life.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-89-90",
+      "severity": "major",
+      "roll": "89-90",
+      "min": 89,
+      "max": 90,
+      "name": "Warped Nethers",
+      "description": "The Character’s nethers are wrong. As in severely wrong. Horribly wrong.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-91-92",
+      "severity": "major",
+      "roll": "91-92",
+      "min": 91,
+      "max": 92,
+      "name": "Warts & Woggles",
+      "description": "The Character suffers from the Warts and Woggles - sores that are painful to scratch and change place daily.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-93-94",
+      "severity": "major",
+      "roll": "93-94",
+      "min": 93,
+      "max": 94,
+      "name": "Webbed Digits",
+      "description": "The Character has webbed toes and fingers; the thin membrane has nerves in it.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-95-96",
+      "severity": "major",
+      "roll": "95-96",
+      "min": 95,
+      "max": 96,
+      "name": "Wrong Ears",
+      "description": "The Character’s ears are warped and incorrect, larger, smaller, colored wrong, or even just functionally useless.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-97-98",
+      "severity": "major",
+      "roll": "97-98",
+      "min": 97,
+      "max": 98,
+      "name": "Wrong Mouth",
+      "description": "The Character’s mouth has been warped uncomfortably, larger than usual, circular, lipless, to other more terrible possibilities.",
+      "sourcePage": 25
+    },
+    {
+      "id": "major-99-00",
+      "severity": "major",
+      "roll": "99-00",
+      "min": 99,
+      "max": 100,
+      "name": "Critical Mutation",
+      "description": "The Character increases their Mutation to a Critical Mutation.",
+      "sourcePage": 25
+    }
+  ],
+  "severe": [
+    {
+      "id": "severe-1-2",
+      "severity": "severe",
+      "roll": "1-2",
+      "min": 1,
+      "max": 2,
+      "name": "Ageusia",
+      "description": "The Character has no taste; they automatically fail any Taste Test.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-3-4",
+      "severity": "severe",
+      "roll": "3-4",
+      "min": 3,
+      "max": 4,
+      "name": "Anosmia",
+      "description": "The Character has no sense of smell; they automatically fail any Smell Test.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-5-6",
+      "severity": "severe",
+      "roll": "5-6",
+      "min": 5,
+      "max": 6,
+      "name": "Aquatic Adapted",
+      "description": "The Character is adapted to sea life; they are able to breathe underwater and have a Swim Speed equal to their Land Speed. However, on land, they have a -1 to their Land Speed due to their condition.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-7-8",
+      "severity": "severe",
+      "roll": "7-8",
+      "min": 7,
+      "max": 8,
+      "name": "Atrophy",
+      "description": "The Character’s [D10: 1-2 Right Arm / 3-4 Left Arm / 5-6 Right Leg / 7-8 Left Leg / 9- 10 Nethers] is completely useless and cannot be used.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-9-10",
+      "severity": "severe",
+      "roll": "9-10",
+      "min": 9,
+      "max": 10,
+      "name": "Blind",
+      "description": "The Character is functionally blind, they cannot see anything, fail any Sight test, have -5 Avoid, and -4D to all Attacks.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-11-12",
+      "severity": "severe",
+      "roll": "11-12",
+      "min": 11,
+      "max": 12,
+      "name": "Built Tough",
+      "description": "The Character is built tough and to endure, they increase their Base HP by +2.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-13-14",
+      "severity": "severe",
+      "roll": "13-14",
+      "min": 13,
+      "max": 14,
+      "name": "Chaos Organ",
+      "description": "A Character’s [D8: 1-2 Heart / 3-4 Lungs / 5-6 Intestines / 7-8 Kidney] is considered a Chaos Organ, which does everything the other Organs do and the rest are redundant.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-15-16",
+      "severity": "severe",
+      "roll": "15-16",
+      "min": 15,
+      "max": 16,
+      "name": "Chronic Obesity",
+      "description": "The Character is obese, with a -1 Presence and -1 Land Speed. On the other hand, people think they’re rich.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-17-18",
+      "severity": "severe",
+      "roll": "17-18",
+      "min": 17,
+      "max": 18,
+      "name": "Claws",
+      "description": "The Character has clawed appendages, imparting a -1d when using manual finger dexterity, but they have the [Mutant Claws] Weapon. [Unarmed / DMG 3 S or P / Crit 5 / One Hand / Melee / Unwieldy, Agile, Light]",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-19-20",
+      "severity": "severe",
+      "roll": "19-20",
+      "min": 19,
+      "max": 20,
+      "name": "Cloven Hooves",
+      "description": "The Character’s bones in their foot have melded to create a cloven hoof instead of a foot, requiring regular maintenance to keep it working right. They can no longer buy normal boots but have the [Cloven Hoof] Weapon. [Unarmed / DMG 3 B / Crit 3 / No Hands / Melee / Unwieldy, Pounding]",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-21-22",
+      "severity": "severe",
+      "roll": "21-22",
+      "min": 21,
+      "max": 22,
+      "name": "Deaf",
+      "description": "The Character is functionally deaf; they cannot hear and automatically fail any Hearing Test. [D6: 1 Learned in Sign Language / 2-6 Don’t Know Sign Language]",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-23-24",
+      "severity": "severe",
+      "roll": "23-24",
+      "min": 23,
+      "max": 24,
+      "name": "Dozen Eyes",
+      "description": "The Character’s head is laced with several eyes facing in all directions. The Character has All Around Sight.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-25-26",
+      "severity": "severe",
+      "roll": "25-26",
+      "min": 25,
+      "max": 26,
+      "name": "Dwarf",
+      "description": "The Character has a version of dwarfism; they are considered one Size smaller than average for their Species.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-27-28",
+      "severity": "severe",
+      "roll": "27-28",
+      "min": 27,
+      "max": 28,
+      "name": "Endless Joints",
+      "description": "The Character has a number of joints in strange places; they may bend and twist themselves unnaturally - they gain +1d to all Contortion Checks.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-29-30",
+      "severity": "severe",
+      "roll": "29-30",
+      "min": 29,
+      "max": 30,
+      "name": "Environmental Failure",
+      "description": "The Character is adapted for a bubble. They have a Moderate Vulnerability to all Environmental Conditions and natural elements.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-31-32",
+      "severity": "severe",
+      "roll": "31-32",
+      "min": 31,
+      "max": 32,
+      "name": "Extra Arm",
+      "description": "The Character has an entirely new arm growing out of their body, it is treated as a regular arm that may carry things as they wish.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-33-34",
+      "severity": "severe",
+      "roll": "33-34",
+      "min": 33,
+      "max": 34,
+      "name": "Extra Brain",
+      "description": "The Character has a second, less useful, brain to help the mental load. Increase Grit by +1.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-35-36",
+      "severity": "severe",
+      "roll": "35-36",
+      "min": 35,
+      "max": 36,
+      "name": "Extra Leg",
+      "description": "The Character has a whole new leg growing somewhere it shouldn’t. [D6: 1-3 Unlucky Placement -1 Finesse / Lucky Legs +1 Finesse]",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-37-38",
+      "severity": "severe",
+      "roll": "37-38",
+      "min": 37,
+      "max": 38,
+      "name": "False Mind",
+      "description": "The Character’s psychic imprint is so damaged, that whenever they are suffering a Meltdown, they also have the Mind Static Effect.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-39-40",
+      "severity": "severe",
+      "roll": "39-40",
+      "min": 39,
+      "max": 40,
+      "name": "Fermenta Gut",
+      "description": "If the Character eats natural plant based foods, they will produce one dose of alcohol in their gut and be under its effects.",
+      "sourcePage": 26
+    },
+    {
+      "id": "severe-41-42",
+      "severity": "severe",
+      "roll": "41-42",
+      "min": 41,
+      "max": 42,
+      "name": "Ghoulish Appetite",
+      "description": "The Character can only eat raw flesh, anything else will be vomited out within the hour.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-43-44",
+      "severity": "severe",
+      "roll": "43-44",
+      "min": 43,
+      "max": 44,
+      "name": "Gliding Wings",
+      "description": "The Character has a set of wings that they may glide safely down from a great height but not fly with.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-45-46",
+      "severity": "severe",
+      "roll": "45-46",
+      "min": 45,
+      "max": 46,
+      "name": "Golden Digits",
+      "description": "The Character’s fingers and toes are golden, fetching 50 Serpents per cut off digit.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-47-48",
+      "severity": "severe",
+      "roll": "47-48",
+      "min": 47,
+      "max": 48,
+      "name": "Grotesque",
+      "description": "The Character is frankly hideous, absolutely ugly, atrociously ugly, children cry when they are seen and animals would rather flee than face you. -2d to all Social Interactions except [Intimidation].",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-49-50",
+      "severity": "severe",
+      "roll": "49-50",
+      "min": 49,
+      "max": 50,
+      "name": "Hemophilia",
+      "description": "The Character is a bleeder - whenever they have the Bleed Condition, it is always one step worse than it was originally.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-51-52",
+      "severity": "severe",
+      "roll": "51-52",
+      "min": 51,
+      "max": 52,
+      "name": "Horns",
+      "description": "The Character has 1d4 Horns growing from their head, they may be used as impromptu weapons in duress. [Unarmed / DMG 2P / Crit 4 / No Hands / Melee / Unwieldy, Impaling]",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-53-54",
+      "severity": "severe",
+      "roll": "53-54",
+      "min": 53,
+      "max": 54,
+      "name": "Hulking Brute",
+      "description": "The Character is massive for their Species; they increase their Size by one Step. Increase Physique by +1 and reduce Finesse by -1.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-55-56",
+      "severity": "severe",
+      "roll": "55-56",
+      "min": 55,
+      "max": 56,
+      "name": "Hypoesthesia",
+      "description": "The Character has no feeling of touch; they automatically fail any Touch Test. [D6: 1-4 No Analgesia / 5-6 Analgesia] If the Character also has Analgesia, they do not feel pain or register it as hurting them. They will still take damage and suffer the effects, just not feel it.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-57-58",
+      "severity": "severe",
+      "roll": "57-58",
+      "min": 57,
+      "max": 58,
+      "name": "Iron Skin",
+      "description": "The Character has rock solid skin; they have -1 Finesse but a Natural Deflection of 25 on all body parts.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-59-60",
+      "severity": "severe",
+      "roll": "59-60",
+      "min": 59,
+      "max": 60,
+      "name": "Mismanaged Guts",
+      "description": "The Character’s guts and body is so maligned that treatment is incredibly difficult, all Healing, Surgery, or Recovery Checks made for the Character is at -3d.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-61-62",
+      "severity": "severe",
+      "roll": "61-62",
+      "min": 61,
+      "max": 62,
+      "name": "Monkey Tail",
+      "description": "The Character has a tail; it may grip onto things as if their Physique was two (-2) less.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-63-64",
+      "severity": "severe",
+      "roll": "63-64",
+      "min": 63,
+      "max": 64,
+      "name": "Mute",
+      "description": "The Character is a functional mute, they cannot speak.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-65-66",
+      "severity": "severe",
+      "roll": "65-66",
+      "min": 65,
+      "max": 66,
+      "name": "Night’s Eye",
+      "description": "The Character can see in the dark as well as they can see during the day, but being in bright light causes a -1d on all Checks unless eye protection is used.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-67-68",
+      "severity": "severe",
+      "roll": "67-68",
+      "min": 67,
+      "max": 68,
+      "name": "Pindrop Ears",
+      "description": "The Character’s hearing is phenomenal; they gain a natural +1d on all Hearing related Checks. They hear most everything, loudly.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-69-70",
+      "severity": "severe",
+      "roll": "69-70",
+      "min": 69,
+      "max": 70,
+      "name": "Poisoner’s Tongue",
+      "description": "The Character’s taste is exquisite and precise; they gain a natural +1d on all Taste related Checks. Though they can only enjoy the most extreme tastes anymore.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-71-72",
+      "severity": "severe",
+      "roll": "71-72",
+      "min": 71,
+      "max": 72,
+      "name": "Precision Eyes",
+      "description": "The Character’s eyesight is amazing; they gain a natural +1d on all Sight related Checks. They are sensitive though.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-73-74",
+      "severity": "severe",
+      "roll": "73-74",
+      "min": 73,
+      "max": 74,
+      "name": "Pretty Tail",
+      "description": "The Character has a tail, a tantalizing thing that draws the eye with its unconscious movement, they gain +1 Presence.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-75-76",
+      "severity": "severe",
+      "roll": "75-76",
+      "min": 75,
+      "max": 76,
+      "name": "Redundant Organs",
+      "description": "The Character’s body is filled with redundant and often useless organs to soak blows. They gain +1 Resilience.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-77-78",
+      "severity": "severe",
+      "roll": "77-78",
+      "min": 77,
+      "max": 78,
+      "name": "Regenerative",
+      "description": "The Character has Regeneration 2.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-79-80",
+      "severity": "severe",
+      "roll": "79-80",
+      "min": 79,
+      "max": 80,
+      "name": "Reorganized Instinct",
+      "description": "The Character has +1d to their Initiative Check due to their heightened instincts, but them being on edge constantly tends to make focusing difficult.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-81-82",
+      "severity": "severe",
+      "roll": "81-82",
+      "min": 81,
+      "max": 82,
+      "name": "Sanguaphage",
+      "description": "The Character can drink blood for sustenance; it doesn’t taste good or provide any supernatural benefits.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-83-84",
+      "severity": "severe",
+      "roll": "83-84",
+      "min": 83,
+      "max": 84,
+      "name": "Serrated Teeth",
+      "description": "The Character has a row of serrated teeth for biting and tearing food and has torn their tongue multiple times. [Unarmed / DMG 3 P / Crit 3 / No Hands / Melee / Unwieldy, Ripping]",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-85-86",
+      "severity": "severe",
+      "roll": "85-86",
+      "min": 85,
+      "max": 86,
+      "name": "Skin Pouches",
+      "description": "The Character has a set of skin pouches on their body, allowing them to hide small objects inside of them.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-87-88",
+      "severity": "severe",
+      "roll": "87-88",
+      "min": 87,
+      "max": 88,
+      "name": "Snout",
+      "description": "The Character’s nose is a distinctive snout. They are Learned in Smell.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-89-90",
+      "severity": "severe",
+      "roll": "89-90",
+      "min": 89,
+      "max": 90,
+      "name": "Tentacle Arms",
+      "description": "The Character’s [D6: 1-3 Right / 4-6 Left] Arm is a tentacle with suction cups, what freakish horror. It does grant a +1d to Climbing Checks.",
+      "sourcePage": 27
+    },
+    {
+      "id": "severe-91-92",
+      "severity": "severe",
+      "roll": "91-92",
+      "min": 91,
+      "max": 92,
+      "name": "Toxic",
+      "description": "The Character is toxic, literally. If any part of them is consumed it will deliver a Fast 8D Toxicity [D6: 1-2 Cytotoxin / 3-4 Hemotoxin / 5-6 Neurotoxin] that forces the target to take 2d HP Damage every hour for 1d4 hours.",
+      "sourcePage": 28
+    },
+    {
+      "id": "severe-93-94",
+      "severity": "severe",
+      "roll": "93-94",
+      "min": 93,
+      "max": 94,
+      "name": "Unnatural Appetite",
+      "description": "The Character’s body rejects most things they have a highly specialized diet that requires exact (often pricey) ingredients. Their body rejects all other kinds of food.",
+      "sourcePage": 28
+    },
+    {
+      "id": "severe-95-96",
+      "severity": "severe",
+      "roll": "95-96",
+      "min": 95,
+      "max": 96,
+      "name": "Weakened Constitution",
+      "description": "The Character is susceptible to disease and other effects, they have -1 Resistance and treat all diseases / poisons as starting one interval sooner.",
+      "sourcePage": 28
+    },
+    {
+      "id": "severe-97-98",
+      "severity": "severe",
+      "roll": "97-98",
+      "min": 97,
+      "max": 98,
+      "name": "Nothing?",
+      "description": "Nothing is wrong. Right? [D6: 1-5 Everything is Fine / 6 Roll a Critical Mutation]",
+      "sourcePage": 28
+    },
+    {
+      "id": "severe-99-00",
+      "severity": "severe",
+      "roll": "99-00",
+      "min": 99,
+      "max": 100,
+      "name": "Increase to Critical",
+      "description": "The Character increases their Mutation to a Critical Mutation.",
+      "sourcePage": 28
+    }
+  ],
+  "critical": [
+    {
+      "id": "critical-1-4",
+      "severity": "critical",
+      "roll": "1-4",
+      "min": 1,
+      "max": 4,
+      "name": "A Pile of Meat",
+      "description": "The Character is little more than a pile of meat that prays for death. Make a new Character and pray they do not suffer the same fate.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-5-8",
+      "severity": "critical",
+      "roll": "5-8",
+      "min": 5,
+      "max": 8,
+      "name": "Aetheric Blood",
+      "description": "The Character’s Blood is a miraculous compound, being able to be synthesized into various medicines. If a vial is ingested, it heals 2 HP automatically. Cannot accept blood donations.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-9-12",
+      "severity": "critical",
+      "roll": "9-12",
+      "min": 9,
+      "max": 12,
+      "name": "Bad Blood",
+      "description": "The Character has bad blood, and any variety of medical treatments incur a -5d to attempt to cure. Blood transfusion is impossible both ways.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-13-16",
+      "severity": "critical",
+      "roll": "13-16",
+      "min": 13,
+      "max": 16,
+      "name": "Blackscale",
+      "description": "The Character was born with a sickly series of scaly rashes, discolored eyes, warped flesh, and other deformities. They have +1 Resilience due to it as well.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-17-20",
+      "severity": "critical",
+      "roll": "17-20",
+      "min": 17,
+      "max": 20,
+      "name": "Blessed Mark",
+      "description": "The Character has a blessed marking on their body of one of the Gods, this a great boon for their family or a horrifying revelation.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-21-24",
+      "severity": "critical",
+      "roll": "21-24",
+      "min": 21,
+      "max": 24,
+      "name": "Blood Fountain",
+      "description": "The Character’s hemophilia is truly a sight - they immediately go to Severe Bleeding and increase Bleed Damage by +2.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-25-28",
+      "severity": "critical",
+      "roll": "25-28",
+      "min": 25,
+      "max": 28,
+      "name": "Bloody Tears",
+      "description": "The Character’s body mixes blood into things it shouldn’t - tears, saliva, piss, and just about anything else has a sickly viscera coloration and conditions.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-29-32",
+      "severity": "critical",
+      "roll": "29-32",
+      "min": 29,
+      "max": 32,
+      "name": "Brain Fuzz",
+      "description": "The Character’s mind is wired “Wrong” - any psychic phenomenon or magic attempting to read the Character’s mind always returns the wrong answer or screams.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-33-36",
+      "severity": "critical",
+      "roll": "33-36",
+      "min": 33,
+      "max": 36,
+      "name": "Cancer",
+      "description": "The Character’s body is filled with cancerous tumors, they can delay the inevitable, but eventually their body will give out before long.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-37-41",
+      "severity": "critical",
+      "roll": "37-41",
+      "min": 37,
+      "max": 41,
+      "name": "Chimera",
+      "description": "The Character is a mixture of a variety of creatures and monsters, they are truly monstrous to behold, they roll 1d6+1 Times on the Major Mutation Chart.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-42-45",
+      "severity": "critical",
+      "roll": "42-45",
+      "min": 42,
+      "max": 45,
+      "name": "Devoured Twin",
+      "description": "The Character devours their twin in utero; they have two Auras that interlink and have +1 Learned Skill of their choice.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-46-49",
+      "severity": "critical",
+      "roll": "46-49",
+      "min": 46,
+      "max": 49,
+      "name": "Freakazoid",
+      "description": "The Character looks dramatically wrong, horribly wrong, they roll 1d12+2 times on the Minor Mutation Chart.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-50-53",
+      "severity": "critical",
+      "roll": "50-53",
+      "min": 50,
+      "max": 53,
+      "name": "Half-Life",
+      "description": "The Character is cursed with a half-life; their total life expectancy is half of what is normal for their species.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-54-57",
+      "severity": "critical",
+      "roll": "54-57",
+      "min": 54,
+      "max": 57,
+      "name": "Heartless",
+      "description": "Amazingly, the Character doesn’t have a heart, its functions split between different organs in the body. Though they also lack a heartbeat.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-58-61",
+      "severity": "critical",
+      "roll": "58-61",
+      "min": 58,
+      "max": 61,
+      "name": "Inner Rot",
+      "description": "The Character is rotting from the inside out; they have -3 Resilience.",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-62-65",
+      "severity": "critical",
+      "roll": "62-65",
+      "min": 62,
+      "max": 65,
+      "name": "Melniboné Disease",
+      "description": "The Character’s body is weak, impairing a -2 to all Attributes and Defenses. If they take their Alchemical Medicines (250 Serpents per Dose) every week, this may be",
+      "sourcePage": 28
+    },
+    {
+      "id": "critical-66-69",
+      "severity": "critical",
+      "roll": "66-69",
+      "min": 66,
+      "max": 69,
+      "name": "Mortian Teacup",
+      "description": "The Character is so fragile that it’s frightening to touch them. They have a Species Base HP of 0.",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-70-73",
+      "severity": "critical",
+      "roll": "70-73",
+      "min": 70,
+      "max": 73,
+      "name": "Nyarlethotep’s Gift",
+      "description": "The Character rolls twice on Severe Mutations, but gains +1d when interacting with any Worshippers of Nyarlethotep or the Ny’var.",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-74-77",
+      "severity": "critical",
+      "roll": "74-77",
+      "min": 74,
+      "max": 77,
+      "name": "Rapid Regeneration",
+      "description": "The Character has a Regeneration of 10, allowing them to regrow limbs and other parts of their body. They consistently regrow “Wrong.”",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-78-81",
+      "severity": "critical",
+      "roll": "78-81",
+      "min": 78,
+      "max": 81,
+      "name": "Soul Sight",
+      "description": "The Character’s eyes are useless, being functionally blind, they do have Aura Sight instead. An inky darkness illuminated by the outlines of other auras.",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-82-85",
+      "severity": "critical",
+      "roll": "82-85",
+      "min": 82,
+      "max": 85,
+      "name": "Soulless",
+      "description": "The Character was born without a soul, a tricky mutation due to it being explicitly magical in nature. They cannot cast magic and produce no aura.",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-86-89",
+      "severity": "critical",
+      "roll": "86-89",
+      "min": 86,
+      "max": 89,
+      "name": "Terrakan Twins",
+      "description": "The Character has a conjoined twin attached, appearing to be two bodies fused together. They have -2 Physique and Finesse but have two additional Learned Skills.",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-90-93",
+      "severity": "critical",
+      "roll": "90-93",
+      "min": 90,
+      "max": 93,
+      "name": "The Herculean Ideal",
+      "description": "The Character is strong, fast, handsome, smart, and most importantly kind. They have +1 to any Attribute of their choice.",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-94-97",
+      "severity": "critical",
+      "roll": "94-97",
+      "min": 94,
+      "max": 97,
+      "name": "The Tree of Limbs",
+      "description": "The Character has 1d6 Extra Arms and 1d6 Extra Legs - if this exceeds 8 total limbs, they have a -1 to Physique, Finesse, and Presence.",
+      "sourcePage": 29
+    },
+    {
+      "id": "critical-98-00",
+      "severity": "critical",
+      "roll": "98-00",
+      "min": 98,
+      "max": 100,
+      "name": "Nothing?",
+      "description": "The Character is afflicted with no major ailments. It’s a miracle! [D6: 1-5 Nothing! / 6 Explode for 10d Damage to Adjacent Enemies Upon Death; Bypass Armor]",
+      "sourcePage": 29
+    }
+  ],
+  "corrupted": [
+    {
+      "id": "corrupted-1-2",
+      "severity": "corrupted",
+      "roll": "1-2",
+      "min": 1,
+      "max": 2,
+      "name": "Bad Blood",
+      "description": "The Character has bad blood, and any variety of medical treatments incur a -5d to attempt to cure. Blood transfusion is impossible both ways.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-3-4",
+      "severity": "corrupted",
+      "roll": "3-4",
+      "min": 3,
+      "max": 4,
+      "name": "Inner Rot",
+      "description": "The Character is rotting from the inside out; they have -3 Resilience.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-5-6",
+      "severity": "corrupted",
+      "roll": "5-6",
+      "min": 5,
+      "max": 6,
+      "name": "Toxic",
+      "description": "The Character is toxic, literally. If any part of them is consumed it will deliver a Fast 8D Toxicity [D6: 1-2 Cytotoxin / 3-4 Hemotoxin / 5-6 Neurotoxin] that forces the target to take 2d HP Damage every hour for 1d4 hours.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-7-8",
+      "severity": "corrupted",
+      "roll": "7-8",
+      "min": 7,
+      "max": 8,
+      "name": "Cancer",
+      "description": "The Character’s body is filled with cancerous tumors, they can delay the inevitable, but eventually their body will give out before long.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-9-10",
+      "severity": "corrupted",
+      "roll": "9-10",
+      "min": 9,
+      "max": 10,
+      "name": "Corrupted Constitution",
+      "description": "The Character’s body is wracked by disease and poisons; they have -1 Resistance and treat all diseases / poisons as starting one interval sooner.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-11-12",
+      "severity": "corrupted",
+      "roll": "11-12",
+      "min": 11,
+      "max": 12,
+      "name": "Serrated Teeth",
+      "description": "The Character has a row of serrated teeth for biting and tearing food, and has torn their tongue multiple times. [Unarmed / DMG 3 P / Crit 3 / No Hands / Melee / Unwieldy, Ripping]",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-13-14",
+      "severity": "corrupted",
+      "roll": "13-14",
+      "min": 13,
+      "max": 14,
+      "name": "Iron Skin",
+      "description": "The Character has rock solid skin, they have -1 Finesse but a Natural Deflection of 25 on all body parts.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-15-16",
+      "severity": "corrupted",
+      "roll": "15-16",
+      "min": 15,
+      "max": 16,
+      "name": "Colorblind",
+      "description": "The Character is completely colorblind, all colors to them are various greys.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-17-18",
+      "severity": "corrupted",
+      "roll": "17-18",
+      "min": 17,
+      "max": 18,
+      "name": "Deathly Pale",
+      "description": "The Character has the pallor of a corpse regardless of their Species.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-19-20",
+      "severity": "corrupted",
+      "roll": "19-20",
+      "min": 19,
+      "max": 20,
+      "name": "Hunched Spine",
+      "description": "The Character’s spine has a natural curve, making them appear hunched over at all times.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-21-22",
+      "severity": "corrupted",
+      "roll": "21-22",
+      "min": 21,
+      "max": 22,
+      "name": "Scleral Coloration",
+      "description": "The Character’s Scleral Coloration is different from normal. White is normal for humans and humanoids.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-23-24",
+      "severity": "corrupted",
+      "roll": "23-24",
+      "min": 23,
+      "max": 24,
+      "name": "Skin Cloak",
+      "description": "The Character’s skin stretches unevenly and uncomfortably across their body, as if they are wearing another person’s skin entirely.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-25-26",
+      "severity": "corrupted",
+      "roll": "25-26",
+      "min": 25,
+      "max": 26,
+      "name": "Sulfurous Breath",
+      "description": "The Character’s breath has a sulfur smell, leaving others gagging if not adequately prepared.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-27-28",
+      "severity": "corrupted",
+      "roll": "27-28",
+      "min": 27,
+      "max": 28,
+      "name": "Terrible Stench",
+      "description": "The Character gives off a terrible odor, something about being unnatural and atrocious for their Species to be around.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-29-30",
+      "severity": "corrupted",
+      "roll": "29-30",
+      "min": 29,
+      "max": 30,
+      "name": "Veiny",
+      "description": "The Character has protruding veins of a strange color, difficult to view without bringing attention to it.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-31-32",
+      "severity": "corrupted",
+      "roll": "31-32",
+      "min": 31,
+      "max": 32,
+      "name": "Black Blood",
+      "description": "The Character’s blood is pitch black.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-33-34",
+      "severity": "corrupted",
+      "roll": "33-34",
+      "min": 33,
+      "max": 34,
+      "name": "Cadaver Patches",
+      "description": "The Character has patchy pieces of discolored skin on their body, as if it is dead skin.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-35-36",
+      "severity": "corrupted",
+      "roll": "35-36",
+      "min": 35,
+      "max": 36,
+      "name": "Elongated",
+      "description": "The Character’s limbs are 1d4+1 Inches longer than normal.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-37-38",
+      "severity": "corrupted",
+      "roll": "37-38",
+      "min": 37,
+      "max": 38,
+      "name": "Rat Vomiting",
+      "description": "A churning sensation in the gut occurs every 1d6 days, causing the Character to vomit out a singular black rat in addition to the contents of their stomach.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-39-40",
+      "severity": "corrupted",
+      "roll": "39-40",
+      "min": 39,
+      "max": 40,
+      "name": "Evil Eye",
+      "description": "The [D6: 1-3 Left / 4-6 Right] Eye is entirely black with the pupil being either Red, Orange, or Green. It twitches a lot.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-41-42",
+      "severity": "corrupted",
+      "roll": "41-42",
+      "min": 41,
+      "max": 42,
+      "name": "Goop Blood",
+      "description": "The Character’s blood, once out of their body, is goopy - similar in feeling and appearance to gelatin.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-43-44",
+      "severity": "corrupted",
+      "roll": "43-44",
+      "min": 43,
+      "max": 44,
+      "name": "Leathery Skin",
+      "description": "The Character’s skin is coarse and uncomfortable to touch.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-45-46",
+      "severity": "corrupted",
+      "roll": "45-46",
+      "min": 45,
+      "max": 46,
+      "name": "Mono Colored Eye",
+      "description": "The Character’s eyes are a single, uncomfortable, color with no visible pupils.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-47-48",
+      "severity": "corrupted",
+      "roll": "47-48",
+      "min": 47,
+      "max": 48,
+      "name": "Sharkteeth",
+      "description": "The Character’s teeth are constantly growing, leading to many being popped out on a regular basis only to be replaced soon after.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-49-50",
+      "severity": "corrupted",
+      "roll": "49-50",
+      "min": 49,
+      "max": 50,
+      "name": "Slimy",
+      "description": "The Character is slimy. Literally. Gross.",
+      "sourcePage": 30
+    },
+    {
+      "id": "corrupted-51-52",
+      "severity": "corrupted",
+      "roll": "51-52",
+      "min": 51,
+      "max": 52,
+      "name": "Vestigial Horns",
+      "description": "The Character has 1d4 Vestigial Horns growing from their head, they may, or may not, be poking out as bone protrusions.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-53-54",
+      "severity": "corrupted",
+      "roll": "53-54",
+      "min": 53,
+      "max": 54,
+      "name": "Man of the Rack",
+      "description": "The Character appears as if they have been stretched by a torturer’s rack, leaving them elongated and adding 1d6 inches of height.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-55-56",
+      "severity": "corrupted",
+      "roll": "55-56",
+      "min": 55,
+      "max": 56,
+      "name": "Meaningless Senses",
+      "description": "The corruption has made both the Character’s sense of Taste and Smell useless, they automatically fail any Taste or Smell Test.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-57-58",
+      "severity": "corrupted",
+      "roll": "57-58",
+      "min": 57,
+      "max": 58,
+      "name": "Atrophy",
+      "description": "The Character’s [D10: 1-2 Right Arm / 3-4 Left Arm / 5-6 Right Leg / 7-8 Left Leg / 9- 10 Nethers] is completely useless and cannot be used.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-59-60",
+      "severity": "corrupted",
+      "roll": "59-60",
+      "min": 59,
+      "max": 60,
+      "name": "Ghoulish Appetite",
+      "description": "The Character can only eat raw flesh, anything else will be vomited out within the hour.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-61-62",
+      "severity": "corrupted",
+      "roll": "61-62",
+      "min": 61,
+      "max": 62,
+      "name": "Grotesque",
+      "description": "The Character is frankly hideous, absolutely ugly, atrociously ugly, children cry when they are seen and animals would rather flee than face you. -2d to all Social Interactions except [Intimidation].",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-63-64",
+      "severity": "corrupted",
+      "roll": "63-64",
+      "min": 63,
+      "max": 64,
+      "name": "Night’s Eye",
+      "description": "The Character can see in the dark as well as they can see during the day, but being in bright light causes a -1d on all Checks unless eye protection is used.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-65-66",
+      "severity": "corrupted",
+      "roll": "65-66",
+      "min": 65,
+      "max": 66,
+      "name": "Devil’s Tail",
+      "description": "The Character has a forked tail that moves around in a rhythmic manner, they gain +1 Soul as their body becomes more acclimated to casting.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-67-68",
+      "severity": "corrupted",
+      "roll": "67-68",
+      "min": 67,
+      "max": 68,
+      "name": "Cursed Mark",
+      "description": "The Character has a cursed brand appear on their body, signifying their use and abuse of Corruption magic, it stings and itches constantly.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-69-70",
+      "severity": "corrupted",
+      "roll": "69-70",
+      "min": 69,
+      "max": 70,
+      "name": "Chimera",
+      "description": "The Character is a mixture of a variety of creatures and monsters, they are truly monstrous to behold, they roll 1d6+1 Times on the Major Mutation Chart.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-71-72",
+      "severity": "corrupted",
+      "roll": "71-72",
+      "min": 71,
+      "max": 72,
+      "name": "Freakazoid",
+      "description": "The Character looks dramatically wrong, horribly wrong, they roll 1d12+2 times on the Minor Mutation Chart.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-73-74",
+      "severity": "corrupted",
+      "roll": "73-74",
+      "min": 73,
+      "max": 74,
+      "name": "Heartless",
+      "description": "Amazingly, the Character doesn’t have a heart, its functions split between different organs in the body. Though they also lack a heartbeat.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-75-76",
+      "severity": "corrupted",
+      "roll": "75-76",
+      "min": 75,
+      "max": 76,
+      "name": "Skinless Hands",
+      "description": "The Character’s hands appear as if they’ve been stripped of flesh, leaving only the muscle and bone underneath.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-77-78",
+      "severity": "corrupted",
+      "roll": "77-78",
+      "min": 77,
+      "max": 78,
+      "name": "Skeletal Visage",
+      "description": "The Character’s face grows sunken and sullen, as if their skull has skin poorly fitted across it.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-79-80",
+      "severity": "corrupted",
+      "roll": "79-80",
+      "min": 79,
+      "max": 80,
+      "name": "Bipupilled Eyes",
+      "description": "The Character has two pupils in their eye, darting around. They gain +1d to all Sight Checks.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-81-82",
+      "severity": "corrupted",
+      "roll": "81-82",
+      "min": 81,
+      "max": 82,
+      "name": "The Hole",
+      "description": "The Character has a hole in their chest, able to be seen through and even reached through.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-83-84",
+      "severity": "corrupted",
+      "roll": "83-84",
+      "min": 83,
+      "max": 84,
+      "name": "Black Teeth",
+      "description": "The Character’s teeth are pitch black.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-85-86",
+      "severity": "corrupted",
+      "roll": "85-86",
+      "min": 85,
+      "max": 86,
+      "name": "Malnourished",
+      "description": "The Character appears malnourished and sickly no matter how much they eat; they have -1 Resilience but only need to eat half as much.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-87-88",
+      "severity": "corrupted",
+      "roll": "87-88",
+      "min": 87,
+      "max": 88,
+      "name": "Hand Pupil",
+      "description": "A hand with inverted sclera and pupil is on the Character’s [D6: 1-3 Left / 4-6 Right] palm. It opens when the Character wills it.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-89-90",
+      "severity": "corrupted",
+      "roll": "89-90",
+      "min": 89,
+      "max": 90,
+      "name": "Claws",
+      "description": "The Character has clawed appendages, imparting a -1d when using manual finger dexterity, but they have the [Mutant Claws] Weapon. [Unarmed / DMG 3 S or P / Crit 5 / One Hand / Melee / Unwieldy, Agile, Light]",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-91-92",
+      "severity": "corrupted",
+      "roll": "91-92",
+      "min": 91,
+      "max": 92,
+      "name": "Toxic Blood",
+      "description": "When hit by natural or unarmed attacks, the Character deals 2 corruption damage to the attacker, 6 if it is a bite attack, but -1 Resilience.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-93-94",
+      "severity": "corrupted",
+      "roll": "93-94",
+      "min": 93,
+      "max": 94,
+      "name": "Wyrmtongue",
+      "description": "The Character’s tongue is forked and distinctive -ss can be heard at the end of sentences. Extremely untrustworthy.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-95-96",
+      "severity": "corrupted",
+      "roll": "95-96",
+      "min": 95,
+      "max": 96,
+      "name": "Evil’s Crown",
+      "description": "The Character has a black mark appear around their forehead, indicating their use of Corrupted Magic and its effects on their soul.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-97-98",
+      "severity": "corrupted",
+      "roll": "97-98",
+      "min": 97,
+      "max": 98,
+      "name": "Ragged",
+      "description": "The Character seems to age as if they were one age category higher but suffering no ill effects.",
+      "sourcePage": 31
+    },
+    {
+      "id": "corrupted-99-00",
+      "severity": "corrupted",
+      "roll": "99-00",
+      "min": 99,
+      "max": 100,
+      "name": "Nothing",
+      "description": "The Character has avoided the consequences of their Dark Magic. For now. (D6: 1-4 Nothing At All / 5-6 Null) If the Character is a Null, they have no flame in their soul and are unable to use Magic of any variety, the Character gains 50% Spell Resistance as compensation.",
+      "sourcePage": 31
+    }
+  ],
+  "xenochild": [
+    {
+      "id": "xenochild-1-5",
+      "severity": "xenochild",
+      "roll": "1-5",
+      "min": 1,
+      "max": 5,
+      "name": "Critical Deviation",
+      "description": "The Character rolls 1d4 times on the Critical Mutation Chart",
+      "sourcePage": 32
+    },
+    {
+      "id": "xenochild-6-10",
+      "severity": "xenochild",
+      "roll": "6-10",
+      "min": 6,
+      "max": 10,
+      "name": "Severe Deviation",
+      "description": "The Character rolls 1d4 times on the Severe Mutation Chart",
+      "sourcePage": 32
+    },
+    {
+      "id": "xenochild-11-20",
+      "severity": "xenochild",
+      "roll": "11-20",
+      "min": 11,
+      "max": 20,
+      "name": "Minor Health Deviation",
+      "description": "The Character rolls 1d4 times on the Major Mutation Chart",
+      "sourcePage": 32
+    },
+    {
+      "id": "xenochild-21-30",
+      "severity": "xenochild",
+      "roll": "21-30",
+      "min": 21,
+      "max": 30,
+      "name": "Major Health Deviation",
+      "description": "The Character rolls 1d6 times on the Major Mutation Chart",
+      "sourcePage": 32
+    },
+    {
+      "id": "xenochild-31-50",
+      "severity": "xenochild",
+      "roll": "31-50",
+      "min": 31,
+      "max": 50,
+      "name": "Minor Aesthetic Deviation",
+      "description": "The Character rolls 1d4 times on the Minor Mutation Chart",
+      "sourcePage": 32
+    },
+    {
+      "id": "xenochild-51-70",
+      "severity": "xenochild",
+      "roll": "51-70",
+      "min": 51,
+      "max": 70,
+      "name": "Major Aesthetic Deviation",
+      "description": "The Character rolls 1d6+2 times on the Minor Mutation Chart",
+      "sourcePage": 32
+    },
+    {
+      "id": "xenochild-71-00",
+      "severity": "xenochild",
+      "roll": "71-00",
+      "min": 71,
+      "max": 100,
+      "name": "Nothing to Report",
+      "description": "The Character has no distinguishable problems due to the Xenochild process.",
+      "sourcePage": 32
+    }
+  ]
+}

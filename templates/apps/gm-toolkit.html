@@ -1,0 +1,241 @@
+<form class="gm-toolkit-form" autocomplete="off">
+    <nav class="gm-tool-tabs tabs" data-group="gm-tools">
+        <a class="item" data-tab="encounter"><i class="fas fa-dice-d12"></i> Encounter</a>
+        <a class="item" data-tab="challenge"><i class="fas fa-tasks"></i> Challenge</a>
+        <a class="item" data-tab="monster"><i class="fas fa-dragon"></i> Quick Monster</a>
+        <a class="item" data-tab="gear"><i class="fas fa-swords"></i> Unique Gear</a>
+        <a class="item" data-tab="power"><i class="fas fa-gem"></i> Items of Power</a>
+    </nav>
+
+    <section class="gm-tool-body">
+        <div class="tab encounter-panel" data-group="gm-tools" data-tab="encounter">
+            <header class="gm-tool-heading">
+                <div><h2>The Encounter Die</h2><p>Roll when travel, noise, conspicuous magic, or new territory may draw trouble.</p></div>
+            </header>
+
+            <div class="gm-form-grid encounter-controls">
+                <label>Danger Level
+                    <select name="encounter.danger">
+                        {{#each dangerLevels as |entry key|}}<option value="{{key}}" {{#if (eq key "moderate")}}selected{{/if}}>{{entry.label}}</option>{{/each}}
+                    </select>
+                </label>
+                <label>Situation
+                    <select name="encounter.modifierPreset">
+                        <option value="0">No modifier</option>
+                        {{#each encounterModifiers as |modifier|}}<option value="{{modifier.value}}">{{modifier.label}} ({{modifier.signed}})</option>{{/each}}
+                    </select>
+                </label>
+                <label>Other Modifier
+                    <input type="number" name="encounter.customModifier" value="0" />
+                </label>
+                <div class="encounter-escalation panel">
+                    <span>Escalation</span><strong>{{encounter.escalation}}</strong>
+                    <button type="button" class="encounter-reset" title="Reset escalation"><i class="fas fa-undo"></i></button>
+                </div>
+            </div>
+            <button type="button" class="encounter-roll primary-action"><i class="fas fa-dice-d12"></i> Roll Encounter Check</button>
+
+            <div class="rules-note panel">
+                <h3>Encounter Size</h3>
+                <table>
+                    <tbody>
+                        <tr><td>3-4 EL below party</td><td>4-8 creatures</td></tr>
+                        <tr><td>1-2 EL below party</td><td>2-4 creatures</td></tr>
+                        <tr><td>Same EL</td><td>1-2 creatures</td></tr>
+                        <tr><td>1-2 EL above</td><td>1 creature</td></tr>
+                        <tr><td>3+ EL above</td><td>1 creature; avoidance recommended</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="tab skill-challenge-panel" data-group="gm-tools" data-tab="challenge">
+            <header class="gm-tool-heading">
+                <div><h2>Skill Challenge</h2><p>Track a multi-step party problem with escalating consequences.</p></div>
+            </header>
+
+            <div class="challenge-status challenge-status-{{challengeStatus.key}}">
+                <strong>{{challengeStatus.label}}</strong>
+                <span>{{challenge.successes}} / {{challenge.successTarget}} successes</span>
+                <span>{{challenge.failures}} / {{challenge.failureLimit}} failures</span>
+                <span>Effective DT {{effectiveDT}}</span>
+            </div>
+
+            <div class="gm-form-grid challenge-core-grid">
+                <label class="span-2">Name<input type="text" name="challenge.name" value="{{challenge.name}}" /></label>
+                <label>Complexity
+                    <select name="challenge.complexity" class="challenge-complexity">
+                        {{#each challengeComplexities as |entry key|}}<option value="{{key}}" {{#if (eq ../challenge.complexity key)}}selected{{/if}}>{{entry.label}}</option>{{/each}}
+                    </select>
+                </label>
+                <label>Base DT<input type="number" name="challenge.baseDT" min="1" value="{{challenge.baseDT}}" /></label>
+                <label>Successes<input type="number" name="challenge.successes" min="0" value="{{challenge.successes}}" /></label>
+                <label>Target<input type="number" name="challenge.successTarget" min="1" value="{{challenge.successTarget}}" /></label>
+                <label>Failures<input type="number" name="challenge.failures" min="0" value="{{challenge.failures}}" /></label>
+                <label>Limit<input type="number" name="challenge.failureLimit" min="1" value="{{challenge.failureLimit}}" /></label>
+                <label>Current Time<input type="number" name="challenge.round" min="1" value="{{challenge.round}}" /></label>
+                <label>Time Limit<input type="number" name="challenge.timeLimit" min="0" value="{{challenge.timeLimit}}" /></label>
+                <label>Unit
+                    <select name="challenge.timeUnit">
+                        <option value="rounds" {{#if (eq challenge.timeUnit "rounds")}}selected{{/if}}>Rounds</option>
+                        <option value="minutes" {{#if (eq challenge.timeUnit "minutes")}}selected{{/if}}>Minutes</option>
+                        <option value="hours" {{#if (eq challenge.timeUnit "hours")}}selected{{/if}}>Hours</option>
+                    </select>
+                </label>
+                <label class="checkbox-label"><input type="checkbox" name="challenge.escalating" {{#if challenge.escalating}}checked{{/if}} /> Failures increase DT</label>
+            </div>
+
+            <label>Goal<textarea name="challenge.goal" rows="2">{{challenge.goal}}</textarea></label>
+            <label>Relevant Skills<textarea name="challenge.skills" rows="2" placeholder="Four to six skills and their narrative uses">{{challenge.skills}}</textarea></label>
+            <div class="gm-form-grid challenge-outcomes">
+                <label>Success<textarea name="challenge.success" rows="2">{{challenge.success}}</textarea></label>
+                <label>Failure<textarea name="challenge.failure" rows="2">{{challenge.failure}}</textarea></label>
+            </div>
+            <label>Complications<textarea name="challenge.complications" rows="2">{{challenge.complications}}</textarea></label>
+
+            <div class="challenge-actions">
+                <button type="button" class="challenge-record" data-result="success"><i class="fas fa-check"></i> +1 Success</button>
+                <button type="button" class="challenge-record" data-result="majorSuccess"><i class="fas fa-check-double"></i> +2 Successes</button>
+                <button type="button" class="challenge-record danger" data-result="failure"><i class="fas fa-times"></i> +1 Failure</button>
+                <button type="button" class="challenge-record" data-result="round"><i class="fas fa-forward"></i> Advance Time</button>
+                <button type="button" class="challenge-save"><i class="fas fa-save"></i> Save</button>
+                <button type="button" class="challenge-reset"><i class="fas fa-undo"></i> Reset</button>
+            </div>
+        </div>
+
+        <div class="tab quick-monster-panel" data-group="gm-tools" data-tab="monster">
+            <header class="gm-tool-heading">
+                <div><h2>Quick Monster Creation</h2><p>Generate a playable NPC from EL, role, size, attack, defense, and armor profiles.</p></div>
+            </header>
+            <div class="gm-form-grid quick-monster-grid">
+                <label class="span-2">Name<input name="quick.name" type="text" value="Quick Monster" /></label>
+                <label>Encounter Level<input name="quick.el" type="number" min="1" value="5" /></label>
+                <label>Size<select name="quick.size">{{selectOptions sizeOptions selected="medium"}}</select></label>
+                <label>Attack Profile<select name="quick.attackTier">{{selectOptions quickOptions.attack selected="competent"}}</select></label>
+                <label>Defense Profile<select name="quick.defenseTier">{{selectOptions quickOptions.defense selected="average"}}</select></label>
+                <label>Role<select name="quick.role">{{selectOptions quickOptions.role selected="standard"}}</select></label>
+                <label>Protection<select name="quick.armor">{{selectOptions quickOptions.armor selected="unarmored"}}</select></label>
+                <label>Damage Type
+                    <select name="quick.damageType"><option value="B">Bludgeoning</option><option value="S">Slashing</option><option value="P">Piercing</option><option value="F">Fire</option><option value="C">Cold</option><option value="E">Electricity</option><option value="A">Acid</option><option value="Ut">Untyped</option></select>
+                </label>
+            </div>
+            <div class="quick-results panel">Choose profiles, then preview or create the NPC.</div>
+            <div class="quick-actions">
+                <button type="button" class="quick-preview"><i class="fas fa-calculator"></i> Preview</button>
+                <button type="button" class="quick-create primary-action"><i class="fas fa-user-plus"></i> Create NPC</button>
+            </div>
+        </div>
+
+        <div class="tab unique-gear-panel" data-group="gm-tools" data-tab="gear">
+            <header class="gm-tool-heading">
+                <div><h2>Unique Gear & Access Levels</h2><p>Determine how difficult a particular weapon, armor piece, relic, or restricted item is to acquire.</p></div>
+            </header>
+
+            <div class="access-level-calculator panel">
+                <h3>Access Level Calculator</h3>
+                <div class="gm-form-grid">
+                    <label class="span-2">Item<input class="access-level-control" name="access.itemName" type="text" value="Unique Gear" /></label>
+                    <label>Base AL
+                        <select class="access-level-control" name="access.base">
+                            {{#each accessLevelRanks as |rank|}}<option value="{{rank.value}}">{{rank.label}} ({{rank.value}})</option>{{/each}}
+                        </select>
+                    </label>
+                    <label>Other Modifier<input class="access-level-control" name="access.custom" type="number" value="0" /></label>
+                </div>
+                <div class="access-modifier-grid">
+                    {{#each accessLevelModifiers as |modifier|}}
+                    <div class="access-modifier-row">
+                        <label><input class="access-level-control access-modifier" type="checkbox" data-value="{{modifier.value}}" /> {{modifier.label}} ({{#if modifier.variable}}{{modifier.variable}}{{else}}{{modifier.signed}}{{/if}})</label>
+                        {{#if modifier.variable}}
+                        <select class="access-level-control access-modifier-variable" disabled><option value="-1">−1</option><option value="-2">−2</option><option value="-3">−3</option></select>
+                        {{/if}}
+                    </div>
+                    {{/each}}
+                </div>
+                <div class="access-level-result"><span>Final Access Level</span><strong>2</strong><small>Cannot be reduced below 2; AL 12+ generally cannot be bought normally.</small></div>
+                <button type="button" class="access-level-post"><i class="fas fa-comment"></i> Post Access Level to Chat</button>
+            </div>
+
+            <div class="gm-reference-grid">
+                <div class="rules-note panel">
+                    <h3>Unique Gear Examples</h3>
+                    <table><thead><tr><th>Rank</th><th>AL</th><th>Examples</th></tr></thead><tbody>
+                        {{#each accessLevelRanks as |rank|}}<tr><td>{{rank.label}}</td><td>{{rank.value}}</td><td>{{rank.examples}}</td></tr>{{/each}}
+                    </tbody></table>
+                </div>
+                <div class="rules-note panel">
+                    <h3>Average Gear Examples</h3>
+                    <table><thead><tr><th>AL</th><th>Examples</th></tr></thead><tbody>
+                        {{#each averageGearAccessLevels as |entry|}}<tr><td>{{entry.value}}</td><td>{{entry.examples}}</td></tr>{{/each}}
+                    </tbody></table>
+                </div>
+            </div>
+
+            <div class="rules-note panel">
+                <h3>Skills for Acquisition</h3>
+                <div class="gear-skill-grid">
+                    {{#each accessLevelSkills as |skill|}}<div><strong>{{skill.label}}</strong><span>{{skill.use}}</span></div>{{/each}}
+                </div>
+            </div>
+
+            <div class="rules-note panel">
+                <h3>Availability, Failure, and Commissioning</h3>
+                <p>Difficult goods may carry markups of +25%, +50%, +100%, or more. Haggling reduces the marked-up price, but the merchant's minimum acceptable percentage is still based on the original price.</p>
+                <p>A failed AL check may delay another attempt, reveal a lesser or flawed alternative, attract unwanted attention, or provide a lead elsewhere. Rare gear may be commissioned when a buyer can find a craftsperson and the required materials.</p>
+            </div>
+        </div>
+
+        <div class="tab item-power-rules-panel" data-group="gm-tools" data-tab="power">
+            <header class="gm-tool-heading">
+                <div><h2>Items of Power</h2><p>World settings, overlap guidance, alternate slots, attunement variants, and Dark Magic Item corruption.</p></div>
+            </header>
+
+            <div class="panel item-power-world-settings">
+                <h3>World Rules</h3>
+                <div class="gm-form-grid">
+                    <label>Slot Rules<select name="itemPower.slotRule">{{selectOptions itemPowerSlotRules selected=itemPowerSlotRule}}</select></label>
+                    <label>Attunement Rules<select name="itemPower.attunementRule">{{selectOptions itemPowerAttunementRules selected=itemPowerAttunementRule}}</select></label>
+                </div>
+                <button type="button" class="item-power-settings-save primary-action"><i class="fas fa-save"></i> Save Item of Power Rules</button>
+            </div>
+
+            <div class="rules-note panel">
+                <h3>Overlap or No Overlap?</h3>
+                <p><strong>Head:</strong> helmets, crowns, circlets, masks, hoods, cowls, headbands, and turbans overlap. Earrings, monocles, eye patches, hair pins, and jaw guards do not.</p>
+                <p><strong>Body:</strong> most non-armor pieces can be worn over or under armor. An Item of Power shaped as armor overlaps and should use its armor-conflict and location fields. Armor+ pieces receive the normal Armor+ benefit.</p>
+                <p><strong>Hands:</strong> gauntlets, vambraces, and pauldrons overlap. Bracers, gloves, and wristbands do not and can be worn together. Mark non-overlapping accessories on their item sheet.</p>
+            </div>
+
+            <div class="rules-note panel">
+                <h3>Alternate Item of Power Slots</h3>
+                <p>The expanded system separates similar-looking items where reasonable. A dash means the slot is unchanged or did not previously exist.</p>
+                <table><thead><tr><th>Old Slot</th><th>New Slot</th><th>Becomes this slot if it is…</th></tr></thead><tbody>
+                    {{#each alternateItemPowerSlots as |slot|}}<tr><td>{{slot.oldSlot}}</td><td>{{slot.displayNewSlot}}</td><td>{{slot.examples}}{{#if slot.capacity}} (maximum {{slot.capacity}}){{/if}}</td></tr>{{/each}}
+                </tbody></table>
+                <p><strong>Rings:</strong> one per finger or similar appendage rather than two total. <strong>Sheaths:</strong> four practical positions—left hip, right hip, back of hip, and backpack. GMs may allow sensible stacking while attunement remains the limiting rule.</p>
+            </div>
+
+            <div class="gm-reference-grid">
+                <div class="rules-note panel">
+                    <h3>Removing Attunement</h3>
+                    <p>When enabled, equipped Items of Power function without attunement checks or slot limits. This removes much of the incentive for non-magic characters to preserve Soul for attunement capacity.</p>
+                </div>
+                <div class="rules-note panel">
+                    <h3>Technology-Affected Attunement</h3>
+                    <p>Technological items can be marked as attuned against magical radiation. Each protected item consumes an attunement slot and is treated as stabilized against radiation-driven malfunction.</p>
+                </div>
+            </div>
+
+            <div class="rules-note panel dark-magic-reference">
+                <h3>Dark Magic Items</h3>
+                <p>Items created through souls, innocent blood, ritual sacrifice, Hell, corruption damage, consumed life or sanity, dark gods, or cosmic horrors are Dark Magic Items. Their gray-black flame or light-absorbing aura is visible to creatures that perceive magical auras.</p>
+                <ul><li><strong>Attuned:</strong> gain Sin equal to Corruption Value each dawn.</li><li><strong>Carried but unattuned:</strong> gain 1 Sin each week.</li><li><strong>Addiction:</strong> crossing the Sin Threshold triggers an addiction check as a Dark Magic spell with DT equal to Corruption Value.</li></ul>
+                <table><thead><tr><th>Item Value</th><th>Corruption Value</th></tr></thead><tbody>
+                    <tr><td>Minor (under 10,000 sp.)</td><td>1</td></tr><tr><td>Moderate (10,000–25,000 sp.)</td><td>2</td></tr><tr><td>Major (25,001–50,000 sp.)</td><td>3</td></tr><tr><td>Legendary (above 50,000 sp.)</td><td>4</td></tr>
+                </tbody></table>
+                <p><strong>Retroactive Dark Magic Items:</strong> {{#each darkMagicItemNames as |name|}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}.</p>
+            </div>
+        </div>
+
+    </section>
+</form>

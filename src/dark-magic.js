@@ -15,10 +15,45 @@
 // Rules source: Core Rulebook Dark Magic chapter (Sin Threshold,
 // Addiction progression); AUDIT.md P0 #3.
 
+import { getDarkMagicItemCorruptionValue, isDarkMagicItem } from "./item-power-rules.js";
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
 /**
  * Ordered addiction stage progression.
  */
 export const ADDICTION_STAGES = ["none", "early", "middle", "late", "terminal"];
+
+/** Dark-school titles shown on the character sheet. */
+export const DARK_SCHOOL_NAMES = Object.freeze({
+    General: "Dark",
+    Divine: "Malediction",
+    Elementalism: "Eclipse",
+    Malevolent: "Malevolent",
+    Martial: "Havoc",
+    Naturalism: "Rot",
+    Preternaturalism: "Madness",
+    Rituals: "Desecration",
+    Runes: "Voidglyph",
+    Spiritualism: "Damnation"
+});
+
+/** Malevolent spells are intrinsically dark even on older items lacking the flag. */
+export function isDarkMagicSpell(spell) {
+    return spell?.system?.isDarkMagic === true || spell?.system?.school === "Malevolent";
+}
+
+export function spellSchoolDisplay(spell) {
+    const school = spell?.system?.school || "General";
+    return isDarkMagicSpell(spell) ? (DARK_SCHOOL_NAMES[school] || school) : school;
+}
 
 /**
  * Passive effects applied to actor data for each stage.
@@ -115,7 +150,7 @@ export async function resetDailySin(actor) {
  *                    resistSuccesses?, gritTarget?, resisted?, stageAdvanced?}>}
  */
 export async function handleDarkCast(actor, spell) {
-    if (!spell?.system?.isDarkMagic) return null;
+    if (!isDarkMagicSpell(spell)) return null;
 
     const dt = Math.max(1, parseInt(spell.system.successes) || 1);
     const sinBefore = Number(actor.system.darkMagic?.currentSin || 0);
@@ -166,6 +201,57 @@ export async function handleDarkCast(actor, spell) {
 
     return { sinBefore, sinAfter, threshold, overflow,
              resistSuccesses, gritTarget, resisted, stageAdvanced };
+}
+
+/**
+ * Apply the recurring corruption from a Dark Magic Item of Power.
+ * Dawn corruption adds the item's Corruption Value while active; weekly
+ * corruption adds 1 Sin while it is merely carried.
+ */
+export async function applyDarkItemCorruption(actor, item, { period = "dawn" } = {}) {
+    if (!actor || !isDarkMagicItem(item)) return null;
+
+    const corruptionValue = getDarkMagicItemCorruptionValue(item);
+    const sinGain = period === "week" ? 1 : corruptionValue;
+    const sinBefore = Number(actor.system.darkMagic?.currentSin || 0);
+    const sinAfter = sinBefore + sinGain;
+    const threshold = Number(actor.system.darkMagic?.sinThreshold || 0);
+    const overflow = sinAfter - threshold;
+    const updates = { "system.darkMagic.currentSin": sinAfter };
+    let dicePool = null;
+    let successes = null;
+    let grit = null;
+    let addictionAdvanced = null;
+
+    if (overflow > 0) {
+        const stage = actor.system.darkMagic?.addictionLevel || "none";
+        const addictionDice = { none: 0, early: 2, middle: 4, late: 6, terminal: 0 }[stage] || 0;
+        dicePool = Math.max(1, corruptionValue + addictionDice);
+        grit = Number(actor.system.totalGrit || actor.system.defenses?.grit || 3);
+        const roll = await new Roll(`${dicePool}d12`).evaluate({ async: true });
+        successes = roll.terms[0].results.reduce((total, die) =>
+            total + (die.result >= 12 ? 2 : die.result >= 8 ? 1 : 0), 0);
+
+        if (successes >= grit) {
+            const index = ADDICTION_STAGES.indexOf(stage);
+            if (index >= 0 && index < ADDICTION_STAGES.length - 1) {
+                addictionAdvanced = ADDICTION_STAGES[index + 1];
+                updates["system.darkMagic.addictionLevel"] = addictionAdvanced;
+            }
+        }
+    }
+
+    await actor.update(updates);
+    const cadence = period === "week" ? "weekly passive corruption" : "dawn attunement corruption";
+    const check = overflow > 0
+        ? `<p>Addiction check: ${dicePool}D vs Grit ${grit} — <strong>${successes}</strong> successes.${successes >= grit ? ` Addiction advances${addictionAdvanced ? ` to <strong>${addictionAdvanced}</strong>` : " (already terminal)"}.` : " The pull is resisted."}</p>`
+        : `<p>Sin remains within the threshold; no addiction check is required.</p>`;
+    await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor }),
+        content: `<div class="thefade-sin-summary"><h3>${escapeHTML(item.name)}</h3><p><strong>${escapeHTML(actor.name)}</strong> suffers ${cadence} (Corruption Value ${corruptionValue}).</p><p>Sin: ${sinBefore} → <strong>${sinAfter}</strong> (threshold ${threshold}).</p>${check}</div>`
+    });
+
+    return { corruptionValue, sinGain, sinBefore, sinAfter, threshold, overflow, dicePool, successes, grit, addictionAdvanced };
 }
 
 function buildSummary(o) {

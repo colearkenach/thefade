@@ -78,6 +78,22 @@
           </div>
         </div>
         <textarea name="system.abilities.{{id}}.description" placeholder="Describe the ability...">{{ability.description}}</textarea>
+        <div class="ability-activation-fields">
+          <label>Behavior
+            <select name="system.abilities.{{id}}.activation">
+              <option value="passive" {{#unless (eq ability.activation "active")}}selected{{/unless}}>Passive</option>
+              <option value="active" {{#if (eq ability.activation "active")}}selected{{/if}}>Active (post to chat)</option>
+            </select>
+          </label>
+          {{#if (eq ability.activation "active")}}
+          <label>Activation
+            <input type="text" name="system.abilities.{{id}}.actionCost" value="{{ability.actionCost}}" placeholder="Minor Action" />
+          </label>
+          <label>Bonus Duration
+            <span><input type="number" name="system.abilities.{{id}}.durationRounds" value="{{numberOr ability.durationRounds 1}}" min="1" data-dtype="Number" /> rounds</span>
+          </label>
+          {{/if}}
+        </div>
         {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=ability.bonuses bonusPath=(concat "system.abilities." id ".bonuses")}}
       </div>
       {{/each}}
@@ -141,6 +157,7 @@
         <div class="quick-add-buttons">
           <h5>Quick add:</h5>
           <button type="button" class="quick-add-btn" data-type="choose-combat-1">Choose 1 Combat</button>
+          <button type="button" class="quick-add-btn" data-type="choose-any-1">Choose 1 Any</button>
           <button type="button" class="quick-add-btn" data-type="choose-social-1">Choose 1 Social</button>
           <button type="button" class="quick-add-btn" data-type="choose-lore-1">Choose 1 Lore</button>
           <button type="button" class="quick-add-btn" data-type="choose-craft-1">Choose 1 Craft</button>

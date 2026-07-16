@@ -1,0 +1,75 @@
+<form class="{{cssClass}} flexcol rules-item-sheet" autocomplete="off">
+    <header class="sheet-header redesigned-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="charname"><input name="name" type="text" value="{{item.name}}" /></h1>
+            <div class="char-subtitle"><span>{{itemTypeLabel}}</span>{{#if system.source}}<span class="sep">·</span><span>{{system.source}}</span>{{/if}}</div>
+        </div>
+    </header>
+
+    <section class="sheet-body rules-item-body">
+        {{#if (eq item.type "mutation")}}
+        <div class="rules-item-grid">
+            <label>Severity<select name="system.severity">{{selectOptions mutationSeverityOptions selected=system.severity}}</select></label>
+            <label>Roll Range<input name="system.rollRange" type="text" value="{{system.rollRange}}" placeholder="1-2" /></label>
+        </div>
+        <label>Effect<textarea name="system.effect" rows="8">{{system.effect}}</textarea></label>
+        {{/if}}
+
+        {{#if (eq item.type "heritage")}}
+        <div class="rules-item-grid">
+            <label>Heritage Type<select name="system.heritageType">{{selectOptions heritageTypeOptions selected=system.heritageType}}</select></label>
+            <label>Characteristic Changes<input name="system.characteristicChanges" type="number" min="0" value="{{system.characteristicChanges}}" /></label>
+            <label>Mother's Species<input name="system.motherSpecies" type="text" value="{{system.motherSpecies}}" /></label>
+            <label>Father's Species<input name="system.fatherSpecies" type="text" value="{{system.fatherSpecies}}" /></label>
+            <label class="span-2">Mutation Rolls<input name="system.mutationRolls" type="text" value="{{system.mutationRolls}}" placeholder="1d4 Minor, 1d2-1 Major" /></label>
+        </div>
+        <label>Effect<textarea name="system.effect" rows="7">{{system.effect}}</textarea></label>
+        {{/if}}
+
+        {{#if (eq item.type "trap")}}
+        <div class="rules-item-grid rules-item-grid-3">
+            <label>Difficulty Level<input name="system.level" type="number" min="1" value="{{system.level}}" /></label>
+            <label>Category<select name="system.category">{{selectOptions trapCategoryOptions selected=system.category}}</select></label>
+            <label>Trigger<input name="system.trigger" type="text" value="{{system.trigger}}" /></label>
+            <label>Detection Skill<input name="system.detectionSkill" type="text" value="{{system.detectionSkill}}" /></label>
+            <label>Detection DT<input name="system.detectionDT" type="number" min="0" value="{{system.detectionDT}}" /></label>
+            <span></span>
+            <label>Disarm Skill<input name="system.disarmSkill" type="text" value="{{system.disarmSkill}}" /></label>
+            <label>Disarm DT<input name="system.disarmDT" type="number" min="0" value="{{system.disarmDT}}" /></label>
+            <label>Reset<input name="system.reset" type="text" value="{{system.reset}}" /></label>
+        </div>
+        {{> "systems/thefade/templates/item/parts/rules-attack-fields.html"}}
+        <label>Effect<textarea name="system.effect" rows="6">{{system.effect}}</textarea></label>
+        <button type="button" class="roll-hazard primary-action"><i class="fas fa-dice-d12"></i> Trigger Against Target</button>
+        {{/if}}
+
+        {{#if (eq item.type "hazard")}}
+        <div class="rules-item-grid rules-item-grid-3">
+            <label>Category<select name="system.category">{{selectOptions hazardCategoryOptions selected=system.category}}</select></label>
+            <label>Interval<input name="system.interval" type="text" value="{{system.interval}}" /></label>
+            <label>Escalation Dice<input name="system.escalationDice" type="number" min="0" value="{{system.escalationDice}}" title="Additional attack dice for each elapsed interval" /></label>
+        </div>
+        {{> "systems/thefade/templates/item/parts/rules-attack-fields.html"}}
+        <label>Effect<textarea name="system.effect" rows="7">{{system.effect}}</textarea></label>
+        <button type="button" class="roll-hazard primary-action"><i class="fas fa-dice-d12"></i> Apply Hazard to Target</button>
+        {{/if}}
+
+        {{#if (eq item.type "downtime")}}
+        <div class="rules-item-grid rules-item-grid-3">
+            <label>Activity<select name="system.activityType">{{selectOptions downtimeTypeOptions selected=system.activityType}}</select></label>
+            <label>Status<select name="system.status">{{selectOptions downtimeStatusOptions selected=system.status}}</select></label>
+            <label>Skill<input name="system.skill" type="text" value="{{system.skill}}" /></label>
+            <label>DT<input name="system.dt" type="number" min="0" value="{{system.dt}}" /></label>
+            <label>Duration<input name="system.duration" type="text" value="{{system.duration}}" /></label>
+            <label>Cost<input name="system.cost" type="text" value="{{system.cost}}" /></label>
+            <label>Progress<input name="system.progress" type="number" min="0" value="{{system.progress}}" /></label>
+            <label>Target<input name="system.target" type="number" min="1" value="{{system.target}}" /></label>
+        </div>
+        <label>Benefit / Outcome<textarea name="system.benefit" rows="6">{{system.benefit}}</textarea></label>
+        {{/if}}
+
+        <label>Source<input name="system.source" type="text" value="{{system.source}}" /></label>
+        <label>Notes / Description<textarea name="system.description" rows="5">{{system.description}}</textarea></label>
+    </section>
+</form>

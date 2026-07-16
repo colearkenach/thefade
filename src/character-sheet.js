@@ -1,7 +1,11 @@
 // TheFadeCharacterSheet class (extracted from thefade.js).
 import {
     SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS,
-    FLEXIBLE_BONUS_OPTIONS, FALLBACK_ACTOR_DATA
+    FLEXIBLE_BONUS_OPTIONS, FALLBACK_ACTOR_DATA,
+    COMBAT_DAMAGE_TYPES, COMBAT_IMMUNITY_DAMAGE_TYPES,
+    COMBAT_IMMUNITY_EFFECTS, COMBAT_STATUS_IMMUNITIES,
+    UNIVERSAL_ABILITY_CATEGORIES,
+    VULNERABILITY_SEVERITY_OPTIONS
 } from './constants.js';
 import {
     openCompendiumBrowser, initializeDefaultSkills,
@@ -12,14 +16,53 @@ import {
     calculateSkillDice, deleteCustomSkill, slugifySkill
 } from './skills.js';
 import { renderModifierHtml } from './conditions.js';
-import { handleDarkCast } from './dark-magic.js';
+import { applyDarkItemCorruption, handleDarkCast, isDarkMagicSpell, spellSchoolDisplay } from './dark-magic.js';
 import { damageTypeFlags } from './damage.js';
 import { openOpposedRollDialog, openAidAnotherDialog } from './opposed.js';
 import { rollHitLocation, locationLabel } from './hit-location.js';
+import { armorProtectionPools, buildProtectionView } from './protection.js';
 import {
     startIgnition, endIgnition, getIgnitionState,
     IGNITION_INTENSITY_LABEL
 } from './ignition.js';
+import {
+    ANATOMY_OPTIONS, calculateXenochildRolls, CROSSBREED_TYPES, getBestCrossbreedOutcome,
+    getCrossbreedOutcome,
+    MUTATION_SEVERITIES, rollMutation
+} from './rules.js';
+import { activateAbility, getActiveTemporaryBonusEntries } from './abilities.js';
+import {
+    CREATURE_TYPE_OPTIONS,
+    buildCreatureSubtypeSelector,
+    getCreatureRuleSources,
+    normalizeCreatureType
+} from './creature-rules.js';
+import {
+    addMechanicalBonusSheetOptions,
+    readMechanicalBonusRow,
+    updateMechanicalBonusRow
+} from './mechanical-bonuses.js';
+import {
+    WEAPON_DAMAGE_ATTRIBUTE_OPTIONS,
+    buildWeaponDamageProfile,
+    formatWeaponDamageComponents,
+    getWeaponAttackAttributeOverride,
+    getWeaponCriticalDamageBonus,
+    getWeaponMinimumHpDamage,
+    getWeaponQualityRules,
+    hasWeaponQuality,
+    resolveWeaponDamageAttribute,
+    weaponQualityDisplay
+} from './weapon-rules.js';
+import {
+    canEquipItemPower,
+    countAttunements,
+    getDarkMagicItemCorruptionValue,
+    isAttunementRemoved,
+    isDarkMagicItem,
+    isItemPowerActive,
+    organizeItemsOfPower
+} from './item-power-rules.js';
 
 /**
 * Character Sheet class for The Fade system
@@ -40,6 +83,14 @@ export class TheFadeCharacterSheet extends ActorSheet {
             // doesn't yank the user back to the top of the sheet.
             scrollY: [".sheet-body", ".tab[data-group='primary']"]
         });
+    }
+
+    _getSheetSectionOpenState(key, defaultOpen = false) {
+        if (!this._sheetSectionOpenStates) this._sheetSectionOpenStates = new Map();
+        if (!this._sheetSectionOpenStates.has(key)) {
+            this._sheetSectionOpenStates.set(key, defaultOpen);
+        }
+        return this._sheetSectionOpenStates.get(key);
     }
 
     /**
@@ -76,6 +127,38 @@ export class TheFadeCharacterSheet extends ActorSheet {
         }
 
         data.sizeOptions = SIZE_OPTIONS;
+        data.creatureTypeOptions = CREATURE_TYPE_OPTIONS;
+        data.selectedCreatureType = normalizeCreatureType(this.actor.system.species?.creatureType);
+        data.creatureSubtypeSelector = buildCreatureSubtypeSelector(this.actor.system, "character");
+        data.creatureRuleAbilityView = {
+            sources: getCreatureRuleSources(this.actor.system, "character"),
+            canActivate: true
+        };
+        data.temporaryAbilityBonuses = getActiveTemporaryBonusEntries(this.actor).map(entry => ({
+            ...entry,
+            remainingRounds: entry.combatId
+                ? Math.max(0, Number(entry.expiresRound) - (Number(game.combat?.round) || 0))
+                : Math.max(1, Number(entry.durationRounds) || 1)
+        }));
+
+        data.combatDamageTypes = COMBAT_DAMAGE_TYPES;
+        data.combatImmunityDamageTypes = COMBAT_IMMUNITY_DAMAGE_TYPES;
+        data.combatImmunityEffects = COMBAT_IMMUNITY_EFFECTS;
+        data.combatStatusImmunities = COMBAT_STATUS_IMMUNITIES;
+        // Native <details> state is DOM-only and would otherwise reset every
+        // time an actor update re-renders the sheet. Keep the open categories
+        // on this sheet instance so Combat-tab accordions stay where the user
+        // left them. Preserve the existing first-render behavior (all open).
+        if (!this._combatTraitOpenCategories) {
+            this._combatTraitOpenCategories = new Set(
+                UNIVERSAL_ABILITY_CATEGORIES.map(category => category.key)
+            );
+        }
+        data.universalAbilityCategories = UNIVERSAL_ABILITY_CATEGORIES.map(category => ({
+            ...category,
+            isOpen: this._combatTraitOpenCategories.has(category.key)
+        }));
+        data.vulnerabilitySeverityOptions = VULNERABILITY_SEVERITY_OPTIONS;
 
         data.flexibleBonusAttributeOptions = FLEXIBLE_BONUS_OPTIONS;
 
@@ -89,6 +172,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
             "moderate": "Moderate",
             "intense": "Intense"
         };
+
+        data.anatomyOptions = ANATOMY_OPTIONS;
+        data.anatomyRulesEnabled = game.settings?.get("thefade", "alternateAnatomyEnabled") ?? false;
+        data.crossbreedTypes = CROSSBREED_TYPES;
+        data.mutationSeverityOptions = MUTATION_SEVERITIES;
+        data.fatePointsEnabled = game.settings?.get("thefade", "fatePointsEnabled") ?? false;
+        data.isGM = game.user?.isGM ?? false;
 
         // Ignition status view-model for the aura card UI
         try {
@@ -126,7 +216,25 @@ export class TheFadeCharacterSheet extends ActorSheet {
         };
 
         // Build the Skills tab view-model: groups by category with icons.
-        data.skillCategoryGroups = this._buildSkillCategoryGroups();
+        data.skillCategoryGroups = this._buildSkillCategoryGroups().map(group => ({
+            ...group,
+            untrainedOpen: this._getSheetSectionOpenState(`skills-untrained-${group.key}`, false)
+        }));
+        data.skillCustomSectionOpen = this._getSheetSectionOpenState("skills-custom", false);
+        data.magicSectionStates = {
+            aura: this._getSheetSectionOpenState("magic-aura", false),
+            darkMagic: this._getSheetSectionOpenState("magic-dark", false),
+            spells: this._getSheetSectionOpenState("magic-spells", true)
+        };
+        data.abilitySectionStates = {
+            creatureRules: this._getSheetSectionOpenState("abilities-creature-rules", true),
+            speciesAbilities: this._getSheetSectionOpenState("abilities-species", true),
+            pathAbilities: this._getSheetSectionOpenState("abilities-path-abilities", true),
+            paths: this._getSheetSectionOpenState("abilities-paths", false),
+            talents: this._getSheetSectionOpenState("abilities-talents", false),
+            precepts: this._getSheetSectionOpenState("abilities-precepts", false),
+            traits: this._getSheetSectionOpenState("abilities-traits", false)
+        };
 
         // Attribute options shown when a skill is unlocked for editing.
         data.skillAttributeOptions = {
@@ -170,6 +278,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             try {
                 this._prepareCharacterItems(data);
                 this._prepareCharacterData(data);
+                data.linkedAbilitySources = this._buildLinkedAbilitySources(data.actor);
             } catch (error) {
                 console.error("Error preparing character data:", error);
                 console.error("Error stack:", error.stack);
@@ -178,6 +287,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 this._initializeMinimalCharacterData(data);
             }
         }
+
+        const protectionPreset = data.anatomyRulesEnabled
+            ? (data.system?.anatomy?.preset || "humanoid")
+            : "humanoid";
+        data.protectionRows = buildProtectionView(this.actor, protectionPreset);
+        data.protectionControlsEnabled = true;
 
         // Ensure magic items data is available to template (with fallbacks)
         try {
@@ -192,7 +307,73 @@ export class TheFadeCharacterSheet extends ActorSheet {
             data.actor.currentAttunements = 0;
             data.actor.maxAttunements = 0;
         }
+
+        // Defense totals are derived data. Expose any amount below the rules
+        // minimum directly to the template instead of persisting display-only
+        // flags every time the sheet opens.
+        const defenseExcess = total => Math.max(0, 1 - Number(total ?? 1));
+        data.defenseExcess = {
+            resilience: defenseExcess(data.system?.totalResilience),
+            avoid: defenseExcess(data.system?.totalAvoid),
+            grit: defenseExcess(data.system?.totalGrit)
+        };
+
+        addMechanicalBonusSheetOptions(data);
         return data;
+    }
+
+    _buildLinkedAbilitySources(actorData) {
+        const buildSource = (item, root) => {
+            if (!item) return null;
+            // Sheet data contains plain embedded-item objects, which expose
+            // Foundry's document identifier as `_id` rather than `id`.
+            const itemId = item.id || item._id;
+            if (!itemId) return null;
+            const abilityObject = item.system?.[root] || {};
+            const abilities = Object.entries(abilityObject).map(([id, ability]) => {
+                const bonusPath = `system.${root}.${id}.bonuses`;
+                return {
+                    id,
+                    name: ability?.name || "",
+                    description: ability?.description || "",
+                    activation: ability?.activation === "active" ? "active" : "passive",
+                    actionCost: ability?.actionCost || "",
+                    durationRounds: Math.max(1, Number(ability?.durationRounds) || 1),
+                    bonuses: Array.isArray(ability?.bonuses) ? ability.bonuses : [],
+                    bonusPath,
+                    bonusSectionKey: `ability-bonuses-${itemId}-${id}`,
+                    bonusesOpen: this._getSheetSectionOpenState(`ability-bonuses-${itemId}-${id}`, false),
+                    namePath: `system.${root}.${id}.name`,
+                    descriptionPath: `system.${root}.${id}.description`,
+                    activationPath: `system.${root}.${id}.activation`,
+                    actionCostPath: `system.${root}.${id}.actionCost`,
+                    durationRoundsPath: `system.${root}.${id}.durationRounds`
+                };
+            });
+            return {
+                itemId,
+                itemName: item.name,
+                itemType: item.type,
+                abilityRoot: root,
+                abilities,
+                abilityCount: abilities.length
+            };
+        };
+
+        const species = buildSource(actorData.speciesItem, "speciesAbilities");
+        const paths = (actorData.paths || []).map(path => {
+            const source = buildSource(path, "abilities");
+            return source ? {
+                ...source,
+                tierLabel: path.system?.isMonsterPath ? "Monster" : `Tier ${path.system?.tier || 1}`
+            } : null;
+        }).filter(Boolean);
+
+        return {
+            species,
+            paths,
+            pathAbilityCount: paths.reduce((total, source) => total + source.abilityCount, 0)
+        };
     }
 
     /**
@@ -214,6 +395,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
         data.actor.spells = [];
         data.actor.skills = [];
         data.actor.talents = [];
+        data.actor.mutations = [];
+        data.actor.heritages = [];
+        data.actor.downtimeProjects = [];
         data.actor.itemsOfPower = [];
         data.actor.equippedItemsOfPower = {};
         data.actor.unequippedItemsOfPower = [];
@@ -336,6 +520,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const mount = []; // Templates expect this
         const vehicle = []; // Templates expect this
         const fleshcraft = []; // Templates expect this
+        const mutations = [];
+        const heritages = [];
+        const downtimeProjects = [];
 
         // Safely iterate through items
         for (let i of items) {
@@ -412,10 +599,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 else if (i.type === 'armor') {
                     armor.push(i);
                 }
-                else if (i.type === 'path') {
+                else if (i.type === 'path' || i.type === 'monsterpath') {
                     paths.push(i);
                 }
                 else if (i.type === 'spell') {
+                    i.displaySchool = spellSchoolDisplay(i);
+                    i.isDarkSchool = isDarkMagicSpell(i);
                     spells.push(i);
                 }
                 else if (i.type === 'skill') {
@@ -431,6 +620,15 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 else if (i.type === 'precept') {
                     precepts.push(i);
                 }
+                else if (i.type === 'mutation') {
+                    mutations.push(i);
+                }
+                else if (i.type === 'heritage') {
+                    heritages.push(i);
+                }
+                else if (i.type === 'downtime') {
+                    downtimeProjects.push(i);
+                }
                 // Fallback to general gear for any unrecognized types
                 else {
                     gear.push(i);
@@ -443,15 +641,30 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Skills now come from actor.system.skills (data, not items).
         const skills = getAllSkills(this.actor);
 
-        // Process Items of Power with ring slot logic
-        const { equippedItemsOfPower, unequippedItemsOfPower } = this._processItemsOfPower(itemsOfPower);
+        // Process Items of Power using the selected world slot/attunement rules.
+        const itemPowerSlotRule = game.settings?.get("thefade", "itemPowerSlotRule") || "standard";
+        const itemPowerAttunementRule = game.settings?.get("thefade", "itemPowerAttunementRule") || "standard";
+        const { equippedItemsOfPower, itemPowerSlots, unequippedItemsOfPower } = this._processItemsOfPower(itemsOfPower, itemPowerSlotRule);
+        for (const item of itemsOfPower) {
+            item.isDarkMagicItem = isDarkMagicItem(item);
+            item.darkMagicCorruptionValue = getDarkMagicItemCorruptionValue(item);
+            item.itemPowerActive = isItemPowerActive(item, itemPowerAttunementRule);
+            item.darkMagicDawn = item.system?.attunement === true
+                || (isAttunementRemoved(itemPowerAttunementRule) && item.system?.equipped === true);
+        }
 
-        // Process Armor with stacking support
-        const { equippedArmor, unequippedArmor, armorTotals } = this._processArmor(armor, actorData);
+        // An Item of Power marked as conflicting with armor is itself an
+        // armor piece: while equipped it occupies its selected location and
+        // participates in the ordinary AP/damage pipeline.
+        const armoredItemsOfPower = itemsOfPower.filter(item => item.system?.conflictsArmor && item.system?.equipped);
+        const { equippedArmor, unequippedArmor, armorTotals } = this._processArmor(
+            [...armor, ...armoredItemsOfPower],
+            actorData
+        );
 
         // Calculate attunements safely
-        const currentAttunements = this._calculateCurrentAttunements(itemsOfPower);
-        const maxAttunements = this._calculateMaxAttunements(actorData);
+        const currentAttunements = this._calculateCurrentAttunements([...this.actor.items], itemPowerAttunementRule);
+        const maxAttunements = isAttunementRemoved(itemPowerAttunementRule) ? 0 : this._calculateMaxAttunements(actorData);
 
         // Calculate dice pools for skills safely
         this._calculateSkillDicePools(skills, actorData);
@@ -470,12 +683,19 @@ export class TheFadeCharacterSheet extends ActorSheet {
         actorData.spells = spells;
         actorData.skills = skills;
         actorData.talents = talents;
-        actorData.speciesItem = items.find(i => i?.type === 'species') || null;
+        actorData.speciesItem = items.find(i => i?.type === 'species' || i?.type === 'monsterspecies') || null;
         actorData.traits = traits;
         actorData.precepts = precepts;
+        actorData.mutations = mutations;
+        actorData.heritages = heritages;
+        actorData.downtimeProjects = downtimeProjects;
         actorData.itemsOfPower = itemsOfPower;
         actorData.equippedItemsOfPower = equippedItemsOfPower;
+        actorData.itemPowerSlots = itemPowerSlots;
         actorData.unequippedItemsOfPower = unequippedItemsOfPower;
+        actorData.itemPowerSlotRule = itemPowerSlotRule;
+        actorData.itemPowerAttunementRule = itemPowerAttunementRule;
+        actorData.attunementRemoved = isAttunementRemoved(itemPowerAttunementRule);
         actorData.equippedArmor = equippedArmor;
         actorData.unequippedArmor = unequippedArmor;
         actorData.armorTotals = armorTotals;
@@ -509,13 +729,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
      * @param {Array} itemsOfPower - Array of magic items
      * @returns {number} Current attunement count
      */
-    _calculateCurrentAttunements(itemsOfPower) {
-        if (!Array.isArray(itemsOfPower)) return 0;
-
+    _calculateCurrentAttunements(items, attunementRule = "standard") {
         try {
-            return itemsOfPower.filter(item =>
-                item && item.system && item.system.attunement === true
-            ).length;
+            return countAttunements(Array.isArray(items) ? items : [...(items || [])], attunementRule);
         } catch (error) {
             console.error("Error calculating current attunements:", error);
             return 0;
@@ -530,7 +746,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
     _calculateMaxAttunements(actorData) {
         try {
             const totalLevel = actorData.system?.level || 1;
-            const soulAttribute = actorData.system?.attributes?.soul?.value || 1;
+            const soulAttribute = Number(actorData.system?.attributes?.soul?.total ?? actorData.system?.attributes?.soul?.value ?? 1);
             return Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
         } catch (error) {
             console.error("Error calculating max attunements:", error);
@@ -576,12 +792,22 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 const attrAbbreviations = {
                     "none": "N/A",
                     "physique": "PHY",
+                    "fullPhysique": "PHY",
                     "finesse": "FIN",
+                    "fullFinesse": "FIN",
                     "mind": "MND",
+                    "fullMind": "MND",
                     "presence": "PRS",
-                    "soul": "SOL"
+                    "fullPresence": "PRS",
+                    "soul": "SOL",
+                    "fullSoul": "SOL",
+                    "higherPhysiqueFinesse": "PHY/FIN"
                 };
-                weapon.attributeAbbr = attrAbbreviations[weapon.system.attribute] || "N/A";
+                const damageAttribute = resolveWeaponDamageAttribute(weapon.system);
+                weapon.attributeAbbr = attrAbbreviations[damageAttribute.key] || "N/A";
+                weapon.damageAttributeLabel = WEAPON_DAMAGE_ATTRIBUTE_OPTIONS[damageAttribute.key] || "N/A";
+                weapon.damageDisplay = formatWeaponDamageComponents(weapon.system);
+                weapon.qualityDisplay = weaponQualityDisplay(weapon.system) || "—";
 
                 const weaponSkillNameLower = (weapon.system.skill || "").toLowerCase();
                 const eb2 = actorData?.system?.equippedBonuses;
@@ -590,12 +816,18 @@ export class TheFadeCharacterSheet extends ActorSheet {
                     : 0;
 
                 if (skill && skill.calculatedDice !== undefined) {
-                    weapon.calculatedDice = skill.calculatedDice + (weapon.system.miscBonus || 0) + itemAttackBonus;
+                    const attackOverride = getWeaponAttackAttributeOverride(weapon.system);
+                    const skillDice = attackOverride
+                        ? calculateSkillDice(this.actor, { ...skill, attribute: attackOverride.key })
+                        : skill.calculatedDice;
+                    weapon.calculatedDice = skillDice + (weapon.system.miscBonus || 0) + itemAttackBonus;
                 } else {
                     // Untrained calculation
-                    const attributeName = weapon.system.attribute || "physique";
+                    const attributeName = getWeaponAttackAttributeOverride(weapon.system)?.key || "physique";
                     if (attributeName !== "none" && actorData?.system?.attributes) {
-                        let attrValue = actorData.system.attributes[attributeName]?.value || 0;
+                        let attrValue = actorData.system.attributes[attributeName]?.total
+                            ?? actorData.system.attributes[attributeName]?.value
+                            ?? 0;
                         let dicePool = Math.floor(attrValue / 2);
                         dicePool += (weapon.system.miscBonus || 0) + itemAttackBonus;
                         weapon.calculatedDice = Math.max(1, dicePool);
@@ -873,43 +1105,21 @@ export class TheFadeCharacterSheet extends ActorSheet {
     }
 
     /**
-    * Process Items of Power with ring slot logic
+    * Process Items of Power with the configured slot and overlap rules.
     * @param {Array} itemsOfPower - Array of magic items
     * @returns {Object} Equipped and unequipped items
     */
-    _processItemsOfPower(itemsOfPower) {
+    _processItemsOfPower(itemsOfPower, slotRule = "standard") {
+        const organized = organizeItemsOfPower(itemsOfPower, slotRule);
         const equippedItemsOfPower = {};
-        const unequippedItemsOfPower = [];
-
-        for (let item of itemsOfPower) {
-            if (!item || !item.system) continue;
-
-            if (item.system.equipped && item.system.slot) {
-                let slot = item.system.slot;
-
-                // Handle ring slots
-                if (slot === 'ring') {
-                    if (!equippedItemsOfPower.ring1) {
-                        slot = 'ring1';
-                    } else if (!equippedItemsOfPower.ring2) {
-                        slot = 'ring2';
-                    } else {
-                        unequippedItemsOfPower.push(item);
-                        continue;
-                    }
-                }
-
-                if (equippedItemsOfPower[slot]) {
-                    unequippedItemsOfPower.push(item);
-                } else {
-                    equippedItemsOfPower[slot] = item;
-                }
-            } else {
-                unequippedItemsOfPower.push(item);
-            }
+        for (const slot of organized.slots) {
+            if (slot.items[0]) equippedItemsOfPower[slot.key] = slot.items[0];
         }
-
-        return { equippedItemsOfPower, unequippedItemsOfPower };
+        return {
+            equippedItemsOfPower,
+            itemPowerSlots: organized.slots,
+            unequippedItemsOfPower: organized.unequipped
+        };
     }
 
     /**
@@ -1009,19 +1219,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 });
             }
 
-            // Add Natural Deflection ONLY if it stacks
-            const nd = actorData.system.naturalDeflection?.[location];
-            if (nd && nd.stacks) {
-                armorTotals[location].current += nd.current || 0;
-                armorTotals[location].max += nd.max || 0;
-            }
-            // If Natural Deflection doesn't stack, use the higher of ND or armor
-            else if (nd && !nd.stacks) {
-                const ndCurrent = nd.current || 0;
-                const ndMax = nd.max || 0;
-                armorTotals[location].current = Math.max(armorTotals[location].current, ndCurrent);
-                armorTotals[location].max = Math.max(armorTotals[location].max, ndMax);
-            }
         });
 
         return { equippedArmor, unequippedArmor, armorTotals };
@@ -1080,12 +1277,35 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const groups = [];
         for (const meta of CATEGORY_META) {
             const list = byCategory[meta.key];
-            if (list && list.length) groups.push({ ...meta, skills: list });
+            if (list && list.length) {
+                const trainedSkills = list.filter(skill => skill.rank !== "untrained");
+                const untrainedSkills = list.filter(skill => skill.rank === "untrained");
+                groups.push({
+                    ...meta,
+                    skills: list,
+                    trainedSkills,
+                    untrainedSkills,
+                    trainedCount: trainedSkills.length,
+                    untrainedCount: untrainedSkills.length
+                });
+            }
         }
+
         // Any unknown category (defensive) gets dumped at the end.
         for (const [cat, list] of Object.entries(byCategory)) {
             if (CATEGORY_META.find(m => m.key === cat)) continue;
-            groups.push({ key: cat, label: cat, icon: "fa-star", skills: list });
+            const trainedSkills = list.filter(skill => skill.rank !== "untrained");
+            const untrainedSkills = list.filter(skill => skill.rank === "untrained");
+            groups.push({
+                key: cat,
+                label: cat,
+                icon: "fa-star",
+                skills: list,
+                trainedSkills,
+                untrainedSkills,
+                trainedCount: trainedSkills.length,
+                untrainedCount: untrainedSkills.length
+            });
         }
         return groups;
     }
@@ -1156,80 +1376,40 @@ export class TheFadeCharacterSheet extends ActorSheet {
     * @param {number} totalReduction - Total amount to reduce
     */
     async _distributeAPReduction(location, totalReduction) {
-        let remaining = totalReduction;
-        const updates = {};
-        const itemUpdates = [];
-
-        // First reduce Natural Deflection if it stacks
+        let remaining = Math.max(0, Number(totalReduction) || 0);
         const ndData = this.actor.system.naturalDeflection?.[location];
-        if (ndData && ndData.stacks && ndData.current > 0 && remaining > 0) {
-            const ndReduction = Math.min(ndData.current, remaining);
-            updates[`system.naturalDeflection.${location}.current`] = ndData.current - ndReduction;
-            remaining -= ndReduction;
-        }
+        const ndCurrent = Math.max(0, Number(ndData?.current) || 0);
+        const armorPools = armorProtectionPools(this.actor, location).filter(pool => pool.current > 0);
+        const highestArmor = armorPools.reduce(
+            (highest, pool) => (!highest || pool.current > highest.current ? pool : highest),
+            null
+        );
 
-        // Then reduce armor pieces for this location
-        if (remaining > 0) {
-            const equippedArmor = this.actor.equippedArmor?.[location] || [];
-
-            for (const armor of equippedArmor) {
-                if (remaining <= 0) break;
-
-                const currentAP = armor.system.currentAP || 0;
-                if (currentAP > 0) {
-                    const armorReduction = Math.min(currentAP, remaining);
-                    itemUpdates.push({
-                        _id: armor._id,
-                        'system.currentAP': currentAP - armorReduction
-                    });
-                    remaining -= armorReduction;
-                }
+        if (ndData?.stacks === true) {
+            const ndReduction = Math.min(ndCurrent, remaining);
+            if (ndReduction > 0) {
+                await this.actor.update({
+                    [`system.naturalDeflection.${location}.current`]: ndCurrent - ndReduction
+                });
+                remaining -= ndReduction;
             }
-
-            // Handle derived armor for limbs
-            if (remaining > 0 && (location === 'leftarm' || location === 'rightarm')) {
-                const armsArmor = this.actor.equippedArmor?.arms || [];
-                for (const armor of armsArmor) {
-                    if (remaining <= 0) break;
-                    const currentAP = armor.system.currentAP || 0;
-                    if (currentAP > 0) {
-                        const armorReduction = Math.min(currentAP, remaining);
-                        itemUpdates.push({
-                            _id: armor._id,
-                            'system.currentAP': currentAP - armorReduction
-                        });
-                        remaining -= armorReduction;
-                    }
-                }
+            if (remaining > 0) {
+                remaining -= await this._reduceArmorProtection(location, remaining);
             }
-
-            if (remaining > 0 && (location === 'leftleg' || location === 'rightleg')) {
-                const legsArmor = this.actor.equippedArmor?.legs || [];
-                for (const armor of legsArmor) {
-                    if (remaining <= 0) break;
-                    const currentAP = armor.system.currentAP || 0;
-                    if (currentAP > 0) {
-                        const armorReduction = Math.min(currentAP, remaining);
-                        itemUpdates.push({
-                            _id: armor._id,
-                            'system.currentAP': currentAP - armorReduction
-                        });
-                        remaining -= armorReduction;
-                    }
-                }
+        } else if (ndCurrent > 0 && (!highestArmor || ndCurrent >= highestArmor.current)) {
+            const ndReduction = Math.min(ndCurrent, remaining);
+            if (ndReduction > 0) {
+                await this.actor.update({
+                    [`system.naturalDeflection.${location}.current`]: ndCurrent - ndReduction
+                });
+                remaining -= ndReduction;
             }
-        }
-
-        // Apply updates
-        if (Object.keys(updates).length > 0) {
-            await this.actor.update(updates);
-        }
-
-        if (itemUpdates.length > 0) {
-            await this.actor.updateEmbeddedDocuments("Item", itemUpdates);
+        } else if (highestArmor && remaining > 0) {
+            remaining -= await this._reduceArmorProtection(location, remaining);
         }
 
         this.render(false);
+        return Math.max(0, Number(totalReduction) || 0) - remaining;
     }
 
     /**
@@ -1266,8 +1446,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 return;
             }
 
-            if (item.type !== "armor") {
-                console.error(`Item ${item.name} is not armor, it's ${item.type}`);
+            const isArmorPiece = item.type === "armor"
+                || (item.type === "magicitem" && item.system?.conflictsArmor);
+            if (!isArmorPiece) {
+                console.error(`Item ${item.name} does not provide armor protection.`);
                 return;
             }
 
@@ -1275,9 +1457,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 // Effective max AP includes strengthening bonus
                 const maxAP = (Number(item.system.ap) || 0) + (Number(item.system.apIncrease) || 0);
 
-                await item.update({
-                    "system.currentAP": maxAP
-                });
+                const updates = { "system.currentAP": maxAP };
+                if (["Arms", "Arms+", "Legs", "Legs+"].includes(item.system.location)) {
+                    updates["system.derivedLeftAP"] = maxAP;
+                    updates["system.derivedRightAP"] = maxAP;
+                }
+                await item.update(updates);
                 ui.notifications.info(`${item.name}'s armor protection has been restored to full.`);
             } catch (error) {
                 console.error("Error updating armor:", error);
@@ -1292,7 +1477,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             event.preventDefault();
             event.stopPropagation();
 
-            const armorItems = this.actor.items.filter(i => i.type === "armor");
+            const armorItems = this.actor.items.filter(i => i.type === "armor"
+                || (i.type === "magicitem" && i.system?.conflictsArmor));
 
             if (armorItems.length === 0) {
                 ui.notifications.warn("No armor items found.");
@@ -1303,9 +1489,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 for (const armor of armorItems) {
                     const maxAP = (Number(armor.system.ap) || 0) + (Number(armor.system.apIncrease) || 0);
 
-                    await armor.update({
-                        "system.currentAP": maxAP
-                    });
+                    const updates = { "system.currentAP": maxAP };
+                    if (["Arms", "Arms+", "Legs", "Legs+"].includes(armor.system.location)) {
+                        updates["system.derivedLeftAP"] = maxAP;
+                        updates["system.derivedRightAP"] = maxAP;
+                    }
+                    await armor.update(updates);
                 }
 
                 ui.notifications.info(`All armor has been restored to full protection.`);
@@ -1846,25 +2035,19 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const item = this.actor.items.get(itemId);
         if (!item) return;
 
-        // Check if slot is compatible
-        let actualSlot = targetSlot;
-        if (targetSlot === 'ring') {
-            actualSlot = this._getAvailableRingSlot();
-            if (!actualSlot) {
-                ui.notifications.warn("No available ring slots.");
-                return;
-            }
-        }
-
-        // Check if slot is already occupied
-        const currentEquipped = this.actor.system.magicItems?.[actualSlot];
-        if (currentEquipped) {
-            ui.notifications.warn(`${actualSlot} slot is already occupied by ${currentEquipped.name}.`);
+        const slotRule = game.settings?.get("thefade", "itemPowerSlotRule") || "standard";
+        const equipCheck = canEquipItemPower(
+            this.actor.items.filter(existing => existing.type === "magicitem"),
+            item,
+            slotRule
+        );
+        if (!equipCheck.allowed) {
+            ui.notifications.warn(equipCheck.reason);
             return;
         }
 
         // Check attunement limits if item requires attunement
-        if (!item.system.attunement) {
+        if (!isAttunementRemoved(game.settings?.get("thefade", "itemPowerAttunementRule")) && !item.system.attunement) {
             const currentAttunements = this.actor.system.currentAttunements || 0;
             const maxAttunements = this.actor.system.maxAttunements || 0;
 
@@ -1875,7 +2058,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         }
 
         // Equip the item
-        this._equipMagicItem(item, actualSlot);
+        this._equipMagicItem(item, targetSlot);
     }
 
     /**
@@ -1899,6 +2082,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
     */
     _onToggleAttunement(event) {
         event.preventDefault();
+        if (isAttunementRemoved(game.settings?.get("thefade", "itemPowerAttunementRule"))) return;
         const element = event.currentTarget;
         const itemId = element.dataset.itemId;
         const isAttuned = element.checked;
@@ -1929,14 +2113,14 @@ export class TheFadeCharacterSheet extends ActorSheet {
     _equipMagicItem(item, slot) {
         const updates = {
             "system.equipped": true,
-            "system.slot": slot === 'ring1' || slot === 'ring2' ? 'ring' : slot
+            "system.slot": slot
         };
 
         // Auto-attune when equipping
         const currentAttunements = this.actor.system.currentAttunements || 0;
         const maxAttunements = this.actor.system.maxAttunements || 0;
 
-        if (currentAttunements < maxAttunements) {
+        if (!isAttunementRemoved(game.settings?.get("thefade", "itemPowerAttunementRule")) && currentAttunements < maxAttunements) {
             updates["system.attunement"] = true;
         }
 
@@ -1976,10 +2160,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
     * @returns {number} Number of attuned items
     */
     _getCurrentAttunements() {
-        return this.actor.items.filter(item =>
-            item.type === 'magicitem' &&
-            item.system.attunement === true
-        ).length;
+        const mode = game.settings?.get("thefade", "itemPowerAttunementRule") || "standard";
+        return countAttunements([...this.actor.items], mode);
     }
 
     /**
@@ -1987,6 +2169,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
     * @returns {number} Maximum attunements allowed
     */
     _getMaxAttunements() {
+        if (isAttunementRemoved(game.settings?.get("thefade", "itemPowerAttunementRule"))) return 0;
         const totalLevel = this.actor.system.level || 1;
         const soulAttribute = (this.actor.system.attributes.soul.total ?? this.actor.system.attributes.soul.value) || 1;
         return Math.max(0, Math.floor(totalLevel / 4) + soulAttribute);
@@ -2145,9 +2328,20 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const weapon = this.actor.items.get(weaponId);
 
         if (!weapon) return;
+        const weaponData = weapon.system;
+        const negatesPassiveDodge = hasWeaponQuality(weaponData, "accurate");
+        const negatesPassiveParry = hasWeaponQuality(weaponData, "powerful");
+        const hasFencing = hasWeaponQuality(weaponData, "fencing");
+        const targetHasFencingWeapon = actor => actor?.items?.some?.(item =>
+            item.type === "weapon" && hasWeaponQuality(item.system, "fencing")
+        ) === true;
+        const adjustedParry = (value, actor) => {
+            if (negatesPassiveParry) return 0;
+            return hasFencing && !targetHasFencingWeapon(actor) ? Math.max(0, value - 1) : value;
+        };
 
         // Show Target Selection dialog
-        const targetInfo = await this._getTargetInfo("Select Target");
+        const targetInfo = await this._getTargetInfo("Select Target", weaponData);
         if (targetInfo === null) return; // User cancelled the dialog
 
         // Show DT dialog with default based on target Avoid
@@ -2169,13 +2363,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 // Apply passive defenses if appropriate
                 if (targetActor.system.defenses) {
                     // Passive Dodge applies to all attacks
-                    if (targetActor.system.defenses.passiveDodge) {
+                    if (!negatesPassiveDodge && targetActor.system.defenses.passiveDodge) {
                         defaultDT += targetActor.system.defenses.passiveDodge;
                     }
 
                     // Passive Parry only applies to melee attacks
                     if (!isRanged && targetActor.system.defenses.passiveParry) {
-                        defaultDT += targetActor.system.defenses.passiveParry;
+                        defaultDT += adjustedParry(targetActor.system.defenses.passiveParry, targetActor);
                     }
                 }
             }
@@ -2205,6 +2399,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 tempParry = 0;
             }
 
+            if (negatesPassiveDodge) tempDodge = 0;
+            tempParry = adjustedParry(tempParry, targetActor);
+
             // Now use these temporary values instead of the actor's current values
             defaultDT = targetActor.system.totalAvoid || 3;
 
@@ -2223,15 +2420,23 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const dt = await this._getDifficultyThreshold("Attack Difficulty", defaultDT);
         if (dt === null) return; // User cancelled the dialog
 
-        const weaponData = weapon.system;
         const skillName = weaponData.skill;
 
         // Find the appropriate skill
         const skill = getSkill(this.actor, skillName);
+        const damageProfile = buildWeaponDamageProfile(this.actor, weaponData, {
+            targetActor,
+            targetMounted: targetInfo?.targetMounted === true,
+            dualTrigger: targetInfo?.dualTrigger === true
+        });
+        const qualitiesDisplay = weaponQualityDisplay(weaponData) || "—";
+        const qualityRules = getWeaponQualityRules(weaponData);
+        const criticalQualityBonus = getWeaponCriticalDamageBonus(weaponData);
+        const minimumHpDamage = getWeaponMinimumHpDamage(weaponData);
 
         if (!skill) {
             // Default to untrained if skill not found
-            const attributeName = weaponData.attribute || "physique";
+            const attributeName = getWeaponAttackAttributeOverride(weaponData)?.key || "physique";
 
             // Get attribute value, handling combined attributes
             let attrValue = 0;
@@ -2239,12 +2444,12 @@ export class TheFadeCharacterSheet extends ActorSheet {
             if (attributeName.includes('_')) {
                 // Handle combined attributes like "physique_finesse"
                 const attributes = attributeName.split('_');
-                const attr1 = this.actor.system.attributes[attributes[0]]?.value || 0;
-                const attr2 = this.actor.system.attributes[attributes[1]]?.value || 0;
+                const attr1 = this.actor.system.attributes[attributes[0]]?.total ?? this.actor.system.attributes[attributes[0]]?.value ?? 0;
+                const attr2 = this.actor.system.attributes[attributes[1]]?.total ?? this.actor.system.attributes[attributes[1]]?.value ?? 0;
                 attrValue = Math.floor((attr1 + attr2) / 2); // Calculate average
             } else {
                 // Normal single attribute
-                attrValue = this.actor.system.attributes[attributeName]?.value || 0;
+                attrValue = this.actor.system.attributes[attributeName]?.total ?? this.actor.system.attributes[attributeName]?.value ?? 0;
             }
 
             let dicePool = Math.floor(attrValue / 2); // Untrained is half attr value
@@ -2313,15 +2518,22 @@ export class TheFadeCharacterSheet extends ActorSheet {
             // Default = body, no status effects; Random = 1d12 on attacker
             // facing column, no status effects.
             let resolvedLocation = null;
+            let resolvedLocationLabel = null;
             let locationRollDetail = null;
             if (attackSucceeds) {
                 if (calledShot) {
                     resolvedLocation = calledShotLocation;
+                    resolvedLocationLabel = locationLabel(resolvedLocation);
                 } else if (hitLocationMode === "default") {
                     resolvedLocation = "body";
+                    resolvedLocationLabel = locationLabel(resolvedLocation);
                 } else {
-                    const r = await rollHitLocation(targetInfo?.facing || "front");
+                    const anatomyPreset = game.settings?.get("thefade", "alternateAnatomyEnabled")
+                        ? (targetActor?.system?.anatomy?.preset || "humanoid")
+                        : "humanoid";
+                    const r = await rollHitLocation(targetInfo?.facing || "front", anatomyPreset);
                     resolvedLocation = r.location;
+                    resolvedLocationLabel = r.label || locationLabel(resolvedLocation);
                     locationRollDetail = r.sideRoll
                         ? `1d12=${r.roll} (${r.column}), 1d2=${r.sideRoll}`
                         : `1d12=${r.roll} (${r.column})`;
@@ -2336,22 +2548,27 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 successes: successes,
                 dt: dt,
                 success: attackSucceeds,
-                damage: weaponData.damage,
-                damageType: weaponData.damageType,
+                damage: damageProfile.total,
+                damageType: damageProfile.primaryType,
+                damageComponents: damageProfile.components,
                 critical: weaponData.critical,
                 criticalHits: 0,
-                totalDamage: weaponData.damage,
-                qualities: weaponData.qualities,
+                totalDamage: damageProfile.total,
+                criticalDamageAmount: damageProfile.total + criticalQualityBonus,
+                minimumHpDamage,
+                qualities: qualitiesDisplay,
+                qualityRules,
+                qualityDamageNotes: damageProfile.conditionalNotes,
                 rank: "untrained",
                 target: targetName,
                 targetUuid: targetActor?.uuid || "",
                 attackerUuid: this.actor.uuid,
                 hitLocation: resolvedLocation,
-                hitLocationLabel: resolvedLocation ? locationLabel(resolvedLocation) : null,
+                hitLocationLabel: resolvedLocationLabel,
                 hitLocationRollDetail: locationRollDetail,
                 calledShot: calledShot,
                 bonusDice: weaponData.miscBonus ? `Includes +${weaponData.miscBonus} bonus dice` : null,
-                ...damageTypeFlags(weaponData.damageType, weaponData.damageComponents)
+                ...damageTypeFlags(damageProfile.primaryType, damageProfile.components)
             };
 
             const content = renderModifierHtml(condModsUntrained) +
@@ -2368,19 +2585,19 @@ export class TheFadeCharacterSheet extends ActorSheet {
         }
 
         const skillData = skill; // skill is already a merged data object
-        const attributeName = skillData.attribute;
+        const attributeName = getWeaponAttackAttributeOverride(weaponData)?.key || skillData.attribute;
         // Get attribute value, handling combined attributes
         let attrValue = 0;
 
         if (attributeName.includes('_')) {
             // Handle combined attributes like "physique_finesse"
             const attributes = attributeName.split('_');
-            const attr1 = this.actor.system.attributes[attributes[0]]?.value || 0;
-            const attr2 = this.actor.system.attributes[attributes[1]]?.value || 0;
+            const attr1 = this.actor.system.attributes[attributes[0]]?.total ?? this.actor.system.attributes[attributes[0]]?.value ?? 0;
+            const attr2 = this.actor.system.attributes[attributes[1]]?.total ?? this.actor.system.attributes[attributes[1]]?.value ?? 0;
             attrValue = Math.floor((attr1 + attr2) / 2); // Calculate average
         } else {
             // Normal single attribute
-            attrValue = this.actor.system.attributes[attributeName]?.value || 0;
+            attrValue = this.actor.system.attributes[attributeName]?.total ?? this.actor.system.attributes[attributeName]?.value ?? 0;
         }
 
         let dicePool = attrValue;
@@ -2448,34 +2665,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Ensure minimum of 1 die
         dicePool = Math.max(1, dicePool);
 
-        // Add weapon specific bonuses. Explicit attribute dropdown wins over
-        // Brutish/Agile defaults so the user can override.
-        const attrTotal = (k) => (this.actor.system.attributes[k]?.total ?? this.actor.system.attributes[k]?.value ?? 0);
-        if (weaponData.attribute && weaponData.attribute !== "none") {
-            const bonusDamage = Math.floor(attrTotal(weaponData.attribute) / 2);
-            weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
-        } else if (weaponData.qualities.includes("Agile")) {
-            const bonusDamage = Math.floor(attrTotal("finesse") / 2);
-            weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
-        } else if (weaponData.qualities.includes("Brutish")) {
-            const bonusDamage = Math.floor(attrTotal("physique") / 2);
-            weaponData.totalDamage = parseInt(weaponData.damage) + bonusDamage;
-        } else {
-            weaponData.totalDamage = parseInt(weaponData.damage);
-        }
-
-        // Magical strengthening
-        const dmgInc = Number(weaponData.damageIncrease) || 0;
-        if (dmgInc) weaponData.totalDamage = (weaponData.totalDamage || 0) + dmgInc;
-
-        // Add equipped damage bonuses (global + per-skill from talents/paths/etc.)
-        const dmgEb = this.actor.system?.equippedBonuses;
-        if (dmgEb) {
-            const skillKey = (skill.name || "").toLowerCase();
-            const equipDmg = (dmgEb.damage || 0) + (dmgEb[`damage_${skillKey}`] || 0);
-            if (equipDmg) weaponData.totalDamage = (weaponData.totalDamage || 0) + equipDmg;
-        }
-
         // Roll the dice
         const roll = new Roll(`${dicePool}d12`);
         await roll.evaluate();
@@ -2505,31 +2694,33 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Calculate excess successes for bonus effects
         const excessSuccesses = attackSucceeds ? successes - dt : 0;
         const criticalThreshold = parseInt(weaponData.critical) || 4;
-        const halfDamage = Math.max(1, Math.floor(weaponData.damage / 2));
+        const halfDamage = Math.max(1, Math.floor(damageProfile.total / 2));
 
         // Define these values for backwards compatibility with template
         const criticalHits = 0;
         const criticalDamage = 0;
-        let totalDamage = weaponData.damage;
-
-        // Include this only if weaponData.totalDamage is defined elsewhere
-        if (weaponData.totalDamage) {
-            totalDamage = weaponData.totalDamage;
-        }
+        const totalDamage = damageProfile.total;
 
         // Resolve hit location on a hit: Called = chosen + status effects;
         // Default = body, no status effects; Random = 1d12 on attacker
         // facing column, no status effects.
         let resolvedLocation = null;
+        let resolvedLocationLabel = null;
         let locationRollDetail = null;
         if (attackSucceeds) {
             if (calledShot) {
                 resolvedLocation = calledShotLocation;
+                resolvedLocationLabel = locationLabel(resolvedLocation);
             } else if (hitLocationMode === "default") {
                 resolvedLocation = "body";
+                resolvedLocationLabel = locationLabel(resolvedLocation);
             } else {
-                const r = await rollHitLocation(targetInfo?.facing || "front");
+                const anatomyPreset = game.settings?.get("thefade", "alternateAnatomyEnabled")
+                    ? (targetActor?.system?.anatomy?.preset || "humanoid")
+                    : "humanoid";
+                const r = await rollHitLocation(targetInfo?.facing || "front", anatomyPreset);
                 resolvedLocation = r.location;
+                resolvedLocationLabel = r.label || locationLabel(resolvedLocation);
                 locationRollDetail = r.sideRoll
                     ? `1d12=${r.roll} (${r.column}), 1d2=${r.sideRoll}`
                     : `1d12=${r.roll} (${r.column})`;
@@ -2544,21 +2735,26 @@ export class TheFadeCharacterSheet extends ActorSheet {
             successes: successes,
             dt: dt,
             success: attackSucceeds,
-            damage: weaponData.damage,
-            damageType: weaponData.damageType,
+            damage: damageProfile.total,
+            damageType: damageProfile.primaryType,
+            damageComponents: damageProfile.components,
             bonusSuccesses: excessSuccesses,
             criticalThreshold: criticalThreshold,
             canCritical: excessSuccesses >= criticalThreshold,
             halfDamage: halfDamage,
             criticalHits: criticalHits,
             totalDamage: totalDamage,
-            qualities: weaponData.qualities,
+            criticalDamageAmount: totalDamage + criticalQualityBonus,
+            minimumHpDamage,
+            qualities: qualitiesDisplay,
+            qualityRules,
+            qualityDamageNotes: damageProfile.conditionalNotes,
             rank: skillData.rank,
             target: targetName,
             targetUuid: targetActor?.uuid || "",
             attackerUuid: this.actor.uuid,
             hitLocation: resolvedLocation,
-            hitLocationLabel: resolvedLocation ? locationLabel(resolvedLocation) : null,
+            hitLocationLabel: resolvedLocationLabel,
             hitLocationRollDetail: locationRollDetail,
             calledShot: calledShot,
             bonusDice: (skillData.miscBonus || weaponData.miscBonus) ?
@@ -2566,7 +2762,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
                     skillData.miscBonus ? `+${skillData.miscBonus} from skill` : '',
                     weaponData.miscBonus ? `+${weaponData.miscBonus} from weapon` : ''
                 ].filter(Boolean).join(', ')}` : null,
-            ...damageTypeFlags(weaponData.damageType, weaponData.damageComponents)
+            ...damageTypeFlags(damageProfile.primaryType, damageProfile.components)
         };
 
         const content = renderModifierHtml(condMods) +
@@ -2588,7 +2784,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
         event.preventDefault();
 
         // Get dice parameters
-        const diceCount = parseInt(document.getElementById('dice-count').value) || 1;
+        const diceInput = event.currentTarget.closest('.dice-section')?.querySelector('.dice-count');
+        const diceCount = parseInt(diceInput?.value, 10) || 1;
 
         // Validate input
         if (diceCount < 1 || diceCount > 100) {
@@ -3056,7 +3253,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Dark Magic: every cast (success or not) accrues Sin and may
         // trigger the addiction resistance roll.
-        if (spell.system.isDarkMagic) {
+        if (isDarkMagicSpell(spell)) {
             try {
                 await handleDarkCast(this.actor, spell);
             } catch (err) {
@@ -3075,7 +3272,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
     * @param {string} title - Dialog title
     * @returns {Promise<object|null>} Target info or null if cancelled
     */
-    async _getTargetInfo(title = "Select Target") {
+    async _getTargetInfo(title = "Select Target", weaponSystem = null) {
         return new Promise((resolve) => {
             const attackerToken = this._getPrimaryTokenForActor(this.actor);
 
@@ -3139,6 +3336,15 @@ export class TheFadeCharacterSheet extends ActorSheet {
                         </select>
                         <p class="hint" id="facing-hint">Auto-detected from token positions and target rotation when possible.</p>
                     </div>
+                    ${hasWeaponQuality(weaponSystem, "antiCavalry") ? `<div class="form-group">
+                        <label class="checkbox-label"><input id="target-mounted" type="checkbox" /> Target is mounted or is a mount</label>
+                        <p class="hint">Applies Anti-Cavalry's +6 damage.</p>
+                    </div>` : ""}
+                    ${hasWeaponQuality(weaponSystem, "dualTrigger") ? `
+                    <div class="form-group">
+                        <label class="checkbox-label"><input id="dual-trigger" type="checkbox" /> Squeeze both triggers</label>
+                        <p class="hint">Deals 1.5× damage and expends all ammunition.</p>
+                    </div>` : ""}
                     <div class="form-group">
                         <label>Hit Location:</label>
                         <select id="hit-location-mode" name="hitLocationMode">
@@ -3170,7 +3376,9 @@ export class TheFadeCharacterSheet extends ActorSheet {
                             const facing = html.find('#facing-select').val();
                             const hitLocationMode = html.find('#hit-location-mode').val() || "random";
                             const calledShotLocation = html.find('#called-shot-location').val() || "body";
-                            resolve({ targetId, facing, hitLocationMode, calledShotLocation });
+                            const targetMounted = html.find('#target-mounted').is(':checked');
+                            const dualTrigger = html.find('#dual-trigger').is(':checked');
+                            resolve({ targetId, facing, hitLocationMode, calledShotLocation, targetMounted, dualTrigger });
                         }
                     },
                     cancel: {
@@ -3522,6 +3730,175 @@ export class TheFadeCharacterSheet extends ActorSheet {
         });
     }
 
+    _activateLinkedAbilityListeners(html) {
+        const linkedAbilities = html.find('.linked-abilities-block');
+        if (!linkedAbilities.length) return;
+
+        const getItem = itemId => itemId ? this.actor.items.get(itemId) : null;
+        const updateLinkedItem = async (item, update) => {
+            await item.update(update);
+
+            // Species abilities are also cached on the actor for derived-stat and
+            // bonus calculations. Keep that cache current when editing the linked
+            // embedded Species item from this sheet, even when full species sync
+            // has been disabled for unrelated Species fields.
+            if (["species", "monsterspecies"].includes(item.type)) {
+                await this.actor.update({
+                    "system.species.speciesAbilities": foundry.utils.deepClone(item.system?.speciesAbilities || {})
+                });
+            }
+        };
+        const getEditorContext = element => {
+            const editor = element.closest('.linked-ability-editor');
+            if (!editor) return {};
+            return {
+                editor,
+                item: getItem(editor.dataset.itemId),
+                abilityId: editor.dataset.abilityId,
+                abilityRoot: editor.dataset.abilityRoot
+            };
+        };
+
+        linkedAbilities.find('.linked-source-edit').on('click', ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            getItem(ev.currentTarget.dataset.itemId)?.sheet?.render(true);
+        });
+
+        linkedAbilities.find('.linked-ability-add').on('click', async ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            const item = getItem(ev.currentTarget.dataset.itemId);
+            const abilityRoot = ev.currentTarget.dataset.abilityRoot;
+            if (!item || !abilityRoot) return;
+            const abilities = foundry.utils.deepClone(item.system?.[abilityRoot] || {});
+            const id = foundry.utils.randomID(16);
+            abilities[id] = { name: "New Ability", description: "", bonuses: [] };
+            await updateLinkedItem(item, { [`system.${abilityRoot}`]: abilities });
+        });
+
+        linkedAbilities.find('.linked-ability-delete').on('click', async ev => {
+            ev.preventDefault();
+            const { item, abilityId, abilityRoot } = getEditorContext(ev.currentTarget);
+            if (!item || !abilityId || !abilityRoot) return;
+            await updateLinkedItem(item, { [`system.${abilityRoot}.-=${abilityId}`]: null });
+        });
+
+        linkedAbilities.find('.linked-ability-field').on('change', async ev => {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            const { item } = getEditorContext(ev.currentTarget);
+            const path = ev.currentTarget.dataset.itemPath;
+            if (!item || !path) return;
+            const value = ev.currentTarget.dataset.dtype === "Number"
+                ? (Number(ev.currentTarget.value) || 0)
+                : (ev.currentTarget.value || "");
+            await updateLinkedItem(item, { [path]: value });
+        });
+
+        linkedAbilities.find('.linked-ability-use').on('click', async ev => {
+            ev.preventDefault();
+            const { item, abilityId, abilityRoot } = getEditorContext(ev.currentTarget);
+            const ability = item?.system?.[abilityRoot]?.[abilityId];
+            if (!item || !ability) return;
+            await activateAbility(this.actor, { id: abilityId, ...ability }, { id: item.id, label: item.name, kind: item.type === "species" || item.type === "monsterspecies" ? "Species" : "Path" });
+        });
+
+        const bonusContext = element => {
+            const section = $(element).closest('.bonus-section');
+            const { item } = getEditorContext(element);
+            return { section, item, path: section.attr('data-bonus-path') };
+        };
+
+        const getBonuses = (item, path) => {
+            const bonuses = item && path ? foundry.utils.getProperty(item, path) : [];
+            return Array.isArray(bonuses) ? bonuses : [];
+        };
+
+        const saveBonusSection = async section => {
+            const editor = section.closest('.linked-ability-editor')[0];
+            const { item } = getEditorContext(editor);
+            const path = section.attr('data-bonus-path');
+            if (!item || !path) return;
+            const bonuses = [];
+            section.find('.bonus-row').each((index, rowElement) => {
+                bonuses.push(readMechanicalBonusRow($(rowElement)));
+            });
+            await updateLinkedItem(item, { [path]: bonuses });
+        };
+
+        linkedAbilities.find('.bonus-row').each((index, row) => updateMechanicalBonusRow($(row)));
+
+        linkedAbilities.find('.bonus-add').on('click', async ev => {
+            ev.preventDefault();
+            const { section, item, path } = bonusContext(ev.currentTarget);
+            if (!item || !path) return;
+            const bonuses = foundry.utils.deepClone(getBonuses(item, path));
+            bonuses.push({ id: foundry.utils.randomID(16), type: "skill", target: "", value: 1 });
+            await updateLinkedItem(item, { [path]: bonuses });
+        });
+
+        linkedAbilities.find('.bonus-delete').on('click', async ev => {
+            ev.preventDefault();
+            const { item, path } = bonusContext(ev.currentTarget);
+            if (!item || !path) return;
+            const id = ev.currentTarget.dataset.bonusId;
+            await updateLinkedItem(item, { [path]: getBonuses(item, path).filter(bonus => bonus.id !== id) });
+        });
+
+        linkedAbilities.find('.bonus-type').on('change', async ev => {
+            const row = $(ev.currentTarget).closest('.bonus-row');
+            updateMechanicalBonusRow(row, { resetAmount: true });
+            await saveBonusSection(row.closest('.bonus-section'));
+        });
+
+        linkedAbilities.find('.bonus-target-control, .bonus-vulnerability-severity, .bonus-value').on('change', async ev => {
+            const row = $(ev.currentTarget).closest('.bonus-row');
+            if ($(ev.currentTarget).hasClass('bonus-universal-ability-target')) {
+                updateMechanicalBonusRow(row, { resetAmount: true });
+            }
+            await saveBonusSection(row.closest('.bonus-section'));
+        });
+    }
+
+    /** Reduce only equipped armor at a location, leaving ND untouched. */
+    async _reduceArmorProtection(location, totalReduction) {
+        let remaining = Math.max(0, Number(totalReduction) || 0);
+        const pools = armorProtectionPools(this.actor, location).filter(pool => pool.current > 0);
+        const cascades = this.actor.system.naturalDeflection?.[location]?.stacks === true;
+        const orderedPools = cascades
+            ? pools.sort((a, b) => (a.current - b.current) || a.key.localeCompare(b.key))
+            : pools.sort((a, b) => (b.current - a.current) || a.key.localeCompare(b.key)).slice(0, 1);
+        const updateMap = new Map();
+
+        for (const pool of orderedPools) {
+            if (remaining <= 0) break;
+            const take = Math.min(pool.current, remaining);
+            const update = updateMap.get(pool.itemId) || { _id: pool.itemId };
+            update[pool.property] = pool.current - take;
+            updateMap.set(pool.itemId, update);
+            remaining -= take;
+        }
+
+        const updates = Array.from(updateMap.values());
+        if (updates.length) await this.actor.updateEmbeddedDocuments("Item", updates);
+        return Math.max(0, Number(totalReduction) || 0) - remaining;
+    }
+
+    /** Restore every equipped armor pool protecting a location. */
+    async _resetArmorProtection(location) {
+        const updateMap = new Map();
+        for (const pool of armorProtectionPools(this.actor, location)) {
+            const update = updateMap.get(pool.itemId) || { _id: pool.itemId };
+            update[pool.property] = pool.max;
+            updateMap.set(pool.itemId, update);
+        }
+
+        const updates = Array.from(updateMap.values());
+        if (updates.length) await this.actor.updateEmbeddedDocuments("Item", updates);
+        return updates.length;
+    }
+
     /**
     * Activate sheet event listeners
     * @param {HTMLElement} html - Sheet HTML element
@@ -3529,18 +3906,95 @@ export class TheFadeCharacterSheet extends ActorSheet {
     activateListeners(html) {
         super.activateListeners(html);
 
+        html.find('.creature-subtype-add').on('click', async ev => {
+            ev.preventDefault();
+            const selector = $(ev.currentTarget).closest('.creature-subtype-selector');
+            const id = selector.find('.creature-subtype-choice').val();
+            if (!id) return;
+            const subtypes = [...new Set([...(this.actor.system.species?.creatureSubtypes || []), id])];
+            await this.actor.update({ "system.species.creatureSubtypes": subtypes });
+        });
+
+        html.find('.creature-subtype-remove').on('click', async ev => {
+            ev.preventDefault();
+            const id = ev.currentTarget.dataset.subtypeId;
+            const subtypes = (this.actor.system.species?.creatureSubtypes || []).filter(value => value !== id);
+            await this.actor.update({ "system.species.creatureSubtypes": subtypes });
+        });
+
+        html.find('.creature-rule-ability-use').on('click', async ev => {
+            ev.preventDefault();
+            const sourceId = ev.currentTarget.closest('[data-creature-rule-source]')?.dataset.creatureRuleSource;
+            const abilityId = ev.currentTarget.closest('[data-creature-rule-ability]')?.dataset.creatureRuleAbility;
+            const source = getCreatureRuleSources(this.actor.system, "character").find(entry => entry.id === sourceId);
+            const ability = source?.abilities.find(entry => entry.id === abilityId);
+            if (source && ability) await activateAbility(this.actor, ability, source);
+        });
+
+        html.find('.temporary-ability-bonus-remove').on('click', async ev => {
+            ev.preventDefault();
+            const id = ev.currentTarget.dataset.temporaryBonusId;
+            const remaining = (this.actor.system.temporaryBonuses || []).filter(entry => entry.id !== id);
+            await this.actor.update({ "system.temporaryBonuses": remaining });
+        });
+
+        html.find('.sheet-state-section').on('toggle', ev => {
+            const key = ev.currentTarget.dataset.sectionKey;
+            if (!key) return;
+            if (!this._sheetSectionOpenStates) this._sheetSectionOpenStates = new Map();
+            this._sheetSectionOpenStates.set(key, ev.currentTarget.open);
+        });
+
+        html.find('.sheet-section-summary a, .sheet-section-summary button').on('click', ev => {
+            ev.stopPropagation();
+        });
+
+        html.find('.roll-anatomy-location').on('click', async ev => {
+            ev.preventDefault();
+            const controls = $(ev.currentTarget).closest('.anatomy-controls');
+            const facing = controls.find('.anatomy-roll-facing').val() || "front";
+            const preset = game.settings?.get("thefade", "alternateAnatomyEnabled")
+                ? (this.actor.system?.anatomy?.preset || "humanoid")
+                : "humanoid";
+            const result = await rollHitLocation(facing, preset);
+            const detail = result.sideRoll
+                ? `1d12=${result.roll}, 1d2=${result.sideRoll}`
+                : `1d12=${result.roll}`;
+            await ChatMessage.create({
+                speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                flavor: `${this.actor.name}: Hit Location`,
+                content: `<div class="thefade-hit-location-roll"><strong>${result.label || locationLabel(result.location)}</strong><br><span>${detail} — ${result.column}</span></div>`
+            });
+        });
+
+        // Remember Combat-tab accordion changes before actor updates replace
+        // the rendered DOM. This also applies when the sheet is read-only.
+        html.find('.combat-traits .universal-ability-category').on('toggle', ev => {
+            const details = ev.currentTarget;
+            const category = details.dataset.category;
+            if (!category) return;
+            if (!this._combatTraitOpenCategories) this._combatTraitOpenCategories = new Set();
+            if (details.open) this._combatTraitOpenCategories.add(category);
+            else this._combatTraitOpenCategories.delete(category);
+        });
+
         // Everything below here is only needed if the sheet is editable
         if (!this.options.editable) return;
-
-        // Initialize defense system with flags
-        if (!this._defensesInitialized) {
-            this._defensesInitialized = true;
-            this._initializeDefenseSystem(html);
-        }
 
         this._initializeExcessPenaltyTooltips(html);
 
         this._activateInventoryListeners(html);
+
+        this._activateLinkedAbilityListeners(html);
+
+        html.find('.rules-item-create').on('click', event => this._onRulesItemCreate(event));
+        html.find('.rules-item-edit').on('click', event => this._onRulesItemEdit(event));
+        html.find('.rules-item-delete').on('click', event => this._onRulesItemDelete(event));
+        html.find('.mutation-roll').on('click', event => this._onMutationRoll(event));
+        html.find('.heritage-calculate').on('click', event => this._onCalculateHeritage(event));
+        html.find('.fate-award').on('click', event => this._onAwardFate(event));
+        html.find('.fate-spend').on('click', event => this._onSpendFate(event));
+        html.find('.downtime-progress').on('click', event => this._onDowntimeProgress(event));
 
         // Pencil-icon edit dialog for adjustable computed values.
         html.find('.tf-edit-adjustable').on('click', this._onEditAdjustable.bind(this));
@@ -3564,6 +4018,34 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 update[`system.conditions.${key}.active`] = false;
             }
             await this.actor.update(update);
+        });
+
+        html.find('.combat-trait-toggle').on('change', async (ev) => {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            const input = ev.currentTarget;
+            if (!input?.name) return;
+            const update = { [input.name]: input.checked };
+            if (input.name.startsWith("system.combatTraits.immunities.statuses.") && input.checked) {
+                const conditions = this.actor.system?.conditions || {};
+                const statusKey = input.name.split(".").pop();
+                if (statusKey === "all") {
+                    for (const key of Object.keys(conditions)) {
+                        update[`system.conditions.${key}.active`] = false;
+                    }
+                } else if (conditions[statusKey]) {
+                    update[`system.conditions.${statusKey}.active`] = false;
+                }
+            }
+            await this.actor.update(update);
+        });
+
+        html.find('.combat-trait-text').on('change', async (ev) => {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            const input = ev.currentTarget;
+            if (!input?.name) return;
+            await this.actor.update({ [input.name]: input.value || "" });
         });
 
         // Injuries: add mental disorder
@@ -3615,85 +4097,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
             await this.actor.update({ "system.mentalDisorders": existing });
         });
 
-        // Handle defense bonus changes
-        html.find('input[name="system.defenses.resilienceBonus"], input[name="system.defenses.avoidBonus"], input[name="system.defenses.gritBonus"]').change(async (ev) => {
-
-            ev.preventDefault();
-            ev.stopImmediatePropagation();
-
-            const input = ev.currentTarget;
-            const fieldName = input.name;
-
-            let value = Number(input.value) || 0;
-
-            // Update actor data directly without triggering render
-            await this.actor.update({
-                [fieldName]: value
-            }, { render: false });
-
-            // Manually update the defense displays
-            await this._updateDefenseDisplays();
-
-            ev.stopPropagation();
-        });
-
-        // Add explicit input change handler
-        html.find('input[name], select[name]').not('[name="system.defenses.resilienceBonus"], [name="system.defenses.avoidBonus"], [name="system.defenses.gritBonus"], [name^="system.movement."]').change(ev => {
-            const input = ev.currentTarget;
-            const fieldName = input.name;
-
-            let value = input.value;
-
-            // Convert to number for numeric inputs
-            if (input.dataset.dtype === 'Number') {
-                value = Number(value);
-                if (isNaN(value)) value = 1; // Default to 1 if conversion fails
-            }
-
-            // For system data updates, use the proper structure
-            if (fieldName.startsWith('system.')) {
-                // Using the proper data structure expected in your version of Foundry
-                const path = fieldName.replace('system.', '');
-
-                // Create an update object with the nested path
-                const paths = path.split('.');
-                let updateData = { "system": {} };
-                let currentLevel = updateData.system;
-
-                // Build the nested structure
-                for (let i = 0; i < paths.length - 1; i++) {
-                    currentLevel[paths[i]] = {};
-                    currentLevel = currentLevel[paths[i]];
-                }
-
-                // Set the final value
-                currentLevel[paths[paths.length - 1]] = value;
-
-                // Update the actor
-                this.actor.update(updateData);
-            } else {
-                // For other updates
-                this.actor.update({
-                    [fieldName]: value
-                });
-            }
-        });
-
-        // For facing selector specifically
-        html.find('select[name="system.defenses.facing"]').on('change', async function (event) {
-            event.preventDefault();
-            const facing = this.value;
-
-            // Use direct document API to update
-            try {
-                await actor.update({
-                    "system.defenses.facing": facing
-                });
-            } catch (error) {
-                console.error("Error updating facing:", error);
-            }
-        });
-
         // Initialize defense details state
         html.find('.defense-checkbox').each(function () {
             const checkbox = $(this);
@@ -3729,8 +4132,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
             this.render(false);
         });
 
-        // Handle changes to embedded items (skills, weapons, etc.)
-        html.find('.items-list .item select, .items-list .item input').change(async ev => {
+        // Embedded item fields deliberately use data-item-path rather than a
+        // form name so Foundry's ActorSheet handler cannot also write them to
+        // the actor document.
+        html.find('.items-list .item [data-item-path]').change(async ev => {
             const element = ev.currentTarget;
             const itemId = element.closest('.item').dataset.itemId;
 
@@ -3739,8 +4144,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             const item = this.actor.items.get(itemId);
             if (!item) return;
 
-            const field = element.name;
-            let value = element.value;
+            const field = element.dataset.itemPath;
+            let value = element.type === 'checkbox' ? element.checked : element.value;
 
             // Handle number inputs
             if (element.dataset.dtype === 'Number') {
@@ -3748,16 +4153,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 if (isNaN(value)) value = 0;
             }
 
-            // For item system data
-            if (field.startsWith('system.')) {
-                const fieldName = field.replace('system.', '');
-                await item.update({
-                    ['system.' + fieldName]: value
-                });
-            } else {
-                // Other fields
-                await item.update({ [field]: value });
-            }
+            await item.update({ [field]: value });
         });
 
         // Handle collapsible sections
@@ -3774,7 +4170,11 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        html.find('.tool-header').click(this._onToggleTool.bind(this));
+        html.find('.tool-header')
+            .click(this._onToggleTool.bind(this))
+            .on('keydown', event => {
+                if (event.key === 'Enter' || event.key === ' ') this._onToggleTool(event);
+            });
 
         html.find('.item-create').click(ev => {
             ev.preventDefault();
@@ -3801,8 +4201,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
 
             // Create the item with proper name formatting
+            const itemTypeLabels = {
+                monsterpath: "Monster Path",
+                monsterspecies: "Monster Species"
+            };
+            const itemTypeLabel = itemTypeLabels[itemType] || `${itemType.charAt(0).toUpperCase()}${itemType.slice(1)}`;
             const itemData = {
-                name: `New ${itemType.charAt(0).toUpperCase() + itemType.slice(1)}`,
+                name: `New ${itemTypeLabel}`,
                 type: itemType,
                 system: {}
             };
@@ -4008,12 +4413,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.attack-roll').click(this._onAttackRoll.bind(this));
 
         // Right-click context menu on weapon rows: Edit / Delete
-        new ContextMenu(html, '.weapons .weapon-row', [
+        const ContextMenuClass = foundry.applications?.ux?.ContextMenu?.implementation ?? globalThis.ContextMenu;
+        new ContextMenuClass(html[0], '.weapons .weapon-row', [
             {
                 name: 'Edit',
                 icon: '<i class="fas fa-edit"></i>',
                 callback: li => {
-                    const itemId = li.data('itemId') || li.attr('data-item-id');
+                    const itemId = li.dataset.itemId;
                     const item = this.actor.items.get(itemId);
                     if (item) item.sheet.render(true);
                 }
@@ -4022,13 +4428,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 name: 'Delete',
                 icon: '<i class="fas fa-trash"></i>',
                 callback: li => {
-                    const itemId = li.data('itemId') || li.attr('data-item-id');
+                    const itemId = li.dataset.itemId;
                     if (!itemId) return;
                     this.actor.deleteEmbeddedDocuments('Item', [itemId]);
-                    li.slideUp(200, () => this.render(false));
+                    $(li).slideUp(200, () => this.render(false));
                 }
             }
-        ]);
+        ], { jQuery: false });
         html.find('.cast-spell').click(this._onCastSpell.bind(this));
         html.find('.initiative-roll').click(this._onInitiativeRoll.bind(this));
         html.find('.roll-dice').click(this._onRollDice.bind(this));
@@ -4040,10 +4446,31 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         // Mirror duplicated HP/Sanity inputs (rendered on Stats + Combat tabs) so
         // form serialization stays consistent regardless of which tab is active.
-        html.find('.vitals-strip-inline input[name]').on('input', function () {
-            const name = this.getAttribute('name');
-            if (!name) return;
-            html.find(`input[name="${name}"]`).not(this).val(this.value);
+        html.find('.vitals-strip-inline input[name], .vitals-strip-inline input[data-vital-path]').on('input', function () {
+            const path = this.getAttribute('name') || this.dataset.vitalPath;
+            if (!path) return;
+            html.find(`input[name="${path}"], input[data-vital-path="${path}"]`).not(this).val(this.value);
+        });
+
+        html.find('.vitals-strip-inline input[data-vital-path]:not([name])').on('change', async (ev) => {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            const input = ev.currentTarget;
+            const path = input.dataset.vitalPath;
+            if (!path) return;
+
+            let value = input.value;
+            if (input.dataset.dtype === 'Number') {
+                value = Number(value);
+                if (!Number.isFinite(value)) {
+                    const defaultValue = input.dataset.defaultValue !== undefined
+                        ? Number(input.dataset.defaultValue)
+                        : 0;
+                    value = Number.isFinite(defaultValue) ? defaultValue : 0;
+                }
+            }
+
+            await this.actor.update({ [path]: value });
         });
         html.find('.roll-attributes').click(this._onRollAttributes.bind(this));
 
@@ -4070,7 +4497,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.species-name-display').on('contextmenu', ev => {
             ev.preventDefault();
             const itemId = ev.currentTarget.closest('.species-card')?.dataset.itemId;
-            const item = itemId ? this.actor.items.get(itemId) : this.actor.items.find(i => i.type === 'species');
+            const item = itemId ? this.actor.items.get(itemId) : this.actor.items.find(i => i.type === 'species' || i.type === 'monsterspecies');
             if (item) item.sheet.render(true);
             else ui.notifications.info("No Species item attached. Drop a Species, browse one, or enable Manual entry.");
         });
@@ -4278,31 +4705,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
         });
 
-        // Handle attunement checkbox changes
-        html.find('.attunement-checkbox').change(ev => {
-            ev.preventDefault();
-            const element = ev.currentTarget;
-            const itemId = element.dataset.itemId;
-            const isAttuned = element.checked;
-
-            const item = this.actor.items.get(itemId);
-            if (!item) return;
-
-            if (isAttuned) {
-                const currentAttunements = this._getCurrentAttunements();
-                const maxAttunements = this._getMaxAttunements();
-
-                if (currentAttunements >= maxAttunements) {
-                    ui.notifications.warn(`Cannot attune to more items. Limit: ${maxAttunements}`);
-                    element.checked = false;
-                    return;
-                }
-            }
-
-            item.update({ "system.attunement": isAttuned });
-            ui.notifications.info(`${item.name} ${isAttuned ? 'attuned' : 'no longer attuned'}.`);
-        });
-
         html.find('.add-family-member').click(this._onAddFamilyMember.bind(this));
         html.find('.remove-family-member').click(this._onRemoveFamilyMember.bind(this));
 
@@ -4414,11 +4816,146 @@ export class TheFadeCharacterSheet extends ActorSheet {
         this.actor.update({ [`system.family.${familyType}`]: updated });
     }
 
+    async _onRulesItemCreate(event) {
+        event.preventDefault();
+        const type = event.currentTarget.dataset.type;
+        if (!["mutation", "heritage", "downtime"].includes(type)) return;
+        const names = { mutation:"New Mutation", heritage:"New Heritage", downtime:"New Downtime Activity" };
+        const [item] = await this.actor.createEmbeddedDocuments("Item", [{ name:names[type], type }]);
+        item?.sheet?.render(true);
+    }
+
+    _onRulesItemEdit(event) {
+        event.preventDefault();
+        const itemId = event.currentTarget.closest("[data-item-id]")?.dataset.itemId;
+        this.actor.items.get(itemId)?.sheet.render(true);
+    }
+
+    async _onRulesItemDelete(event) {
+        event.preventDefault();
+        const itemId = event.currentTarget.closest("[data-item-id]")?.dataset.itemId;
+        const item = this.actor.items.get(itemId);
+        if (!item) return;
+        const confirmed = await Dialog.confirm({ title:`Delete ${item.name}`, content:`<p>Delete <strong>${item.name}</strong>?</p>` });
+        if (confirmed) await item.delete();
+    }
+
+    async _onMutationRoll(event) {
+        event.preventDefault();
+        const tools = event.currentTarget.closest(".mutation-tools");
+        const severity = tools?.querySelector('[name="mutation-roll-severity"]')?.value || "minor";
+        try {
+            const rolled = await rollMutation(severity);
+            const [item] = await this.actor.createEmbeddedDocuments("Item", [{
+                name: rolled.result.name,
+                type: "mutation",
+                img: "icons/svg/biohazard.svg",
+                system: {
+                    severity,
+                    rollRange: rolled.result.roll,
+                    effect: rolled.result.description,
+                    description: rolled.result.description,
+                    source: `Heirs to Rangar, p. ${rolled.result.sourcePage}`
+                },
+                flags: { thefade:{ mutationTableId:rolled.result.id, mutationRoll:rolled.roll } }
+            }]);
+            await ChatMessage.create({
+                speaker: ChatMessage.getSpeaker({ actor:this.actor }),
+                content:`<div class="thefade mutation-chat"><h3>${this.actor.name}: ${rolled.label} Mutation (${rolled.roll})</h3><p><strong>${rolled.result.name}</strong></p><p>${rolled.result.description}</p><p class="muted">Added to the character.</p></div>`
+            });
+            item?.sheet?.render(false);
+        } catch (error) {
+            console.error("The Fade | Mutation roll failed", error);
+            ui.notifications.error(error.message);
+        }
+    }
+
+    async _onCalculateHeritage(event) {
+        event.preventDefault();
+        const builder = event.currentTarget.closest(".heritage-builder");
+        const motherType = builder?.querySelector('[name="system.heritage.motherType"]')?.value;
+        const fatherType = builder?.querySelector('[name="system.heritage.fatherType"]')?.value;
+        if (!motherType || !fatherType) return ui.notifications.warn("Choose both parental creature types.");
+        const form = builder?.closest("form");
+        const isXenochild = form?.querySelector('[name="system.personalDetails.xenochild"]')?.checked
+            ?? !!this.actor.system.personalDetails?.xenochild;
+        const outcome = isXenochild
+            ? getBestCrossbreedOutcome(motherType, fatherType)
+            : getCrossbreedOutcome(motherType, fatherType);
+        const checked = name => !!builder?.querySelector(`[name="system.heritage.xenochildModifiers.${name}"]`)?.checked;
+        const xenochildModifiers = {
+            designerSculpting: checked("designerSculpting"),
+            extradimensionalParentage: checked("extradimensionalParentage"),
+            dragonParent: checked("dragonParent"),
+            faeParent: checked("faeParent"),
+            undeadDNA: checked("undeadDNA"),
+            additionalParents: Math.max(0, Math.floor(Number(builder?.querySelector('[name="system.heritage.xenochildModifiers.additionalParents"]')?.value) || 0))
+        };
+        const xenochild = calculateXenochildRolls(outcome.code, xenochildModifiers);
+        await this.actor.update({
+            "system.heritage.motherType": motherType,
+            "system.heritage.fatherType": fatherType,
+            "system.heritage.outcome": outcome.key,
+            "system.heritage.outcomeLabel": outcome.label,
+            "system.heritage.characteristicChanges": outcome.characteristicChanges,
+            "system.heritage.standardMutationRolls": outcome.standardMutationRolls,
+            "system.heritage.isXenochild": isXenochild,
+            "system.heritage.xenochildModifiers": xenochildModifiers,
+            "system.heritage.xenochildRolls": isXenochild ? xenochild.total : 0
+        });
+        const details = isXenochild
+            ? `${xenochild.total} Xenochild mutation roll(s) (${xenochild.base} base${xenochild.bonus ? ` + ${xenochild.bonus} situational` : ""}); freely mix parental Characteristics.`
+            : `${outcome.characteristicChanges} characteristic change(s); natural mutation rolls: ${outcome.standardMutationRolls}.`;
+        await ChatMessage.create({
+            speaker: ChatMessage.getSpeaker({ actor:this.actor }),
+            content:`<div class="thefade heritage-chat"><h3>${this.actor.name}: Crossbreed Result</h3><p><strong>${outcome.label}</strong> - ${details}</p></div>`
+        });
+    }
+
+    async _onAwardFate(event) {
+        event.preventDefault();
+        if (!game.user?.isGM) return ui.notifications.warn("Only the GM can award Fate Points.");
+        const amount = Math.max(1, Number(event.currentTarget.dataset.amount) || 1);
+        const current = Math.max(0, Number(this.actor.system.fate?.points) || 0);
+        await this.actor.update({ "system.fate.points":current + amount });
+        await ChatMessage.create({ speaker:ChatMessage.getSpeaker({ actor:this.actor }), content:`<p><strong>${this.actor.name}</strong> gains ${amount} Fate Point${amount === 1 ? "" : "s"}.</p>` });
+    }
+
+    async _onSpendFate(event) {
+        event.preventDefault();
+        const cost = Math.max(1, Number(event.currentTarget.dataset.cost) || 1);
+        const current = Math.max(0, Number(this.actor.system.fate?.points) || 0);
+        if (current < cost) return ui.notifications.warn(`This use costs ${cost} Fate Points.`);
+        const label = event.currentTarget.dataset.label || "Fate Point benefit";
+        const effect = event.currentTarget.dataset.effect || "";
+        await this.actor.update({ "system.fate.points":current - cost });
+        await ChatMessage.create({
+            speaker:ChatMessage.getSpeaker({ actor:this.actor }),
+            content:`<div class="thefade fate-chat"><h3>${this.actor.name} spends ${cost} Fate Point${cost === 1 ? "" : "s"}</h3><p><strong>${label}:</strong> ${effect}</p></div>`
+        });
+    }
+
+    async _onDowntimeProgress(event) {
+        event.preventDefault();
+        const itemId = event.currentTarget.closest("[data-item-id]")?.dataset.itemId;
+        const item = this.actor.items.get(itemId);
+        if (!item || item.type !== "downtime") return;
+        const amount = Number(event.currentTarget.dataset.amount) || 1;
+        const target = Math.max(1, Number(item.system.target) || 1);
+        const progress = Math.max(0, Number(item.system.progress) || 0) + amount;
+        const completed = progress >= target;
+        await item.update({ "system.progress":progress, ...(completed ? { "system.status":"completed" } : { "system.status":"active" }) });
+        if (completed) {
+            await ChatMessage.create({ speaker:ChatMessage.getSpeaker({ actor:this.actor }), content:`<p><strong>${this.actor.name}</strong> completes downtime activity <strong>${item.name}</strong>. ${item.system.benefit || ""}</p>` });
+        }
+    }
+
     _onToggleTool(event) {
         event.preventDefault();
         const toolSection = $(event.currentTarget).closest('.header-tool');
         const isCollapsed = toolSection.attr('data-collapsed') === 'true';
         toolSection.attr('data-collapsed', !isCollapsed);
+        $(event.currentTarget).attr('aria-expanded', String(isCollapsed));
     }
 
     /**
@@ -4481,37 +5018,15 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 }
 
             } else if (item.type === 'magicitem') {
-                // Handle magic item conflicts
-                const slot = item.system.slot;
-
-                if (slot === 'ring') {
-                    // Check both ring slots
-                    const ringItems = this.actor.items.filter(i =>
-                        i.type === 'item' &&
-                        i.system.itemCategory === 'magicitem' &&
-                        i.system.equipped === true &&
-                        i.system.slot === 'ring' &&
-                        i.id !== item.id
-                    );
-
-                    if (ringItems.length >= 2) {
-                        ui.notifications.warn("Both ring slots are occupied.");
-                        return;
-                    }
-                } else {
-                    // Check single slot conflicts
-                    const conflictingItem = this.actor.items.find(i =>
-                        i.type === 'item' &&
-                        i.system.itemCategory === 'magicitem' &&
-                        i.system.equipped === true &&
-                        i.system.slot === slot &&
-                        i.id !== item.id
-                    );
-
-                    if (conflictingItem) {
-                        ui.notifications.warn(`${slot} slot is already occupied by ${conflictingItem.name}.`);
-                        return;
-                    }
+                const slotRule = game.settings?.get("thefade", "itemPowerSlotRule") || "standard";
+                const result = canEquipItemPower(
+                    this.actor.items.filter(existing => existing.type === "magicitem"),
+                    item,
+                    slotRule
+                );
+                if (!result.allowed) {
+                    ui.notifications.warn(result.reason);
+                    return;
                 }
             }
 
@@ -4574,6 +5089,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // Attunement checkbox
         html.find('.attunement-checkbox').change(async (event) => {
             event.preventDefault();
+            const attunementRule = game.settings?.get("thefade", "itemPowerAttunementRule") || "standard";
+            if (isAttunementRemoved(attunementRule)) return;
             const checkbox = $(event.currentTarget);
             const itemId = checkbox.data('item-id') || checkbox.attr('data-item-id');
             const isAttuned = event.currentTarget.checked;
@@ -4591,14 +5108,10 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
             // Check attunement limits
             if (isAttuned) {
-                const currentlyAttuned = this.actor.items.filter(i =>
-                    i.type === 'item' &&
-                    i.system.itemCategory === 'magicitem' &&
-                    i.system.attunement === true
-                ).length;
+                const currentlyAttuned = countAttunements([...this.actor.items], attunementRule);
 
                 const actorLevel = this.actor.system.level || 1;
-                const soulValue = this.actor.system.attributes?.soul?.value || 1;
+                const soulValue = Number(this.actor.system.attributes?.soul?.total ?? this.actor.system.attributes?.soul?.value ?? 1);
                 const maxAllowed = Math.max(0, Math.floor(actorLevel / 4) + soulValue);
 
                 if (currentlyAttuned >= maxAllowed) {
@@ -4615,6 +5128,41 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 console.error("Error updating attunement:", error);
                 ui.notifications.error("Failed to update attunement");
             }
+        });
+
+        // Stats protection table: reduce AP using the active protection order.
+        html.find('.reduce-protection-ap').click(async (event) => {
+            event.preventDefault();
+            const location = $(event.currentTarget).data('location');
+            const pools = armorProtectionPools(this.actor, location).filter(pool => pool.current > 0);
+            if (!pools.length) {
+                ui.notifications.warn(`${location} Armored Protection is already at 0`);
+                return;
+            }
+
+            const cascades = this.actor.system.naturalDeflection?.[location]?.stacks === true;
+            const maxReduction = cascades
+                ? pools.reduce((total, pool) => total + pool.current, 0)
+                : Math.max(...pools.map(pool => pool.current));
+            const amount = await this._getReductionAmount(
+                `Reduce ${location} Armored Protection`,
+                cascades
+                    ? `Current AP: ${pools.reduce((total, pool) => total + pool.current, 0)}. Stacking is on, so reduction can cascade between armor pieces.`
+                    : `Highest current AP pool: ${maxReduction}. Stacking is off, so reduction stays on that one armor piece.`,
+                maxReduction
+            );
+            if (amount === null) return;
+
+            const reduced = await this._reduceArmorProtection(location, amount);
+            ui.notifications.info(`${location} Armored Protection reduced by ${reduced}`);
+        });
+
+        // Stats protection table: refresh all AP pools for this location.
+        html.find('.reset-protection-ap').click(async (event) => {
+            event.preventDefault();
+            const location = $(event.currentTarget).data('location');
+            const resetCount = await this._resetArmorProtection(location);
+            if (resetCount) ui.notifications.info(`${location} Armored Protection refreshed`);
         });
 
         // Armor AP Reduction with popup
@@ -4864,8 +5412,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
             if (amount === null) return; // User cancelled
 
             // Distribute reduction across ND and armor pieces
-            await this._distributeAPReduction(location, amount);
-            ui.notifications.info(`${location} Total AP reduced by ${amount}`);
+            const reduced = await this._distributeAPReduction(location, amount);
+            ui.notifications.info(`${location} protection reduced by ${reduced}`);
         });
 
         // Unattune button
@@ -4894,6 +5442,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 ui.notifications.info(`${item.name} unequipped.`);
                 this.render(false);
             }
+        });
+
+        html.find('.dark-item-corruption').click(async event => {
+            event.preventDefault();
+            const button = $(event.currentTarget);
+            const item = this.actor.items.get(button.data('item-id'));
+            if (!item) return;
+            const period = button.data('period') === 'week' ? 'week' : 'dawn';
+            await applyDarkItemCorruption(this.actor, item, { period });
+            this.render(false);
         });
 
         // ============================================================================
@@ -5436,6 +5994,16 @@ export class TheFadeCharacterSheet extends ActorSheet {
                 if (currentSpan.length) currentSpan.text(totals.current);
                 if (maxSpan.length) maxSpan.text(totals.max);
             });
+
+            for (const part of sheetData.protectionRows || []) {
+                const rows = html.find(`.protection-row[data-protection-location="${part.location}"]`);
+                rows.find('.armor-protection-value .protection-current').text(part.armor.current);
+                rows.find('.armor-protection-value .protection-max').text(part.armor.max);
+                rows.find('.natural-protection-value .protection-current').text(part.natural.current);
+                rows.find('.natural-protection-value .protection-max').text(part.natural.max);
+                rows.find('.total-protection-value .protection-current').text(part.total.current);
+                rows.find('.total-protection-value .protection-max').text(part.total.max);
+            }
         } catch (error) {
             console.error("Error recalculating armor totals:", error);
         }

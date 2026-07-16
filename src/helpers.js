@@ -375,6 +375,17 @@ export async function applyPathSkillModifications(actor, path) {
                 choicesMade++;
                 break;
 
+            case PATH_SKILL_TYPES.CHOOSE_ANY:
+                await showChooseRegularSkillsDialog(
+                    actor,
+                    pathSkill.system.chooseCount,
+                    "Any",
+                    pathSkill.system.rank,
+                    path
+                );
+                choicesMade++;
+                break;
+
             case PATH_SKILL_TYPES.CHOOSE_LORE:
                 // Show dialog to create lore skills
                 await showChooseLoreSkillsDialog(
@@ -455,6 +466,8 @@ export async function handleChooseSkillsOption(actor, pathSkill) {
     if (skillCategory.includes("lore")) {
         // Special handling for Lore skills
         await showChooseLoreSkillsDialog(actor, numToChoose, pathSkill.system.rank);
+    } else if (skillCategory.includes("any")) {
+        await showChooseRegularSkillsDialog(actor, numToChoose, "Any", pathSkill.system.rank);
     } else if (skillCategory.includes("perform")) {
         // Special handling for Perform skills
         await showChoosePerformSkillsDialog(actor, numToChoose, pathSkill.system.rank);
@@ -472,12 +485,14 @@ export async function handleChooseSkillsOption(actor, pathSkill) {
 * Now excludes skills already in the path at Learned or higher
 */
 export async function showChooseRegularSkillsDialog(actor, numToChoose, category, rank, path = null) {
-    const categorySkills = DEFAULT_SKILLS.filter(skill =>
-        skill.category.toLowerCase() === category.toLowerCase()
-    );
+    const anyCategory = !category || category.toLowerCase() === "any";
+    const categoryLabel = anyCategory ? "Any" : category;
+    const categorySkills = anyCategory
+        ? DEFAULT_SKILLS
+        : DEFAULT_SKILLS.filter(skill => skill.category.toLowerCase() === category.toLowerCase());
 
     if (categorySkills.length === 0) {
-        ui.notifications.warn(`No skills found for category: ${category}`);
+        ui.notifications.warn(`No skills found for category: ${categoryLabel}`);
         return;
     }
 
@@ -507,12 +522,12 @@ export async function showChooseRegularSkillsDialog(actor, numToChoose, category
     }
 
     if (availableSkills.length === 0) {
-        ui.notifications.warn(`No ${category} skills available - all skills in this category are already in the path at Learned or higher.`);
+        ui.notifications.warn(`No ${categoryLabel} skills available - all matching skills are already in the path at Learned or higher.`);
         return;
     }
 
     if (availableSkills.length < numToChoose) {
-        ui.notifications.warn(`Only ${availableSkills.length} ${category} skills available, but ${numToChoose} requested. Showing available skills.`);
+        ui.notifications.warn(`Only ${availableSkills.length} ${categoryLabel} skills available, but ${numToChoose} requested. Showing available skills.`);
         numToChoose = availableSkills.length;
     }
 
@@ -522,7 +537,7 @@ export async function showChooseRegularSkillsDialog(actor, numToChoose, category
         ).join('<br>');
 
         const dialog = new Dialog({
-            title: `Choose ${numToChoose} ${category} Skills`,
+            title: `Choose ${numToChoose} ${categoryLabel} Skills`,
             content: `
                 <form>
                     <p>Select ${numToChoose} skills to improve to ${rank} rank:</p>
@@ -558,7 +573,7 @@ export async function showChooseRegularSkillsDialog(actor, numToChoose, category
                             }
                         }
 
-                        ui.notifications.info(`Applied ${selected.length} ${category} skills at ${rank} rank.`);
+                        ui.notifications.info(`Applied ${selected.length} ${categoryLabel} skills at ${rank} rank.`);
                         resolve(true);
                     }
                 },

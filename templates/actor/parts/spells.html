@@ -1,10 +1,11 @@
 <section class="spells-section">
     <!-- Aura -->
-    <div class="aura-card inv-block">
-        <h2 class="inv-heading">
+    <details class="aura-card inv-block sheet-state-section" data-section-key="magic-aura" {{#if magicSectionStates.aura}}open{{/if}}>
+        <summary class="inv-heading sheet-section-summary">
             <i class="fas fa-eye"></i>
             <span class="inv-title">Aura</span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
         <div class="inv-block-body">
             <div class="aura-fields">
                 <div class="form-group">
@@ -106,15 +107,16 @@
                 {{/if}}
             </div>
         </div>
-    </div>
+    </details>
 
     <!-- Sin and Dark Magic -->
-    <div class="sin-dark-magic-section inv-block inv-block--crimson">
-        <h2 class="inv-heading">
+    <details class="sin-dark-magic-section inv-block inv-block--crimson sheet-state-section" data-section-key="magic-dark" {{#if magicSectionStates.darkMagic}}open{{/if}}>
+        <summary class="inv-heading sheet-section-summary">
             <i class="fas fa-skull"></i>
             <span class="inv-title">Sin and Dark Magic</span>
             <span class="inv-count" title="Dark Magic spells known">{{system.darkMagic.spellsLearnedCount}}</span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
         <div class="inv-block-body">
             <!-- Sin Management -->
             <div class="sin-management grid grid-4col">
@@ -149,11 +151,11 @@
             <p class="addiction-stage-summary"><em>Addiction: {{system.darkMagic.stageSummary}}</em></p>
             {{/if}}
         </div>
-    </div>
+    </details>
 
     <!-- Spells -->
-    <div class="spells-block inv-block">
-        <h2 class="inv-heading">
+    <details class="spells-block inv-block sheet-state-section" data-section-key="magic-spells" {{#if magicSectionStates.spells}}open{{/if}}>
+        <summary class="inv-heading sheet-section-summary">
             <i class="fas fa-wand-magic-sparkles"></i>
             <span class="inv-title">Spells</span>
             <span class="inv-count">{{actor.spells.length}}</span>
@@ -161,7 +163,8 @@
                 <a class="item-create" title="Add Spell" data-type="spell"><i class="fas fa-plus"></i></a>
                 <a class="spell-browse" title="Browse Spells"><i class="fas fa-search"></i></a>
             </span>
-        </h2>
+            <i class="fas fa-chevron-down section-toggle-icon"></i>
+        </summary>
 
         <!-- Filter Controls -->
         <div class="spell-filters">
@@ -204,7 +207,10 @@
                             <i class="fas fa-chevron-down spell-toggle-icon"></i>
                         </label>
                     </div>
-                    <div class="spell-school {{lowercase spell.system.school}}">{{spell.system.school}}</div>
+                    <div class="spell-school {{lowercase spell.system.school}} {{#if spell.isDarkSchool}}dark-school{{/if}}"
+                         title="{{#if spell.isDarkSchool}}Dark Magic form of {{spell.system.school}}{{else}}{{spell.system.school}}{{/if}}">
+                        {{spell.displaySchool}}
+                    </div>
                     <div class="spell-damage">{{#if spell.system.damage}}{{spell.system.damage}} {{spell.system.damageType}}{{else}}-{{/if}}</div>
                     <div class="spell-time">{{spell.system.time}}</div>
                     <div class="spell-successes">{{spell.system.successes}}</div>
@@ -238,7 +244,7 @@
                             <div class="spell-detail-value">{{spell.system.mishapModifier}}</div>
                         </div>
                         {{/if}}
-                        {{#if spell.system.isDarkMagic}}
+                        {{#if spell.isDarkSchool}}
                         <div class="spell-detail-item">
                             <div class="spell-detail-label">Dark Magic:</div>
                             <div class="spell-detail-value">Yes</div>
@@ -249,5 +255,5 @@
             </div>
             {{/each}}
         </div>
-    </div>
+    </details>
 </section>

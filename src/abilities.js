@@ -13,6 +13,8 @@
 // Rules source: Core Rulebook universal-ability chapter. See AUDIT.md
 // P1 #16 and P2 #31.
 
+import { mechanicalBonusSummary } from "./mechanical-bonuses.js";
+
 /**
  * Registry keyed by ability name (case-sensitive). Each entry has:
  *  - description: short mechanical summary shown on the sheet.
@@ -170,7 +172,7 @@ export function applyAbilityEffects(data, actor) {
     // Path abilities (authored on each path item).
     if (actor?.items) {
         for (const item of actor.items) {
-            if (item.type !== "path") continue;
+            if (item.type !== "path" && item.type !== "monsterpath") continue;
             const abilities = item.system?.abilities || {};
             for (const ability of Object.values(abilities)) {
                 if (ability?.name) sources.push({ source: item.name, ability });
@@ -181,6 +183,7 @@ export function applyAbilityEffects(data, actor) {
     const applied = [];
     const unmatched = [];
     for (const { source, ability } of sources) {
+        if (ability.activation === "active") continue;
         // Strip trailing numeric suffix to match the registry key.
         const key = ability.name.replace(/\s+\d+\s*$/, "").trim();
         const entry = UNIVERSAL_ABILITIES[key];
@@ -196,4 +199,79 @@ export function applyAbilityEffects(data, actor) {
         }
     }
     data.abilityEffects = { applied, unmatched };
+}
+
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+/** Return only temporary bonus entries whose round/time window is still open. */
+export function getActiveTemporaryBonusEntries(actor) {
+    const entries = Array.isArray(actor?.system?.temporaryBonuses) ? actor.system.temporaryBonuses : [];
+    const combat = game.combat;
+    const worldTime = Number(game.time?.worldTime) || 0;
+    return entries.filter(entry => {
+        if (entry.combatId) {
+            return combat?.id === entry.combatId && (Number(combat.round) || 0) < (Number(entry.expiresRound) || 0);
+        }
+        return (Number(entry.expiresAt) || 0) > worldTime;
+    });
+}
+
+/**
+ * Post an active ability to chat and, when it has bonuses, put those bonuses
+ * into the actor's short-lived bonus pool for the authored number of rounds.
+ */
+export async function activateAbility(actor, ability, source = {}) {
+    if (!actor || !ability) return;
+    const durationRounds = Math.max(1, Number(ability.durationRounds) || 1);
+    const bonuses = Array.isArray(ability.bonuses) ? foundry.utils.deepClone(ability.bonuses) : [];
+    const sourceId = source.id || source.sourceId || source.label || source.name || "ability";
+    const key = `${sourceId}:${ability.id || ability.name || "active"}`;
+
+    if (bonuses.length) {
+        const combat = game.combat;
+        const activeCombat = combat?.combatants?.some?.(combatant => combatant.actorId === actor.id || combatant.actor?.id === actor.id)
+            ? combat
+            : null;
+        const worldTime = Number(game.time?.worldTime) || 0;
+        const current = Array.isArray(actor.system?.temporaryBonuses)
+            ? foundry.utils.deepClone(actor.system.temporaryBonuses)
+            : [];
+        const retained = current.filter(entry => entry.key !== key && getActiveTemporaryBonusEntries({ system: { temporaryBonuses: [entry] } }).length);
+        retained.push({
+            id: foundry.utils.randomID(16),
+            key,
+            source: source.label || source.name || "Ability",
+            ability: ability.name || "Active Ability",
+            bonuses,
+            durationRounds,
+            combatId: activeCombat?.id || "",
+            startRound: activeCombat ? (Number(activeCombat.round) || 0) : null,
+            expiresRound: activeCombat ? (Number(activeCombat.round) || 0) + durationRounds : null,
+            expiresAt: worldTime + (durationRounds * 6)
+        });
+        await actor.update({ "system.temporaryBonuses": retained });
+    }
+
+    const action = ability.actionCost ? `<p><strong>Activation:</strong> ${escapeHTML(ability.actionCost)}</p>` : "";
+    const duration = bonuses.length ? `<p><strong>Duration:</strong> ${durationRounds} round${durationRounds === 1 ? "" : "s"}</p>` : "";
+    const bonusList = bonuses.length
+        ? `<ul>${bonuses.map(entry => `<li>${escapeHTML(mechanicalBonusSummary(entry))}</li>`).join("")}</ul>`
+        : "";
+    const description = escapeHTML(ability.description || "").replaceAll("\n", "<br>");
+    await ChatMessage.create({
+        speaker: ChatMessage.getSpeaker({ actor }),
+        flavor: `${actor.name}: ${ability.name || "Active Ability"}`,
+        content: `<div class="thefade chat-card ability-chat-card">
+            <h3>${escapeHTML(ability.name || "Active Ability")}</h3>
+            <p class="item-type-label">${escapeHTML(source.kind ? `${source.kind}: ${source.label}` : (source.label || source.name || "Ability"))}</p>
+            ${action}${description ? `<p>${description}</p>` : ""}${duration}${bonusList}
+        </div>`
+    });
 }

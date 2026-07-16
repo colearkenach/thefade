@@ -1,5 +1,15 @@
 // TheFadeNPCSheet — simplified actor sheet for monsters and named NPCs.
 import { SIZE_OPTIONS } from './constants.js';
+import { ANATOMY_OPTIONS } from './rules.js';
+import { rollHitLocation, locationLabel } from './hit-location.js';
+import { buildProtectionView } from './protection.js';
+import { activateAbility, getActiveTemporaryBonusEntries } from './abilities.js';
+import {
+    CREATURE_TYPE_OPTIONS,
+    buildCreatureSubtypeSelector,
+    getCreatureRuleSources,
+    normalizeCreatureType
+} from './creature-rules.js';
 
 export class TheFadeNPCSheet extends ActorSheet {
     static get defaultOptions() {
@@ -17,6 +27,25 @@ export class TheFadeNPCSheet extends ActorSheet {
         const data = super.getData();
         data.system = data.actor.system;
         data.sizeOptions = SIZE_OPTIONS;
+        data.creatureTypeOptions = CREATURE_TYPE_OPTIONS;
+        data.selectedCreatureType = normalizeCreatureType(data.system.creatureType);
+        data.creatureSubtypeSelector = buildCreatureSubtypeSelector(data.system, "npc");
+        data.creatureRuleAbilityView = {
+            sources: getCreatureRuleSources(data.system, "npc"),
+            canActivate: true
+        };
+        data.temporaryAbilityBonuses = getActiveTemporaryBonusEntries(this.actor).map(entry => ({
+            ...entry,
+            remainingRounds: entry.combatId
+                ? Math.max(0, Number(entry.expiresRound) - (Number(game.combat?.round) || 0))
+                : Math.max(1, Number(entry.durationRounds) || 1)
+        }));
+        data.anatomyOptions = ANATOMY_OPTIONS;
+        data.anatomyRulesEnabled = game.settings?.get("thefade", "alternateAnatomyEnabled") ?? false;
+        data.protectionRows = buildProtectionView(
+            this.actor,
+            data.anatomyRulesEnabled ? (data.system.anatomy?.preset || "humanoid") : "humanoid"
+        );
 
         // Categorize embedded items
         const items = data.items || [];
@@ -39,6 +68,54 @@ export class TheFadeNPCSheet extends ActorSheet {
 
     activateListeners(html) {
         super.activateListeners(html);
+
+        html.find('.creature-subtype-add').on('click', async ev => {
+            ev.preventDefault();
+            const selector = $(ev.currentTarget).closest('.creature-subtype-selector');
+            const id = selector.find('.creature-subtype-choice').val();
+            if (!id) return;
+            await this.actor.update({ "system.creatureSubtypes": [...new Set([...(this.actor.system.creatureSubtypes || []), id])] });
+        });
+
+        html.find('.creature-subtype-remove').on('click', async ev => {
+            ev.preventDefault();
+            const id = ev.currentTarget.dataset.subtypeId;
+            await this.actor.update({ "system.creatureSubtypes": (this.actor.system.creatureSubtypes || []).filter(value => value !== id) });
+        });
+
+        html.find('.creature-rule-ability-use').on('click', async ev => {
+            ev.preventDefault();
+            const sourceId = ev.currentTarget.closest('[data-creature-rule-source]')?.dataset.creatureRuleSource;
+            const abilityId = ev.currentTarget.closest('[data-creature-rule-ability]')?.dataset.creatureRuleAbility;
+            const source = getCreatureRuleSources(this.actor.system, "npc").find(entry => entry.id === sourceId);
+            const ability = source?.abilities.find(entry => entry.id === abilityId);
+            if (source && ability) await activateAbility(this.actor, ability, source);
+        });
+
+        html.find('.temporary-ability-bonus-remove').on('click', async ev => {
+            ev.preventDefault();
+            const id = ev.currentTarget.dataset.temporaryBonusId;
+            await this.actor.update({ "system.temporaryBonuses": (this.actor.system.temporaryBonuses || []).filter(entry => entry.id !== id) });
+        });
+
+        html.find('.roll-anatomy-location').on('click', async ev => {
+            ev.preventDefault();
+            const controls = $(ev.currentTarget).closest('.anatomy-controls');
+            const facing = controls.find('.anatomy-roll-facing').val() || "front";
+            const preset = game.settings?.get("thefade", "alternateAnatomyEnabled")
+                ? (this.actor.system?.anatomy?.preset || "humanoid")
+                : "humanoid";
+            const result = await rollHitLocation(facing, preset);
+            const detail = result.sideRoll
+                ? `1d12=${result.roll}, 1d2=${result.sideRoll}`
+                : `1d12=${result.roll}`;
+            await ChatMessage.create({
+                speaker: ChatMessage.getSpeaker({ actor: this.actor }),
+                flavor: `${this.actor.name}: Hit Location`,
+                content: `<div class="thefade-hit-location-roll"><strong>${result.label || locationLabel(result.location)}</strong><br><span>${detail} — ${result.column}</span></div>`
+            });
+        });
+
         if (!this.options.editable) return;
 
         // Initiative roll

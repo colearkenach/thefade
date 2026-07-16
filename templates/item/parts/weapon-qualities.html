@@ -1,0 +1,33 @@
+<div class="weapon-quality-selector">
+    <div class="weapon-quality-picker">
+        <select class="weapon-quality-choice" aria-label="Rules-backed weapon quality">
+            <option value="">Choose a rules-backed quality…</option>
+            {{#each selector.available as |quality|}}
+            <option value="{{quality.id}}">{{quality.label}}</option>
+            {{/each}}
+        </select>
+        <button type="button" class="weapon-quality-add" title="Add the selected quality"><i class="fas fa-plus"></i> Add</button>
+    </div>
+
+    {{#if selector.selected.length}}
+    <div class="weapon-quality-chips">
+        {{#each selector.selected as |quality|}}
+        <span class="weapon-quality-chip" title="{{quality.description}}">
+            {{quality.label}}
+            {{#if quality.automatic}}
+            <small>automatic</small>
+            {{else}}
+            <button type="button" class="weapon-quality-remove" data-quality-id="{{quality.id}}" title="Remove {{quality.label}}"><i class="fas fa-times"></i></button>
+            {{/if}}
+        </span>
+        {{/each}}
+    </div>
+    <div class="weapon-quality-rule-list">
+        {{#each selector.selected as |quality|}}
+        <p><strong>{{quality.label}}.</strong> {{quality.description}}</p>
+        {{/each}}
+    </div>
+    {{/if}}
+
+    <p class="hint">Effects the system can determine from an attack are applied automatically. Contextual effects remain visible on attack cards for adjudication.</p>
+</div>

@@ -31,7 +31,8 @@
         
         <div class="form-group">
           <label>Is Dark Magic?</label>
-          <input type="checkbox" name="system.isDarkMagic" {{checked system.isDarkMagic}}/>
+          <input type="checkbox" name="system.isDarkMagic" {{#if (eq system.school "Malevolent")}}checked disabled{{else}}{{checked system.isDarkMagic}}{{/if}}/>
+          {{#if (eq system.school "Malevolent")}}<p class="hint">Malevolent spells are always Dark Magic.</p>{{/if}}
         </div>
         
         <div class="form-group">
