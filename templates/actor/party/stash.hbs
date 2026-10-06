@@ -1,0 +1,15 @@
+<section class="tab tf-tab stash {{tab.cssClass}}" data-group="primary" data-tab="stash">
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Party.stash"}}</h2>
+            {{#if editable}}
+            <span class="tf-section-aside tf-section-actions">
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="{{physicalTypes}}" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+            </span>
+            {{/if}}
+        </header>
+        <ol class="tf-item-list">
+            {{#each items}}{{> "thefade.item-row" this editable=../editable}}{{else}}<li class="tf-empty">{{localize "THEFADE.Party.stashEmpty"}}</li>{{/each}}
+        </ol>
+    </section>
+</section>

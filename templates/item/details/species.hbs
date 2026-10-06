@@ -1,0 +1,58 @@
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Species.identity"}}</h2></header>
+    <div class="tf-form-grid">
+        {{formGroup systemFields.baseHP value=source.baseHP}}
+        {{formGroup systemFields.size value=source.size choices=config.sizes}}
+        <div class="form-group">
+            <label>{{systemFields.creatureType.label}}</label>
+            <div class="form-fields"><select name="system.creatureType">{{selectOptions config.creatureTypes selected=system.creatureType localize=true}}</select></div>
+        </div>
+        {{formGroup systemFields.visionType value=source.visionType choices=visionOptions localize=true}}
+        {{formGroup systemFields.languages value=source.languages placeholder=(localize "THEFADE.Species.languagesHint")}}
+        {{#if owned}}{{formGroup systemFields.syncToActor value=source.syncToActor hint=(localize "THEFADE.Species.syncHint")}}{{/if}}
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Species.subtypes"}}</label>
+        <div class="form-fields tf-chips">
+            {{#each subtypeSelector.selected}}
+            <span class="tf-chip">{{label}} <button type="button" class="tf-chip-remove" data-action="removeSubtype" data-subtype="{{id}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button></span>
+            {{/each}}
+            <select data-add-subtype aria-label="{{localize 'THEFADE.Species.addSubtype'}}">
+                <option value="">{{localize "THEFADE.Species.addSubtype"}}</option>
+                {{#each subtypeSelector.available}}<option value="{{id}}">{{label}}</option>{{/each}}
+            </select>
+            <button type="button" class="tf-icon-button" data-action="addSubtype" aria-label="{{localize 'THEFADE.Species.addSubtype'}}"><i class="fa-solid fa-plus"></i></button>
+        </div>
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Species.attributeBonuses"}}</h2></header>
+    <div class="tf-attribute-inputs">
+        {{#each config.attributes as |attr key|}}
+        <label class="tf-stat-field"><span>{{localize attr.abbreviation}}</span><input type="number" name="system.abilityBonuses.{{key}}" value="{{lookup @root.source.abilityBonuses key}}" step="1"></label>
+        {{/each}}
+        <label class="tf-stat-field flexible" data-tooltip="THEFADE.Species.flexibleHint"><span>{{localize "THEFADE.Species.flexible"}}</span><input type="number" name="system.flexibleBonus.value" value="{{source.flexibleBonus.value}}" step="1"></label>
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Movement.title"}}</h2></header>
+    <div class="tf-attribute-inputs">
+        {{#each movementKeys}}
+        <label class="tf-stat-field"><span>{{localize (concat "THEFADE.Movement." this)}}</span><input type="number" name="system.movement.{{this}}" value="{{lookup @root.source.movement this}}" min="0" step="1"></label>
+        {{/each}}
+    </div>
+</section>
+
+{{#if ruleSources.length}}
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Species.typeAbilities"}}</h2></header>
+    {{#each ruleSources}}
+    <details class="tf-rule-source">
+        <summary><span class="tf-chip">{{kind}}</span> {{label}}</summary>
+        <ul>{{#each abilities}}<li><strong>{{name}}.</strong> {{description}}</li>{{/each}}</ul>
+    </details>
+    {{/each}}
+</section>
+{{/if}}

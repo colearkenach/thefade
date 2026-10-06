@@ -1,0 +1,21 @@
+<section class="tf-section">
+    <div class="tf-form-grid">
+        {{formGroup systemFields.virality value=source.virality}}
+        {{formGroup systemFields.treatmentDT value=source.treatmentDT}}
+        {{formGroup systemFields.incubation value=source.incubation placeholder=(localize "THEFADE.Disease.incubationHint")}}
+        {{formGroup systemFields.duration value=source.duration}}
+        {{formGroup systemFields.durationType value=source.durationType choices=config.disease.durationTypes}}
+        {{formGroup systemFields.requiresVector value=source.requiresVector}}
+        {{formGroup systemFields.requiresCure value=source.requiresCure}}
+    </div>
+    <fieldset class="tf-check-group">
+        <legend>{{localize "THEFADE.Disease.transmission"}}</legend>
+        {{#each config.disease.transmission as |label key|}}
+        <label class="tf-check-field"><input type="checkbox" name="system.transmission.{{key}}" {{checked (lookup @root.source.transmission key)}}> {{label}}</label>
+        {{/each}}
+    </fieldset>
+    <div class="form-group stacked">
+        <label>{{systemFields.effect.label}}</label>
+        <textarea name="system.effect" rows="4">{{source.effect}}</textarea>
+    </div>
+</section>

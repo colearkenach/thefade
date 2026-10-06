@@ -1,0 +1,26 @@
+{{!-- Mechanical bonus rows. Params: bonuses (prepared rows), basePath ("system.bonuses"). --}}
+<div class="tf-rows tf-bonus-rows">
+    {{#each bonuses}}
+    <div class="tf-row">
+        <input type="hidden" name="{{path}}.id" value="{{id}}">
+        <select name="{{path}}.type" aria-label="{{localize 'THEFADE.Bonus.type'}}">{{selectOptions @root.bonusTypeOptions selected=type}}</select>
+        {{#if textTarget}}
+        <input type="text" name="{{path}}.target" value="{{target}}" placeholder="{{localize 'THEFADE.Bonus.textTargetHint'}}" aria-label="{{localize 'THEFADE.Bonus.target'}}">
+        {{else if targetOptions}}
+        <select name="{{path}}.target" aria-label="{{localize 'THEFADE.Bonus.target'}}">{{selectOptions targetOptions selected=target}}</select>
+        {{else}}
+        <input type="hidden" name="{{path}}.target" value="{{target}}">
+        {{/if}}
+        {{#if isVulnerability}}
+        <select name="{{path}}.severity" aria-label="{{localize 'THEFADE.Bonus.severity'}}">{{selectOptions @root.severityOptions selected=severity}}</select>
+        {{/if}}
+        {{#if hasValue}}
+        <input type="number" class="tf-short" name="{{path}}.value" value="{{value}}" step="{{#if amount.step}}{{amount.step}}{{else}}1{{/if}}" {{#if amount.label}}data-tooltip="{{amount.label}}"{{/if}} aria-label="{{#if amount.label}}{{amount.label}}{{else}}{{localize 'THEFADE.Bonus.value'}}{{/if}}">
+        {{/if}}
+        <button type="button" class="tf-icon-button" data-action="removeRow" data-path="{{../basePath}}" data-index="{{index}}" data-tooltip="THEFADE.ItemSheet.removeRow" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    {{else}}
+    <p class="tf-empty">{{localize "THEFADE.Bonus.none"}}</p>
+    {{/each}}
+    <button type="button" class="tf-text-button" data-action="addRow" data-path="{{basePath}}" data-template="bonus"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Bonus.add"}}</button>
+</div>

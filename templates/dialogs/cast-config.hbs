@@ -1,0 +1,23 @@
+<div class="thefade tf-dialog">
+    <p class="tf-dialog-lead">{{localize "THEFADE.Spell.castLead" dice=baseDice required=required}}</p>
+    {{#if mods.notes.length}}<ul class="tf-notes">{{#each mods.notes}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+    {{#if needsTarget}}
+    <div class="form-group">
+        <label>{{localize "THEFADE.Attack.target"}}</label>
+        <div class="form-fields">
+            <select name="targetId">
+                <option value="">{{localize "THEFADE.Attack.noTarget"}}</option>
+                {{#each tokens}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+            </select>
+        </div>
+    </div>
+    {{/if}}
+    <div class="form-group">
+        <label>{{localize "THEFADE.Roll.extraDiceLabel"}}</label>
+        <div class="form-fields"><input type="number" name="extraDice" value="0" step="1"></div>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Roll.mode"}}</label>
+        <div class="form-fields"><select name="rollMode">{{#each rollModes}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+    </div>
+</div>

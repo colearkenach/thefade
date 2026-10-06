@@ -1,0 +1,30 @@
+<section class="tab tf-tab skills {{tab.cssClass}}" data-group="primary" data-tab="skills">
+    <p class="tf-hint">{{localize "THEFADE.PathSkill.hint"}}</p>
+    <datalist id="tf-skill-names-{{item.id}}">{{#each skillNames}}<option value="{{this}}"></option>{{/each}}</datalist>
+    <div class="tf-rows tf-path-skills">
+        {{#each pathSkills}}
+        <div class="tf-row-block">
+            <div class="tf-row">
+                <input type="hidden" name="system.pathSkills.{{index}}._id" value="{{_id}}">
+                <select name="system.pathSkills.{{index}}.system.entryType" aria-label="{{localize 'THEFADE.PathSkill.entryType'}}">{{selectOptions @root.entryTypeOptions selected=system.entryType localize=true}}</select>
+                {{#if (eq system.entryType "specific")}}
+                <input type="text" name="system.pathSkills.{{index}}.name" value="{{name}}" list="tf-skill-names-{{@root.item.id}}" placeholder="{{localize 'THEFADE.PathSkill.skillName'}}" aria-label="{{localize 'THEFADE.PathSkill.skillName'}}">
+                {{else if isCustom}}
+                <select name="system.pathSkills.{{index}}.system.skillType" aria-label="{{localize 'THEFADE.PathSkill.customType'}}">{{selectOptions @root.customTypeOptions selected=system.skillType localize=true}}</select>
+                <input type="text" name="system.pathSkills.{{index}}.system.subtype" value="{{system.subtype}}" placeholder="{{localize 'THEFADE.PathSkill.subtype'}}" aria-label="{{localize 'THEFADE.PathSkill.subtype'}}">
+                {{else}}
+                {{#if isCategory}}
+                <select name="system.pathSkills.{{index}}.system.chooseCategory" aria-label="{{localize 'THEFADE.PathSkill.category'}}">{{selectOptions @root.config.skillCategories selected=system.chooseCategory localize=true}}</select>
+                {{/if}}
+                <label class="tf-inline-field">× <input type="number" class="tf-short" name="system.pathSkills.{{index}}.system.chooseCount" value="{{system.chooseCount}}" min="1" step="1" aria-label="{{localize 'THEFADE.PathSkill.count'}}"></label>
+                {{/if}}
+                <select name="system.pathSkills.{{index}}.system.rank" aria-label="{{localize 'THEFADE.PathSkill.rank'}}">{{selectOptions @root.rankOptions selected=system.rank localize=true}}</select>
+                <button type="button" class="tf-icon-button" data-action="removeRow" data-path="system.pathSkills" data-index="{{index}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+        {{else}}
+        <p class="tf-empty">{{localize "THEFADE.PathSkill.none"}}</p>
+        {{/each}}
+        <button type="button" class="tf-text-button" data-action="addRow" data-path="system.pathSkills" data-template="pathSkill"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.PathSkill.add"}}</button>
+    </div>
+</section>

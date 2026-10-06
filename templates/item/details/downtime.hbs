@@ -1,0 +1,27 @@
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{localize "THEFADE.Downtime.progress"}}</h2>
+        <span class="tf-section-aside"><span class="tf-chip status-{{system.displayStatus}}">{{lookup config.downtimeStatuses system.displayStatus}}</span></span>
+    </header>
+    <div class="tf-progress">
+        <div class="tf-meter" aria-hidden="true"><span style="width: {{system.percentComplete}}%"></span></div>
+        <div class="tf-row">
+            <input type="number" class="tf-short" name="system.progress" value="{{source.progress}}" min="0" step="1" aria-label="{{systemFields.progress.label}}">
+            <span class="tf-of">/</span>
+            <input type="number" class="tf-short" name="system.target" value="{{source.target}}" min="1" step="1" aria-label="{{systemFields.target.label}}">
+            <span class="tf-hint">{{system.percentComplete}}%</span>
+        </div>
+    </div>
+    <div class="tf-form-grid">
+        {{formGroup systemFields.activityType value=source.activityType choices=config.downtimeTypes}}
+        {{formGroup systemFields.status value=source.status choices=config.downtimeStatuses}}
+        {{formGroup systemFields.skill value=source.skill}}
+        {{formGroup systemFields.dt value=source.dt}}
+        {{formGroup systemFields.duration value=source.duration}}
+        {{formGroup systemFields.cost value=source.cost}}
+    </div>
+    <div class="form-group stacked">
+        <label>{{systemFields.benefit.label}}</label>
+        <textarea name="system.benefit" rows="3">{{source.benefit}}</textarea>
+    </div>
+</section>

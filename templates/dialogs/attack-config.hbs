@@ -1,0 +1,63 @@
+<div class="thefade tf-dialog">
+    <p class="tf-dialog-lead">{{localize "THEFADE.Attack.pool" dice=attack.dice skill=weapon.system.skill}}{{#if attack.attributeSource}} <span class="tf-hint">({{attack.attributeSource}})</span>{{/if}}</p>
+    {{#if mods.notes.length}}<ul class="tf-notes">{{#each mods.notes}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+
+    <div class="form-group">
+        <label>{{localize "THEFADE.Attack.target"}}</label>
+        <div class="form-fields">
+            <select name="targetId">
+                <option value="">{{localize "THEFADE.Attack.noTarget"}}</option>
+                {{#each tokens}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Attack.facing"}}</label>
+        <div class="form-fields">
+            <select name="facing">{{#each facings}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+        </div>
+        <p class="hint">{{localize "THEFADE.Attack.facingHint"}}</p>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Attack.location"}}</label>
+        <div class="form-fields">
+            <select name="locationMode">
+                <option value="random" {{#if (eq config.locationMode "random")}}selected{{/if}}>{{localize "THEFADE.Attack.locationRandom"}}</option>
+                <option value="default" {{#if (eq config.locationMode "default")}}selected{{/if}}>{{localize "THEFADE.Attack.locationDefault"}}</option>
+                <option value="called" {{#if (eq config.locationMode "called")}}selected{{/if}}>{{localize "THEFADE.Attack.locationCalled"}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group" data-called hidden>
+        <label>{{localize "THEFADE.Attack.calledLocation"}}</label>
+        <div class="form-fields">
+            <select name="calledLocation">{{#each locations}}<option value="{{key}}" {{#if (eq key ../config.calledLocation)}}selected{{/if}}>{{label}}</option>{{/each}}</select>
+        </div>
+        <p class="hint">{{localize "THEFADE.Attack.calledHint"}}</p>
+    </div>
+    {{#if antiCavalry}}
+    <div class="form-group"><label class="checkbox"><input type="checkbox" name="mounted"> {{localize "THEFADE.Attack.mounted"}}</label></div>
+    {{/if}}
+    {{#if dualTrigger}}
+    <div class="form-group"><label class="checkbox"><input type="checkbox" name="dualTrigger"> {{localize "THEFADE.Attack.dualTrigger"}}</label></div>
+    {{/if}}
+    <div class="form-group">
+        <label>{{localize "THEFADE.Roll.dt"}}</label>
+        <div class="form-fields">
+            <input type="number" name="dt" value="{{config.dt}}" min="1" step="1">
+            <select name="difficulty" aria-label="{{localize 'THEFADE.Roll.difficulty'}}">
+                <option value="">{{localize "THEFADE.Roll.byName"}}</option>
+                {{#each difficulties}}<option value="{{value}}">{{value}} · {{label}}</option>{{/each}}
+            </select>
+        </div>
+        <p class="hint" data-dt-parts></p>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Roll.extraDiceLabel"}}</label>
+        <div class="form-fields"><input type="number" name="extraDice" value="0" step="1"></div>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Roll.mode"}}</label>
+        <div class="form-fields"><select name="rollMode">{{#each rollModes}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+    </div>
+</div>

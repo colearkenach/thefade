@@ -1,0 +1,14 @@
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Path.path"}}</h2></header>
+    <div class="tf-form-grid">
+        {{#if (eq type "path")}}
+        <div class="form-group">
+            <label>{{systemFields.tier.label}}</label>
+            <div class="form-fields"><select name="system.tier" data-dtype="Number">{{selectOptions config.pathTiers selected=source.tier localize=true}}</select></div>
+        </div>
+        {{/if}}
+        {{formGroup systemFields.baseHP value=source.baseHP hint=(localize "THEFADE.Path.baseHPHint")}}
+    </div>
+    {{formGroup systemFields.requirements value=source.requirements stacked=true}}
+    <p class="tf-hint">{{localize "THEFADE.Path.applyHint"}}</p>
+</section>

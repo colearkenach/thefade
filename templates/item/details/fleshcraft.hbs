@@ -1,0 +1,39 @@
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Fleshcraft.creature"}}</h2></header>
+    <div class="tf-form-grid">
+        {{formGroup systemFields.creatureType value=source.creatureType}}
+        {{formGroup systemFields.el value=source.el}}
+        {{formGroup systemFields.size value=source.size choices=config.sizes}}
+        {{formGroup systemFields.movement value=source.movement}}
+        {{formGroup systemFields.hp value=source.hp}}
+        {{formGroup systemFields.sanityCost value=source.sanityCost}}
+        {{formGroup systemFields.active value=source.active}}
+    </div>
+    <div class="tf-attribute-inputs">
+        {{#each config.attributes as |attr key|}}
+        <label class="tf-stat-field"><span>{{localize attr.abbreviation}}</span><input type="number" name="system.attributes.{{key}}" value="{{lookup @root.source.attributes key}}" step="1"></label>
+        {{/each}}
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Fleshcraft.defenses"}}</h2></header>
+    <div class="tf-attribute-inputs">
+        <label class="tf-stat-field"><span>{{localize "THEFADE.Defense.avoid"}}</span><input type="number" name="system.defenses.avoid" value="{{source.defenses.avoid}}" step="1"></label>
+        <label class="tf-stat-field"><span>{{localize "THEFADE.Defense.resilience"}}</span><input type="number" name="system.defenses.resilience" value="{{source.defenses.resilience}}" step="1"></label>
+        <label class="tf-stat-field"><span>{{localize "THEFADE.Defense.grit"}}</span><input type="number" name="system.defenses.grit" value="{{source.defenses.grit}}" step="1"></label>
+    </div>
+    <div class="tf-attribute-inputs">
+        <label class="tf-stat-field"><span>{{localize "THEFADE.Fleshcraft.ndHead"}}</span><input type="number" name="system.nd.head" value="{{source.nd.head}}" step="1"></label>
+        <label class="tf-stat-field"><span>{{localize "THEFADE.Fleshcraft.ndBody"}}</span><input type="number" name="system.nd.body" value="{{source.nd.body}}" step="1"></label>
+        <label class="tf-stat-field"><span>{{localize "THEFADE.Fleshcraft.ndArms"}}</span><input type="number" name="system.nd.arms" value="{{source.nd.arms}}" step="1"></label>
+        <label class="tf-stat-field"><span>{{localize "THEFADE.Fleshcraft.ndLegs"}}</span><input type="number" name="system.nd.legs" value="{{source.nd.legs}}" step="1"></label>
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Fleshcraft.abilities"}}</h2></header>
+    {{formGroup systemFields.naturalWeapons value=source.naturalWeapons elementType="textarea" stacked=true}}
+    {{formGroup systemFields.specialAbilities value=source.specialAbilities elementType="textarea" stacked=true}}
+    {{formGroup systemFields.skills value=source.skills elementType="textarea" stacked=true}}
+</section>

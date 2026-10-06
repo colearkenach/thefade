@@ -1,0 +1,56 @@
+<section class="tab tf-tab powers {{tab.cssClass}}" data-group="primary" data-tab="powers">
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Bonus.title"}}</h2></header>
+        <p class="tf-hint">{{#if (eq type "magicitem")}}{{localize "THEFADE.Bonus.itemHint"}}{{else}}{{localize "THEFADE.Bonus.featureHint"}}{{/if}}</p>
+        {{> thefade.bonuses bonuses=bonuses basePath="system.bonuses"}}
+    </section>
+
+    {{#if grants}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Grants.abilities"}}</h2></header>
+        {{#each grants.abilities}}
+        <fieldset class="tf-check-group">
+            <legend>{{label}}</legend>
+            {{#each abilities}}
+            <label class="tf-check-field" {{#if description}}data-tooltip="{{description}}"{{/if}}><input type="checkbox" name="system.traitGrants.abilities.{{../key}}.{{key}}" {{checked checked}}> {{label}}</label>
+            {{/each}}
+        </fieldset>
+        {{/each}}
+        <div class="form-group">
+            <label>{{localize "THEFADE.Grants.spellResistance"}}</label>
+            <div class="form-fields"><input type="number" name="system.traitGrants.spellResistancePercent" value="{{grants.spellResistancePercent}}" min="1" max="100" step="1"><span class="tf-of">%</span></div>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Grants.resistances"}}</h2></header>
+        <div class="tf-check-row">
+            {{#each grants.resistances}}<label class="tf-check-field"><input type="checkbox" name="system.traitGrants.resistances.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Grants.immunities"}}</h2></header>
+        <fieldset class="tf-check-group">
+            <legend>{{localize "THEFADE.Grants.damageTypes"}}</legend>
+            {{#each grants.damageImmunities}}<label class="tf-check-field"><input type="checkbox" name="system.traitGrants.immunities.damageTypes.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+        </fieldset>
+        <fieldset class="tf-check-group">
+            <legend>{{localize "THEFADE.Grants.statuses"}}</legend>
+            {{#each grants.statusImmunities}}<label class="tf-check-field"><input type="checkbox" name="system.traitGrants.immunities.statuses.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+        </fieldset>
+        <fieldset class="tf-check-group">
+            <legend>{{localize "THEFADE.Grants.effects"}}</legend>
+            {{#each grants.effectImmunities}}<label class="tf-check-field"><input type="checkbox" name="system.traitGrants.immunities.effects.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+        </fieldset>
+        <div class="form-group">
+            <label>{{localize "THEFADE.Grants.customImmunities"}}</label>
+            <div class="form-fields"><input type="text" name="system.traitGrants.customImmunities" value="{{grants.customImmunities}}"></div>
+        </div>
+        <div class="form-group stacked">
+            <label>{{localize "THEFADE.Grants.notes"}}</label>
+            <textarea name="system.traitGrants.notes" rows="2">{{grants.notes}}</textarea>
+        </div>
+    </section>
+    {{/if}}
+</section>

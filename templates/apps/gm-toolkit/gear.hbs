@@ -1,0 +1,79 @@
+<section class="tab tf-tab gear {{tab.cssClass}}" data-group="primary" data-tab="gear">
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.GMToolkit.gear.calculator"}}</h2>
+            <span class="tf-section-aside"><span class="tf-chip">{{localize "THEFADE.GMToolkit.gear.alChip" total=access.total}}</span></span>
+        </header>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.gear.hint"}}</p>
+        <div class="tf-form-grid">
+            <div class="form-group">
+                <label for="{{partId}}-itemName">{{localize "THEFADE.GMToolkit.gear.item"}}</label>
+                <div class="form-fields"><input id="{{partId}}-itemName" type="text" name="access.itemName" value="{{access.itemName}}" placeholder="{{localize 'THEFADE.GMToolkit.gear.defaultItem'}}"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-base">{{localize "THEFADE.GMToolkit.gear.base"}}</label>
+                <div class="form-fields"><select id="{{partId}}-base" name="access.base">{{selectOptions access.baseOptions selected=access.base}}</select></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-custom">{{localize "THEFADE.GMToolkit.gear.otherModifier"}}</label>
+                <div class="form-fields"><input id="{{partId}}-custom" type="number" name="access.custom" value="{{access.custom}}" step="1"></div>
+            </div>
+        </div>
+        <ul class="tf-rows">
+            {{#each access.rows}}
+            <li class="tf-row">
+                <label class="tf-row-label"><input type="checkbox" name="access.modifiers.{{key}}" {{checked checked}}> {{localize label}}</label>
+                {{#if variable}}
+                <select name="access.variable.{{key}}" aria-label="{{localize label}}" {{disabled (not checked)}}>{{selectOptions @root.access.variableOptions selected=value}}</select>
+                {{else}}
+                <span class="tf-chip">{{display}}</span>
+                {{/if}}
+            </li>
+            {{/each}}
+        </ul>
+        <div class="tf-row tf-total">
+            <span class="tf-row-label">{{localize "THEFADE.GMToolkit.gear.final"}}</span>
+            <strong class="tf-row-value">{{access.total}}</strong>
+        </div>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.gear.finalHint"}}</p>
+        <div class="tf-button-row">
+            <button type="button" class="tf-button" data-action="postAccessLevel"><i class="fa-solid fa-comment"></i> {{localize "THEFADE.GMToolkit.gear.post"}}</button>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.gear.uniqueExamples"}}</h2></header>
+        <table class="tf-table">
+            <thead><tr><th>{{localize "THEFADE.GMToolkit.gear.rank"}}</th><th>{{localize "THEFADE.GMToolkit.gear.al"}}</th><th>{{localize "THEFADE.GMToolkit.gear.examples"}}</th></tr></thead>
+            <tbody>
+                {{#each access.ranks}}<tr><td>{{localize label}}</td><td>{{value}}</td><td>{{examples}}</td></tr>{{/each}}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.gear.averageExamples"}}</h2></header>
+        <table class="tf-table">
+            <thead><tr><th>{{localize "THEFADE.GMToolkit.gear.al"}}</th><th>{{localize "THEFADE.GMToolkit.gear.examples"}}</th></tr></thead>
+            <tbody>
+                {{#each access.average}}<tr><td>{{value}}</td><td>{{examples}}</td></tr>{{/each}}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.gear.skills"}}</h2></header>
+        <table class="tf-table">
+            <thead><tr><th>{{localize "THEFADE.GMToolkit.gear.skill"}}</th><th>{{localize "THEFADE.GMToolkit.gear.use"}}</th></tr></thead>
+            <tbody>
+                {{#each access.skills}}<tr><td>{{localize label}}</td><td>{{use}}</td></tr>{{/each}}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.gear.availability"}}</h2></header>
+        <p>{{localize "THEFADE.GMToolkit.gear.markup"}}</p>
+        <p>{{localize "THEFADE.GMToolkit.gear.failedCheck"}}</p>
+    </section>
+</section>

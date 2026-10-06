@@ -1,0 +1,24 @@
+<section class="tf-section">
+    <div class="tf-form-grid">
+        {{#if (eq type "talent")}}
+        {{formGroup systemFields.talentType value=source.talentType choices=config.talentTypes}}
+        {{formGroup systemFields.associatedPath value=source.associatedPath}}
+        {{/if}}
+        {{#if (eq type "trait")}}
+        {{formGroup systemFields.traitType value=source.traitType choices=config.traitTypes}}
+        {{/if}}
+        {{#if (eq type "precept")}}
+        {{formGroup systemFields.deity value=source.deity}}
+        {{formGroup systemFields.domain value=source.domain}}
+        {{/if}}
+        {{formGroup systemFields.usesPerDay value=source.usesPerDay hint=(localize "THEFADE.Item.usesPerDayHint")}}
+        {{#if source.usesPerDay}}{{formGroup systemFields.usesToday value=source.usesToday}}{{/if}}
+    </div>
+    {{#if systemFields.prerequisites}}{{formGroup systemFields.prerequisites value=source.prerequisites stacked=true}}{{/if}}
+    {{#if (eq type "precept")}}
+    <div class="form-group stacked">
+        <label>{{systemFields.effect.label}}</label>
+        <textarea name="system.effect" rows="4">{{source.effect}}</textarea>
+    </div>
+    {{/if}}
+</section>

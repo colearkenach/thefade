@@ -1,0 +1,29 @@
+<div class="form-group">
+    <label>{{localize "Name"}}</label>
+    <div class="form-fields">
+        <input type="text" name="name" placeholder="{{defaultName}}" autofocus>
+    </div>
+</div>
+<div class="form-group">
+    <label>{{localize "Type"}}</label>
+    <div class="form-fields">
+        <select name="type">
+            {{#each families}}
+            <optgroup label="{{label}}">
+                {{#each options}}<option value="{{value}}" {{#if (eq value ../../type)}}selected{{/if}}>{{label}}</option>{{/each}}
+            </optgroup>
+            {{/each}}
+        </select>
+    </div>
+</div>
+{{#if hasFolders}}
+<div class="form-group">
+    <label>{{localize "DOCUMENT.Folder"}}</label>
+    <div class="form-fields">
+        <select name="folder">
+            <option value=""></option>
+            {{#each folders}}<option value="{{id}}" {{#if (eq id ../folder)}}selected{{/if}}>{{name}}</option>{{/each}}
+        </select>
+    </div>
+</div>
+{{/if}}

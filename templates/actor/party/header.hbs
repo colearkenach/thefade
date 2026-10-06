@@ -1,0 +1,19 @@
+<div class="tf-top">
+    <header class="tf-header">
+        <img class="tf-portrait" src="{{actor.img}}" alt="{{actor.name}}" {{#if editable}}data-action="editImage" data-edit="img" data-tooltip="THEFADE.Sheet.editPortrait"{{/if}}>
+        <div class="tf-identity">
+            <input class="tf-name" type="text" name="name" value="{{actor.name}}" aria-label="{{localize 'THEFADE.Sheet.name'}}">
+            <div class="tf-kicker">
+                <span class="tf-rule" aria-hidden="true"></span>
+                <span>{{localize "TYPES.Actor.party"}} · {{localize "THEFADE.Party.memberCount" count=memberCount}}</span>
+                <span class="tf-rule" aria-hidden="true"></span>
+            </div>
+        </div>
+        <div class="tf-header-actions">
+            <label class="tf-resource tf-purse">
+                <span class="label">{{localize "THEFADE.Currency.purse"}}</span>
+                <span class="value"><input type="number" name="system.currency.serpents" value="{{source.currency.serpents}}" min="0" step="0.01" aria-label="{{localize 'THEFADE.Currency.serpents'}}"><span class="tf-of">sp</span></span>
+            </label>
+        </div>
+    </header>
+</div>

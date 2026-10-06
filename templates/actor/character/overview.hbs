@@ -1,0 +1,165 @@
+<section class="tab tf-tab overview {{tab.cssClass}}" data-group="primary" data-tab="overview">
+
+    {{!-- Attributes --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Sheet.attributes"}}</h2>
+            <span class="tf-section-aside">
+                {{#if editMode}}
+                {{#if (eq creationMode "pointbuy")}}
+                <span class="tf-pointbuy {{#if system.pointBuy.over}}over{{/if}}" data-tooltip="THEFADE.Creation.pointBuyHint">
+                    {{localize "THEFADE.Creation.pointBuy" spent=system.pointBuy.spent budget=system.pointBuy.budget}}
+                </span>
+                {{else}}
+                <button type="button" class="tf-text-button" data-action="rollAttributes"><i class="fa-solid fa-dice"></i> {{localize "THEFADE.Creation.rollAttributes"}}</button>
+                {{/if}}
+                {{else}}{{localize "THEFADE.Sheet.clickToRoll"}}{{/if}}
+            </span>
+        </header>
+        <div class="tf-attributes">
+            {{#each attributes}}
+            <div class="tf-attribute {{#if infirm}}infirm{{/if}} {{#if locked}}locked{{/if}}" data-attribute="{{key}}">
+                <button type="button" class="tf-attribute-roll" data-action="rollAttribute" data-attribute="{{key}}"
+                    data-tooltip="{{localize 'THEFADE.Sheet.rollAttribute' attribute=label}}" {{#if ../editMode}}tabindex="-1"{{/if}}>
+                    <span class="tf-attribute-label">{{label}}</span>
+                    <span class="tf-attribute-total">{{total}}</span>
+                    <span class="tf-attribute-breakdown">{{breakdown}}</span>
+                    <span class="tf-dice"><i class="fa-solid fa-dice-d20" aria-hidden="true"></i>{{#if infirm}}{{localize "THEFADE.Attribute.infirm"}}{{else}}{{total}}D{{/if}}</span>
+                </button>
+                {{#if ../editMode}}
+                <div class="tf-attribute-edit">
+                    <label>{{localize "THEFADE.Attribute.baseShort"}}<input type="number" name="system.attributes.{{key}}.value" value="{{source.value}}" step="1"></label>
+                    <label>{{localize "THEFADE.Attribute.bonusShort"}}<input type="number" name="system.attributes.{{key}}.bonus" value="{{source.bonus}}" step="1"></label>
+                    <label>{{localize "THEFADE.Attribute.overrideShort"}}<input type="number" name="system.attributes.{{key}}.override" value="{{source.override}}" step="1" placeholder="—"></label>
+                    <label>{{localize "THEFADE.Attribute.speciesShort"}}<input type="number" name="system.attributes.{{key}}.speciesBonus" value="{{source.speciesBonus}}" step="1"></label>
+                </div>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        {{#if flexible.value}}
+        <div class="tf-flexible">
+            <label>{{localize "THEFADE.Attribute.flexibleChoice" value=flexible.value}}
+                <select name="system.species.flexibleBonus.selectedAttribute" {{#unless editable}}disabled{{/unless}}>
+                    {{selectOptions flexible.options selected=flexible.selected blank=(localize "THEFADE.Attribute.chooseFlexible")}}
+                </select>
+            </label>
+        </div>
+        {{/if}}
+    </section>
+
+    {{!-- Defenses --}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Sheet.defenses"}}</h2></header>
+        <div class="tf-defenses">
+            {{#each defenses}}
+            <div class="tf-defense" data-tooltip="{{formula}}">
+                <span class="tf-defense-value">{{value}}</span>
+                <span class="tf-defense-text">
+                    <span class="tf-defense-label">{{localize label}}</span>
+                    {{#if ../editMode}}
+                    <span class="tf-defense-edit">
+                        <label>{{localize "THEFADE.Attribute.bonusShort"}}<input type="number" name="system.defenses.{{bonus}}" value="{{sourceBonus}}" step="1"></label>
+                        <label>{{localize "THEFADE.Attribute.overrideShort"}}<input type="number" name="system.defenses.{{override}}" value="{{sourceOverride}}" step="1" placeholder="—"></label>
+                    </span>
+                    {{else}}
+                    <span class="tf-defense-formula">{{formula}}</span>
+                    {{/if}}
+                </span>
+            </div>
+            {{/each}}
+        </div>
+    </section>
+
+    <div class="tf-columns">
+        {{!-- Protection --}}
+        <section class="tf-section">
+            <header class="tf-section-head">
+                <h2>{{localize "THEFADE.Sheet.protection"}}</h2>
+                <span class="tf-section-aside">{{localize "THEFADE.Protection.apNd"}}</span>
+            </header>
+            <div class="tf-doll">
+                {{#each protection.doll}}
+                {{#if this}}
+                <div class="tf-doll-cell {{#if damaged}}damaged{{/if}}" data-location="{{location}}"
+                    data-tooltip="{{localize 'THEFADE.Protection.cellTooltip' armor=armor.current armorMax=armor.max nd=natural.current ndMax=natural.max}}">
+                    <span class="tf-doll-label">{{label}}</span>
+                    <span class="tf-doll-total">{{total}}<small>/ {{max}}</small></span>
+                    <span class="tf-doll-detail">AP {{armor.current}} · ND {{natural.current}}</span>
+                    <span class="tf-meter thin" aria-hidden="true"><span style="width: {{pct}}%"></span></span>
+                    {{#if ../editable}}
+                    <span class="tf-doll-controls">
+                        <button type="button" class="tf-icon-button" data-action="damageLocation" data-location="{{location}}" data-tooltip="THEFADE.Protection.damage" aria-label="{{localize 'THEFADE.Protection.damage'}}"><i class="fa-solid fa-minus"></i></button>
+                        <button type="button" class="tf-icon-button" data-action="restoreLocation" data-location="{{location}}" data-tooltip="THEFADE.Protection.restore" aria-label="{{localize 'THEFADE.Protection.restore'}}"><i class="fa-solid fa-rotate-left"></i></button>
+                    </span>
+                    {{/if}}
+                </div>
+                {{else}}<div class="tf-doll-gap"></div>{{/if}}
+                {{/each}}
+            </div>
+            <footer class="tf-section-foot">
+                <button type="button" class="tf-text-button" data-action="rollHitLocation"><i class="fa-solid fa-crosshairs"></i> {{localize "THEFADE.Protection.rollLocation"}}</button>
+            </footer>
+        </section>
+
+        {{!-- Attacks & stance --}}
+        <section class="tf-section">
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Sheet.attacks"}}</h2></header>
+            <ol class="tf-attacks">
+                {{#each attacks}}
+                <li class="tf-attack draggable {{#unless ready}}unready{{/unless}}" data-item-id="{{id}}">
+                    <div class="tf-attack-text">
+                        <a class="tf-attack-name" data-action="itemOpen">{{name}}</a>
+                        <span class="tf-attack-line">{{skill}} · {{damage}} · {{localize "THEFADE.Chip.critical" value=critical}} · {{range}}</span>
+                        {{#if qualities}}<span class="tf-attack-qualities">{{qualities}}</span>{{/if}}
+                        {{#unless ready}}<span class="tf-hint">{{localize "THEFADE.Weapon.notReady"}}</span>{{/unless}}
+                    </div>
+                    <button type="button" class="tf-roll-button" data-action="rollAttack" data-tooltip="{{localize 'THEFADE.Attack.rollHint' dice=dice}}">
+                        <i class="fa-solid fa-dice-d20" aria-hidden="true"></i>{{dice}}D
+                    </button>
+                </li>
+                {{else}}
+                <li class="tf-empty">{{localize "THEFADE.Attack.noWeapons"}}</li>
+                {{/each}}
+            </ol>
+            <div class="tf-stance">
+                <span class="tf-stance-label">{{localize "THEFADE.Sheet.stance"}}</span>
+                <div class="tf-stance-options" role="group" aria-label="{{localize 'THEFADE.Sheet.stance'}}">
+                    {{#each stances}}
+                    <button type="button" class="tf-pill {{#if active}}active{{/if}}" data-action="setStance" data-stance="{{key}}" aria-pressed="{{active}}" data-tooltip="{{description}}" {{#unless ../editable}}disabled{{/unless}}>{{label}}</button>
+                    {{/each}}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="tf-footer-grid">
+        <section class="tf-mini">
+            <h3>{{localize "THEFADE.Sheet.movement"}}</h3>
+            {{#if editMode}}
+            <div class="tf-movement-edit">
+                {{#each movement}}
+                <label>{{label}}<input type="number" name="system.movement.{{mode}}" value="{{source}}" min="0" step="1"></label>
+                {{/each}}
+            </div>
+            {{else}}
+            {{#each movement}}
+            <p class="tf-mini-line"><strong>{{label}} {{effective}}</strong> {{localize "THEFADE.Movement.hexes"}} <span class="tf-hint">· {{overland}} {{localize "THEFADE.Movement.overland"}}</span></p>
+            {{else}}<p class="tf-hint">{{localize "THEFADE.Movement.none"}}</p>{{/each}}
+            {{/if}}
+        </section>
+        <section class="tf-mini">
+            <h3>{{localize "THEFADE.Sheet.carrying"}}</h3>
+            <p class="tf-mini-line"><strong>{{encumbrance.load}} / {{encumbrance.light}}</strong> lb · {{encumbrance.currentTierLabel}}</p>
+            <span class="tf-meter thin" aria-hidden="true"><span style="width: {{encumbrance.pct}}%"></span></span>
+            <p class="tf-hint">{{localize "THEFADE.Encumbrance.bands" medium=encumbrance.medium heavy=encumbrance.heavy}}</p>
+        </section>
+        <section class="tf-mini">
+            <h3>{{localize "THEFADE.Sheet.conditions"}}</h3>
+            {{#each activeConditions}}
+            <span class="tf-chip condition">{{label}}{{#if intensity}} · {{intensity}}{{/if}}</span>
+            {{else}}<p class="tf-hint">{{localize "THEFADE.Condition.none"}}</p>{{/each}}
+            {{#if system.conditionSummary}}<p class="tf-hint">{{system.conditionSummary}}</p>{{/if}}
+        </section>
+    </div>
+</section>

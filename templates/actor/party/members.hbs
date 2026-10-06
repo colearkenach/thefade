@@ -1,0 +1,43 @@
+<section class="tab tf-tab members {{tab.cssClass}}" data-group="primary" data-tab="members">
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Party.members"}}</h2>
+            {{#if editable}}
+            <span class="tf-section-aside tf-section-actions">
+                <button type="button" class="tf-icon-button" data-action="addMember" data-tooltip="THEFADE.Party.addMember" aria-label="{{localize 'THEFADE.Party.addMember'}}"><i class="fa-solid fa-user-plus"></i></button>
+            </span>
+            {{/if}}
+        </header>
+        <ol class="tf-member-list">
+            {{#each members}}
+            <li class="tf-member" data-member-id="{{id}}">
+                <img src="{{img}}" alt="" class="tf-thumb">
+                <div class="tf-member-text">
+                    {{#if canView}}<a class="tf-item-name" data-action="openMember">{{name}}</a>{{else}}<span class="tf-item-name">{{name}}</span>{{/if}}
+                    <span class="tf-hint">{{localize "THEFADE.Sheet.level"}} {{level}} · {{xp}} XP · {{serpents}} sp</span>
+                </div>
+                <div class="tf-member-vitals">
+                    <span class="tf-mini-vital hp" data-tooltip="THEFADE.Vital.hp"><i class="fa-solid fa-heart"></i> {{hp.value}} / {{hp.max}}</span>
+                    <span class="tf-mini-vital sanity" data-tooltip="THEFADE.Vital.sanity"><i class="fa-solid fa-brain"></i> {{sanity.value}} / {{sanity.max}}</span>
+                </div>
+                {{#if @root.editable}}
+                <button type="button" class="tf-icon-button" data-action="removeMember" data-tooltip="THEFADE.Party.removeMember" aria-label="{{localize 'THEFADE.Party.removeMember'}}"><i class="fa-solid fa-user-minus"></i></button>
+                {{/if}}
+            </li>
+            {{else}}
+            <li class="tf-empty">{{localize "THEFADE.Party.empty"}}</li>
+            {{/each}}
+        </ol>
+    </section>
+
+    {{#if editable}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Party.rewards"}}</h2></header>
+        <div class="tf-button-row">
+            <button type="button" class="tf-button" data-action="giveXP"><i class="fa-solid fa-star"></i> {{localize "THEFADE.Party.giveXP"}}</button>
+            <button type="button" class="tf-button" data-action="giveCurrency"><i class="fa-solid fa-coins"></i> {{localize "THEFADE.Party.giveCurrency"}}</button>
+            <button type="button" class="tf-button" data-action="dividePool"><i class="fa-solid fa-divide"></i> {{localize "THEFADE.Party.dividePool"}}</button>
+        </div>
+    </section>
+    {{/if}}
+</section>

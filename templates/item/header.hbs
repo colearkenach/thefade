@@ -1,0 +1,38 @@
+<div class="tf-top">
+    <header class="tf-header tf-item-header">
+        <img class="tf-item-img" src="{{item.img}}" alt="{{item.name}}" {{#if editable}}data-action="editImage" data-edit="img" data-tooltip="THEFADE.ItemSheet.editImage"{{/if}}>
+        <div class="tf-identity">
+            <input class="tf-name" type="text" name="name" value="{{item.name}}" placeholder="{{localize 'THEFADE.Sheet.name'}}" aria-label="{{localize 'THEFADE.Sheet.name'}}" {{#unless editable}}disabled{{/unless}}>
+            <div class="tf-kicker">
+                <span class="tf-rule" aria-hidden="true"></span>
+                <span>{{typeLabel}}{{#if familyLabel}} · {{familyLabel}}{{/if}}</span>
+                <span class="tf-rule" aria-hidden="true"></span>
+            </div>
+            {{#if chips.length}}
+            <div class="tf-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</div>
+            {{/if}}
+        </div>
+        <div class="tf-header-actions">
+            {{#if resource}}
+            <div class="tf-resource" data-tooltip="{{localize resource.label}}">
+                <span class="label">{{localize resource.label}}</span>
+                {{#if (eq resource.kind "daily")}}
+                <span class="value">{{#if resource.max}}{{resource.value}} / {{resource.max}}{{else}}∞{{/if}}</span>
+                {{else}}
+                <span class="value"><input type="number" name="{{resource.path}}" value="{{resource.value}}" min="0" step="1" aria-label="{{localize resource.label}}" {{#unless editable}}disabled{{/unless}}>{{#if resource.max}}<span class="tf-of">/ {{resource.max}}</span>{{/if}}</span>
+                {{/if}}
+            </div>
+            {{/if}}
+            <div class="tf-button-row">
+                {{#if owned}}
+                <button type="button" class="tf-button" data-action="use"><i class="fa-solid fa-hand-sparkles" aria-hidden="true"></i> {{localize "THEFADE.Item.use"}}</button>
+                {{/if}}
+                {{#if (eq resource.kind "daily")}}
+                <button type="button" class="tf-icon-button" data-action="resetUses" data-tooltip="THEFADE.Item.resetUses" aria-label="{{localize 'THEFADE.Item.resetUses'}}"><i class="fa-solid fa-rotate-left"></i></button>
+                {{/if}}
+                <button type="button" class="tf-icon-button" data-action="toChat" data-tooltip="THEFADE.Item.toChat" aria-label="{{localize 'THEFADE.Item.toChat'}}"><i class="fa-solid fa-comment"></i></button>
+            </div>
+        </div>
+    </header>
+    {{#if physical}}{{> thefade.physical}}{{/if}}
+</div>

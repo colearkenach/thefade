@@ -1,0 +1,15 @@
+<div class="tf-form-grid">
+    {{#each generatedFields}}
+    {{#if options}}
+    {{formGroup field value=value choices=options localize=true disabled=(not @root.editable)}}
+    {{else if long}}
+    {{formGroup field value=value elementType="textarea" classes="wide" stacked=true disabled=(not @root.editable)}}
+    {{else}}
+    {{formGroup field value=value disabled=(not @root.editable)}}
+    {{/if}}
+    {{/each}}
+</div>
+{{#if (eq type "alchemical")}}
+<p class="tf-hint">{{localize "THEFADE.Alchemy.craftHint" discipline=system.discipline cost=system.craftCost}}</p>
+{{#if owned}}<button type="button" class="tf-button" data-action="craft"><i class="fa-solid fa-flask"></i> {{localize "THEFADE.Alchemy.craft"}}</button>{{/if}}
+{{/if}}

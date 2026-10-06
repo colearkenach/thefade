@@ -1,0 +1,71 @@
+<section class="tab tf-tab encounter {{tab.cssClass}}" data-group="primary" data-tab="encounter">
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.GMToolkit.encounter.heading"}}</h2>
+            <span class="tf-section-aside tf-hint">{{sources.encounterDie}}</span>
+        </header>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.encounter.hint"}}</p>
+        <div class="tf-form-grid">
+            <div class="form-group">
+                <label for="{{partId}}-danger">{{localize "THEFADE.GMToolkit.encounter.danger"}}</label>
+                <div class="form-fields">
+                    <select id="{{partId}}-danger" name="encounter.danger">{{selectOptions encounter.dangerOptions selected=encounter.danger}}</select>
+                </div>
+                {{#if encounter.example}}<p class="tf-hint">{{encounter.example}}</p>{{/if}}
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-modifier">{{localize "THEFADE.GMToolkit.encounter.situation"}}</label>
+                <div class="form-fields">
+                    <select id="{{partId}}-modifier" name="encounter.modifier">{{selectOptions encounter.modifierOptions selected=encounter.modifier blank=(localize "THEFADE.GMToolkit.encounter.noModifier")}}</select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-custom">{{localize "THEFADE.GMToolkit.encounter.otherModifier"}}</label>
+                <div class="form-fields">
+                    <input id="{{partId}}-custom" type="number" name="encounter.custom" value="{{encounter.custom}}" step="1">
+                </div>
+            </div>
+        </div>
+        <p class="tf-hint">{{encounter.triggerHint}}</p>
+        <div class="tf-button-row">
+            <button type="button" class="tf-button" data-action="rollEncounter" {{disabled (not encounter.canRoll)}}>
+                <i class="fa-solid fa-dice-d12"></i> {{localize "THEFADE.GMToolkit.encounter.roll"}}
+            </button>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.GMToolkit.encounter.escalation"}}</h2>
+            <span class="tf-section-aside">
+                <span class="tf-chip">{{encounter.escalation}}</span>
+                <button type="button" class="tf-icon-button" data-action="resetEscalation" data-tooltip="THEFADE.GMToolkit.encounter.resetEscalation" aria-label="{{localize 'THEFADE.GMToolkit.encounter.resetEscalation'}}"><i class="fa-solid fa-rotate-left"></i></button>
+            </span>
+        </header>
+        <p class="tf-hint">{{#if encounter.escalates}}{{localize "THEFADE.GMToolkit.encounter.escalationHint"}}{{else}}{{localize "THEFADE.GMToolkit.encounter.noEscalationHint"}}{{/if}}</p>
+        <table class="tf-table">
+            <thead>
+                <tr><th>{{localize "THEFADE.GMToolkit.encounter.typeRoll"}}</th><th>{{localize "THEFADE.GMToolkit.encounter.typeResult"}}</th></tr>
+            </thead>
+            <tbody>
+                {{#each encounter.typeRows}}
+                <tr class="{{key}}"><td>{{range}}</td><td><strong>{{localize label}}</strong> — {{localize description}}</td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.encounter.size.heading"}}</h2></header>
+        <table class="tf-table">
+            <thead>
+                <tr><th>{{localize "THEFADE.GMToolkit.encounter.size.elColumn"}}</th><th>{{localize "THEFADE.GMToolkit.encounter.size.countColumn"}}</th></tr>
+            </thead>
+            <tbody>
+                {{#each encounter.sizeRows}}
+                <tr><td>{{localize el}}</td><td>{{localize count}}</td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </section>
+</section>

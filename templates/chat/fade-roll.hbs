@@ -1,0 +1,13 @@
+<div class="thefade chat-card roll-card {{#if outcome}}{{outcome.key}}{{/if}}">
+    {{#if label}}<header class="tf-card-header"><div class="tf-card-title"><h3>{{label}}</h3><span class="tf-card-subtitle">{{localize "THEFADE.Roll.poolOf" dice=poolSize}}</span></div></header>{{/if}}
+    {{#if faces.length}}
+    <div class="tf-dice-row">{{#each faces}}<span class="tf-face {{cls}}">{{face}}</span>{{/each}}</div>
+    {{/if}}
+    <div class="tf-result-line">
+        <span class="tf-successes"><strong>{{successes}}</strong> {{localize "THEFADE.Roll.successes"}}</span>
+        {{#if dt}}<span class="tf-vs">{{localize "THEFADE.Roll.vsDT" dt=dt}}</span>{{/if}}
+        {{#if outcome}}<span class="tf-outcome {{outcome.key}}">{{outcome.label}}</span>{{/if}}
+    </div>
+    {{#if notes.length}}<ul class="tf-notes">{{#each notes}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+    {{#if tooltip}}<details class="tf-roll-details"><summary>{{localize "THEFADE.Roll.details"}}</summary>{{{tooltip}}}</details>{{/if}}
+</div>

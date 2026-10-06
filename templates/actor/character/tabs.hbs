@@ -1,0 +1,7 @@
+<nav class="sheet-tabs tabs tf-tabs" data-group="primary" aria-label="{{localize 'THEFADE.Sheet.sections'}}">
+    {{#each tabs}}
+    <a class="item {{cssClass}}" data-action="tab" data-group="{{group}}" data-tab="{{id}}" {{#if active}}aria-current="page"{{/if}}>
+        <i class="{{icon}}" aria-hidden="true"></i><span>{{localize label}}</span>
+    </a>
+    {{/each}}
+</nav>

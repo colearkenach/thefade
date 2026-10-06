@@ -1,0 +1,92 @@
+<section class="tab tf-tab magic {{tab.cssClass}}" data-group="primary" data-tab="magic">
+    <div class="tf-columns">
+        {{!-- Sin & Dark Magic --}}
+        <section class="tf-section">
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Magic.sin"}}</h2></header>
+            <div class="tf-sin {{#if darkMagic.over}}over{{/if}}">
+                <p class="tf-big-line"><strong>{{darkMagic.currentSin}}</strong> / {{darkMagic.sinThreshold}} <span class="tf-hint">{{localize "THEFADE.Magic.threshold"}}</span></p>
+                <span class="tf-meter" aria-hidden="true"><span style="width: {{darkMagic.pct}}%"></span></span>
+                <p class="tf-hint">{{localize "THEFADE.Magic.thresholdHint" spells=darkMagic.spellsLearnedCount}}</p>
+                <div class="tf-form-grid">
+                    <label>{{localize "THEFADE.Magic.thresholdBonus"}}<input type="number" name="system.darkMagic.sinThresholdBonus" value="{{source.darkMagic.sinThresholdBonus}}" step="1" {{#unless editMode}}disabled{{/unless}}></label>
+                    <label>{{localize "THEFADE.Magic.addiction"}}<select name="system.darkMagic.addictionLevel" {{#unless editable}}disabled{{/unless}}>{{selectOptions addictionOptions selected=source.darkMagic.addictionLevel}}</select></label>
+                </div>
+                <p class="tf-hint">{{darkMagic.stageSummary}}</p>
+                <div class="tf-button-row">
+                    <button type="button" class="tf-text-button" data-action="rollAddiction" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-skull"></i> {{localize "THEFADE.Magic.rollAddiction"}}</button>
+                    <button type="button" class="tf-text-button" data-action="restDaily" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-moon"></i> {{localize "THEFADE.Rest.daily"}}</button>
+                </div>
+            </div>
+        </section>
+
+        {{!-- Aura --}}
+        <section class="tf-section">
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Magic.aura"}}</h2></header>
+            <div class="tf-form-grid">
+                <label>{{localize "THEFADE.Magic.auraColor"}}<select name="system.aura.color" {{#unless editable}}disabled{{/unless}}>{{selectOptions auraOptions.colors selected=source.aura.color}}</select></label>
+                <label>{{localize "THEFADE.Magic.auraShape"}}<select name="system.aura.shape" {{#unless editable}}disabled{{/unless}}>{{selectOptions auraOptions.shapes selected=source.aura.shape}}</select></label>
+                <label>{{localize "THEFADE.Magic.auraIntensity"}}<select name="system.aura.intensity" {{#unless editable}}disabled{{/unless}}>{{selectOptions auraOptions.intensities selected=source.aura.intensity}}</select></label>
+            </div>
+            {{#if ignition.summary}}<p class="tf-hint tf-ignition-status {{#if ignition.active}}active{{/if}}"><i class="fa-solid fa-fire"></i> {{ignition.summary}}</p>{{/if}}
+            <div class="tf-button-row">
+                {{#if ignition.active}}
+                <button type="button" class="tf-text-button" data-action="ignite" data-end="1" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-fire-extinguisher"></i> {{localize "THEFADE.Magic.endIgnition"}}</button>
+                {{else}}
+                <button type="button" class="tf-text-button" data-action="ignite" {{#unless (and editable ignition.canAttempt)}}disabled{{/unless}}><i class="fa-solid fa-fire"></i> {{localize "THEFADE.Magic.ignite"}}</button>
+                {{/if}}
+            </div>
+        </section>
+    </div>
+
+    {{!-- Spells --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Magic.spells"}}</h2>
+            <span class="tf-section-aside tf-section-actions">
+                {{#if spellcasting}}<span class="tf-chip" data-tooltip="THEFADE.Magic.spellcastingHint">{{localize "THEFADE.Magic.spellcasting"}} {{spellcasting.rank}} · {{spellcasting.dice}}D</span>{{/if}}
+                {{#if editable}}
+                <button type="button" class="tf-icon-button" data-action="browse" data-type="spell" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="spell" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+                {{/if}}
+            </span>
+        </header>
+        {{#each spellSchools}}
+        <h3 class="tf-subhead {{#if dark}}dark{{/if}}">{{label}}</h3>
+        <ol class="tf-item-list tf-spells">
+            {{#each spells}}
+            <li class="tf-item draggable {{#if expanded}}expanded{{/if}} {{#if system.isDark}}dark{{/if}}" data-item-id="{{id}}">
+                <img src="{{img}}" alt="" class="tf-thumb">
+                <div class="tf-item-text">
+                    <a class="tf-item-name" data-action="itemOpen">{{name}}</a>
+                    <span class="tf-item-chips">
+                        <span class="tf-chip">{{localize "THEFADE.Chip.successes" value=system.requirementsLabel}}</span>
+                        {{#if system.damage}}<span class="tf-chip">{{system.damageLabel}}</span>{{/if}}
+                        {{#if system.attackTargets.length}}<span class="tf-chip">vs {{#each system.attackTargets}}{{this}}{{#unless @last}} & {{/unless}}{{/each}}</span>{{/if}}
+                        <span class="tf-chip">{{system.time}}</span>
+                    </span>
+                </div>
+                <div class="tf-item-controls">
+                    <button type="button" class="tf-roll-button" data-action="castSpell" data-tooltip="THEFADE.Magic.castHint"><i class="fa-solid fa-wand-sparkles" aria-hidden="true"></i>{{localize "THEFADE.Magic.cast"}}</button>
+                    <button type="button" class="tf-icon-button" data-action="itemExpand" aria-expanded="{{expanded}}"><i class="fa-solid {{#if expanded}}fa-chevron-up{{else}}fa-chevron-down{{/if}}"></i></button>
+                </div>
+                {{#if expanded}}
+                <div class="tf-item-summary">
+                    {{#if description}}{{{description}}}{{else}}<p class="tf-hint">{{localize "THEFADE.Item.noDescription"}}</p>{{/if}}
+                    {{#if system.bonusEffect}}<p><strong>{{localize "THEFADE.Spell.bonusEffect"}}:</strong> {{system.bonusEffect}}</p>{{/if}}
+                </div>
+                {{/if}}
+            </li>
+            {{/each}}
+        </ol>
+        {{else}}
+        <p class="tf-hint">{{localize "THEFADE.Magic.noSpells"}}</p>
+        {{/each}}
+    </section>
+
+    {{#if staves.length}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Magic.devices"}}</h2></header>
+        <ol class="tf-item-list">{{#each staves}}{{> "thefade.item-row" this editable=../editable}}{{/each}}</ol>
+    </section>
+    {{/if}}
+</section>

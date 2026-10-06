@@ -1,0 +1,70 @@
+<section class="tab tf-tab monster {{tab.cssClass}}" data-group="primary" data-tab="monster">
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.monster.heading"}}</h2></header>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.monster.hint"}}</p>
+        <div class="tf-form-grid">
+            <div class="form-group">
+                <label for="{{partId}}-name">{{localize "THEFADE.GMToolkit.monster.name"}}</label>
+                <div class="form-fields"><input id="{{partId}}-name" type="text" name="monster.name" value="{{monster.name}}" placeholder="{{localize 'THEFADE.GMToolkit.monster.defaultName'}}"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-el">{{localize "THEFADE.GMToolkit.monster.el"}}</label>
+                <div class="form-fields"><input id="{{partId}}-el" type="number" name="monster.el" value="{{monster.el}}" min="1" step="1"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-size">{{localize "THEFADE.GMToolkit.monster.size"}}</label>
+                <div class="form-fields"><select id="{{partId}}-size" name="monster.size">{{selectOptions monster.sizeOptions selected=monster.size localize=true}}</select></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-role">{{localize "THEFADE.GMToolkit.monster.role"}}</label>
+                <div class="form-fields"><select id="{{partId}}-role" name="monster.role">{{selectOptions monster.roleOptions selected=monster.role localize=true}}</select></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-attackTier">{{localize "THEFADE.GMToolkit.monster.attackTier"}}</label>
+                <div class="form-fields"><select id="{{partId}}-attackTier" name="monster.attackTier">{{selectOptions monster.attackOptions selected=monster.attackTier localize=true}}</select></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-defenseTier">{{localize "THEFADE.GMToolkit.monster.defenseTier"}}</label>
+                <div class="form-fields"><select id="{{partId}}-defenseTier" name="monster.defenseTier">{{selectOptions monster.defenseOptions selected=monster.defenseTier localize=true}}</select></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-armor">{{localize "THEFADE.GMToolkit.monster.armor"}}</label>
+                <div class="form-fields"><select id="{{partId}}-armor" name="monster.armor">{{selectOptions monster.armorOptions selected=monster.armor localize=true}}</select></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-damageType">{{localize "THEFADE.GMToolkit.monster.damageType"}}</label>
+                <div class="form-fields"><select id="{{partId}}-damageType" name="monster.damageType">{{selectOptions monster.damageTypeOptions selected=monster.damageType localize=true}}</select></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.monster.preview"}}</h2></header>
+        <table class="tf-table">
+            <thead>
+                <tr>
+                    <th>{{localize "THEFADE.GMToolkit.monster.stat.el"}}</th>
+                    <th>{{localize "THEFADE.GMToolkit.monster.stat.attack"}}</th>
+                    <th>{{localize "THEFADE.GMToolkit.monster.stat.defense"}}</th>
+                    <th>{{localize "THEFADE.GMToolkit.monster.stat.hp"}}</th>
+                    <th>{{localize "THEFADE.GMToolkit.monster.stat.ap"}}</th>
+                    <th>{{localize "THEFADE.GMToolkit.monster.stat.damage"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{monster.stats.el}}</td>
+                    <td>{{localize "THEFADE.GMToolkit.monster.attackDice" dice=monster.stats.attackDice}}</td>
+                    <td>{{monster.stats.defense}}</td>
+                    <td>{{monster.stats.hp}}</td>
+                    <td>{{monster.stats.ap}}</td>
+                    <td>{{monster.stats.damage}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.monster.createHint" attribute=monster.attribute}}</p>
+        <div class="tf-button-row">
+            <button type="button" class="tf-button" data-action="createMonster"><i class="fa-solid fa-user-plus"></i> {{localize "THEFADE.GMToolkit.monster.create"}}</button>
+        </div>
+    </section>
+</section>

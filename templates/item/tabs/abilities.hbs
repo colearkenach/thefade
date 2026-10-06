@@ -1,0 +1,28 @@
+<section class="tab tf-tab abilities {{tab.cssClass}}" data-group="primary" data-tab="abilities">
+    <ol class="tf-ability-editor">
+        {{#each abilities}}
+        <li class="tf-ability-card" data-ability-id="{{id}}">
+            <div class="tf-row">
+                <input type="text" class="tf-ability-name" name="{{path}}.name" value="{{name}}" placeholder="{{localize 'THEFADE.Abilities.name'}}" aria-label="{{localize 'THEFADE.Abilities.name'}}">
+                <select name="{{path}}.activation" aria-label="{{localize 'THEFADE.Abilities.activation'}}">{{selectOptions @root.config.abilityActivations selected=activation localize=true}}</select>
+                <button type="button" class="tf-icon-button" data-action="removeAbility" data-tooltip="THEFADE.Abilities.delete" aria-label="{{localize 'THEFADE.Abilities.delete'}}"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            {{#if (eq activation "active")}}
+            <div class="tf-row">
+                <label class="tf-inline-field">{{localize "THEFADE.Abilities.actionCost"}} <input type="text" name="{{path}}.actionCost" value="{{actionCost}}" placeholder="{{localize 'THEFADE.Abilities.actionCostHint'}}"></label>
+                <label class="tf-inline-field">{{localize "THEFADE.Abilities.duration"}} <input type="number" class="tf-short" name="{{path}}.durationRounds" value="{{durationRounds}}" min="0" step="1"> {{localize "THEFADE.Abilities.rounds"}}</label>
+            </div>
+            {{/if}}
+            <textarea name="{{path}}.description" rows="3" placeholder="{{localize 'THEFADE.Abilities.description'}}" aria-label="{{localize 'THEFADE.Abilities.description'}}">{{description}}</textarea>
+            <details class="tf-ability-bonuses" {{#if bonuses.length}}open{{/if}}>
+                <summary>{{localize "THEFADE.Bonus.title"}} ({{bonuses.length}})</summary>
+                <p class="tf-hint">{{#if (eq activation "active")}}{{localize "THEFADE.Bonus.activeHint"}}{{else}}{{localize "THEFADE.Bonus.passiveHint"}}{{/if}}</p>
+                {{> thefade.bonuses bonuses=bonuses basePath=(concat path ".bonuses")}}
+            </details>
+        </li>
+        {{else}}
+        <li class="tf-empty">{{localize "THEFADE.Abilities.none"}}</li>
+        {{/each}}
+    </ol>
+    <button type="button" class="tf-text-button" data-action="addAbility"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Abilities.add"}}</button>
+</section>

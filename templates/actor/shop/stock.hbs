@@ -1,0 +1,42 @@
+<section class="tab tf-tab stock {{tab.cssClass}}" data-group="primary" data-tab="stock">
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Shop.stock"}}</h2>
+            {{#if editable}}
+            <span class="tf-section-aside tf-section-actions">
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="{{physicalTypes}}" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+            </span>
+            {{/if}}
+        </header>
+        <table class="tf-table tf-stock">
+            <thead>
+                <tr>
+                    <th>{{localize "THEFADE.Shop.item"}}</th>
+                    <th class="center">{{localize "THEFADE.Shop.inStock"}}</th>
+                    <th class="center">{{localize "THEFADE.Shop.price"}}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each stock}}
+                <tr class="draggable" data-item-id="{{id}}">
+                    <td>
+                        <a class="tf-item-name" data-action="itemExpand"><img src="{{img}}" alt="" class="tf-thumb">{{name}}</a>
+                        <div class="tf-item-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</div>
+                        {{#if expanded}}<div class="tf-item-summary">{{#if description}}{{{description}}}{{else}}<p class="tf-hint">{{localize "THEFADE.Item.noDescription"}}</p>{{/if}}</div>{{/if}}
+                    </td>
+                    <td class="center">{{quantity}}</td>
+                    <td class="center">{{price}} sp</td>
+                    <td class="center">
+                        {{#if ../canTrade}}<button type="button" class="tf-roll-button" data-action="buy"><i class="fa-solid fa-cart-shopping" aria-hidden="true"></i> {{localize "THEFADE.Shop.buy"}}</button>{{/if}}
+                        {{#if ../editable}}<button type="button" class="tf-icon-button" data-action="itemOpen" data-tooltip="THEFADE.Item.edit" aria-label="{{localize 'THEFADE.Item.edit'}}"><i class="fa-solid fa-pen-to-square"></i></button>{{/if}}
+                    </td>
+                </tr>
+                {{else}}
+                <tr><td colspan="4" class="tf-empty">{{localize "THEFADE.Shop.empty"}}</td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <p class="tf-hint">{{#if editable}}{{localize "THEFADE.Shop.gmHint"}}{{else}}{{localize "THEFADE.Shop.playerHint"}}{{/if}}</p>
+    </section>
+</section>

@@ -1,0 +1,105 @@
+<div class="tf-top">
+    <header class="tf-header">
+        <img class="tf-portrait" src="{{actor.img}}" alt="{{actor.name}}" {{#if editable}}data-action="editImage" data-edit="img" data-tooltip="THEFADE.Sheet.editPortrait"{{/if}}>
+        <div class="tf-identity">
+            {{#if editMode}}
+            <input class="tf-name" type="text" name="name" value="{{actor.name}}" placeholder="{{localize 'THEFADE.Sheet.name'}}" aria-label="{{localize 'THEFADE.Sheet.name'}}">
+            {{else}}
+            <h1 class="tf-name">{{actor.name}}</h1>
+            {{/if}}
+            <div class="tf-kicker">
+                <span class="tf-rule" aria-hidden="true"></span>
+                <span>{{#each header.subtitle}}{{this}}{{#unless @last}} · {{/unless}}{{else}}{{localize "THEFADE.Sheet.noSpecies"}}{{/each}}</span>
+                <span class="tf-rule" aria-hidden="true"></span>
+            </div>
+            <div class="tf-meta">
+                {{#if editMode}}
+                <label class="tf-inline-field">{{localize "THEFADE.Sheet.level"}} <input type="number" name="system.level" value="{{source.level}}" min="0" step="1"></label>
+                <label class="tf-inline-field">{{localize "THEFADE.Sheet.experience"}} <input type="number" name="system.experience" value="{{source.experience}}" min="0" step="1"></label>
+                {{else}}
+                <span>{{localize "THEFADE.Sheet.level"}} {{system.level}}</span>
+                {{/if}}
+                {{#each header.paths}}
+                <span class="tf-sep">·</span>
+                <a class="tf-link" data-action="itemOpen" data-item-id="{{id}}">{{name}}{{#if monster}}{{else}} ({{localize "THEFADE.Path.tierShort"}} {{tier}}){{/if}}</a>
+                {{/each}}
+                {{#if header.multipleSpecies}}<span class="tf-warning" data-tooltip="THEFADE.Sheet.multipleSpecies"><i class="fa-solid fa-triangle-exclamation"></i></span>{{/if}}
+            </div>
+        </div>
+        <div class="tf-header-actions">
+            <button type="button" class="tf-button tf-initiative" data-action="rollInitiative" data-tooltip="THEFADE.Sheet.initiativeHint">
+                <i class="fa-solid fa-dice-d20" aria-hidden="true"></i>
+                <span class="label">{{localize "THEFADE.Sheet.initiative"}}</span>
+                <span class="value">{{thefade-signed system.initiative.mod}}</span>
+            </button>
+            <div class="tf-dice-tool" role="group" aria-label="{{localize 'THEFADE.Sheet.diceTool'}}">
+                <input type="number" name="poolDice" value="1" min="1" max="100" aria-label="{{localize 'THEFADE.Sheet.diceCount'}}" data-tooltip="THEFADE.Sheet.diceCount">
+                <span class="unit">D</span>
+                <button type="button" class="tf-icon-button" data-action="rollPool" data-tooltip="THEFADE.Sheet.rollPool" aria-label="{{localize 'THEFADE.Sheet.rollPool'}}"><i class="fa-solid fa-dice"></i></button>
+                <button type="button" class="tf-icon-button" data-action="opposedRoll" data-tooltip="THEFADE.Sheet.opposed" aria-label="{{localize 'THEFADE.Sheet.opposed'}}"><i class="fa-solid fa-people-arrows"></i></button>
+                <button type="button" class="tf-icon-button" data-action="aidAnother" data-tooltip="THEFADE.Sheet.aid" aria-label="{{localize 'THEFADE.Sheet.aid'}}"><i class="fa-solid fa-hands-helping"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <section class="tf-vitals">
+        <div class="tf-vital hp state-{{system.hp.state}}">
+            <div class="tf-vital-head">
+                <span class="tf-vital-label">{{localize "THEFADE.Vital.hp"}}</span>
+                <span class="tf-chip state">{{system.hp.stateLabel}}</span>
+            </div>
+            <div class="tf-vital-value">
+                <input type="number" name="system.hp.value" value="{{source.hp.value}}" step="1" aria-label="{{localize 'THEFADE.Vital.hpCurrent'}}" {{#unless editable}}disabled{{/unless}}>
+                <span class="tf-of">/ {{system.hp.max}}</span>
+                <button type="button" class="tf-icon-button" data-action="takeRest" data-tooltip="THEFADE.Rest.restHint" aria-label="{{localize 'THEFADE.Rest.rest'}}"><i class="fa-solid fa-bed"></i></button>
+            </div>
+            <div class="tf-meter" aria-hidden="true"><span style="width: {{system.hp.pct}}%"></span></div>
+            <div class="tf-vital-foot" data-tooltip="{{system.hp.formula}}">
+                {{#if editMode}}
+                <label class="tf-inline-field">{{localize "THEFADE.Vital.miscBonus"}} <input type="number" name="system.hpMiscBonus" value="{{source.hpMiscBonus}}" step="1"></label>
+                {{else}}{{system.hp.formula}}{{/if}}
+            </div>
+        </div>
+
+        <div class="tf-vital sanity">
+            <div class="tf-vital-head">
+                <span class="tf-vital-label">{{localize "THEFADE.Vital.sanity"}}</span>
+                <span class="tf-hint">{{localize "THEFADE.Vital.meltdownAt" value=system.sanity.meltdown}}</span>
+            </div>
+            <div class="tf-vital-value">
+                <input type="number" name="system.sanity.value" value="{{source.sanity.value}}" step="1" aria-label="{{localize 'THEFADE.Vital.sanityCurrent'}}" {{#unless editable}}disabled{{/unless}}>
+                <span class="tf-of">/ {{system.sanity.max}}</span>
+            </div>
+            <div class="tf-meter" aria-hidden="true"><span style="width: {{system.sanity.pct}}%"></span></div>
+            <div class="tf-vital-foot" data-tooltip="{{system.sanity.formula}}">
+                {{#if editMode}}
+                <label class="tf-inline-field">{{localize "THEFADE.Vital.miscBonus"}} <input type="number" name="system.sanity.miscBonus" value="{{source.sanity.miscBonus}}" step="1"></label>
+                {{else}}{{system.sanity.formula}}{{/if}}
+            </div>
+        </div>
+
+        <div class="tf-vital sin {{#if header.sin.over}}over{{/if}}">
+            <div class="tf-vital-head">
+                <span class="tf-vital-label">{{localize "THEFADE.Vital.sin"}}</span>
+                <span class="tf-hint">{{localize "THEFADE.Vital.threshold" value=header.sin.threshold}}</span>
+            </div>
+            <div class="tf-vital-value">
+                <input type="number" name="system.darkMagic.currentSin" value="{{source.darkMagic.currentSin}}" min="0" step="1" aria-label="{{localize 'THEFADE.Vital.sinCurrent'}}" {{#unless editable}}disabled{{/unless}}>
+                <span class="tf-of">/ {{header.sin.threshold}}</span>
+            </div>
+            <div class="tf-meter" aria-hidden="true"><span style="width: {{thefade-pct header.sin.value header.sin.threshold}}%"></span></div>
+            <div class="tf-vital-foot">{{localize (lookup config.addictionStages system.darkMagic.addictionLevel)}}</div>
+        </div>
+
+        {{#if header.fateEnabled}}
+        <div class="tf-vital fate">
+            <div class="tf-vital-head"><span class="tf-vital-label">{{localize "THEFADE.Vital.fate"}}</span></div>
+            <div class="tf-vital-value">
+                <span class="tf-big">{{system.fate.points}}</span>
+                <button type="button" class="tf-icon-button" data-action="fate" data-delta="-1" data-tooltip="THEFADE.Fate.spend" aria-label="{{localize 'THEFADE.Fate.spend'}}" {{#unless system.fate.points}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+                {{#if isGM}}<button type="button" class="tf-icon-button" data-action="fate" data-delta="1" data-tooltip="THEFADE.Fate.award" aria-label="{{localize 'THEFADE.Fate.award'}}"><i class="fa-solid fa-plus"></i></button>{{/if}}
+            </div>
+        </div>
+        {{/if}}
+    </section>
+</div>

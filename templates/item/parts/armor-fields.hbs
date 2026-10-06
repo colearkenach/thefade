@@ -1,0 +1,32 @@
+{{!-- Armor protection fields, shared by armor and armor-like Items of Power. --}}
+<div class="tf-form-grid">
+    <div class="form-group">
+        <label>{{systemFields.location.label}}</label>
+        <div class="form-fields"><select name="system.location">{{selectOptions config.armorLocations selected=source.location}}</select></div>
+    </div>
+    {{formGroup systemFields.ap value=source.ap}}
+    {{#if system.isLimb}}
+    <div class="form-group">
+        <label>{{localize "THEFADE.Armor.currentLimbs"}}</label>
+        <div class="form-fields">
+            <span class="tf-hint">{{localize "THEFADE.Body.left"}}</span>
+            <input type="number" name="system.derivedLeftAP" value="{{system.leftAP}}" min="0" max="{{system.maxAP}}" step="1" aria-label="{{localize 'THEFADE.Armor.leftAP'}}">
+            <span class="tf-hint">{{localize "THEFADE.Body.right"}}</span>
+            <input type="number" name="system.derivedRightAP" value="{{system.rightAP}}" min="0" max="{{system.maxAP}}" step="1" aria-label="{{localize 'THEFADE.Armor.rightAP'}}">
+            <span class="tf-of">/ {{system.maxAP}}</span>
+        </div>
+    </div>
+    {{else}}
+    <div class="form-group">
+        <label>{{systemFields.currentAP.label}}</label>
+        <div class="form-fields">
+            <input type="number" name="system.currentAP" value="{{source.currentAP}}" min="0" step="1">
+            <span class="tf-of">/ {{system.maxAP}}</span>
+        </div>
+    </div>
+    {{/if}}
+    {{formGroup systemFields.isHeavy value=source.isHeavy}}
+    {{#if (eq system.pool "shield")}}
+    {{formGroup systemFields.autoBlock value=source.autoBlock hint=(localize "THEFADE.Armor.autoBlockHint")}}
+    {{/if}}
+</div>

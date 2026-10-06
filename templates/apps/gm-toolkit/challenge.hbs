@@ -1,0 +1,120 @@
+<section class="tab tf-tab challenge {{tab.cssClass}}" data-group="primary" data-tab="challenge">
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.GMToolkit.challenge.heading"}}</h2>
+            <span class="tf-section-aside">
+                <span class="tf-chip status-{{challenge.status.key}}">{{challenge.status.label}}</span>
+                <span class="tf-chip">{{localize "THEFADE.GMToolkit.challenge.currentDT" dt=challenge.effectiveDT}}</span>
+            </span>
+        </header>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.challenge.hint"}} <cite>{{sources.skillChallenges}}</cite></p>
+        <ul class="tf-rows">
+            <li class="tf-row">
+                <span class="tf-row-label">{{localize "THEFADE.GMToolkit.challenge.successes"}}</span>
+                <span class="tf-meter success" aria-hidden="true"><span style="width:{{thefade-pct challenge.successes challenge.successTarget}}%"></span></span>
+                <span class="tf-row-value">{{challenge.successes}} / {{challenge.successTarget}}</span>
+            </li>
+            <li class="tf-row">
+                <span class="tf-row-label">{{localize "THEFADE.GMToolkit.challenge.failures"}}</span>
+                <span class="tf-meter failure" aria-hidden="true"><span style="width:{{thefade-pct challenge.failures challenge.failureLimit}}%"></span></span>
+                <span class="tf-row-value">{{challenge.failures}} / {{challenge.failureLimit}}</span>
+            </li>
+            <li class="tf-row">
+                <span class="tf-row-label">{{localize "THEFADE.GMToolkit.challenge.time"}}</span>
+                <span class="tf-meter time" aria-hidden="true"><span style="width:{{thefade-pct challenge.round challenge.timeLimit}}%"></span></span>
+                <span class="tf-row-value">{{challenge.timeLabel}}</span>
+            </li>
+        </ul>
+        <div class="tf-button-row">
+            <button type="button" class="tf-button" data-action="recordChallenge" data-result="success"><i class="fa-solid fa-check"></i> {{localize "THEFADE.GMToolkit.challenge.record.success"}}</button>
+            <button type="button" class="tf-button" data-action="recordChallenge" data-result="majorSuccess"><i class="fa-solid fa-check-double"></i> {{localize "THEFADE.GMToolkit.challenge.record.majorSuccess"}}</button>
+            <button type="button" class="tf-button" data-action="recordChallenge" data-result="failure"><i class="fa-solid fa-xmark"></i> {{localize "THEFADE.GMToolkit.challenge.record.failure"}}</button>
+            <button type="button" class="tf-button" data-action="recordChallenge" data-result="time"><i class="fa-solid fa-forward"></i> {{localize "THEFADE.GMToolkit.challenge.record.time"}}</button>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.GMToolkit.challenge.setup"}}</h2>
+            <span class="tf-section-aside">
+                <button type="button" class="tf-text-button" data-action="resetChallenge"><i class="fa-solid fa-rotate-left"></i> {{localize "THEFADE.GMToolkit.challenge.reset"}}</button>
+            </span>
+        </header>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.challenge.autosave"}}</p>
+        <div class="tf-form-grid">
+            <div class="form-group">
+                <label for="{{partId}}-name">{{localize "THEFADE.GMToolkit.challenge.name"}}</label>
+                <div class="form-fields"><input id="{{partId}}-name" type="text" name="challenge.name" value="{{challenge.name}}"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-complexity">{{localize "THEFADE.GMToolkit.challenge.complexity"}}</label>
+                <div class="form-fields">
+                    <select id="{{partId}}-complexity" name="challenge.complexity">{{selectOptions challenge.complexityOptions selected=challenge.complexity localize=true}}</select>
+                </div>
+                <p class="tf-hint">{{localize "THEFADE.GMToolkit.challenge.complexityHint"}}</p>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-baseDT">{{localize "THEFADE.GMToolkit.challenge.baseDT"}}</label>
+                <div class="form-fields"><input id="{{partId}}-baseDT" type="number" name="challenge.baseDT" value="{{challenge.baseDT}}" min="1" step="1"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-escalating">{{localize "THEFADE.GMToolkit.challenge.escalating"}}</label>
+                <div class="form-fields"><input id="{{partId}}-escalating" type="checkbox" name="challenge.escalating" {{checked challenge.escalating}}></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-successes">{{localize "THEFADE.GMToolkit.challenge.successes"}}</label>
+                <div class="form-fields"><input id="{{partId}}-successes" type="number" name="challenge.successes" value="{{challenge.successes}}" min="0" step="1"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-successTarget">{{localize "THEFADE.GMToolkit.challenge.successTarget"}}</label>
+                <div class="form-fields"><input id="{{partId}}-successTarget" type="number" name="challenge.successTarget" value="{{challenge.successTarget}}" min="1" step="1"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-failures">{{localize "THEFADE.GMToolkit.challenge.failures"}}</label>
+                <div class="form-fields"><input id="{{partId}}-failures" type="number" name="challenge.failures" value="{{challenge.failures}}" min="0" step="1"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-failureLimit">{{localize "THEFADE.GMToolkit.challenge.failureLimit"}}</label>
+                <div class="form-fields"><input id="{{partId}}-failureLimit" type="number" name="challenge.failureLimit" value="{{challenge.failureLimit}}" min="1" step="1"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-round">{{localize "THEFADE.GMToolkit.challenge.round"}}</label>
+                <div class="form-fields"><input id="{{partId}}-round" type="number" name="challenge.round" value="{{challenge.round}}" min="1" step="1"></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-timeLimit">{{localize "THEFADE.GMToolkit.challenge.timeLimit"}}</label>
+                <div class="form-fields">
+                    <input id="{{partId}}-timeLimit" type="number" name="challenge.timeLimit" value="{{challenge.timeLimit}}" min="0" step="1">
+                    <select name="challenge.timeUnit" aria-label="{{localize 'THEFADE.GMToolkit.challenge.timeUnit'}}">{{selectOptions challenge.unitOptions selected=challenge.timeUnit localize=true}}</select>
+                </div>
+                <p class="tf-hint">{{localize "THEFADE.GMToolkit.challenge.timeLimitHint"}}</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.challenge.notes"}}</h2></header>
+        <div class="form-group stacked">
+            <label for="{{partId}}-goal">{{localize "THEFADE.GMToolkit.challenge.goal"}}</label>
+            <textarea id="{{partId}}-goal" name="challenge.goal" rows="2">{{challenge.goal}}</textarea>
+        </div>
+        <div class="form-group stacked">
+            <label for="{{partId}}-skills">{{localize "THEFADE.GMToolkit.challenge.skills"}}</label>
+            <textarea id="{{partId}}-skills" name="challenge.skills" rows="2" placeholder="{{localize 'THEFADE.GMToolkit.challenge.skillsPlaceholder'}}">{{challenge.skills}}</textarea>
+        </div>
+        <div class="tf-form-grid">
+            <div class="form-group stacked">
+                <label for="{{partId}}-success">{{localize "THEFADE.GMToolkit.challenge.onSuccess"}}</label>
+                <textarea id="{{partId}}-success" name="challenge.success" rows="2">{{challenge.success}}</textarea>
+            </div>
+            <div class="form-group stacked">
+                <label for="{{partId}}-failure">{{localize "THEFADE.GMToolkit.challenge.onFailure"}}</label>
+                <textarea id="{{partId}}-failure" name="challenge.failure" rows="2">{{challenge.failure}}</textarea>
+            </div>
+        </div>
+        <div class="form-group stacked">
+            <label for="{{partId}}-complications">{{localize "THEFADE.GMToolkit.challenge.complications"}}</label>
+            <textarea id="{{partId}}-complications" name="challenge.complications" rows="2">{{challenge.complications}}</textarea>
+        </div>
+    </section>
+</section>

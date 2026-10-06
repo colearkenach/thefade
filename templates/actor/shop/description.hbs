@@ -1,0 +1,11 @@
+<section class="tab tf-tab description {{tab.cssClass}}" data-group="primary" data-tab="description">
+    <section class="tf-section">
+        {{formInput systemFields.description value=source.description enriched=enrichedDescription toggled=true documentUUID=actor.uuid}}
+    </section>
+    {{#if isGM}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Shop.gmNotes"}}</h2></header>
+        {{formInput systemFields.notes value=source.notes enriched=enrichedNotes toggled=true documentUUID=actor.uuid}}
+    </section>
+    {{/if}}
+</section>

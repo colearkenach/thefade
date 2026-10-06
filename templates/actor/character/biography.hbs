@@ -1,0 +1,102 @@
+<section class="tab tf-tab biography {{tab.cssClass}}" data-group="primary" data-tab="biography">
+    <div class="tf-columns bio">
+        <section class="tf-section">
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Bio.profile"}}</h2></header>
+            <div class="tf-form-grid">
+                <label>{{localize "THEFADE.Bio.age"}}<input type="number" name="system.personalDetails.age" value="{{source.personalDetails.age}}" min="0" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.sex"}}<select name="system.personalDetails.sex" {{#unless editable}}disabled{{/unless}}>{{selectOptions sexOptions selected=source.personalDetails.sex}}</select></label>
+                <label>{{localize "THEFADE.Bio.sexuality"}}<input type="text" name="system.personalDetails.sexuality" value="{{source.personalDetails.sexuality}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.handedness"}}<input type="text" name="system.personalDetails.handedness" value="{{source.personalDetails.handedness}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.height"}}
+                    <span class="tf-pair">
+                        <input type="number" name="system.personalDetails.heightFeet" value="{{source.personalDetails.heightFeet}}" min="0" aria-label="{{localize 'THEFADE.Bio.feet'}}" {{#unless editable}}disabled{{/unless}}>ft
+                        <input type="number" name="system.personalDetails.heightInches" value="{{source.personalDetails.heightInches}}" min="0" max="11" aria-label="{{localize 'THEFADE.Bio.inches'}}" {{#unless editable}}disabled{{/unless}}>in
+                    </span>
+                </label>
+                <label>{{localize "THEFADE.Bio.weight"}}<input type="number" name="system.personalDetails.weight" value="{{source.personalDetails.weight}}" min="0" {{#unless editable}}disabled{{/unless}}></label>
+                <label class="wide">{{localize "THEFADE.Bio.languages"}}<input type="text" name="system.species.languages" value="{{source.species.languages}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label class="wide">{{localize "THEFADE.Bio.religion"}}<input type="text" name="system.religion" value="{{source.religion}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.birthplace"}}<input type="text" name="system.personalDetails.birthplace" value="{{source.personalDetails.birthplace}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.culture"}}<input type="text" name="system.personalDetails.culture" value="{{source.personalDetails.culture}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.socialClass"}}<input type="text" name="system.personalDetails.socialClass" value="{{source.personalDetails.socialClass}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.occupation"}}<input type="text" name="system.personalDetails.occupation" value="{{source.personalDetails.occupation}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.education"}}<input type="text" name="system.personalDetails.education" value="{{source.personalDetails.education}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.reputation"}}<input type="text" name="system.personalDetails.reputation" value="{{source.personalDetails.reputation}}" {{#unless editable}}disabled{{/unless}}></label>
+            </div>
+            <h3 class="tf-subhead">{{localize "THEFADE.Bio.appearance"}}</h3>
+            <div class="tf-form-grid">
+                <label>{{localize "THEFADE.Bio.hair"}}<input type="text" name="system.personalDetails.hairColor" value="{{source.personalDetails.hairColor}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.eyes"}}<input type="text" name="system.personalDetails.eyeColor" value="{{source.personalDetails.eyeColor}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.skin"}}<input type="text" name="system.personalDetails.skinColor" value="{{source.personalDetails.skinColor}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Bio.build"}}<input type="text" name="system.personalDetails.build" value="{{source.personalDetails.build}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label class="wide">{{localize "THEFADE.Bio.marks"}}<input type="text" name="system.personalDetails.distinguishingMarks" value="{{source.personalDetails.distinguishingMarks}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label class="wide">{{localize "THEFADE.Bio.voice"}}<input type="text" name="system.personalDetails.voice" value="{{source.personalDetails.voice}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label class="wide">{{localize "THEFADE.Bio.fightingStyle"}}<input type="text" name="system.personalDetails.fightingStyle" value="{{source.personalDetails.fightingStyle}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label class="wide">{{localize "THEFADE.Bio.vice"}}<input type="text" name="system.personalDetails.greatestVice" value="{{source.personalDetails.greatestVice}}" {{#unless editable}}disabled{{/unless}}></label>
+            </div>
+        </section>
+
+        <section class="tf-section">
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Bio.biography"}}</h2></header>
+            {{formInput systemFields.biography value=source.biography enriched=enrichedBiography toggled=true documentUUID=actor.uuid}}
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Bio.notes"}}</h2></header>
+            {{formInput systemFields.notes value=source.notes enriched=enrichedNotes toggled=true documentUUID=actor.uuid}}
+            {{#if fateEnabled}}
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Bio.motivations"}}</h2></header>
+            <div class="tf-form-grid single">
+                <label>{{localize "THEFADE.Fate.personalGoal"}}<input type="text" name="system.fate.motivations.personalGoal" value="{{source.fate.motivations.personalGoal}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Fate.drivingForce"}}<input type="text" name="system.fate.motivations.drivingForce" value="{{source.fate.motivations.drivingForce}}" {{#unless editable}}disabled{{/unless}}></label>
+                <label>{{localize "THEFADE.Fate.personalRelationship"}}<input type="text" name="system.fate.motivations.personalRelationship" value="{{source.fate.motivations.personalRelationship}}" {{#unless editable}}disabled{{/unless}}></label>
+            </div>
+            {{/if}}
+        </section>
+    </div>
+
+    {{!-- Heritage & mutations (Heirs to Rangar) --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Bio.heritage"}}</h2>
+            {{#if editable}}<span class="tf-section-aside tf-section-actions"><button type="button" class="tf-text-button" data-action="heritage"><i class="fa-solid fa-dna"></i> {{localize "THEFADE.Heritage.calculate"}}</button></span>{{/if}}
+        </header>
+        {{#if system.heritage.outcomeLabel}}
+        <p class="tf-big-line"><strong>{{system.heritage.outcomeLabel}}</strong>
+            <span class="tf-hint">{{localize "THEFADE.Heritage.summary" changes=system.heritage.characteristicChanges mutations=system.heritage.standardMutationRolls}}</span></p>
+        {{/if}}
+        <ol class="tf-item-list">{{#each heritages}}{{> "thefade.item-row" this editable=../editable}}{{/each}}</ol>
+        <h3 class="tf-subhead">{{localize "THEFADE.Bio.mutations"}}
+            {{#if editable}}
+            <span class="tf-subhead-actions">
+                <button type="button" class="tf-text-button" data-action="rollMutation" data-severity="minor"><i class="fa-solid fa-dice"></i> {{localize "THEFADE.Mutation.rollMinor"}}</button>
+                <button type="button" class="tf-text-button" data-action="rollMutation" data-severity="major"><i class="fa-solid fa-dice"></i> {{localize "THEFADE.Mutation.rollMajor"}}</button>
+            </span>
+            {{/if}}
+        </h3>
+        <ol class="tf-item-list">{{#each mutations}}{{> "thefade.item-row" this editable=../editable}}{{else}}<li class="tf-empty">{{localize "THEFADE.Mutation.none"}}</li>{{/each}}</ol>
+    </section>
+
+    {{!-- Downtime --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Bio.downtime"}}</h2>
+            {{#if editable}}<span class="tf-section-aside tf-section-actions"><button type="button" class="tf-icon-button" data-action="itemCreate" data-type="downtime" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button></span>{{/if}}
+        </header>
+        <ol class="tf-item-list">
+            {{#each downtime}}
+            <li class="tf-item draggable" data-item-id="{{id}}">
+                <img src="{{img}}" alt="" class="tf-thumb">
+                <div class="tf-item-text">
+                    <a class="tf-item-name" data-action="itemOpen">{{name}}</a>
+                    <span class="tf-item-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</span>
+                    <span class="tf-meter thin" aria-hidden="true"><span style="width: {{system.percentComplete}}%"></span></span>
+                </div>
+                {{#if ../editable}}
+                <div class="tf-item-controls">
+                    <button type="button" class="tf-icon-button" data-action="downtimeProgress" data-delta="-1" aria-label="{{localize 'THEFADE.Downtime.less'}}"><i class="fa-solid fa-minus"></i></button>
+                    <button type="button" class="tf-icon-button" data-action="downtimeProgress" data-delta="1" aria-label="{{localize 'THEFADE.Downtime.more'}}"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                {{/if}}
+            </li>
+            {{else}}<li class="tf-empty">{{localize "THEFADE.Downtime.none"}}</li>{{/each}}
+        </ol>
+    </section>
+</section>

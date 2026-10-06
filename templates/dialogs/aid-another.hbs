@@ -1,0 +1,28 @@
+<div class="thefade tf-dialog">
+    <p class="tf-dialog-lead">{{localize "THEFADE.Aid.lead" dt=dt}}</p>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Aid.ally"}}</label>
+        <div class="form-fields">
+            <select name="ally">{{#each participants}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{name}}</option>{{/each}}</select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Aid.skill"}}</label>
+        <div class="form-fields">
+            <select name="skill">{{#each skills}}<option value="{{value}}">{{label}}</option>{{/each}}</select>
+        </div>
+        <p class="hint">{{localize "THEFADE.Aid.skillHint"}}</p>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Roll.extraDiceLabel"}}</label>
+        <div class="form-fields"><input type="number" name="extraDice" value="0" step="1"></div>
+    </div>
+    <div class="form-group">
+        <label>{{localize "THEFADE.Roll.mode"}}</label>
+        <div class="form-fields"><select name="rollMode">{{#each rollModes}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}</select></div>
+    </div>
+    <ul class="tf-notes">
+        <li>{{localize "THEFADE.Aid.helperLimit"}}</li>
+        <li>{{localize "THEFADE.Aid.combatHint"}}</li>
+    </ul>
+</div>
