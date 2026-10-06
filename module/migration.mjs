@@ -117,16 +117,26 @@ export async function migrateActor(actor, rawData) {
     }
 }
 
-/** Migrate every document in a world compendium. */
+/**
+ * Migrate every document in a compendium (world or system), rewriting each
+ * item's stored system data in the current format. Items are saved in
+ * batches; actors go through migrateActor for their embedded items.
+ * @returns {Promise<number>} Documents migrated.
+ */
 export async function migrateCompendium(pack) {
     const wasLocked = pack.locked;
     if (wasLocked) await pack.configure({ locked: false });
     try {
         const documents = await pack.getDocuments();
-        for (const document of documents) {
-            if (pack.documentName === "Actor") await migrateActor(document, null);
-            else await document.update({ "==system": document.toObject().system }, { diff: false, render: false });
+        if (pack.documentName === "Actor") {
+            for (const actor of documents) await migrateActor(actor, null);
+        } else if (pack.documentName === "Item") {
+            const updates = documents.map(item => ({ _id: item.id, "==system": item.toObject().system }));
+            for (let i = 0; i < updates.length; i += 100) {
+                await Item.implementation.updateDocuments(updates.slice(i, i + 100), { pack: pack.collection, diff: false, render: false });
+            }
         }
+        return documents.length;
     } finally {
         if (wasLocked) await pack.configure({ locked: true });
     }

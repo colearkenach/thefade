@@ -2165,6 +2165,12 @@
           },
           "requiresCure": {
             "label": "Needs a cure"
+          },
+          "price": {
+            "label": "Price (sp)"
+          },
+          "weight": {
+            "label": "Weight"
           }
         }
       },

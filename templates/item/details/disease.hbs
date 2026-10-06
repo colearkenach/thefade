@@ -7,6 +7,8 @@
         {{formGroup systemFields.durationType value=source.durationType choices=config.disease.durationTypes}}
         {{formGroup systemFields.requiresVector value=source.requiresVector}}
         {{formGroup systemFields.requiresCure value=source.requiresCure}}
+        {{formGroup systemFields.price value=source.price}}
+        {{formGroup systemFields.weight value=source.weight step=0.01}}
     </div>
     <fieldset class="tf-check-group">
         <legend>{{localize "THEFADE.Disease.transmission"}}</legend>

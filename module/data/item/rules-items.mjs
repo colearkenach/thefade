@@ -1,6 +1,6 @@
 // Rules items: diseases, mutations, heritage, traps, hazards, downtime activities.
-import TheFadeItemModel, { physicalSchema } from "./base.mjs";
-import { boolean, count, string, toNumber } from "../fields.mjs";
+import TheFadeItemModel from "./base.mjs";
+import { boolean, count, number, string, toNumber } from "../fields.mjs";
 
 const { fields } = foundry.data;
 
@@ -19,13 +19,19 @@ export class DiseaseData extends TheFadeItemModel {
             treatmentDT: count(0),
             requiresVector: boolean(false),
             requiresCure: boolean(false),
-            effect: string()
+            effect: string(),
+            // Cultured diseases can be bought and carried as samples (Core, Diseases).
+            price: number(0, { min: 0 }),
+            weight: number(0, { min: 0 })
         };
     }
 
     static migrateData(source) {
-        // Diseases are conditions, not carried goods.
-        for (const key of Object.keys(physicalSchema())) delete source[key];
+        // Diseases keep a price and weight but none of the other carried-goods fields.
+        for (const key of ["quantity", "equipped", "technological", "technologyAttunement"]) delete source[key];
+        for (const key of ["price", "weight"]) {
+            if (key in source && typeof source[key] !== "number") source[key] = Math.max(0, toNumber(source[key], 0));
+        }
         const keys = ["airborne", "contact", "fluid", "ingested", "injury"];
         const prior = source.transmission;
         if (typeof prior === "string" || Array.isArray(prior)) {
