@@ -21,7 +21,7 @@ function spellOptions(state) {
     if (state.range) options.push({ key: "range", label: game.i18n.localize("THEFADE.Spell.moreRange"), cost: 1, pool: "cast" });
     if (state.time && !/^instant/i.test(state.time)) options.push({ key: "duration", label: game.i18n.localize("THEFADE.Spell.moreDuration"), cost: state.durationCost, pool: "cast" });
     if (state.bonusEffect && !state.spent.some(s => s.key === "bonus")) options.push({ key: "bonus", label: state.bonusEffect, cost: 1, pool: "cast" });
-    if (d.canCrit && attackHit) options.push({ key: "crit", label: game.i18n.format("THEFADE.Attack.crit", { damage: d.critValue }), cost: SPELL_CRIT, pool: "attack" });
+    if (d.canCrit && attackHit) options.push({ key: "crit", label: game.i18n.format("THEFADE.Attack.crit", { damage: critDamage(d) }), cost: SPELL_CRIT, pool: "attack" });
     if (!hasAttack || attackHit) {
         const pool = hasAttack ? "attack" : "cast";
         const types = new Set(d.components.filter(c => c.amount > 0).flatMap(c => CONFIG.THEFADE.damageTypeParts[c.type] ?? [c.type]));
@@ -41,6 +41,14 @@ function poolRemaining(state, pool) {
     return pool === "attack" ? (state.attackRemaining ?? 0) : state.remaining;
 }
 
+/**
+ * Damage one crit deals: the base damage again. Damage bought with casting
+ * successes raises the base, so each crit repeats it too (designer ruling).
+ */
+function critDamage(d) {
+    return d.critValue + d.increase;
+}
+
 /** Take successes from a pool (a negative amount refunds them). */
 function spendFrom(state, pool, amount) {
     if (pool === "attack") state.attackRemaining = (state.attackRemaining ?? 0) - amount;
@@ -51,7 +59,7 @@ async function cardContext(state, message) {
     const caster = await fromUuid(state.casterUuid);
     const roll = message?.rolls?.[0];
     const d = state.damage;
-    const components = d.components.map((c, i) => ({ ...c, amount: c.amount + (i === 0 ? d.increase + d.crits * d.critValue : 0) }));
+    const components = d.components.map((c, i) => ({ ...c, amount: c.amount + (i === 0 ? d.increase + d.crits * critDamage(d) : 0) }));
     const counts = {};
     for (const s of state.spent) counts[s.key] = (counts[s.key] ?? 0) + 1;
     return {
