@@ -1,0 +1,20 @@
+<section class="tab tf-tab lore {{tab.cssClass}}" data-group="primary" data-tab="lore">
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Species.lifespan"}}</h2></header>
+        <div class="tf-form-grid">
+            {{formGroup systemFields.youngAge value=source.youngAge}}
+            {{formGroup systemFields.adultAge value=source.adultAge}}
+            {{formGroup systemFields.oldAge value=source.oldAge}}
+            {{formGroup systemFields.maximumAge value=source.maximumAge}}
+            {{formGroup systemFields.biologicallyImmortal value=source.biologicallyImmortal}}
+        </div>
+    </section>
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{systemFields.personality.label}}</h2></header>
+        <textarea name="system.personality" rows="5">{{source.personality}}</textarea>
+    </section>
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{systemFields.history.label}}</h2></header>
+        <textarea name="system.history" rows="5">{{source.history}}</textarea>
+    </section>
+</section>

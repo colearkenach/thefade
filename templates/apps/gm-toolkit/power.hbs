@@ -1,0 +1,77 @@
+<section class="tab tf-tab power {{tab.cssClass}}" data-group="primary" data-tab="power">
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.GMToolkit.power.worldRules"}}</h2>
+            {{#if power.dirty}}<span class="tf-section-aside tf-hint">{{localize "THEFADE.GMToolkit.power.unsaved"}}</span>{{/if}}
+        </header>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.power.hint"}}</p>
+        <div class="tf-form-grid">
+            <div class="form-group">
+                <label for="{{partId}}-slotRule">{{localize "THEFADE.GMToolkit.power.slotRule"}}</label>
+                <div class="form-fields"><select id="{{partId}}-slotRule" name="itemPower.slotRule">{{selectOptions power.slotChoices selected=power.slotRule localize=true}}</select></div>
+            </div>
+            <div class="form-group">
+                <label for="{{partId}}-attunementRule">{{localize "THEFADE.GMToolkit.power.attunementRule"}}</label>
+                <div class="form-fields"><select id="{{partId}}-attunementRule" name="itemPower.attunementRule">{{selectOptions power.attunementChoices selected=power.attunementRule localize=true}}</select></div>
+            </div>
+        </div>
+        <div class="tf-button-row">
+            <button type="button" class="tf-button" data-action="saveItemPowerRules" {{disabled (not power.dirty)}}><i class="fa-solid fa-floppy-disk"></i> {{localize "THEFADE.GMToolkit.power.save"}}</button>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.power.overlap.heading"}}</h2></header>
+        <p><strong>{{localize "THEFADE.GMToolkit.power.overlap.headLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.overlap.head"}}</p>
+        <p><strong>{{localize "THEFADE.GMToolkit.power.overlap.bodyLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.overlap.body"}}</p>
+        <p><strong>{{localize "THEFADE.GMToolkit.power.overlap.handsLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.overlap.hands"}}</p>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.power.alternate.heading"}}</h2></header>
+        <p class="tf-hint">{{localize "THEFADE.GMToolkit.power.alternate.hint"}}</p>
+        <table class="tf-table">
+            <thead>
+                <tr>
+                    <th>{{localize "THEFADE.GMToolkit.power.alternate.oldSlot"}}</th>
+                    <th>{{localize "THEFADE.GMToolkit.power.alternate.newSlot"}}</th>
+                    <th>{{localize "THEFADE.GMToolkit.power.alternate.becomes"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each power.alternateSlots}}
+                <tr><td>{{oldSlot}}</td><td>{{newSlot}}</td><td>{{examples}}{{#if maximum}} {{maximum}}{{/if}}</td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <p><strong>{{localize "THEFADE.GMToolkit.power.alternate.ringsLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.alternate.rings"}}</p>
+        <p><strong>{{localize "THEFADE.GMToolkit.power.alternate.sheathsLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.alternate.sheaths"}}</p>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.power.removing.heading"}}</h2></header>
+        <p>{{localize "THEFADE.GMToolkit.power.removing.text"}}</p>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.power.technology.heading"}}</h2></header>
+        <p>{{localize "THEFADE.GMToolkit.power.technology.text"}}</p>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.GMToolkit.power.dark.heading"}}</h2></header>
+        <p>{{localize "THEFADE.GMToolkit.power.dark.text"}}</p>
+        <ul>
+            <li><strong>{{localize "THEFADE.GMToolkit.power.dark.attunedLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.dark.attuned"}}</li>
+            <li><strong>{{localize "THEFADE.GMToolkit.power.dark.carriedLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.dark.carried"}}</li>
+            <li><strong>{{localize "THEFADE.GMToolkit.power.dark.addictionLabel"}}</strong> {{localize "THEFADE.GMToolkit.power.dark.addiction"}}</li>
+        </ul>
+        <table class="tf-table">
+            <thead><tr><th>{{localize "THEFADE.GMToolkit.power.corruption.value"}}</th><th>{{localize "THEFADE.GMToolkit.power.corruption.cv"}}</th></tr></thead>
+            <tbody>
+                {{#each power.corruptionRows}}<tr><td>{{localize label}}</td><td>{{value}}</td></tr>{{/each}}
+            </tbody>
+        </table>
+        <p><strong>{{localize "THEFADE.GMToolkit.power.dark.retroactiveLabel"}}</strong> {{power.darkMagicItems}}.</p>
+    </section>
+</section>

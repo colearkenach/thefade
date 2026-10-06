@@ -1,0 +1,99 @@
+<section class="tab tf-tab monster {{tab.cssClass}}" data-group="primary" data-tab="monster">
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Monster.attributeSet"}}</h2></header>
+        <p class="tf-hint">{{localize "THEFADE.Monster.attributeSetHint"}}</p>
+        <div class="tf-attribute-inputs">
+            {{#each config.attributes as |attr key|}}
+            <label class="tf-stat-field"><span>{{localize attr.abbreviation}}</span><input type="number" name="system.attributeSet.{{key}}" value="{{lookup @root.source.attributeSet key}}" step="1"></label>
+            {{/each}}
+        </div>
+        {{formGroup systemFields.attributeSpread value=source.attributeSpread placeholder="10, 5, 3, 1, 1"}}
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Monster.naturalDeflection"}}</h2></header>
+        <table class="tf-table tf-nd-table">
+            <thead>
+                <tr>
+                    <th>{{localize "THEFADE.Monster.rating"}}</th>
+                    <th>{{localize "THEFADE.Monster.base"}}</th>
+                    <th>{{localize "THEFADE.Body.head"}}</th>
+                    <th>{{localize "THEFADE.Body.body"}}</th>
+                    <th>{{localize "THEFADE.Monster.arms"}}</th>
+                    <th>{{localize "THEFADE.Monster.legs"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each ndRows}}
+                <tr>
+                    <th>{{label}}</th>
+                    <td><input type="number" class="tf-short" name="system.naturalDeflectionTypes.{{key}}.baseMultiplier" value="{{rule.baseMultiplier}}" step="any" aria-label="{{label}} {{localize 'THEFADE.Monster.base'}}"></td>
+                    {{#each parts}}
+                    <td><select name="system.naturalDeflectionTypes.{{../key}}.parts.{{part}}" aria-label="{{../label}} {{part}}">{{selectOptions @root.config.naturalDeflectionMultipliers selected=value}}</select></td>
+                    {{/each}}
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+        <p class="tf-hint">{{localize "THEFADE.Monster.ndHint"}}</p>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Monster.standardAttacks"}}</h2></header>
+        <p class="tf-hint">{{localize "THEFADE.Monster.attacksHint"}}</p>
+        <ol class="tf-rows">
+            {{#each attacks}}
+            <li class="tf-row-block">
+                <div class="tf-row">
+                    <input type="hidden" name="system.standardAttacks.{{index}}.id" value="{{id}}">
+                    <select name="system.standardAttacks.{{index}}.mode" aria-label="{{localize 'THEFADE.Monster.mode'}}">{{selectOptions @root.config.standardAttackModes selected=mode}}</select>
+                    <span class="tf-chips">
+                        {{#each weapons}}
+                        <span class="tf-chip"><img src="{{img}}" alt="" class="tf-thumb">{{name}}
+                            <button type="button" class="tf-chip-remove" data-action="removeAttackWeapon" data-index="{{../index}}" data-weapon="{{@index}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+                        </span>
+                        {{else}}<span class="tf-empty">{{localize "THEFADE.Monster.dropWeapon"}}</span>
+                        {{/each}}
+                    </span>
+                    <button type="button" class="tf-icon-button" data-action="removeRow" data-path="system.standardAttacks" data-index="{{index}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </li>
+            {{else}}
+            <li class="tf-empty">{{localize "THEFADE.Monster.noAttacks"}}</li>
+            {{/each}}
+        </ol>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Monster.sizeRules"}}</h2></header>
+        <p class="tf-hint">{{localize "THEFADE.Monster.sizeRulesHint"}}</p>
+        {{#each sizeRows}}
+        <details class="tf-size-rule" {{#if (eq key @root.source.size)}}open{{/if}}>
+            <summary>{{label}}{{#if rule.example}} <span class="tf-hint">— {{rule.example}}</span>{{/if}}</summary>
+            <div class="tf-form-grid">
+                <label class="tf-inline-field">{{localize "THEFADE.Monster.averageEL"}} <input type="number" class="tf-short" name="system.sizeRules.{{key}}.averageEL" value="{{rule.averageEL}}" step="1"></label>
+                <label class="tf-inline-field">{{localize "THEFADE.Monster.bonusHP"}} <input type="number" class="tf-short" name="system.sizeRules.{{key}}.bonusHP" value="{{rule.bonusHP}}" step="1"></label>
+                <label class="tf-inline-field">{{localize "THEFADE.Monster.landMovement"}} <input type="number" class="tf-short" name="system.sizeRules.{{key}}.movement.land" value="{{rule.movement.land}}" step="1"></label>
+                <label class="tf-inline-field">{{localize "THEFADE.Monster.example"}} <input type="text" name="system.sizeRules.{{key}}.example" value="{{rule.example}}"></label>
+            </div>
+            <table class="tf-table tf-size-table">
+                <thead><tr><th></th>{{#each @root.config.attributes}}<th>{{localize abbreviation}}</th>{{/each}}</tr></thead>
+                <tbody>
+                    <tr>
+                        <th>{{localize "THEFADE.Monster.bonus"}}</th>
+                        {{#each @root.config.attributes as |attr attrKey|}}
+                        <td><input type="number" class="tf-short" name="system.sizeRules.{{../key}}.bonuses.{{attrKey}}" value="{{lookup ../rule.bonuses attrKey}}" step="1"></td>
+                        {{/each}}
+                    </tr>
+                    <tr>
+                        <th>{{localize "THEFADE.Monster.cap"}}</th>
+                        {{#each @root.config.attributes as |attr attrKey|}}
+                        <td><input type="number" class="tf-short" name="system.sizeRules.{{../key}}.caps.{{attrKey}}" value="{{lookup ../rule.caps attrKey}}" step="1" placeholder="—"></td>
+                        {{/each}}
+                    </tr>
+                </tbody>
+            </table>
+        </details>
+        {{/each}}
+    </section>
+</section>

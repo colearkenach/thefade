@@ -1,0 +1,73 @@
+<div class="thefade chat-card attack-card {{#if state.hit}}hit{{else}}miss{{/if}}">
+    <header class="tf-card-header">
+        <img src="{{state.itemImg}}" alt="" class="tf-card-icon">
+        <div class="tf-card-title">
+            <h3><a data-tf-action="openItem" data-uuid="{{state.itemUuid}}">{{state.itemName}}</a></h3>
+            <span class="tf-card-subtitle">{{attackerName}}{{#if state.targetName}} → {{state.targetName}}{{/if}}{{#if facingLabel}} · {{facingLabel}}{{/if}}</span>
+        </div>
+    </header>
+
+    <div class="tf-dice-row" aria-label="{{localize 'THEFADE.Roll.dice'}}">
+        {{#each faces}}<span class="tf-face {{cls}}">{{face}}</span>{{/each}}
+    </div>
+    <div class="tf-result-line">
+        <span class="tf-successes"><strong>{{state.successes}}</strong> {{localize "THEFADE.Roll.successes"}}</span>
+        <span class="tf-vs" {{#if state.dtParts.length}}data-tooltip="{{#each state.dtParts}}{{this}}{{#unless @last}} + {{/unless}}{{/each}}"{{/if}}>{{localize "THEFADE.Roll.vsDT" dt=state.dt}}</span>
+        <span class="tf-outcome {{#if state.hit}}success{{else}}failure{{/if}}">{{#if state.autoFail}}{{localize "THEFADE.Roll.autoFail"}}{{else}}{{#if state.hit}}{{localize "THEFADE.Attack.hit"}}{{else}}{{localize "THEFADE.Attack.miss"}}{{/if}}{{/if}}</span>
+    </div>
+
+    {{#if state.hit}}
+    <section class="tf-card-section">
+        {{#if state.location}}
+        <p class="tf-location"><i class="fa-solid fa-crosshairs"></i> {{state.location.label}}{{#if state.location.called}} <em>({{localize "THEFADE.Attack.called"}})</em>{{/if}}{{#if state.location.detail}} <span class="tf-hint">[{{state.location.detail}}]</span>{{/if}}</p>
+        {{/if}}
+        <p class="tf-damage"><span class="tf-damage-total">{{totalDamage}}</span> {{localize "THEFADE.Attack.damage"}}
+            <span class="tf-hint">{{#each components}}{{amount}} {{label}}{{#unless @last}} + {{/unless}}{{/each}}{{#if state.damage.crits}} · {{localize "THEFADE.Attack.critCount" count=state.damage.crits}}{{/if}}</span>
+        </p>
+        {{#if state.damage.minimumHp}}<p class="tf-hint">{{localize "THEFADE.Attack.minimumHp" value=state.damage.minimumHp}}</p>{{/if}}
+        {{#if state.ripping}}<p class="tf-hint"><i class="fa-solid fa-droplet"></i> {{localize "THEFADE.Attack.rippingHint" rounds=state.ripping.rounds}}</p>{{/if}}
+    </section>
+
+    {{#unless state.applied}}
+    {{#if options.length}}
+    <section class="tf-card-section owner-only">
+        <p class="tf-spend-head">{{localize "THEFADE.Attack.remaining" count=state.remaining}}</p>
+        <div class="tf-spend-options">
+            {{#each options}}
+            <button type="button" class="tf-spend" data-tf-action="spend" data-option="{{key}}" {{#unless affordable}}disabled{{/unless}}>
+                <span>{{#if extend}}{{localize "THEFADE.Attack.extend" effect=label}}{{else}}{{label}}{{/if}}</span><small>{{cost}}</small>
+            </button>
+            {{/each}}
+        </div>
+        {{#if state.spent.length}}<button type="button" class="tf-text-button" data-tf-action="resetSpend"><i class="fa-solid fa-rotate-left"></i> {{localize "THEFADE.Attack.resetSpend"}}</button>{{/if}}
+    </section>
+    {{/if}}
+    {{/unless}}
+
+    {{#if state.spent.length}}
+    <ul class="tf-spent">
+        {{#each state.spent}}<li><strong>{{label}}</strong>{{#if rounds}} · {{localize "THEFADE.Attack.rounds" rounds=rounds}}{{/if}}</li>{{/each}}
+    </ul>
+    {{/if}}
+
+    {{#if state.targetUuid}}
+    <footer class="tf-card-footer">
+        {{#if state.applied}}
+        <span class="tf-applied"><i class="fa-solid fa-check"></i> {{localize "THEFADE.Attack.applied"}}</span>
+        {{else}}
+        <button type="button" class="tf-apply gm-only" data-tf-action="applyDamage"><i class="fa-solid fa-burst"></i> {{localize "THEFADE.Attack.applyDamage"}}</button>
+        {{/if}}
+    </footer>
+    {{/if}}
+    {{/if}}
+
+    {{#if state.notes.length}}
+    <ul class="tf-notes">{{#each state.notes}}<li>{{this}}</li>{{/each}}</ul>
+    {{/if}}
+    {{#if state.qualityRules.length}}
+    <details class="tf-qualities">
+        <summary>{{state.qualities}}</summary>
+        {{#each state.qualityRules}}<p><strong>{{label}}.</strong> {{description}}</p>{{/each}}
+    </details>
+    {{/if}}
+</div>

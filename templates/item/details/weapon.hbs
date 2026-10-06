@@ -1,0 +1,60 @@
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.ItemSheet.combat"}}</h2></header>
+    <div class="tf-form-grid">
+        <div class="form-group">
+            <label>{{systemFields.skill.label}}</label>
+            <div class="form-fields"><select name="system.skill">{{selectOptions config.weaponSkills selected=source.skill}}</select></div>
+        </div>
+        <div class="form-group">
+            <label>{{systemFields.handedness.label}}</label>
+            <div class="form-fields"><select name="system.handedness">{{selectOptions config.weaponHandedness selected=source.handedness localize=true}}</select></div>
+        </div>
+        <div class="form-group">
+            <label>{{systemFields.attribute.label}}</label>
+            <div class="form-fields"><select name="system.attribute">{{selectOptions config.weaponDamageAttributes selected=source.attribute}}</select></div>
+        </div>
+        {{formGroup systemFields.range value=source.range placeholder="Melee"}}
+        {{formGroup systemFields.critical value=source.critical}}
+        {{#unless system.isNatural}}{{formGroup systemFields.integrity value=source.integrity}}{{/unless}}
+        {{formGroup systemFields.miscBonus value=source.miscBonus hint=(localize "THEFADE.Weapon.miscBonusHint")}}
+        {{#unless system.isNatural}}
+        <div class="form-group">
+            <label>{{systemFields.material.label}}</label>
+            <div class="form-fields"><select name="system.material">{{selectOptions config.materials selected=source.material}}</select></div>
+        </div>
+        {{/unless}}
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{localize "THEFADE.Weapon.damage"}}</h2>
+        {{#if wielded}}<span class="tf-section-aside" data-tooltip="{{localize 'THEFADE.Weapon.wieldedHint'}}">{{localize "THEFADE.Weapon.wielded" damage=wielded.damage dice=wielded.dice}}</span>{{/if}}
+    </header>
+    {{> thefade.damage-rows}}
+    {{#if wielded.attributeBonus}}<p class="tf-hint">{{localize "THEFADE.Weapon.attributeBonus" value=wielded.attributeBonus}}{{#if wielded.attributeSource}} · {{wielded.attributeSource}}{{/if}}</p>{{/if}}
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Weapon.qualities"}}</h2></header>
+    <div class="tf-chips tf-quality-list">
+        {{#each qualities.selected}}
+        <span class="tf-chip {{#if automatic}}auto{{/if}}" data-tooltip="{{description}}">
+            {{label}}
+            {{#if automatic}}<em>· {{localize "THEFADE.Weapon.automatic"}}</em>
+            {{else}}<button type="button" class="tf-chip-remove" data-action="removeQuality" data-quality="{{id}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>{{/if}}
+        </span>
+        {{else}}<span class="tf-empty">{{localize "THEFADE.Weapon.noQualities"}}</span>
+        {{/each}}
+    </div>
+    {{#if editable}}
+    <div class="tf-row tf-add-row">
+        <select data-add-quality aria-label="{{localize 'THEFADE.Weapon.addQuality'}}">
+            <option value="">{{localize "THEFADE.Weapon.chooseQuality"}}</option>
+            {{#each qualities.available}}<option value="{{id}}">{{label}}</option>{{/each}}
+        </select>
+        <button type="button" class="tf-text-button" data-action="addQuality"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Weapon.addQuality"}}</button>
+    </div>
+    {{formGroup systemFields.qualities value=source.qualities hint=(localize "THEFADE.Weapon.customQualitiesHint")}}
+    {{/if}}
+</section>

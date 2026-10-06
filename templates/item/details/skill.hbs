@@ -1,0 +1,11 @@
+<section class="tf-section">
+    <div class="tf-form-grid">
+        {{formGroup systemFields.category value=source.category choices=config.skillCategories localize=true}}
+        {{formGroup systemFields.attribute value=source.attribute choices=config.skillAttributes localize=true}}
+    </div>
+    <div class="form-group stacked">
+        <label>{{systemFields.usage.label}}</label>
+        <textarea name="system.usage" rows="5">{{source.usage}}</textarea>
+    </div>
+    <p class="tf-hint">{{localize "THEFADE.Skill.itemHint"}}</p>
+</section>

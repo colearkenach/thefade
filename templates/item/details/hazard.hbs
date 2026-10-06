@@ -1,0 +1,41 @@
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{#if (eq type "trap")}}{{localize "THEFADE.Hazard.trap"}}{{else}}{{localize "THEFADE.Hazard.hazard"}}{{/if}}</h2>
+        {{#if canRoll}}
+        <span class="tf-section-aside"><button type="button" class="tf-button" data-action="rollHazard" data-tooltip="THEFADE.Hazard.triggerHint"><i class="fa-solid fa-bolt"></i> {{localize "THEFADE.Hazard.trigger"}}</button></span>
+        {{/if}}
+    </header>
+    <div class="tf-form-grid">
+        {{#if (eq type "trap")}}
+        {{formGroup systemFields.level value=source.level}}
+        {{formGroup systemFields.category value=source.category choices=config.trapCategories}}
+        {{formGroup systemFields.trigger value=source.trigger}}
+        {{formGroup systemFields.reset value=source.reset}}
+        {{formGroup systemFields.detectionSkill value=source.detectionSkill}}
+        {{formGroup systemFields.detectionDT value=source.detectionDT}}
+        {{formGroup systemFields.disarmSkill value=source.disarmSkill}}
+        {{formGroup systemFields.disarmDT value=source.disarmDT}}
+        {{else}}
+        {{formGroup systemFields.category value=source.category choices=config.hazardCategories}}
+        {{formGroup systemFields.interval value=source.interval}}
+        {{formGroup systemFields.escalationDice value=source.escalationDice}}
+        {{/if}}
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Hazard.attack"}}</h2></header>
+    <div class="tf-form-grid">
+        {{formGroup systemFields.attackDice value=source.attackDice}}
+        {{formGroup systemFields.defense value=source.defense choices=config.hazardDefenses}}
+        {{formGroup systemFields.damage value=source.damage hint=(localize "THEFADE.Hazard.damageHint")}}
+        {{formGroup systemFields.damageType value=source.damageType choices=config.damageTypes}}
+        {{formGroup systemFields.damageTrack value=source.damageTrack choices=config.damageTracks}}
+        {{formGroup systemFields.critical value=source.critical}}
+        {{formGroup systemFields.bypassArmor value=source.bypassArmor}}
+    </div>
+    <div class="form-group stacked">
+        <label>{{systemFields.effect.label}}</label>
+        <textarea name="system.effect" rows="3">{{source.effect}}</textarea>
+    </div>
+</section>

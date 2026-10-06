@@ -1,0 +1,115 @@
+{{!-- Ignition chat cards (module/rules/ignition.mjs): the public card, a whispered invite, or an Ignition Action result. State lives in flags.thefade.ignition. --}}
+{{#if isCard}}
+<div class="thefade chat-card ignition-card {{#if active}}active{{else}}ended{{/if}}">
+    <header class="tf-card-header">
+        <img src="{{img}}" alt="" class="tf-card-icon">
+        <div class="tf-card-title">
+            <h3>{{localize "THEFADE.Ignition.title"}}</h3>
+            <span class="tf-card-subtitle">{{subtitle}}</span>
+        </div>
+    </header>
+
+    <section class="tf-card-section">
+        <div class="tf-result-line">
+            <span class="tf-successes"><strong>{{minutes}}</strong> {{localize "THEFADE.Ignition.minutes"}}</span>
+            <span class="tf-vs">{{localize "THEFADE.Ignition.durationCap" max=maxMinutes}}</span>
+            <span class="tf-outcome {{#if active}}success{{else}}failure{{/if}}">{{#if active}}{{localize "THEFADE.Ignition.statusActive"}}{{else}}{{localize "THEFADE.Ignition.statusEnded"}}{{/if}}</span>
+        </div>
+        <p class="tf-hint">{{#if active}}{{localize "THEFADE.Ignition.startCost"}}{{else}}{{endedLine}}{{/if}}</p>
+    </section>
+
+    <section class="tf-card-section">
+        <h4>{{localize "THEFADE.Ignition.participantsHeading" count=participants.length}}</h4>
+        <ul class="tf-notes ignition-participants">
+            {{#each participants}}
+            <li><i class="fa-solid {{#if isInitiator}}fa-fire{{else}}fa-user{{/if}}"></i> {{name}}{{#if isInitiator}} <span class="tf-hint">({{localize "THEFADE.Ignition.initiator"}})</span>{{/if}}{{#if outOfRange}} <span class="tf-hint tf-warning">({{localize "THEFADE.Ignition.outOfRangeShort"}})</span>{{/if}}</li>
+            {{/each}}
+        </ul>
+    </section>
+
+    {{#if active}}
+    <section class="tf-card-section">
+        <h4>{{localize "THEFADE.Ignition.effectsHeading"}}</h4>
+        <ul class="tf-notes">{{#each effects}}<li>{{this}}</li>{{/each}}</ul>
+        <p class="tf-hint">{{localize "THEFADE.Ignition.effectsApplied"}}</p>
+    </section>
+
+    <section class="tf-card-section">
+        <h4>{{localize "THEFADE.Ignition.actionsHeading"}}</h4>
+        <div class="tf-spend-options ignition-actions">
+            {{#each actions}}
+            <button type="button" class="tf-spend" data-tf-action="ignition" data-op="action" data-key="{{key}}" data-tooltip-text="{{hint}}" {{#if spent}}disabled{{/if}}>
+                <span>{{label}}</span>{{#if spent}}<small>{{localize "THEFADE.Ignition.spent"}}</small>{{/if}}
+            </button>
+            {{/each}}
+        </div>
+    </section>
+    {{/if}}
+
+    {{#if log.length}}
+    <ul class="tf-spent">{{#each log}}<li><strong>{{label}}</strong> · {{performer}}{{#if targets}} → {{targets}}{{/if}}</li>{{/each}}</ul>
+    {{/if}}
+
+    {{#if active}}
+    <footer class="tf-card-footer">
+        <button type="button" class="tf-text-button" data-tf-action="ignition" data-op="join"><i class="fa-solid fa-user-plus"></i> {{localize "THEFADE.Ignition.join"}}</button>
+        <button type="button" class="tf-text-button owner-only" data-tf-action="ignition" data-op="end"><i class="fa-solid fa-fire-extinguisher"></i> {{localize "THEFADE.Ignition.end"}}</button>
+    </footer>
+    {{/if}}
+</div>
+{{/if}}
+
+{{#if isInvite}}
+<div class="thefade chat-card ignition-invite">
+    <header class="tf-card-header">
+        <img src="{{img}}" alt="" class="tf-card-icon">
+        <div class="tf-card-title">
+            <h3>{{localize "THEFADE.Ignition.inviteTitle"}}</h3>
+            <span class="tf-card-subtitle">{{subtitle}}</span>
+        </div>
+    </header>
+    <section class="tf-card-section">
+        <p class="tf-hint">{{meta}} · {{localize "THEFADE.Ignition.joinCost"}}</p>
+        {{#if pending}}
+        <div class="tf-button-row">
+            <button type="button" class="tf-text-button" data-tf-action="ignition" data-op="accept"><i class="fa-solid fa-fire"></i> {{localize "THEFADE.Ignition.accept"}}</button>
+            <button type="button" class="tf-text-button" data-tf-action="ignition" data-op="decline"><i class="fa-solid fa-xmark"></i> {{localize "THEFADE.Ignition.decline"}}</button>
+        </div>
+        {{else}}
+        <p class="tf-outcome {{#if accepted}}success{{else}}failure{{/if}}">{{#if accepted}}{{localize "THEFADE.Ignition.accepted"}}{{else}}{{localize "THEFADE.Ignition.declined"}}{{/if}}</p>
+        {{/if}}
+    </section>
+</div>
+{{/if}}
+
+{{#if isAction}}
+<div class="thefade chat-card ignition-action">
+    <header class="tf-card-header">
+        <img src="{{img}}" alt="" class="tf-card-icon">
+        <div class="tf-card-title">
+            <h3>{{label}}</h3>
+            <span class="tf-card-subtitle">{{subtitle}}</span>
+        </div>
+    </header>
+    <section class="tf-card-section">
+        <p class="tf-card-effect">{{hint}}</p>
+        {{#if minor}}<p class="tf-hint">{{localize "THEFADE.Ignition.minorAction"}}</p>{{/if}}
+    </section>
+    {{#if healing}}
+    <section class="tf-card-section">
+        <h4>{{localize "THEFADE.Ignition.healing"}}</h4>
+        <div class="tf-dice-row">{{#each healing.faces}}<span class="tf-face">{{this}}</span>{{/each}}</div>
+        <div class="tf-result-line">
+            <span class="tf-successes"><strong>{{healing.amount}}</strong> {{localize "THEFADE.Ignition.hp"}}</span>
+        </div>
+        <ul class="tf-notes">{{#each healing.rows}}<li>{{this}}</li>{{/each}}</ul>
+    </section>
+    {{/if}}
+    {{#if flare}}
+    <section class="tf-card-section">
+        <p class="tf-damage">{{flare}}</p>
+    </section>
+    {{/if}}
+    {{#if ends}}<p class="tf-hint">{{localize "THEFADE.Ignition.flareEnds"}}</p>{{/if}}
+</div>
+{{/if}}

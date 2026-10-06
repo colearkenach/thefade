@@ -1,0 +1,51 @@
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{localize "THEFADE.ItemOfPower.slotting"}}</h2>
+        {{#if owned}}<span class="tf-section-aside">{{#if system.isActive}}<span class="tf-good">{{localize "THEFADE.ItemOfPower.active"}}</span>{{else}}{{localize "THEFADE.ItemOfPower.inactive"}}{{/if}}</span>{{/if}}
+    </header>
+    <div class="tf-form-grid">
+        <div class="form-group">
+            <label>{{systemFields.slot.label}}</label>
+            <div class="form-fields"><select name="system.slot">{{selectOptions slotOptions selected=source.slot}}</select></div>
+        </div>
+        <div class="form-group">
+            <label>{{systemFields.overlapMode.label}}</label>
+            <div class="form-fields"><select name="system.overlapMode">{{selectOptions config.itemPowerOverlap selected=source.overlapMode}}</select></div>
+        </div>
+        {{#if attunementEnabled}}{{formGroup systemFields.attunement value=source.attunement}}{{/if}}
+        <div class="form-group">
+            <label>{{systemFields.catalyst.label}}</label>
+            <div class="form-fields"><select name="system.catalyst">{{selectOptions config.itemPowerCatalysts selected=source.catalyst}}</select></div>
+        </div>
+    </div>
+    <div class="form-group stacked">
+        <label>{{systemFields.effect.label}}</label>
+        <textarea name="system.effect" rows="3">{{source.effect}}</textarea>
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{localize "THEFADE.ItemOfPower.aura"}}</h2>
+        {{#if system.isDarkMagicItem}}<span class="tf-section-aside tf-dark">{{localize "THEFADE.Chip.corruption" value=system.corruptionValue}}</span>{{/if}}
+    </header>
+    <div class="tf-form-grid">
+        {{formGroup systemFields.hasAura value=source.hasAura}}
+        {{#if source.hasAura}}{{formGroup systemFields.auraColor value=source.auraColor placeholder=system.displayAuraColor}}{{/if}}
+        {{formGroup systemFields.darkMagic value=source.darkMagic}}
+        {{#if system.isDarkMagicItem}}
+        <div class="form-group">
+            <label>{{systemFields.corruptionValueOverride.label}}</label>
+            <div class="form-fields"><select name="system.corruptionValueOverride" data-dtype="Number">{{selectOptions config.corruptionValues selected=source.corruptionValueOverride}}</select></div>
+        </div>
+        {{/if}}
+    </div>
+    {{formGroup systemFields.radiationEffect value=source.radiationEffect stacked=true}}
+    {{formGroup systemFields.creationRequirements value=source.creationRequirements stacked=true}}
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Armor.protection"}}</h2></header>
+    {{formGroup systemFields.conflictsArmor value=source.conflictsArmor hint=(localize "THEFADE.ItemOfPower.armorHint")}}
+    {{#if source.conflictsArmor}}{{> thefade.armor-fields}}{{/if}}
+</section>

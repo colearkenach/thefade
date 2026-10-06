@@ -1,0 +1,74 @@
+<section class="tab tf-tab inventory {{tab.cssClass}}" data-group="primary" data-tab="inventory">
+    <div class="tf-purse">
+        <label class="tf-currency">
+            <i class="fa-solid fa-coins" aria-hidden="true"></i>
+            <span>{{localize "THEFADE.Inventory.serpents"}}</span>
+            <input type="number" name="system.currency.serpents" value="{{source.currency.serpents}}" min="0" step="1" {{#unless editable}}disabled{{/unless}}>
+        </label>
+        <div class="tf-load">
+            <span>{{localize "THEFADE.Inventory.load" load=encumbrance.load light=encumbrance.light}} · {{encumbrance.currentTierLabel}}</span>
+            <span class="tf-meter thin" aria-hidden="true"><span style="width: {{encumbrance.pct}}%"></span></span>
+        </div>
+        {{#if editable}}
+        <button type="button" class="tf-text-button" data-action="itemCreate"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Item.createAny"}}</button>
+        {{/if}}
+    </div>
+
+    {{!-- Items of Power --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Inventory.itemsOfPower"}}</h2>
+            <span class="tf-section-aside tf-section-actions">
+                {{#if itemsOfPower.attunement.enabled}}
+                <span class="tf-chip {{#if (gt itemsOfPower.attunement.current itemsOfPower.attunement.max)}}danger{{/if}}" data-tooltip="THEFADE.ItemOfPower.attunementHint">
+                    {{localize "THEFADE.ItemOfPower.attunementCount" current=itemsOfPower.attunement.current max=itemsOfPower.attunement.max}}
+                </span>
+                {{/if}}
+                {{#if editable}}
+                <button type="button" class="tf-icon-button" data-action="browse" data-type="magicitem" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="magicitem" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+                {{/if}}
+            </span>
+        </header>
+        <div class="tf-slots">
+            {{#each itemsOfPower.slots}}
+            <div class="tf-slot {{#if empty}}empty{{/if}}" data-tooltip="{{examples}}">
+                <span class="tf-slot-label">{{label}}{{#if capacityLabel}} <small>{{capacityLabel}}</small>{{/if}}</span>
+                {{#each items}}
+                <div class="tf-slot-item" data-item-id="{{id}}">
+                    <img src="{{img}}" alt="" class="tf-thumb">
+                    <a class="tf-item-name" data-action="itemOpen">{{name}}</a>
+                    {{#if ../../itemsOfPower.attunement.enabled}}
+                    <button type="button" class="tf-icon-button toggle {{#if system.attunement}}on{{/if}}" data-action="attune" aria-pressed="{{system.attunement}}" data-tooltip="{{#if system.attunement}}THEFADE.ItemOfPower.unattune{{else}}THEFADE.ItemOfPower.attune{{/if}}" {{#unless ../../editable}}disabled{{/unless}}><i class="fa-solid fa-link"></i></button>
+                    {{/if}}
+                    <button type="button" class="tf-icon-button" data-action="itemEquip" data-tooltip="THEFADE.Item.unequip" aria-label="{{localize 'THEFADE.Item.unequip'}}" {{#unless ../../editable}}disabled{{/unless}}><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                {{else}}<span class="tf-hint">{{localize "THEFADE.ItemOfPower.emptySlot"}}</span>{{/each}}
+            </div>
+            {{/each}}
+        </div>
+        {{#if itemsOfPower.unequipped.length}}
+        <h3 class="tf-subhead">{{localize "THEFADE.ItemOfPower.carried"}}</h3>
+        <ol class="tf-item-list">
+            {{#each itemsOfPower.unequipped}}{{> "thefade.item-row" this editable=../editable}}{{/each}}
+        </ol>
+        {{/if}}
+    </section>
+
+    {{#each inventory}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{label}}</h2>
+            <span class="tf-section-aside tf-section-actions">
+                {{#if items.length}}<span class="tf-hint">{{weight}} lb</span>{{/if}}
+                {{#if ../editable}}
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="{{types}}" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+                {{/if}}
+            </span>
+        </header>
+        <ol class="tf-item-list">
+            {{#each items}}{{> "thefade.item-row" this editable=../../editable}}{{else}}<li class="tf-empty">{{localize "THEFADE.Inventory.empty"}}</li>{{/each}}
+        </ol>
+    </section>
+    {{/each}}
+</section>

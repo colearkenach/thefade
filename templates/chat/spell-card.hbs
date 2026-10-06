@@ -1,0 +1,93 @@
+<div class="thefade chat-card spell-card {{#if state.success}}hit{{else}}miss{{/if}} {{#if state.isDark}}dark{{/if}}">
+    <header class="tf-card-header">
+        <img src="{{state.itemImg}}" alt="" class="tf-card-icon">
+        <div class="tf-card-title">
+            <h3><a data-tf-action="openItem" data-uuid="{{state.itemUuid}}">{{state.itemName}}</a></h3>
+            <span class="tf-card-subtitle">{{casterName}} · {{state.school}}{{#if state.targetName}} → {{state.targetName}}{{/if}}</span>
+        </div>
+    </header>
+
+    {{#if state.rune}}
+    <section class="tf-card-section">
+        <h4>{{localize "THEFADE.Spell.runeDrawing"}}</h4>
+        <div class="tf-dice-row">{{#each state.rune.faces}}<span class="tf-face {{cls}}">{{face}}</span>{{/each}}</div>
+        <div class="tf-result-line">
+            <span class="tf-successes"><strong>{{state.rune.successes}}</strong> {{localize "THEFADE.Roll.successes"}}</span>
+            <span class="tf-vs">{{localize "THEFADE.Roll.vsDT" dt=state.rune.required}}</span>
+            <span class="tf-outcome {{#if state.rune.success}}success{{else}}failure{{/if}}">{{#if state.rune.success}}{{localize "THEFADE.Spell.runeDrawn"}}{{else}}{{localize "THEFADE.Spell.runeFailed"}}{{/if}}</span>
+        </div>
+    </section>
+    {{/if}}
+
+    <section class="tf-card-section">
+        <h4>{{#if state.rune}}{{localize "THEFADE.Spell.activation"}}{{else}}{{localize "THEFADE.Spell.casting"}}{{/if}}</h4>
+        <div class="tf-dice-row">{{#each faces}}<span class="tf-face {{cls}}">{{face}}</span>{{/each}}</div>
+        <div class="tf-result-line">
+            <span class="tf-successes"><strong>{{state.cast.successes}}</strong> {{localize "THEFADE.Roll.successes"}}</span>
+            <span class="tf-vs">{{localize "THEFADE.Roll.vsDT" dt=state.cast.required}}</span>
+            <span class="tf-outcome {{#if state.success}}success{{else}}failure{{/if}}">
+                {{#if state.cast.autoFail}}{{localize "THEFADE.Roll.autoFail"}}{{else}}{{#if state.success}}{{localize "THEFADE.Spell.cast"}}{{else}}{{localize "THEFADE.Spell.fizzle"}}{{/if}}{{/if}}
+            </span>
+        </div>
+        {{#if state.mishap}}
+        <p class="tf-mishap"><i class="fa-solid fa-triangle-exclamation"></i> {{localize "THEFADE.Spell.mishapLine" severity=mishapLabel}}</p>
+        {{/if}}
+    </section>
+
+    {{#each state.attacks}}
+    <section class="tf-card-section">
+        <h4>{{localize "THEFADE.Spell.attackVs" defense=defense}}</h4>
+        <div class="tf-dice-row">{{#each faces}}<span class="tf-face {{cls}}">{{face}}</span>{{/each}}</div>
+        <div class="tf-result-line">
+            <span class="tf-successes"><strong>{{successes}}</strong> {{localize "THEFADE.Roll.successes"}}</span>
+            <span class="tf-vs">{{localize "THEFADE.Roll.vsDT" dt=dt}}{{#if estimated}} <span class="tf-hint">({{localize "THEFADE.Spell.noTargetDT"}})</span>{{/if}}</span>
+            <span class="tf-outcome {{#if hit}}success{{else}}failure{{/if}}">{{#if hit}}{{localize "THEFADE.Attack.hit"}}{{else}}{{localize "THEFADE.Attack.miss"}}{{/if}}</span>
+        </div>
+        {{#if hit}}{{#if effect}}<p class="tf-card-effect">{{effect}}</p>{{/if}}{{/if}}
+    </section>
+    {{/each}}
+
+    {{#if state.success}}
+    <section class="tf-card-section">
+        {{#if totalDamage}}
+        <p class="tf-damage"><span class="tf-damage-total">{{totalDamage}}</span> {{localize "THEFADE.Attack.damage"}}
+            <span class="tf-hint">{{#each components}}{{amount}} {{label}}{{#unless @last}} + {{/unless}}{{/each}}{{#if state.damage.crits}} · {{localize "THEFADE.Attack.critCount" count=state.damage.crits}}{{/if}}</span>
+        </p>
+        {{/if}}
+        {{#if state.sanityDamage}}<p class="tf-hint"><i class="fa-solid fa-brain"></i> {{localize "THEFADE.Spell.sanityDamage" value=state.sanityDamage}}</p>{{/if}}
+        {{#if state.statusEffects.length}}<ul class="tf-notes">{{#each state.statusEffects}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+        {{#if state.buffEffects.length}}<ul class="tf-notes buffs">{{#each state.buffEffects}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+        {{#each increases}}<p class="tf-hint">{{label}} ×{{n}}</p>{{/each}}
+    </section>
+
+    {{#unless state.applied}}
+    {{#if options.length}}
+    <section class="tf-card-section owner-only">
+        <p class="tf-spend-head">{{localize "THEFADE.Attack.remaining" count=state.remaining}}</p>
+        <div class="tf-spend-options">
+            {{#each options}}
+            <button type="button" class="tf-spend" data-tf-action="spellAction" data-op="spend" data-option="{{key}}" {{#unless affordable}}disabled{{/unless}}><span>{{label}}</span><small>{{cost}}</small></button>
+            {{/each}}
+        </div>
+        {{#if state.spent.length}}<button type="button" class="tf-text-button" data-tf-action="spellAction" data-op="reset"><i class="fa-solid fa-rotate-left"></i> {{localize "THEFADE.Attack.resetSpend"}}</button>{{/if}}
+    </section>
+    {{/if}}
+    {{/unless}}
+
+    {{#if state.spent.length}}
+    <ul class="tf-spent">{{#each state.spent}}<li><strong>{{label}}</strong>{{#if rounds}} · {{localize "THEFADE.Attack.rounds" rounds=rounds}}{{/if}}</li>{{/each}}</ul>
+    {{/if}}
+
+    {{#if state.targetUuid}}{{#if state.hit}}
+    <footer class="tf-card-footer">
+        {{#if state.applied}}
+        <span class="tf-applied"><i class="fa-solid fa-check"></i> {{localize "THEFADE.Attack.applied"}}</span>
+        {{else}}
+        <button type="button" class="tf-apply gm-only" data-tf-action="spellAction" data-op="apply"><i class="fa-solid fa-burst"></i> {{localize "THEFADE.Spell.apply"}}</button>
+        {{/if}}
+    </footer>
+    {{/if}}{{/if}}
+    {{/if}}
+
+    {{#if state.notes.length}}<ul class="tf-notes">{{#each state.notes}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+</div>

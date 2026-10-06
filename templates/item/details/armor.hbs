@@ -1,0 +1,13 @@
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{localize "THEFADE.Armor.protection"}}</h2>
+        <span class="tf-section-aside">{{localize "THEFADE.Armor.maxAP" value=system.maxAP}}{{#if source.apIncrease}} <span class="tf-hint">({{source.ap}} + {{source.apIncrease}})</span>{{/if}}</span>
+    </header>
+    {{> thefade.armor-fields}}
+    <div class="tf-form-grid">
+        <div class="form-group">
+            <label>{{systemFields.material.label}}</label>
+            <div class="form-fields"><select name="system.material">{{selectOptions config.materials selected=source.material}}</select></div>
+        </div>
+    </div>
+</section>

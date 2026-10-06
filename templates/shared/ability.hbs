@@ -1,0 +1,11 @@
+<li class="tf-ability {{#if active}}active{{/if}}" data-ability-id="{{id}}" data-source-id="{{sourceId}}" data-kind="{{kind}}">
+    <div class="tf-ability-head">
+        <strong>{{name}}</strong>
+        {{#if active}}
+        <span class="tf-chip">{{localize "THEFADE.Activation.active"}}{{#if actionCost}} · {{actionCost}}{{/if}}</span>
+        <button type="button" class="tf-text-button" data-action="useAbility"><i class="fa-solid fa-play"></i> {{localize "THEFADE.Item.use"}}</button>
+        {{/if}}
+        {{#if bonusCount}}<span class="tf-chip bonus" data-tooltip="THEFADE.Abilities.bonusHint"><i class="fa-solid fa-gem"></i> {{bonusCount}}</span>{{/if}}
+    </div>
+    {{#if description}}<p>{{description}}</p>{{/if}}
+</li>

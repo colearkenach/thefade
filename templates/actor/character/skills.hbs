@@ -1,0 +1,61 @@
+<section class="tab tf-tab skills {{tab.cssClass}}" data-group="primary" data-tab="skills">
+    <div class="tf-toolbar">
+        <label class="tf-search">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="search" data-skill-filter value="{{skillFilter}}" placeholder="{{localize 'THEFADE.Skill.filter'}}" aria-label="{{localize 'THEFADE.Skill.filter'}}">
+        </label>
+        {{#if editable}}
+        <div class="tf-toolbar-group">
+            <button type="button" class="tf-text-button" data-action="addCustomSkill" data-type="lore"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Skill.type.lore"}}</button>
+            <button type="button" class="tf-text-button" data-action="addCustomSkill" data-type="perform"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Skill.type.perform"}}</button>
+            <button type="button" class="tf-text-button" data-action="addCustomSkill" data-type="craft"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Skill.type.craft"}}</button>
+        </div>
+        {{/if}}
+    </div>
+    <p class="tf-hint tf-tab-hint">{{localize "THEFADE.Skill.hint"}}</p>
+
+    <div class="tf-skill-groups">
+        {{#each skillGroups}}
+        <section class="tf-section skill-group">
+            <header class="tf-section-head">
+                <h2>{{label}}</h2>
+                <span class="tf-section-aside">{{localize "THEFADE.Skill.trainedCount" trained=trainedCount total=count}}</span>
+            </header>
+            <ol class="tf-skill-list">
+                {{#each skills}}
+                <li class="skill-row {{#unless trained}}untrained{{/unless}}" data-skill="{{key}}" data-skill-name="{{name}}" data-rank="{{rankLabel}}">
+                    <button type="button" class="tf-skill-roll" data-action="rollSkill" data-tooltip="{{localize 'THEFADE.Skill.rollHint' skill=name dice=dice}}">
+                        <span class="tf-skill-name">{{name}}</span>
+                        {{#unless ../../editMode}}
+                        <span class="tf-skill-rank">{{rankLabel}}</span>
+                        <span class="tf-skill-attr" data-tooltip="{{attributeName}}">{{attributeLabel}}</span>
+                        {{/unless}}
+                        <span class="tf-dice"><i class="fa-solid fa-dice-d20" aria-hidden="true"></i>{{dice}}D</span>
+                    </button>
+                    {{#if ../../editMode}}
+                    <span class="tf-skill-edit">
+                        <select name="system.skills.{{key}}.rank" aria-label="{{localize 'THEFADE.Skill.rank'}}">
+                            {{selectOptions ../../rankOptions selected=rank}}
+                        </select>
+                        {{#if isCore}}
+                        <label class="tf-check" data-tooltip="THEFADE.Skill.unlockHint">
+                            <input type="checkbox" name="system.skills.{{key}}.attributeUnlocked" {{checked attributeUnlocked}}>
+                            <i class="fa-solid {{#if attributeUnlocked}}fa-lock-open{{else}}fa-lock{{/if}}"></i>
+                        </label>
+                        {{/if}}
+                        <select name="system.skills.{{key}}.attribute" aria-label="{{localize 'THEFADE.Skill.attribute'}}" {{#if isCore}}{{#unless attributeUnlocked}}disabled{{/unless}}{{/if}}>
+                            {{selectOptions ../../attributeOptions selected=attribute}}
+                        </select>
+                        <input type="number" name="system.skills.{{key}}.miscBonus" value="{{miscBonus}}" step="1" aria-label="{{localize 'THEFADE.Skill.miscBonus'}}" data-tooltip="THEFADE.Skill.miscBonus">
+                        {{#if isCustom}}
+                        <button type="button" class="tf-icon-button danger" data-action="deleteSkill" data-tooltip="THEFADE.Skill.delete" aria-label="{{localize 'THEFADE.Skill.delete'}}"><i class="fa-solid fa-trash"></i></button>
+                        {{/if}}
+                    </span>
+                    {{/if}}
+                </li>
+                {{/each}}
+            </ol>
+        </section>
+        {{/each}}
+    </div>
+</section>

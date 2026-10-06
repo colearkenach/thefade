@@ -1,0 +1,13 @@
+<div class="thefade chat-card item-card">
+    <header class="tf-card-header">
+        <img src="{{item.img}}" alt="" class="tf-card-icon">
+        <div class="tf-card-title">
+            <h3><a data-tf-action="openItem" data-uuid="{{item.uuid}}">{{item.name}}</a></h3>
+            <span class="tf-card-subtitle">{{typeLabel}}</span>
+        </div>
+    </header>
+    {{#if chips.length}}<div class="tf-card-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</div>{{/if}}
+    {{#if effect}}<p class="tf-card-effect">{{effect}}</p>{{/if}}
+    {{#if description}}<div class="tf-card-description">{{{description}}}</div>{{/if}}
+    {{#if note}}<p class="tf-hint">{{note}}</p>{{/if}}
+</div>

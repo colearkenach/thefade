@@ -1,305 +1,2459 @@
 {
-  "THEFADE.AttributePhysique": "Physique",
-  "THEFADE.AttributeFinesse": "Finesse",
-  "THEFADE.AttributeMind": "Mind",
-  "THEFADE.AttributePresence": "Presence",
-  "THEFADE.AttributeSoul": "Soul",
-
-  "THEFADE.HP": "HP",
-  "THEFADE.Sanity": "Sanity",
-  "THEFADE.Species": "Species",
-  "THEFADE.Size": "Size",
-
-  "THEFADE.DefenseResilience": "Resilience",
-  "THEFADE.DefenseAvoid": "Avoid",
-  "THEFADE.DefenseGrit": "Grit",
-  "THEFADE.DefensePassiveDodge": "Passive Dodge",
-  "THEFADE.DefensePassiveParry": "Passive Parry",
-  "THEFADE.DefenseFacing": "Facing",
-
-  "THEFADE.SettingCreationMode": "Character Creation Mode",
-  "THEFADE.SettingCreationModeHint": "Choose how players generate attribute scores for new characters. Point Buy shows the 20-point budget tracker; Random Roll shows the 1d6 (exploding) roller.",
-  "THEFADE.SettingCreationModePointBuy": "Point Buy",
-  "THEFADE.SettingCreationModeRandom": "Random Roll",
-
-  "THEFADE.SettingMoreHP": "More HP (Alt Rule)",
-  "THEFADE.SettingMoreHPHint": "Optional scaling HP rule. Once a Tier 2 path is taken, the character gains +1 HP per character level (starting at level 5). Once a Tier 3 path is taken, levels 10+ instead grant +2 HP per level.",
-  "THEFADE.SettingAlternateAnatomy": "Alternate Hit Location Anatomies (Alt Rule)",
-  "THEFADE.SettingAlternateAnatomyHint": "Enable Bestiary anatomy charts, anatomy-specific protection rows, and anatomy selection on Character and NPC defense panels.",
-  "THEFADE.SettingFatePoints": "Fate Points (Alt Rule)",
-  "THEFADE.SettingFatePointsHint": "Enable the Bestiary's Motivation and Fate Point controls on character sheets.",
-  "THEFADE.GMToolkitName": "The Fade GM Toolkit",
-  "THEFADE.GMToolkitLabel": "Open GM Toolkit",
-  "THEFADE.SettingItemPowerSlots": "Item of Power Slot Rules",
-  "THEFADE.SettingItemPowerSlotsHint": "Use the standard equipment slots or the expanded alternate slot table.",
-  "THEFADE.SettingItemPowerSlotsStandard": "Standard slots",
-  "THEFADE.SettingItemPowerSlotsAlternate": "Alternate expanded slots",
-  "THEFADE.SettingItemPowerAttunement": "Item of Power Attunement Rules",
-  "THEFADE.SettingItemPowerAttunementHint": "Use ordinary attunement, remove attunement, or allow technological items to consume slots for radiation protection.",
-  "THEFADE.SettingItemPowerAttunementStandard": "Standard attunement",
-  "THEFADE.SettingItemPowerAttunementRemoved": "Remove attunement",
-  "THEFADE.SettingItemPowerAttunementTechnology": "Technology can use attunement",
-  "THEFADE.GMToolkitHint": "Encounter, challenge, monster, Unique Gear, and Item of Power tools.",
-
-  "THEFADE.SetFacing": "Face Target or Hex",
-  "THEFADE.SetFacingTargeted": "{token} now faces {target}.",
-  "THEFADE.SetFacingClickPrompt": "Click a hex on the canvas. Facing will snap to that neighboring hex direction.",
-  "THEFADE.TokenCombatState": "Token Facing & Stance",
-  "THEFADE.TokenFacing": "Facing",
-  "THEFADE.TokenStance": "Stance",
-  "THEFADE.TokenFaceTarget": "Face",
-  "THEFADE.TokenFacingHexReadout": "{direction} is Front",
-  "THEFADE.TokenFacingHexHint": "Select the adjacent hex that is the token's Front. Every other defense zone follows from that face.",
-  "THEFADE.TokenConditionImmune": "{actor} is immune to {condition}.",
-  "THEFADE.TokenConditionImmuneShort": "Immune",
-
-  "THEFADE.FacingFront": "Front",
-  "THEFADE.FacingFlank": "Flank",
-  "THEFADE.FacingBackFlank": "Back Flank",
-  "THEFADE.FacingBack": "Back",
-
-  "THEFADE.FacingFrontDesc": "Full defensive bonuses",
-  "THEFADE.FacingFlankDesc": "Full passive defenses, -1 Avoid",
-  "THEFADE.FacingBackFlankDesc": "½ passive dodge, no parry, -2 Avoid",
-  "THEFADE.FacingBackDesc": "¼ passive dodge, no parry, -2 Avoid",
-
-  "THEFADE.PassiveDefenses": "Passive Defenses",
-  "THEFADE.PassiveDefensesDesc": "Defensive bonuses that apply automatically based on your position",
-
-  "THEFADE.PassiveDodgeDesc": "Passive bonus to avoid melee and ranged attacks",
-  "THEFADE.PassiveParryDesc": "Passive bonus to avoid melee attacks only",
-
-  "THEFADE.MovementLand": "Land Speed",
-  "THEFADE.MovementFly": "Fly Speed",
-  "THEFADE.MovementSwim": "Swim Speed",
-
-  "THEFADE.SkillRankUntrained": "Untrained",
-  "THEFADE.SkillRankLearned": "Learned",
-  "THEFADE.SkillRankPracticed": "Practiced",
-  "THEFADE.SkillRankAdept": "Adept",
-  "THEFADE.SkillRankExperienced": "Experienced",
-  "THEFADE.SkillRankExpert": "Expert",
-  "THEFADE.SkillRankMastered": "Mastered",
-
-  "THEFADE.SkillCategoryCombat": "Combat Skills",
-  "THEFADE.SkillCategoryKnowledge": "Knowledge Skills",
-  "THEFADE.SkillCategoryMagical": "Magical Skills",
-  "THEFADE.SkillCategoryPhysical": "Physical Skills",
-  "THEFADE.SkillCategorySense": "Sense Skills",
-  "THEFADE.SkillCategorySocial": "Social Skills",
-  "THEFADE.SkillCategoryCraft": "Craft Skills",
-
-  "THEFADE.PathTier1": "Tier 1",
-  "THEFADE.PathTier2": "Tier 2",
-  "THEFADE.PathTier3": "Tier 3",
-
-  "THEFADE.SpellSchoolGeneral": "General",
-  "THEFADE.SpellSchoolAlchemy": "Alchemy",
-  "THEFADE.SpellSchoolDivine": "Divine",
-  "THEFADE.SpellSchoolElementalism": "Elementalism",
-  "THEFADE.SpellSchoolMalevolent": "Malevolent",
-  "THEFADE.SpellSchoolMartial": "Martial",
-  "THEFADE.SpellSchoolNaturalism": "Naturalism",
-  "THEFADE.SpellSchoolPreternaturalism": "Preternaturalism",
-  "THEFADE.SpellSchoolRituals": "Rituals",
-  "THEFADE.SpellSchoolRunes": "Runes",
-  "THEFADE.SpellSchoolSpiritualism": "Spiritualism",
-
-  "THEFADE.WeaponHandednessLight": "Light",
-  "THEFADE.WeaponHandednessOneHanded": "One-Handed",
-  "THEFADE.WeaponHandednessTwoHanded": "Two-Handed",
-
-  "THEFADE.WeaponSkillAxe": "Axe",
-  "THEFADE.WeaponSkillBow": "Bow",
-  "THEFADE.WeaponSkillCudgel": "Cudgel",
-  "THEFADE.WeaponSkillFirearm": "Firearm",
-  "THEFADE.WeaponSkillHeavyWeaponry": "Heavy Weaponry",
-  "THEFADE.WeaponSkillPolearm": "Polearm",
-  "THEFADE.WeaponSkillSword": "Sword",
-  "THEFADE.WeaponSkillThrown": "Thrown",
-  "THEFADE.WeaponSkillUnarmed": "Unarmed",
-
-  "THEFADE.ItemCreate": "Create Item",
-  "THEFADE.ItemEdit": "Edit Item",
-  "THEFADE.ItemDelete": "Delete Item",
-
-  "THEFADE.TabMain": "Main",
-  "THEFADE.TabSkills": "Skills",
-  "THEFADE.TabInventory": "Inventory",
-  "THEFADE.TabPaths": "Paths & Talents",
-  "THEFADE.TabSpells": "Spells",
-  "THEFADE.TabBackground": "Background",
-
-  "THEFADE.RollSkill": "Skill Roll",
-  "THEFADE.RollAttribute": "Attribute Roll",
-  "THEFADE.RollAttack": "Attack Roll",
-  "THEFADE.CastSpell": "Cast Spell",
-
-  "THEFADE.Successes": "Successes",
-  "THEFADE.DamageTypes": "Damage Types",
-
-  "THEFADE.BludgeoningDamage": "Bludgeoning (B)",
-  "THEFADE.SlashingDamage": "Slashing (S)",
-  "THEFADE.PiercingDamage": "Piercing (P)",
-  "THEFADE.FireDamage": "Fire (F)",
-  "THEFADE.ColdDamage": "Cold (C)",
-  "THEFADE.AcidDamage": "Acid (A)",
-  "THEFADE.ElectricityDamage": "Electricity (E)",
-  "THEFADE.SonicDamage": "Sonic (So)",
-  "THEFADE.SmitingDamage": "Smiting (Sm)",
-  "THEFADE.ExpelDamage": "Expel (Ex)",
-  "THEFADE.PsychoKineticDamage": "Psychokinetic (Psi)",
-  "THEFADE.CorruptionDamage": "Corruption (Co)",
-  "THEFADE.UntypedDamage": "Untyped (Ut)",
-
-  "THEFADE.ArmorLocationHead": "Head",
-  "THEFADE.ArmorLocationHeadPlus": "Head+",
-  "THEFADE.ArmorLocationBody": "Body",
-  "THEFADE.ArmorLocationBodyPlus": "Body+",
-  "THEFADE.ArmorLocationArms": "Arms",
-  "THEFADE.ArmorLocationArmsPlus": "Arms+",
-  "THEFADE.ArmorLocationLegs": "Legs",
-  "THEFADE.ArmorLocationLegsPlus": "Legs+",
-  "THEFADE.ArmorLocationShield": "Shield",
-
-  "THEFADE.MaterialIron": "Iron",
-  "THEFADE.MaterialBone": "Bone",
-  "THEFADE.MaterialWood": "Wood",
-  "THEFADE.MaterialLeather": "Leather",
-  "THEFADE.MaterialCopper": "Copper",
-  "THEFADE.MaterialBronze": "Bronze",
-  "THEFADE.MaterialColdIron": "Cold Iron",
-  "THEFADE.MaterialSteel": "Steel",
-  "THEFADE.MaterialColdSteel": "Cold Steel",
-  "THEFADE.MaterialGold": "Gold",
-  "THEFADE.MaterialOrichalcum": "Orichalcum",
-  "THEFADE.MaterialSilver": "Silver",
-  "THEFADE.MaterialMithral": "Mithral",
-  "THEFADE.MaterialPlatinum": "Platinum",
-  "THEFADE.MaterialAdamantine": "Adamantine",
-  "THEFADE.MaterialRitewood": "Ritewood",
-  "THEFADE.MaterialBlacksteel": "Blacksteel",
-
-  "THEFADE.MishapSeverity": "Mishap Severity",
-  "THEFADE.MishapMinor": "Minor Mishap",
-  "THEFADE.MishapModerate": "Moderate Mishap",
-  "THEFADE.MishapSevere": "Severe Mishap",
-  "THEFADE.MishapCritical": "Critical Mishap",
-
-  "THEFADE.SpellCastingSuccess": "The spell is successfully cast!",
-  "THEFADE.SpellCastingFailure": "The spell fails to manifest...",
-
-  "THEFADE.ItemTypeGear": "General Gear",
-  "THEFADE.ItemTypeConsumable": "Consumable",
-  "THEFADE.ItemTypePotion": "Potion",
-  "THEFADE.ItemTypeScroll": "Scroll",
-  "THEFADE.ItemTypeTool": "Tool",
-  "THEFADE.ItemTypePowerItem": "Item of Power",
-
-  "THEFADE.ItemSlotHead": "Head",
-  "THEFADE.ItemSlotNeck": "Neck",
-  "THEFADE.ItemSlotBody": "Body",
-  "THEFADE.ItemSlotHands": "Hands",
-  "THEFADE.ItemSlotRing": "Ring",
-  "THEFADE.ItemSlotBelt": "Belt",
-  "THEFADE.ItemSlotBoots": "Boots",
-
-  "THEFADE.CarryingCapacityLight": "Light (No Penalty)",
-  "THEFADE.CarryingCapacityMedium": "Medium (-½ Speed)",
-  "THEFADE.CarryingCapacityHeavy": "Heavy (-½ Speed, -1 Avoid)",
-  "THEFADE.CarryingCapacityOverHead": "Over the Head (Additional Penalties)",
-  "THEFADE.CarryingCapacityOffGround": "Off the Ground (Additional Penalties)",
-  "THEFADE.CarryingCapacityPushOrDrag": "Push or Drag (Additional Penalties)",
-
-  "THEFADE.SizeMiniscule": "Miniscule",
-  "THEFADE.SizeDiminutive": "Diminutive",
-  "THEFADE.SizeTiny": "Tiny",
-  "THEFADE.SizeSmall": "Small",
-  "THEFADE.SizeMedium": "Medium",
-  "THEFADE.SizeLarge": "Large",
-  "THEFADE.SizeMassive": "Massive",
-  "THEFADE.SizeImmense": "Immense",
-  "THEFADE.SizeEnormous": "Enormous",
-  "THEFADE.SizeTitanic": "Titanic",
-
-  "THEFADE.CharacterLevel": "Level",
-  "THEFADE.CharacterExperience": "Experience",
-  "THEFADE.CharacterSpecies": "Species",
-  "THEFADE.CharacterBackground": "Background",
-  "THEFADE.CharacterAppearance": "Appearance",
-  "THEFADE.CharacterNotes": "Notes",
-
-  "THEFADE.Currency": "Currency",
-  "THEFADE.CurrencySerpents": "Serpents (sp)",
-  "THEFADE.CurrencyDragons": "Dragons (dg)",
-  "THEFADE.CurrencyWolves": "Wolves (wf)",
-  "THEFADE.CurrencyRavens": "Ravens (rn)",
-  "THEFADE.CurrencyNewts": "Newts (nt)",
-
-  "THEFADE.Weapons": "Weapons",
-  "THEFADE.Armor": "Armor",
-  "THEFADE.Gear": "Gear",
-
-  "THEFADE.AddWeapon": "Add Weapon",
-  "THEFADE.AddArmor": "Add Armor",
-  "THEFADE.AddItem": "Add Item",
-  "THEFADE.AddSkill": "Add Skill",
-  "THEFADE.AddPath": "Add Path",
-  "THEFADE.AddTalent": "Add Talent",
-  "THEFADE.AddSpell": "Add Spell",
-
-  "THEFADE.Name": "Name",
-  "THEFADE.Damage": "Damage",
-  "THEFADE.Critical": "Critical",
-  "THEFADE.Range": "Range",
-  "THEFADE.Qualities": "Qualities",
-  "THEFADE.ArmoredProtection": "Armored Protection (AP)",
-  "THEFADE.IsHeavy": "Is Heavy?",
-  "THEFADE.Location": "Location",
-  "THEFADE.Weight": "Weight",
-  "THEFADE.Quantity": "Quantity",
-  "THEFADE.Description": "Description",
-  "THEFADE.Effect": "Effect",
-
-  "THEFADE.AttackWith": "Attack with",
-  "THEFADE.DamageTotal": "Total Damage",
-
-
-  "TYPES.Item.weapon": "Weapon",
-  "TYPES.Item.armor": "Armor",
-  "TYPES.Item.skill": "Skill",
-  "TYPES.Item.path": "Path",
-  "TYPES.Item.monsterpath": "Monster Path",
-  "TYPES.Item.spell": "Spell",
-  "TYPES.Item.alchemical": "Alchemical Item",
-  "TYPES.Item.talent": "Talent",
-  "TYPES.Item.item": "General Item",
-  "TYPES.Item.species": "Species",
-  "TYPES.Item.monsterspecies": "Monster Species",
-  "TYPES.Item.drug": "Drug",
-  "TYPES.Item.poison": "Poison",
-  "TYPES.Item.disease": "Disease",
-  "TYPES.Item.biological": "Biological",
-  "TYPES.Item.medical": "Medical",
-  "TYPES.Item.travel": "Travel & Survival",
-  "TYPES.Item.mount": "Mount",
-  "TYPES.Item.vehicle": "Vehicle",
-  "TYPES.Item.musical": "Musical Instrument",
-  "TYPES.Item.potion": "Potion",
-  "TYPES.Item.staff": "Staff",
-  "TYPES.Item.wand": "Wand",
-  "TYPES.Item.gate": "Dimensional Gate",
-  "TYPES.Item.communication": "Communication Device",
-  "TYPES.Item.containment": "Containment Item",
-  "TYPES.Item.dream": "Dream Harvesting",
-  "TYPES.Item.fleshcraft": "Flesh Craft",
-  "TYPES.Item.magicitem": "Item of Power",
-  "TYPES.Item.clothing": "Clothing",
-  "TYPES.Item.trait": "Trait",
-  "TYPES.Item.precept": "Precept",
-  "TYPES.Item.mutation": "Mutation",
-  "TYPES.Item.heritage": "Heritage",
-  "TYPES.Item.trap": "Trap",
-  "TYPES.Item.hazard": "Hazard",
-  "TYPES.Item.downtime": "Downtime Activity"
+  "TYPES": {
+    "Actor": {
+      "character": "Character",
+      "npc": "NPC (legacy)",
+      "party": "Party",
+      "shop": "Shop"
+    },
+    "Item": {
+      "weapon": "Weapon",
+      "armor": "Armor",
+      "clothing": "Clothing",
+      "magicitem": "Item of Power",
+      "item": "Gear",
+      "travel": "Travel Gear",
+      "musical": "Instrument",
+      "potion": "Potion",
+      "drug": "Drug",
+      "poison": "Poison",
+      "medical": "Medical Supply",
+      "alchemical": "Alchemical Item",
+      "staff": "Staff",
+      "wand": "Wand",
+      "gate": "Gate Device",
+      "communication": "Communication Device",
+      "containment": "Containment Device",
+      "dream": "Dream",
+      "mount": "Mount",
+      "vehicle": "Vehicle",
+      "biological": "Biological Item",
+      "fleshcraft": "Fleshcraft",
+      "talent": "Talent",
+      "trait": "Trait",
+      "precept": "Precept",
+      "skill": "Skill",
+      "species": "Species",
+      "monsterspecies": "Monster Species",
+      "path": "Path",
+      "monsterpath": "Monster Path",
+      "heritage": "Heritage",
+      "spell": "Spell",
+      "disease": "Disease",
+      "mutation": "Mutation",
+      "trap": "Trap",
+      "hazard": "Hazard",
+      "downtime": "Downtime Activity"
+    }
+  },
+  "THEFADE": {
+    "SheetLabel": {
+      "character": "The Fade Character Sheet",
+      "party": "The Fade Party Sheet",
+      "shop": "The Fade Shop Sheet",
+      "item": "The Fade Item Sheet"
+    },
+    "Setting": {
+      "moreHP": {
+        "name": "More HP (Alt Rule)",
+        "hint": "Optional scaling HP rule. Once a Tier 2 path is taken, the character gains +1 HP per character level (starting at level 5). Once a Tier 3 path is taken, levels 10+ instead grant +2 HP per level."
+      },
+      "creationMode": {
+        "name": "Character Creation Mode",
+        "hint": "How players generate attribute scores for new characters. Point Buy shows the budget tracker; Random Roll shows the attribute roller.",
+        "pointbuy": "Point Buy",
+        "random": "Random Roll"
+      },
+      "alternateAnatomy": {
+        "name": "Alternate Hit Location Anatomies (Alt Rule)",
+        "hint": "Enable the Bestiary anatomy charts: anatomy-specific protection rows and anatomy selection on character sheets."
+      },
+      "fatePoints": {
+        "name": "Fate Points (Alt Rule)",
+        "hint": "Enable the Bestiary's Motivation and Fate Point controls on character sheets."
+      },
+      "itemPowerSlots": {
+        "name": "Item of Power Slot Rules",
+        "hint": "Use the standard equipment slots or the expanded alternate slot table.",
+        "standard": "Standard slots",
+        "alternate": "Alternate expanded slots"
+      },
+      "attunement": {
+        "name": "Item of Power Attunement Rules",
+        "hint": "Use ordinary attunement, remove attunement, or allow technological items to use attunement slots for radiation protection.",
+        "standard": "Standard attunement",
+        "removed": "No attunement",
+        "technology": "Technology can use attunement"
+      },
+      "skipRollDialog": {
+        "name": "Skip Roll Dialogs",
+        "hint": "Roll immediately with default options when you click a roll. Hold Shift to open the roll dialog instead. When off, Shift-click skips the dialog."
+      }
+    },
+    "Migration": {
+      "begin": "The Fade is updating this world's data to version {version}. Please don't close the world until it finishes.",
+      "complete": "The Fade data update to version {version} is complete.",
+      "errors": "The Fade data update finished with {count} error(s). See the browser console (F12) for details.",
+      "title": "Update world data",
+      "prompt": "<strong>{world}</strong> was made with an older version of The Fade. Its characters and items need a one-time update to work with this version.</p><p>Make a backup of the world first (Setup → Worlds → Backup). Update now?",
+      "now": "Update now",
+      "later": "Not now",
+      "deferred": "World data hasn't been updated. Some sheets may show wrong values until you reload and choose Update now."
+    },
+    "Socket": {
+      "noGM": "A GM must be logged in to complete this.",
+      "timeout": "The GM's client didn't respond. Try again."
+    },
+    "Sheet": {
+      "Tab": {
+        "overview": "Overview",
+        "skills": "Skills",
+        "combat": "Combat",
+        "inventory": "Inventory",
+        "abilities": "Abilities",
+        "magic": "Magic",
+        "biography": "Biography"
+      },
+      "sections": "Sheet sections",
+      "name": "Name",
+      "editPortrait": "Change portrait",
+      "editMode": "Editing",
+      "playMode": "Playing",
+      "toEdit": "Switch to edit mode to change stored values",
+      "toPlay": "Switch to play mode",
+      "level": "Level",
+      "experience": "XP",
+      "noSpecies": "No species",
+      "multipleSpecies": "This character has more than one species item. Only the first is used.",
+      "initiative": "Initiative",
+      "initiativeHint": "Roll initiative (1d12 + half of Finesse + Mind). Adds this token to combat if needed.",
+      "diceTool": "Roll a dice pool",
+      "diceCount": "Number of dice",
+      "rollPool": "Roll this many dice",
+      "opposed": "Opposed roll",
+      "aid": "Aid another",
+      "attributes": "Attributes",
+      "rollAttribute": "Roll {attribute}",
+      "clickToRoll": "Click to roll",
+      "defenses": "Defenses",
+      "movement": "Movement",
+      "conditions": "Conditions",
+      "stance": "Stance",
+      "stanceConditions": "Stance & Conditions",
+      "weapons": "Weapons",
+      "attacks": "Attacks",
+      "armor": "Armor",
+      "protection": "Protection",
+      "injuries": "Injuries",
+      "afflictions": "Afflictions",
+      "traits": "Combat Traits",
+      "carrying": "Carrying"
+    },
+    "Attribute": {
+      "physique": "Physique",
+      "finesse": "Finesse",
+      "mind": "Mind",
+      "presence": "Presence",
+      "soul": "Soul",
+      "physiqueAbbr": "PHY",
+      "finesseAbbr": "FIN",
+      "mindAbbr": "MND",
+      "presenceAbbr": "PRS",
+      "soulAbbr": "SOL",
+      "physique_finesse": "Physique or Finesse",
+      "physique_mind": "Physique or Mind",
+      "finesse_presence": "Finesse or Presence",
+      "mind_soul": "Mind or Soul",
+      "base": "{value} base",
+      "baseShort": "Base",
+      "bonus": "Bonus",
+      "bonusShort": "Bonus",
+      "species": "Species",
+      "speciesShort": "Species",
+      "item": "items",
+      "flexible": "flexible",
+      "overridden": "Set to {value} (override)",
+      "overrideShort": "Override",
+      "infirm": "Infirm",
+      "chooseFlexible": "— choose —",
+      "flexibleChoice": "Flexible species bonus (+{value})"
+    },
+    "Defense": {
+      "avoid": "Avoid",
+      "resilience": "Resilience",
+      "grit": "Grit",
+      "passiveDodge": "Passive Dodge",
+      "passiveParry": "Passive Parry",
+      "overridden": "Set to {value} (override)"
+    },
+    "Vital": {
+      "hp": "HP",
+      "hpCurrent": "Current HP",
+      "sanity": "Sanity",
+      "sanityCurrent": "Current Sanity",
+      "sin": "Sin",
+      "sinCurrent": "Current Sin",
+      "fate": "Fate",
+      "miscBonus": "Misc. bonus",
+      "meltdownAt": "Meltdown at {value}",
+      "threshold": "Threshold {value}"
+    },
+    "HPState": {
+      "healthy": "Healthy",
+      "bloodied": "Bloodied",
+      "wounded": "Wounded",
+      "unconscious": "Unconscious",
+      "dying": "Dying",
+      "dead": "Dead"
+    },
+    "Encumbrance": {
+      "none": "Unencumbered",
+      "light": "Light load",
+      "medium": "Medium load",
+      "heavy": "Heavy load",
+      "overHead": "Over-head lift",
+      "offGround": "Off-ground lift",
+      "pushOrDrag": "Push or drag only",
+      "bands": "Medium load from {medium}, heavy load from {heavy}."
+    },
+    "Movement": {
+      "title": "Movement",
+      "land": "Land",
+      "fly": "Fly",
+      "swim": "Swim",
+      "climb": "Climb",
+      "burrow": "Burrow",
+      "hexes": "hexes",
+      "overland": "Overland",
+      "none": "No movement"
+    },
+    "Rank": {
+      "untrained": "Untrained",
+      "learned": "Learned",
+      "practiced": "Practiced",
+      "adept": "Adept",
+      "experienced": "Experienced",
+      "expert": "Expert",
+      "mastered": "Mastered"
+    },
+    "SkillCategory": {
+      "Combat": "Combat",
+      "Craft": "Craft",
+      "Knowledge": "Knowledge",
+      "Magical": "Magical",
+      "Physical": "Physical",
+      "Sense": "Sense",
+      "Social": "Social"
+    },
+    "Skill": {
+      "hint": "Click a skill's dice to roll it. Shift-click rolls without the dialog.",
+      "filter": "Filter skills",
+      "trainedCount": "{trained} trained of {total}",
+      "rank": "Rank",
+      "attribute": "Attribute",
+      "miscBonus": "Bonus dice",
+      "rollHint": "Roll {skill} ({dice}D)",
+      "add": "Add skill",
+      "addTitle": "Add {type} skill",
+      "subtype": "Name",
+      "delete": "Delete skill",
+      "deleteTitle": "Delete {name}",
+      "deleteConfirm": "Delete the skill {name} from this character?",
+      "exists": "{name} is already on this character.",
+      "isCore": "{name} is a core skill; every character already has it.",
+      "customInvalid": "Give the skill a name.",
+      "unlockHint": "Allow this untrained skill to be rolled anyway.",
+      "itemHint": "Skill entries are references. Drop one onto a character to add it as a custom Craft, Lore, or Perform skill.",
+      "type": {
+        "craft": "Craft",
+        "lore": "Lore",
+        "perform": "Perform"
+      }
+    },
+    "Difficulty": {
+      "trivial": "Trivial (1)",
+      "easy": "Easy (2)",
+      "moderate": "Moderate (3)",
+      "challenging": "Challenging (4)",
+      "hard": "Hard (5)",
+      "veryHard": "Very Hard (6)",
+      "extreme": "Extreme (8)",
+      "legendary": "Legendary (10)"
+    },
+    "Roll": {
+      "roll": "Roll",
+      "dice": "Dice",
+      "dt": "DT",
+      "difficulty": "Difficulty",
+      "noDT": "No DT",
+      "byName": "— or choose a difficulty —",
+      "mode": "Roll mode",
+      "extraDice": "{dice}D situational",
+      "extraDiceLabel": "Extra dice",
+      "extraDiceHint": "Situational dice to add or remove (e.g. +2 or −1).",
+      "successes": "successes",
+      "vsDT": "vs DT {dt}",
+      "success": "Success",
+      "failure": "Failure",
+      "autoFail": "Automatic failure",
+      "conditionBonus": "+{dice}D from conditions",
+      "conditionPenalty": "−{dice}D from conditions",
+      "infirm": "Infirm: this attribute can't be rolled.",
+      "details": "Dice",
+      "poolLabel": "{dice}D pool",
+      "poolLead": "Rolling {dice}D before adjustments.",
+      "poolOf": "{dice}D",
+      "skillFlavor": "{skill} ({rank})",
+      "attributeFlavor": "{attribute} check",
+      "noSkill": "No skill named {skill} on this character."
+    },
+    "Condition": {
+      "none": "No active conditions",
+      "clear": "Clear combat state",
+      "dead": "Dead",
+      "intensity": "Intensity",
+      "hudTiered": "{label} ({intensity})",
+      "immune": "{actor} is immune to {condition}.",
+      "immuneHint": "Immune"
+    },
+    "Intensity": {
+      "trivial": "Trivial",
+      "moderate": "Moderate",
+      "severe": "Severe"
+    },
+    "Addiction": {
+      "none": "None",
+      "early": "Early stage",
+      "middle": "Middle stage",
+      "late": "Late stage",
+      "terminal": "Terminal stage"
+    },
+    "Facing": {
+      "title": "Facing",
+      "front": "Front",
+      "flank": "Flank",
+      "backflank": "Back Flank",
+      "back": "Back",
+      "aim": "Face a target or hex",
+      "clickPrompt": "Click a hex on the canvas. Facing snaps to that neighboring hex direction."
+    },
+    "Combat": {
+      "bleedTick": "{condition} ({intensity}) deals {damage} damage.",
+      "regeneration": "Regenerates {healed} HP.",
+      "stanceEnds": "{stance} ends.",
+      "conditionsEnd": "{conditions} ended."
+    },
+    "Attack": {
+      "title": "Attack: {weapon}",
+      "roll": "Attack",
+      "rollHint": "Attack ({dice}D)",
+      "pool": "{dice}D {skill}",
+      "target": "Target",
+      "noTarget": "No target",
+      "manualDT": "No target selected: set the DT yourself.",
+      "facing": "Attacking from",
+      "facingHint": "Which side of the target you attack from. It's read from token positions when both are on the map.",
+      "location": "Hit location",
+      "locationRandom": "Random (d12)",
+      "locationDefault": "Body",
+      "locationCalled": "Called shot (−2D)",
+      "calledLocation": "Called location",
+      "calledHint": "A called shot costs 2 dice and always hits the chosen location.",
+      "called": "called shot",
+      "calledShotPenalty": "−2D called shot",
+      "mounted": "Target is mounted",
+      "dualTrigger": "Fire both barrels (Dual-Trigger)",
+      "accurate": "Accurate: the target can't Dodge.",
+      "powerful": "Powerful: the target can't Parry.",
+      "defenseExcess": "+{dice}D: the target's Avoid is already at its minimum.",
+      "hit": "Hit",
+      "miss": "Miss",
+      "damage": "damage",
+      "crit": "Critical (+{damage} damage)",
+      "critCount": "{count} crit(s)",
+      "minimumHp": "Deals at least {value} HP damage.",
+      "remaining": "{count} success(es) left to spend",
+      "extend": "Extend {effect}",
+      "rounds": "{rounds} rounds",
+      "resetSpend": "Undo spending",
+      "notEnough": "Not enough successes left for that.",
+      "applyDamage": "Apply damage",
+      "applied": "Damage applied",
+      "gmOnly": "Only a GM can apply damage.",
+      "conditionApplied": "{condition} applied for {rounds} rounds.",
+      "sanityLoss": "Loses {amount} Sanity.",
+      "noWeapons": "No weapons. Add one from the Inventory or the compendium.",
+      "none": "—",
+      "rippingExtend": "Ripping Bleed +1 round",
+      "rippingBleed": "Ripping Bleed",
+      "rippingHint": "Ripping: Trivial Bleed for {rounds} rounds if this deals HP damage.",
+      "rippingApplied": "Ripping: Trivial Bleed for {rounds} rounds."
+    },
+    "DamageEffect": {
+      "fire": "Ignite (burning)",
+      "cold": "Chill (Fatigue)",
+      "acid": "Corrode (Pain)",
+      "electricity": "Arc to a nearby foe",
+      "sonic": "Deafen",
+      "smiting": "Terrify (Fear)",
+      "expel": "Stun",
+      "psychicSanity": "Psychic shock (Sanity damage)",
+      "psychicConfusion": "Confuse",
+      "corruption": "Corrupt"
+    },
+    "Body": {
+      "head": "Head",
+      "body": "Body",
+      "leftarm": "Left Arm",
+      "rightarm": "Right Arm",
+      "leftleg": "Left Leg",
+      "rightleg": "Right Leg",
+      "left": "L",
+      "right": "R"
+    },
+    "Protection": {
+      "location": "Location",
+      "armor": "Armor",
+      "natural": "Natural",
+      "total": "Total",
+      "apNd": "AP + ND",
+      "anatomy": "Anatomy",
+      "ndCurrent": "Current ND",
+      "ndMax": "Max ND",
+      "stacks": "stacks with armor",
+      "stacksHint": "Natural deflection on this location stacks with worn armor instead of being replaced by it.",
+      "cellTooltip": "Armor {armor}/{armorMax} · Natural {nd}/{ndMax}",
+      "damage": "Damage protection",
+      "damageTitle": "Damage {location} protection",
+      "amount": "Amount",
+      "apply": "Apply",
+      "overflow": "{overflow} damage got past the protection.",
+      "restore": "Restore",
+      "restoreAll": "Restore all",
+      "restoreAllHint": "Reset every location's armor and natural deflection to full.",
+      "rollLocation": "Roll hit location",
+      "hitLocation": "Hit location: {location} (rolled {roll})"
+    },
+    "Armor": {
+      "protection": "Protection",
+      "maxAP": "Max AP {value}",
+      "currentLimbs": "Current AP (left / right)",
+      "leftAP": "Left AP",
+      "rightAP": "Right AP",
+      "autoBlockHint": "Body parts this shield automatically protects (e.g. \"Arms, Body\").",
+      "none": "No armor worn"
+    },
+    "Injury": {
+      "minor": "Minor",
+      "major": "Major",
+      "severed": "severed",
+      "add": "Add injury",
+      "disorders": "Mental disorders",
+      "addDisorder": "Add disorder",
+      "removeDisorder": "Remove disorder",
+      "disorderName": "Disorder",
+      "disorderType": "Severity",
+      "noDisorders": "No mental disorders"
+    },
+    "Affliction": {
+      "none": "No diseases, poisons, or drug effects"
+    },
+    "Traits": {
+      "resistances": "Resistances",
+      "vulnerabilities": "Vulnerabilities",
+      "absorption": "Absorption",
+      "damageImmunities": "Damage immunities",
+      "statusImmunities": "Condition immunities",
+      "effectImmunities": "Effect immunities",
+      "spellResistance": "Spell resistance",
+      "notes": "Notes",
+      "edit": "Edit combat traits",
+      "granted": "Granted by an item, species, or creature type",
+      "grantedHint": "Marked entries come from equipped items, species, and creature type rules. Edit those sources to change them.",
+      "none": "No resistances, immunities, or vulnerabilities"
+    },
+    "Inventory": {
+      "empty": "Nothing here yet.",
+      "load": "Load {load} / {light}",
+      "serpents": "Serpents",
+      "itemsOfPower": "Items of Power"
+    },
+    "Currency": {
+      "purse": "Purse",
+      "serpents": "Serpents (sp)"
+    },
+    "Family": {
+      "equipment": "Equipment",
+      "gear": "Gear",
+      "consumables": "Consumables",
+      "devices": "Magical Devices",
+      "companions": "Mounts, Vehicles & Creatures",
+      "abilities": "Talents, Traits & Skills",
+      "origins": "Species, Paths & Heritage",
+      "magic": "Spells",
+      "rules": "Afflictions & GM Tools"
+    },
+    "Item": {
+      "create": "Create item",
+      "createAny": "Create item",
+      "newName": "New {type}",
+      "browse": "Browse the compendium",
+      "noPack": "There's no compendium for this item type.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete {name}",
+      "deleteConfirm": "Delete {name} from {actor}? This can't be undone.",
+      "duplicate": "Duplicate",
+      "toChat": "Show in chat",
+      "use": "Use",
+      "resetUses": "Reset uses",
+      "usesPerDayHint": "0 means no daily limit.",
+      "equip": "Equip",
+      "unequip": "Unequip",
+      "expand": "Show details",
+      "collapse": "Hide details",
+      "less": "One fewer",
+      "more": "One more",
+      "openHint": "Open item sheet",
+      "noDescription": "No description."
+    },
+    "Chip": {
+      "critical": "Crit {value}",
+      "quantity": "×{value}",
+      "perDay": "{value}/day",
+      "baseHP": "Base HP {value}",
+      "successes": "{value} successes",
+      "toxicity": "Toxicity {value}",
+      "corruption": "Corruption {value}",
+      "heavy": "Heavy"
+    },
+    "Resource": {
+      "quantity": "Quantity",
+      "charges": "Charges",
+      "energy": "Energy",
+      "usesToday": "Uses left today",
+      "unlimited": "Unlimited",
+      "none": "{name} has no uses left."
+    },
+    "Handedness": {
+      "light": "Light",
+      "oneHanded": "One-Handed",
+      "twoHanded": "Two-Handed",
+      "natural": "Natural Weapon"
+    },
+    "Weapon": {
+      "name": "Weapon",
+      "damage": "Damage",
+      "crit": "Crit",
+      "range": "Range",
+      "ready": "Ready",
+      "attack": "Attack",
+      "qualities": "Qualities",
+      "noQualities": "No qualities",
+      "addQuality": "Add quality",
+      "chooseQuality": "— choose a quality —",
+      "automatic": "automatic",
+      "customQualitiesHint": "Other qualities as free text, separated by commas.",
+      "miscBonusHint": "Extra attack dice from this weapon.",
+      "naturalHint": "Natural weapons are always ready.",
+      "wielded": "In hand: {damage} · {dice}D",
+      "wieldedHint": "This weapon's damage and attack pool for its current owner, including attribute bonuses.",
+      "attributeBonus": "+{value} damage from attribute",
+      "notReady": "Not in hand. Ready it on the Combat tab."
+    },
+    "Enhance": {
+      "enchantment": "Enchantment",
+      "basePrice": "Base enchantment price: {value} sp.",
+      "totalCost": "Magic cost {value} sp",
+      "strengthening": "Strengthening",
+      "requiresEnchant": "Requires the item to be enchanted.",
+      "weaponRules": "Enchanted weapons deal normal damage to magic armor, double their Integrity, and take half damage from non-magical weapons.",
+      "armorRules": "Enchanted armor takes half damage from non-magical weapons.",
+      "radiationImmune": "Enchanted bows and firearms are immune to magical radiation.",
+      "naturalNone": "Natural weapons can't be enchanted, strengthened, or modified.",
+      "powers": "Enchantment powers",
+      "powerName": "Power name",
+      "powerDescription": "What the power does",
+      "addPower": "Add power",
+      "noPowers": "No enchantment powers.",
+      "darkHint": "A Dark Magic enchantment (addiction rules apply).",
+      "modifications": "Modifications",
+      "slots": "{used} / {max} slots",
+      "modName": "Modification name",
+      "modDescription": "What the modification does",
+      "addMod": "Add modification",
+      "noMods": "No modifications."
+    },
+    "ItemOfPower": {
+      "slotting": "Slot",
+      "active": "Active",
+      "inactive": "Inactive (equip and attune to use)",
+      "attune": "Attune",
+      "unattune": "End attunement",
+      "attuned": "Attuned",
+      "attunementCount": "Attunement {current} / {max}",
+      "attunementFull": "No attunement slots left (maximum {max}).",
+      "attunementHint": "Attunement slots: a quarter of your level plus your Soul.",
+      "aura": "Aura",
+      "darkAura": "Light-absorbing black",
+      "carried": "Carried, not equipped",
+      "emptySlot": "Empty",
+      "armorHint": "This item occupies an armor location and provides AP.",
+      "slot": {
+        "head": "Head",
+        "neck": "Neck",
+        "body": "Body",
+        "hands": "Hands",
+        "belt": "Belt",
+        "legs": "Legs",
+        "boots": "Boots",
+        "ring": "Rings",
+        "headband": "Headband",
+        "eyes": "Eyes",
+        "ears": "Ears",
+        "face": "Face",
+        "necklace": "Necklace",
+        "shoulders": "Shoulders",
+        "clothing": "Clothing",
+        "overcoat": "Overcoat",
+        "chestplate": "Chestplate",
+        "backpack": "Backpack",
+        "arm": "Arm",
+        "wrist": "Wrist",
+        "sheath": "Sheath"
+      }
+    },
+    "Grants": {
+      "abilities": "Universal abilities granted",
+      "spellResistance": "Spell resistance",
+      "resistances": "Resistances granted",
+      "immunities": "Immunities granted",
+      "damageTypes": "Damage types",
+      "statuses": "Conditions",
+      "effects": "Effects",
+      "customImmunities": "Other immunities",
+      "notes": "Notes"
+    },
+    "Bonus": {
+      "title": "Mechanical bonuses",
+      "type": "Bonus type",
+      "target": "Applies to",
+      "value": "Amount",
+      "severity": "Severity",
+      "textTargetHint": "Skill name, category, or \"all\"",
+      "add": "Add bonus",
+      "none": "No bonuses.",
+      "itemHint": "Applied while the item is equipped (and attuned, if attunement is in use).",
+      "featureHint": "Applied while the character has this.",
+      "passiveHint": "Always applied while the character has this ability.",
+      "activeHint": "Applied for the ability's duration when it's used."
+    },
+    "ItemSheet": {
+      "Tab": {
+        "details": "Details",
+        "description": "Description",
+        "enhancements": "Enhancements",
+        "outcomes": "Effects",
+        "abilities": "Abilities",
+        "skills": "Skills",
+        "monster": "Monster",
+        "lore": "Lore",
+        "powers": "Powers"
+      },
+      "editImage": "Change image",
+      "sourceHint": "Book and page, e.g. Core p. 120",
+      "combat": "Combat",
+      "damageAmount": "Damage",
+      "damageType": "Damage type",
+      "addDamage": "Add damage",
+      "noDamage": "No damage.",
+      "removeRow": "Remove"
+    },
+    "Spell": {
+      "casting": "Casting",
+      "activation": "Activation",
+      "runeDrawing": "Drawing the rune",
+      "runeDrawn": "Rune drawn",
+      "runeFailed": "Rune failed",
+      "cast": "Cast",
+      "fizzle": "Fizzled",
+      "castTitle": "Cast {spell}",
+      "castLead": "Rolling {dice}D; the spell needs {required} successes.",
+      "mishapLine": "{severity} mishap",
+      "mishap": {
+        "minor": "Minor",
+        "moderate": "Moderate",
+        "severe": "Severe",
+        "critical": "Critical"
+      },
+      "attacks": "Spell attacks",
+      "attacksHint": "Each checked defense is attacked with the spellcasting roll when the spell is cast at a target.",
+      "attackVs": "Attack vs {defense}",
+      "noTargetDT": "no target: estimated",
+      "onHit": "On a hit",
+      "sameAsSuccesses": "same as Successes",
+      "sanityDamage": "{value} Sanity damage",
+      "sanityHint": "A number or a dice formula (e.g. 1d6).",
+      "statusEffects": "Conditions inflicted",
+      "status": "Condition",
+      "intensity": "Intensity",
+      "duration": "Duration",
+      "notes": "Notes",
+      "addStatus": "Add condition",
+      "noStatus": "No conditions.",
+      "buffs": "Buffs",
+      "buffName": "Buff",
+      "buffTarget": "Target",
+      "buffDescription": "What the buff does",
+      "addBuff": "Add buff",
+      "noBuffs": "No buffs.",
+      "bonusEffect": "Bonus effect",
+      "bonusEffectHint": "What extra successes can buy for this spell.",
+      "moreDamage": "Increase damage",
+      "moreRange": "Increase range",
+      "moreDuration": "Increase duration",
+      "apply": "Apply spell",
+      "nothingApplied": "Nothing to apply."
+    },
+    "Mishap": {
+      "none": "Standard",
+      "corruption": "Corruption"
+    },
+    "Magic": {
+      "spells": "Spells",
+      "noSpells": "No spells known.",
+      "devices": "Staves & Wands",
+      "spellcasting": "Spellcasting",
+      "spellcastingHint": "Your Spellcasting rank and dice pool.",
+      "cast": "Cast",
+      "castHint": "Cast this spell",
+      "dark": "Dark Magic",
+      "sin": "Sin & Addiction",
+      "threshold": "Sin Threshold",
+      "thresholdBonus": "Threshold bonus",
+      "thresholdHint": "Soul minus Dark Magic spells known ({spells}), plus bonuses. Minimum 1.",
+      "addiction": "Addiction",
+      "rollAddiction": "Roll addiction attack",
+      "addictionAttack": "Addiction attack",
+      "addictionHint": "Make the addiction attack for casting a Dark Magic spell.",
+      "castingDT": "Spell's casting DT",
+      "addictionFlavor": "Addiction attack: {dice}D vs Grit {grit}",
+      "addictionHit": "The addiction takes hold: {damage}. Stage {before} → {after} ({stage}).",
+      "addictionMiss": "The character resists the addiction.",
+      "aura": "Aura",
+      "auraColor": "Color",
+      "auraShape": "Shape",
+      "auraIntensity": "Intensity",
+      "ignite": "Ignite",
+      "endIgnition": "End Ignition"
+    },
+    "Abilities": {
+      "paths": "Paths",
+      "noPaths": "No paths yet.",
+      "species": "Species",
+      "noSpecies": "No species. Drop one from the compendium.",
+      "speciesDetails": "Species details",
+      "speciesManualHint": "These values were copied from the species item. Edit them here only for species without an item.",
+      "creatureRules": "Creature type rules",
+      "talents": "Talents",
+      "noTalents": "No talents.",
+      "traits": "Traits",
+      "noTraits": "No traits.",
+      "precepts": "Precepts",
+      "noPrecepts": "No precepts.",
+      "activeEffects": "Active effects",
+      "endEffect": "End effect",
+      "none": "No abilities.",
+      "add": "Add ability",
+      "newAbility": "New Ability",
+      "name": "Ability name",
+      "description": "What the ability does",
+      "activation": "Activation",
+      "actionCost": "Action",
+      "actionCostHint": "e.g. Minor Action",
+      "duration": "Lasts",
+      "rounds": "rounds",
+      "delete": "Delete ability",
+      "deleteTitle": "Delete {name}",
+      "deleteConfirm": "Delete the ability {name}?",
+      "bonusHint": "Mechanical bonuses this ability applies"
+    },
+    "Activation": {
+      "passive": "Passive",
+      "active": "Active"
+    },
+    "Progression": {
+      "maxTier": "Highest tier {tier}",
+      "paths": "Paths {taken}/{allowed}",
+      "pathsHint": "One path per tier reached.",
+      "talents": "Talents {taken}/{allowed}",
+      "talentsHint": "One talent every other level (half your level, rounded up).",
+      "traits": "Traits {taken}"
+    },
+    "Creation": {
+      "pointBuy": "Points {spent} / {budget}",
+      "pointBuyHint": "Attribute points spent against the point-buy budget.",
+      "rollAttributes": "Roll attributes",
+      "rollTitle": "Roll Attributes",
+      "rollConfirm": "Replace the five attribute values with random rolls (1d6 each; a 6 rolls once more and adds)? This cannot be undone.",
+      "assignTitle": "Assign Attributes",
+      "assignLead": "Your rolls have been applied in rolled order. You may rearrange which attribute gets which result.",
+      "assign": "Assign",
+      "assignHint": "Picking a result already used swaps the two. Closing this window keeps the rolled order.",
+      "rollOption": "{value} (roll {number})",
+      "cardTitle": "Attribute Roll",
+      "cardLead": "1d6 five times, a 6 rolls once more and adds: {values}",
+      "capped": "capped at 10 (rolled {total})",
+      "rearranged": "Results rearranged by the player."
+    },
+    "Path": {
+      "path": "Path",
+      "tier1": "Tier 1",
+      "tier2": "Tier 2",
+      "tier3": "Tier 3",
+      "tierShort": "T",
+      "monster": "Monster Path",
+      "baseHPHint": "HP this path adds to the character's base HP.",
+      "applyHint": "Adding this path to a character raises the skills on the Skills tab (never lowers them) and asks for any choices.",
+      "applied": "{path} applied to {actor}: {raised} skill(s) raised, {created} added.",
+      "apply": "Apply",
+      "skip": "Skip",
+      "anyCategory": "any",
+      "chooseTitle": "Choose {count} {category} skill(s)",
+      "chooseHint": "{path} lets you raise {count} skill(s) to {rank}.",
+      "chooseExactly": "Choose exactly {count}.",
+      "nameTitle": "Name {count} {type} skill(s)",
+      "nameHint": "{path} grants {count} {type} skill(s) at {rank}. Name them.",
+      "nameAll": "Name all {count}."
+    },
+    "PathSkill": {
+      "hint": "Skills this path grants. Drop a skill item here to add it.",
+      "entryType": "Grant",
+      "entry": {
+        "specific": "This skill",
+        "specific-custom": "This Craft/Lore/Perform",
+        "choose-category": "Choose from a category",
+        "choose-any": "Choose any skill",
+        "choose-lore": "Player names Lore skills",
+        "choose-perform": "Player names Perform skills",
+        "choose-craft": "Player names Craft skills"
+      },
+      "skillName": "Skill name",
+      "customType": "Kind",
+      "craft": "Craft",
+      "lore": "Lore",
+      "perform": "Perform",
+      "subtype": "Name (e.g. History)",
+      "category": "Category",
+      "count": "How many",
+      "rank": "Rank",
+      "add": "Add skill grant",
+      "none": "This path grants no skills."
+    },
+    "Species": {
+      "identity": "Species",
+      "name": "Species",
+      "baseHP": "Base HP",
+      "size": "Size",
+      "creatureType": "Creature type",
+      "subtypes": "Subtypes",
+      "addSubtype": "Add subtype",
+      "customSubtype": "Other subtype",
+      "languages": "Languages",
+      "languagesHint": "Common, Elvish, …",
+      "isMonster": "Monster",
+      "attributeBonuses": "Attribute bonuses",
+      "flexible": "Flexible",
+      "flexibleHint": "{species} grants +{value} to an attribute of your choice.",
+      "flexibleTitle": "{species}: flexible bonus",
+      "flexibleAttribute": "Attribute",
+      "chooseLater": "Choose later",
+      "deflectionTitle": "{species}: natural deflection",
+      "deflectionRating": "Natural deflection rating",
+      "attackTitle": "{species}: standard attacks",
+      "attackHint": "Choose this species' standard attack.",
+      "syncHint": "Apply this item to the character now and keep later edits in sync.",
+      "typeAbilities": "Creature type & subtype abilities",
+      "lifespan": "Lifespan",
+      "applied": "{species} applied to {actor}."
+    },
+    "Vision": {
+      "normal": "Normal",
+      "enhanced": "Enhanced",
+      "darkvision": "Darkvision"
+    },
+    "Monster": {
+      "attributeSet": "Attribute set",
+      "attributeSetHint": "Starting attributes for a new monster of this species.",
+      "naturalDeflection": "Natural deflection",
+      "rating": "Rating",
+      "base": "Base ×",
+      "arms": "Arms",
+      "legs": "Legs",
+      "ndHint": "Natural deflection per location is the base multiplier × Physique, scaled by each location's fraction.",
+      "standardAttacks": "Standard attacks",
+      "attacksHint": "Drop weapons here. \"Grant\" gives every weapon in the entry; \"Choice\" asks the player to pick one.",
+      "mode": "Mode",
+      "dropWeapon": "Drop a weapon here",
+      "noAttacks": "No standard attacks.",
+      "sizeRules": "Size rules",
+      "sizeRulesHint": "Adjustments applied when a monster of this species is a given size.",
+      "averageEL": "Average EL",
+      "bonusHP": "Bonus HP",
+      "landMovement": "Land movement",
+      "example": "Example",
+      "bonus": "Bonus",
+      "cap": "Cap"
+    },
+    "Fleshcraft": {
+      "creature": "Creature",
+      "defenses": "Defenses & natural deflection",
+      "ndHead": "ND Head",
+      "ndBody": "ND Body",
+      "ndArms": "ND Arms",
+      "ndLegs": "ND Legs",
+      "abilities": "Abilities"
+    },
+    "Disease": {
+      "transmission": "Transmission",
+      "incubationHint": "e.g. 2–5 days"
+    },
+    "Hazard": {
+      "trap": "Trap",
+      "hazard": "Hazard",
+      "attack": "Attack",
+      "trigger": "Trigger",
+      "triggerHint": "Attack the targeted (or selected) token with this.",
+      "needTarget": "Target or select a token first.",
+      "automatic": "Automatic hit (no attack roll).",
+      "damageHint": "A number or a dice formula.",
+      "badFormula": "Invalid damage formula: {formula}"
+    },
+    "Downtime": {
+      "progress": "Progress",
+      "less": "Less progress",
+      "more": "More progress",
+      "none": "No downtime activities."
+    },
+    "Alchemy": {
+      "craft": "Craft",
+      "craftHint": "{discipline}: crafting costs {cost} sp in materials."
+    },
+    "Mutation": {
+      "none": "No mutations.",
+      "rollMinor": "Roll minor mutation",
+      "rollMajor": "Roll major mutation",
+      "unknownSeverity": "Unknown mutation table: {severity}.",
+      "failed": "Mutation roll failed: {error}",
+      "source": "Heirs to Rangar, p. {page}",
+      "cardTitle": "{severity} Mutation",
+      "added": "Added to {name}.",
+      "d100": "on d100",
+      "range": "Result {range}",
+      "severities": {
+        "minor": "Minor",
+        "major": "Major",
+        "severe": "Severe",
+        "critical": "Critical",
+        "corrupted": "Corrupted",
+        "xenochild": "Xenochild"
+      }
+    },
+    "Heritage": {
+      "calculate": "Calculate heritage",
+      "summary": "{changes} characteristic change(s), {mutations} mutation roll(s)",
+      "title": "Calculate Heritage",
+      "lead": "Choose each parent's creature type to find the crossbreed outcome (Heirs to Rangar, pp. 33–47).",
+      "mother": "Mother's type",
+      "father": "Father's type",
+      "choose": "— choose —",
+      "xenochild": "Xenochild",
+      "xenochildHint": "A Xenochild uses the better outcome of either parent order and rolls on the Xenochild table.",
+      "modifiersLegend": "Xenochild modifiers",
+      "rollsBonus": "+{rolls} roll(s)",
+      "additionalParents": "Additional DNA sources",
+      "additionalParentsHint": "Sources beyond the first two parents; each adds 2 Xenochild rolls.",
+      "preview": "Outcome: {outcome}",
+      "needTypes": "Choose both parental creature types.",
+      "naturalDetails": "{changes} characteristic change(s); natural mutation rolls: {rolls}.",
+      "xenochildDetails": "{total} Xenochild mutation roll(s) ({base} base); freely mix parental Characteristics.",
+      "xenochildDetailsBonus": "{total} Xenochild mutation roll(s) ({base} base + {bonus} situational); freely mix parental Characteristics.",
+      "cardTitle": "Crossbreed Result",
+      "parents": "{mother} × {father}",
+      "additionalSources": "{count} additional DNA source(s)",
+      "types": {
+        "HH": "Humanoid (Human)",
+        "HD": "Humanoid (Demihuman)",
+        "XG": "Xeno (Goblin)",
+        "XI": "Xeno (Insect)",
+        "XM": "Xeno (Mammal)",
+        "XO": "Xeno (Other)",
+        "XR": "Xeno (Reptile)",
+        "EXC": "Extradimensional (Celestial)",
+        "EXD": "Extradimensional (Demonic)",
+        "EXO": "Extradimensional (Other)",
+        "UH": "Undead (High)",
+        "UL": "Undead (Low)",
+        "MD": "Magical (Dragon)",
+        "MF": "Magical (Fae)",
+        "P": "Plant",
+        "A": "Artificial"
+      },
+      "outcomes": {
+        "breedTrue": "Breed True",
+        "hybrid": "Hybrid",
+        "mule": "Mule",
+        "degenerate": "Degenerate",
+        "nonViable": "Non-viable",
+        "special": "Special Crossbreed"
+      },
+      "mutationRolls": {
+        "breedTrue": "None",
+        "hybrid": "None",
+        "mule": "1d4 Minor; 1d2-1 Major",
+        "degenerate": "1d6 Minor; 1d4 Major; 1d4-2 Severe",
+        "nonViable": "Not naturally viable",
+        "special": "See the special crossbreed entry"
+      },
+      "modifiers": {
+        "designerSculpting": "Designer Sculpting (+1 Attribute)",
+        "extradimensionalParentage": "Extradimensional Parentage",
+        "dragonParent": "Magic (Dragon) Parent",
+        "faeParent": "Magic (Fae) Parent",
+        "undeadDNA": "Undead DNA"
+      }
+    },
+    "Rest": {
+      "rest": "Rest",
+      "restHint": "Rest: recover 1d12 + Physique HP.",
+      "restFlavor": "Rest: HP {before} → {after} (max {max})",
+      "daily": "New day",
+      "dailyTitle": "Start a new day",
+      "dailyConfirm": "Reset daily uses, Sin, and other daily limits for this character?",
+      "dailyDone": "A new day dawns for {name}."
+    },
+    "Fate": {
+      "spend": "Spend a Fate Point",
+      "award": "Award a Fate Point",
+      "drivingForce": "Driving force",
+      "personalGoal": "Personal goal",
+      "personalRelationship": "Personal relationship"
+    },
+    "Bio": {
+      "profile": "Profile",
+      "appearance": "Appearance",
+      "biography": "Biography",
+      "notes": "Notes",
+      "motivations": "Motivations",
+      "heritage": "Heritage",
+      "mutations": "Mutations",
+      "downtime": "Downtime",
+      "age": "Age",
+      "sex": "Sex",
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "sexuality": "Sexuality",
+      "handedness": "Handedness",
+      "height": "Height",
+      "feet": "Feet",
+      "inches": "Inches",
+      "weight": "Weight",
+      "languages": "Languages",
+      "religion": "Religion",
+      "birthplace": "Birthplace",
+      "culture": "Culture",
+      "socialClass": "Social class",
+      "occupation": "Occupation",
+      "education": "Education",
+      "reputation": "Reputation",
+      "hair": "Hair",
+      "eyes": "Eyes",
+      "skin": "Skin",
+      "build": "Build",
+      "marks": "Distinguishing marks",
+      "voice": "Voice",
+      "fightingStyle": "Fighting style",
+      "vice": "Greatest vice"
+    },
+    "Party": {
+      "Tab": {
+        "members": "Members",
+        "stash": "Stash",
+        "notes": "Notes"
+      },
+      "memberCount": "{count} member(s)",
+      "members": "Members",
+      "addMember": "Add member",
+      "add": "Add",
+      "character": "Character",
+      "removeMember": "Remove from party",
+      "noCandidates": "Every character is already in this party.",
+      "empty": "No members. Drag characters here or use Add member.",
+      "rewards": "Rewards",
+      "giveXP": "Give XP",
+      "xpEach": "XP for each member",
+      "gaveXP": "Gave {amount} XP to {count} member(s).",
+      "giveCurrency": "Give serpents",
+      "serpentsEach": "Serpents for each member",
+      "gaveCurrency": "Gave {amount} sp to each of {count} member(s).",
+      "dividePool": "Divide the purse",
+      "divideConfirm": "Split {pool} sp among {count} member(s): {share} sp each, {remainder} sp stays in the party purse.",
+      "poolTooSmall": "The purse is too small to split.",
+      "noMembers": "This party has no members.",
+      "stash": "Party stash",
+      "stashEmpty": "The stash is empty. Drag items here."
+    },
+    "Shop": {
+      "Tab": {
+        "stock": "Stock",
+        "description": "Description"
+      },
+      "treasury": "Treasury",
+      "stock": "For sale",
+      "item": "Item",
+      "inStock": "In stock",
+      "price": "Price",
+      "empty": "Nothing for sale.",
+      "buy": "Buy",
+      "buyTitle": "Buy {name}",
+      "buyLead": "{name}: {price} sp each, {stock} in stock.",
+      "quantity": "Quantity",
+      "payer": "Paid by",
+      "total": "Total: {total} sp",
+      "bought": "{buyer} bought {count}× {name} for {total} sp.",
+      "cannotAfford": "{name} needs {total} sp but has {has} sp.",
+      "sell": "Sell",
+      "sellToShop": "Sell to this shop",
+      "sellTitle": "Sell an item",
+      "sellItemTitle": "Sell {name}",
+      "sellLead": "{shop} buys {name} at {price} sp each (half value). Shop treasury: {purse} sp.",
+      "unitPrice": "Price each (sp)",
+      "payTo": "Pay to",
+      "next": "Next",
+      "sold": "{seller} sold {count}× {name} for {total} sp (paid to {recipient}).",
+      "shopCannotAfford": "The shop only has {has} sp; this sale needs {total} sp.",
+      "nothingToSell": "Your characters have nothing to sell.",
+      "noAccounts": "You don't own a character or party that can pay.",
+      "missing": "That item or character no longer exists.",
+      "notAllowed": "You don't have permission for that trade.",
+      "gmHint": "Drag items here to stock the shop. Players with at least Observer permission can buy and sell.",
+      "playerHint": "Drag an item from your character onto this sheet to sell it.",
+      "gmNotes": "GM notes"
+    },
+    "GMToolkit": {
+      "title": "GM Toolkit",
+      "gmOnly": "Only a GM can use the GM Toolkit.",
+      "tab": {
+        "encounter": "Encounter",
+        "challenge": "Challenge",
+        "monster": "Quick Monster",
+        "gear": "Unique Gear",
+        "power": "Items of Power"
+      },
+      "encounter": {
+        "heading": "The Encounter Die",
+        "hint": "Roll when travel, noise, conspicuous magic, or new territory may draw trouble.",
+        "danger": "Danger Level",
+        "dangerOption": "{label} ({threshold}+)",
+        "dangerSafe": "{label} (no roll)",
+        "situation": "Situation",
+        "noModifier": "No modifier",
+        "otherModifier": "Other Modifier",
+        "triggerHint": "An encounter occurs when {formula} totals {threshold} or more.",
+        "noRollHint": "No encounter roll is required in a safe area.",
+        "roll": "Roll Encounter Check",
+        "escalation": "Escalation",
+        "resetEscalation": "Reset escalation",
+        "escalationHint": "Each non-hostile encounter at Moderate danger or higher raises escalation by 1, widening the hostile range of the type die. A hostile encounter resets it to 0.",
+        "noEscalationHint": "Escalation does not apply at this danger level.",
+        "typeRoll": "Type (1d12)",
+        "typeResult": "Encounter",
+        "size": {
+          "heading": "Encounter Size",
+          "elColumn": "Creature EL",
+          "countColumn": "Creatures",
+          "muchWeaker": {
+            "el": "3–4 EL below the party",
+            "count": "4–8 creatures"
+          },
+          "weaker": {
+            "el": "1–2 EL below the party",
+            "count": "2–4 creatures"
+          },
+          "even": {
+            "el": "Same EL",
+            "count": "1–2 creatures"
+          },
+          "stronger": {
+            "el": "1–2 EL above",
+            "count": "1 creature"
+          },
+          "muchStronger": {
+            "el": "3+ EL above",
+            "count": "1 creature; avoidance recommended"
+          }
+        },
+        "chat": {
+          "title": "Encounter Die: {danger}",
+          "check": "Check: {roll} = {total} vs. {threshold}+",
+          "none": "No encounter",
+          "typeRoll": "Type roll: {roll}",
+          "escalation": "Escalation: {value}"
+        }
+      },
+      "challenge": {
+        "heading": "Skill Challenge",
+        "hint": "Track a multi-step party problem with escalating consequences.",
+        "status": {
+          "active": "Active",
+          "success": "Succeeded",
+          "failure": "Failed",
+          "expired": "Time Expired"
+        },
+        "currentDT": "Current DT {dt}",
+        "successes": "Successes",
+        "failures": "Failures",
+        "time": "Time",
+        "timeOf": "{round} / {limit} {unit}",
+        "timeOpen": "{round} {unit} (no limit)",
+        "timeNote": "Time: {time}",
+        "successesOf": "Successes: {value} / {target}",
+        "failuresOf": "Failures: {value} / {limit}",
+        "unit": {
+          "rounds": "Rounds",
+          "minutes": "Minutes",
+          "hours": "Hours"
+        },
+        "unitLower": {
+          "rounds": "rounds",
+          "minutes": "minutes",
+          "hours": "hours"
+        },
+        "record": {
+          "success": "+1 Success",
+          "majorSuccess": "+2 Successes",
+          "failure": "+1 Failure",
+          "time": "Advance Time"
+        },
+        "setup": "Setup",
+        "reset": "Reset Challenge",
+        "resetConfirm": "Reset the skill challenge? Its name, notes, and progress will be cleared.",
+        "autosave": "Changes are saved for the whole world as you make them.",
+        "name": "Name",
+        "complexity": "Complexity",
+        "complexityHint": "Choosing a complexity sets the success target, failure limit, and time limit.",
+        "baseDT": "Base DT",
+        "escalating": "Failures increase DT",
+        "successTarget": "Success Target",
+        "failureLimit": "Failure Limit",
+        "round": "Current Time",
+        "timeLimit": "Time Limit",
+        "timeUnit": "Time Unit",
+        "timeLimitHint": "0 means no time limit.",
+        "notes": "Notes",
+        "goal": "Goal",
+        "skills": "Relevant Skills",
+        "skillsPlaceholder": "Four to six skills and their narrative uses",
+        "onSuccess": "Success",
+        "onFailure": "Failure",
+        "complications": "Complications"
+      },
+      "monster": {
+        "heading": "Quick Monster Creation",
+        "hint": "Generate a playable NPC from EL, role, size, attack, defense, and armor profiles.",
+        "name": "Name",
+        "defaultName": "Quick Monster",
+        "el": "Encounter Level",
+        "size": "Size",
+        "role": "Role",
+        "attackTier": "Attack Profile",
+        "defenseTier": "Defense Profile",
+        "armor": "Protection",
+        "damageType": "Damage Type",
+        "preview": "Statistics",
+        "stat": {
+          "el": "EL",
+          "attack": "Attack",
+          "defense": "Defense",
+          "hp": "HP",
+          "ap": "AP",
+          "damage": "Damage"
+        },
+        "attackDice": "{dice}D",
+        "createHint": "Creates an NPC with every attribute at {attribute}, a natural attack, and body armor when AP is above 0.",
+        "create": "Create NPC",
+        "created": "Created {name}.",
+        "notes": "Quick Monster (EL {el}, {role}). Attack {attack}D; Defense {defense}; HP {hp}; AP {ap}; Damage {damage}.",
+        "attackName": "Primary Attack",
+        "armorName": "Quick Protection"
+      },
+      "gear": {
+        "calculator": "Access Level Calculator",
+        "alChip": "AL {total}",
+        "hint": "Determine how difficult a particular weapon, armor piece, relic, or restricted item is to acquire.",
+        "item": "Item",
+        "defaultItem": "Unique Gear",
+        "base": "Base AL",
+        "otherModifier": "Other Modifier",
+        "final": "Final Access Level",
+        "finalHint": "Cannot be reduced below 2; AL 12+ generally cannot be bought normally.",
+        "post": "Post Access Level to Chat",
+        "uniqueExamples": "Unique Gear Examples",
+        "averageExamples": "Average Gear Examples",
+        "rank": "Rank",
+        "al": "AL",
+        "examples": "Examples",
+        "skills": "Skills for Acquisition",
+        "skill": "Skill",
+        "use": "Use",
+        "availability": "Availability, Failure, and Commissioning",
+        "markup": "Difficult goods may carry markups of +25%, +50%, +100%, or more. Haggling reduces the marked-up price, but the merchant's minimum acceptable percentage is still based on the original price.",
+        "failedCheck": "A failed AL check may delay another attempt, reveal a lesser or flawed alternative, attract unwanted attention, or provide a lead elsewhere. Rare gear may be commissioned when a buyer can find a craftsperson and the required materials.",
+        "chat": {
+          "subtitle": "Access Level",
+          "total": "Access Level {total}",
+          "breakdown": "Base {base}, modifiers {modifier}",
+          "other": "Other modifier ({modifier})",
+          "unbuyable": "AL 12+ generally cannot be bought normally.",
+          "skill": "The GM chooses the skill appropriate to the acquisition attempt."
+        }
+      },
+      "power": {
+        "worldRules": "World Rules",
+        "hint": "These world settings are also available under Configure Settings.",
+        "unsaved": "Unsaved changes",
+        "slotRule": "Slot Rules",
+        "attunementRule": "Attunement Rules",
+        "save": "Save Item of Power Rules",
+        "saved": "Item of Power world rules updated.",
+        "maximum": "(maximum {count})",
+        "overlap": {
+          "heading": "Overlap or No Overlap?",
+          "headLabel": "Head:",
+          "head": "Helmets, crowns, circlets, masks, hoods, cowls, headbands, and turbans overlap. Earrings, monocles, eye patches, hair pins, and jaw guards do not.",
+          "bodyLabel": "Body:",
+          "body": "Most non-armor pieces can be worn over or under armor. An Item of Power shaped as armor overlaps and should use its armor-conflict and location fields. Armor+ pieces receive the normal Armor+ benefit.",
+          "handsLabel": "Hands:",
+          "hands": "Gauntlets, vambraces, and pauldrons overlap. Bracers, gloves, and wristbands do not and can be worn together. Mark non-overlapping accessories on their item sheet."
+        },
+        "alternate": {
+          "heading": "Alternate Item of Power Slots",
+          "hint": "The expanded system separates similar-looking items where reasonable. A dash means the slot is unchanged or did not previously exist.",
+          "oldSlot": "Old Slot",
+          "newSlot": "New Slot",
+          "becomes": "Becomes this slot if it is…",
+          "ringsLabel": "Rings:",
+          "rings": "One per finger or similar appendage rather than two total.",
+          "sheathsLabel": "Sheaths:",
+          "sheaths": "Four practical positions—left hip, right hip, back of hip, and backpack. GMs may allow sensible stacking while attunement remains the limiting rule."
+        },
+        "removing": {
+          "heading": "Removing Attunement",
+          "text": "When enabled, equipped Items of Power function without attunement checks or slot limits. This removes much of the incentive for non-magic characters to preserve Soul for attunement capacity."
+        },
+        "technology": {
+          "heading": "Technology-Affected Attunement",
+          "text": "Technological items can be marked as attuned against magical radiation. Each protected item consumes an attunement slot and is treated as stabilized against radiation-driven malfunction."
+        },
+        "dark": {
+          "heading": "Dark Magic Items",
+          "text": "Items created through souls, innocent blood, ritual sacrifice, Hell, corruption damage, consumed life or sanity, dark gods, or cosmic horrors are Dark Magic Items. Their gray-black flame or light-absorbing aura is visible to creatures that perceive magical auras.",
+          "attunedLabel": "Attuned:",
+          "attuned": "gain Sin equal to Corruption Value each dawn.",
+          "carriedLabel": "Carried but unattuned:",
+          "carried": "gain 1 Sin each week.",
+          "addictionLabel": "Addiction:",
+          "addiction": "crossing the Sin Threshold triggers a Dark Magic attack against Grit, using Corruption Value as its base dice.",
+          "retroactiveLabel": "Retroactive Dark Magic Items:"
+        },
+        "corruption": {
+          "value": "Item Value",
+          "cv": "Corruption Value",
+          "minor": "Minor (under 10,000 sp.)",
+          "moderate": "Moderate (10,000–25,000 sp.)",
+          "major": "Major (25,001–50,000 sp.)",
+          "legendary": "Legendary (above 50,000 sp.)"
+        }
+      }
+    },
+    "ACTOR": {
+      "character": {
+        "FIELDS": {
+          "level": {
+            "label": "Level"
+          },
+          "experience": {
+            "label": "Experience"
+          },
+          "biography": {
+            "label": "Biography"
+          },
+          "notes": {
+            "label": "Notes"
+          }
+        }
+      },
+      "party": {
+        "FIELDS": {
+          "notes": {
+            "label": "Notes"
+          }
+        }
+      },
+      "shop": {
+        "FIELDS": {
+          "description": {
+            "label": "Description"
+          },
+          "notes": {
+            "label": "GM notes"
+          }
+        }
+      }
+    },
+    "ITEM": {
+      "base": {
+        "FIELDS": {
+          "description": {
+            "label": "Description"
+          },
+          "source": {
+            "label": "Source"
+          },
+          "effect": {
+            "label": "Effect"
+          },
+          "duration": {
+            "label": "Duration"
+          },
+          "range": {
+            "label": "Range"
+          },
+          "usesPerDay": {
+            "label": "Uses per day"
+          },
+          "usesToday": {
+            "label": "Used today"
+          },
+          "bonuses": {
+            "label": "Bonuses"
+          },
+          "material": {
+            "label": "Material"
+          },
+          "damage": {
+            "label": "Damage"
+          },
+          "critical": {
+            "label": "Critical"
+          },
+          "hp": {
+            "label": "HP"
+          },
+          "size": {
+            "label": "Size"
+          },
+          "movement": {
+            "label": "Movement"
+          },
+          "creatureType": {
+            "label": "Creature type"
+          },
+          "specialAbilities": {
+            "label": "Special abilities"
+          },
+          "specialFeatures": {
+            "label": "Special features"
+          },
+          "skill": {
+            "label": "Skill"
+          },
+          "category": {
+            "label": "Category"
+          },
+          "capacity": {
+            "label": "Capacity"
+          },
+          "activation": {
+            "label": "Activation"
+          },
+          "prerequisites": {
+            "label": "Prerequisites"
+          },
+          "el": {
+            "label": "EL"
+          },
+          "dt": {
+            "label": "DT"
+          }
+        }
+      },
+      "physical": {
+        "FIELDS": {
+          "weight": {
+            "label": "Weight"
+          },
+          "price": {
+            "label": "Price (sp)"
+          },
+          "quantity": {
+            "label": "Quantity"
+          },
+          "equipped": {
+            "label": "Equipped"
+          },
+          "technological": {
+            "label": "Technological"
+          },
+          "technologyAttunement": {
+            "label": "Uses an attunement slot"
+          }
+        }
+      },
+      "weapon": {
+        "FIELDS": {
+          "damageComponents": {
+            "label": "Damage"
+          },
+          "critical": {
+            "label": "Critical (successes)"
+          },
+          "handedness": {
+            "label": "Handedness"
+          },
+          "range": {
+            "label": "Range"
+          },
+          "integrity": {
+            "label": "Integrity"
+          },
+          "qualities": {
+            "label": "Other qualities"
+          },
+          "qualityIds": {
+            "label": "Qualities"
+          },
+          "skill": {
+            "label": "Skill"
+          },
+          "attribute": {
+            "label": "Damage attribute"
+          },
+          "miscBonus": {
+            "label": "Attack bonus dice"
+          },
+          "isEnchanted": {
+            "label": "Enchanted"
+          },
+          "enchantmentPrice": {
+            "label": "Enchantment price (sp)"
+          },
+          "damageIncrease": {
+            "label": "Damage increase"
+          },
+          "strengtheningPrice": {
+            "label": "Strengthening price (sp)"
+          },
+          "enchantmentPowers": {
+            "label": "Enchantment powers"
+          },
+          "modifications": {
+            "label": "Modifications"
+          }
+        }
+      },
+      "armor": {
+        "FIELDS": {
+          "ap": {
+            "label": "AP"
+          },
+          "currentAP": {
+            "label": "Current AP"
+          },
+          "derivedLeftAP": {
+            "label": "Left AP"
+          },
+          "derivedRightAP": {
+            "label": "Right AP"
+          },
+          "isHeavy": {
+            "label": "Heavy armor"
+          },
+          "location": {
+            "label": "Location"
+          },
+          "autoBlock": {
+            "label": "Auto-block"
+          },
+          "isEnchanted": {
+            "label": "Enchanted"
+          },
+          "enchantmentPrice": {
+            "label": "Enchantment price (sp)"
+          },
+          "apIncrease": {
+            "label": "AP increase"
+          },
+          "strengtheningPrice": {
+            "label": "Strengthening price (sp)"
+          },
+          "enchantmentPowers": {
+            "label": "Enchantment powers"
+          },
+          "modifications": {
+            "label": "Modifications"
+          }
+        }
+      },
+      "magicitem": {
+        "FIELDS": {
+          "slot": {
+            "label": "Slot"
+          },
+          "overlapMode": {
+            "label": "Slot sharing"
+          },
+          "effect": {
+            "label": "Powers"
+          },
+          "catalyst": {
+            "label": "Catalyst"
+          },
+          "attunement": {
+            "label": "Attuned"
+          },
+          "darkMagic": {
+            "label": "Dark Magic item"
+          },
+          "corruptionValueOverride": {
+            "label": "Corruption value"
+          },
+          "hasAura": {
+            "label": "Has an aura"
+          },
+          "auraColor": {
+            "label": "Aura color"
+          },
+          "radiationEffect": {
+            "label": "Radiation effect"
+          },
+          "creationRequirements": {
+            "label": "Creation requirements"
+          },
+          "traitGrants": {
+            "label": "Granted traits"
+          },
+          "conflictsArmor": {
+            "label": "Worn as armor"
+          }
+        }
+      },
+      "spell": {
+        "FIELDS": {
+          "school": {
+            "label": "School"
+          },
+          "isDarkMagic": {
+            "label": "Dark Magic"
+          },
+          "time": {
+            "label": "Casting time"
+          },
+          "range": {
+            "label": "Range"
+          },
+          "successes": {
+            "label": "Successes needed"
+          },
+          "symbologySuccesses": {
+            "label": "Symbology successes (drawing)"
+          },
+          "spellcastingSuccesses": {
+            "label": "Spellcasting successes (activation)"
+          },
+          "damageComponents": {
+            "label": "Damage"
+          },
+          "sanityDamage": {
+            "label": "Sanity damage"
+          },
+          "statusEffects": {
+            "label": "Conditions inflicted"
+          },
+          "buffEffects": {
+            "label": "Buffs"
+          },
+          "attack": {
+            "label": "Attacks"
+          },
+          "attackEffects": {
+            "label": "On-hit effects"
+          },
+          "bonusEffect": {
+            "label": "Bonus effect"
+          },
+          "weapons": {
+            "label": "Weapons"
+          },
+          "recipeCost": {
+            "label": "Ritual components"
+          },
+          "mishapModifier": {
+            "label": "Mishap table"
+          }
+        }
+      },
+      "path": {
+        "FIELDS": {
+          "tier": {
+            "label": "Tier"
+          },
+          "baseHP": {
+            "label": "Base HP"
+          },
+          "requirements": {
+            "label": "Requirements"
+          },
+          "abilities": {
+            "label": "Abilities"
+          },
+          "pathSkills": {
+            "label": "Path skills"
+          }
+        }
+      },
+      "species": {
+        "FIELDS": {
+          "syncToActor": {
+            "label": "Sync to character"
+          },
+          "baseHP": {
+            "label": "Base HP"
+          },
+          "size": {
+            "label": "Size"
+          },
+          "creatureType": {
+            "label": "Creature type"
+          },
+          "creatureSubtype": {
+            "label": "Other subtype"
+          },
+          "creatureSubtypes": {
+            "label": "Subtypes"
+          },
+          "languages": {
+            "label": "Languages"
+          },
+          "abilityBonuses": {
+            "label": "Attribute bonuses"
+          },
+          "flexibleBonus": {
+            "label": "Flexible bonus"
+          },
+          "movement": {
+            "label": "Movement"
+          },
+          "speciesAbilities": {
+            "label": "Species abilities"
+          },
+          "personality": {
+            "label": "Personality"
+          },
+          "history": {
+            "label": "History"
+          },
+          "youngAge": {
+            "label": "Young"
+          },
+          "adultAge": {
+            "label": "Adult"
+          },
+          "oldAge": {
+            "label": "Old"
+          },
+          "maximumAge": {
+            "label": "Maximum age"
+          },
+          "visionType": {
+            "label": "Vision"
+          },
+          "biologicallyImmortal": {
+            "label": "Biologically immortal"
+          }
+        }
+      },
+      "monsterspecies": {
+        "FIELDS": {
+          "attributeSet": {
+            "label": "Attribute set"
+          },
+          "attributeSpread": {
+            "label": "Attribute spread"
+          },
+          "naturalDeflectionTypes": {
+            "label": "Natural deflection"
+          },
+          "standardAttacks": {
+            "label": "Standard attacks"
+          },
+          "sizeRules": {
+            "label": "Size rules"
+          }
+        }
+      },
+      "talent": {
+        "FIELDS": {
+          "talentType": {
+            "label": "Talent type"
+          },
+          "associatedPath": {
+            "label": "Associated path"
+          }
+        }
+      },
+      "trait": {
+        "FIELDS": {
+          "traitType": {
+            "label": "Trait type"
+          }
+        }
+      },
+      "precept": {
+        "FIELDS": {
+          "deity": {
+            "label": "Deity"
+          },
+          "domain": {
+            "label": "Domain"
+          },
+          "effect": {
+            "label": "Effect"
+          }
+        }
+      },
+      "skill": {
+        "FIELDS": {
+          "rank": {
+            "label": "Rank"
+          },
+          "category": {
+            "label": "Category"
+          },
+          "attribute": {
+            "label": "Attribute"
+          },
+          "usage": {
+            "label": "How it's used"
+          },
+          "miscBonus": {
+            "label": "Bonus dice"
+          }
+        }
+      },
+      "item": {
+        "FIELDS": {
+          "itemCategory": {
+            "label": "Category"
+          }
+        }
+      },
+      "travel": {
+        "FIELDS": {
+          "travelType": {
+            "label": "Travel type"
+          },
+          "speedBonus": {
+            "label": "Speed bonus"
+          }
+        }
+      },
+      "musical": {
+        "FIELDS": {
+          "instrumentType": {
+            "label": "Instrument type"
+          },
+          "performanceBonus": {
+            "label": "Performance bonus"
+          },
+          "magicalProperties": {
+            "label": "Magical properties"
+          }
+        }
+      },
+      "clothing": {
+        "FIELDS": {
+          "clothingType": {
+            "label": "Clothing type"
+          },
+          "wornLocation": {
+            "label": "Worn on"
+          },
+          "quality": {
+            "label": "Quality"
+          },
+          "coldBonus": {
+            "label": "Cold protection"
+          },
+          "hotBonus": {
+            "label": "Heat protection"
+          },
+          "coldPenalty": {
+            "label": "Cold penalty"
+          },
+          "hotPenalty": {
+            "label": "Heat penalty"
+          },
+          "skillBonus": {
+            "label": "Skill bonus (skill)"
+          },
+          "skillBonusDice": {
+            "label": "Skill bonus (dice)"
+          },
+          "skillConditions": {
+            "label": "When the skill bonus applies"
+          },
+          "specialEffect": {
+            "label": "Special effect"
+          },
+          "protectionType": {
+            "label": "Protects against"
+          },
+          "protectionLevel": {
+            "label": "Protection level"
+          }
+        }
+      },
+      "drug": {
+        "FIELDS": {
+          "sideEffects": {
+            "label": "Side effects"
+          },
+          "addiction": {
+            "label": "Addiction"
+          },
+          "addictionRating": {
+            "label": "Addiction rating"
+          },
+          "overdose": {
+            "label": "Overdose"
+          }
+        }
+      },
+      "poison": {
+        "FIELDS": {
+          "toxicity": {
+            "label": "Toxicity"
+          },
+          "poisonType": {
+            "label": "Administration"
+          },
+          "onset": {
+            "label": "Onset"
+          },
+          "category": {
+            "label": "Toxin class"
+          },
+          "saveDifficulty": {
+            "label": "Resist DT"
+          },
+          "damage": {
+            "label": "Damage"
+          }
+        }
+      },
+      "medical": {
+        "FIELDS": {
+          "medicalType": {
+            "label": "Supply type"
+          },
+          "healingAmount": {
+            "label": "Healing"
+          },
+          "applicationTime": {
+            "label": "Time to apply"
+          },
+          "bonus": {
+            "label": "Bonus dice"
+          },
+          "uses": {
+            "label": "Uses (−1 = reusable tool)"
+          }
+        }
+      },
+      "alchemical": {
+        "FIELDS": {
+          "skill": {
+            "label": "Crafting skill"
+          },
+          "dt": {
+            "label": "Crafting DT"
+          },
+          "darkMagic": {
+            "label": "Blightcraft (Dark Magic)"
+          }
+        }
+      },
+      "device": {
+        "FIELDS": {
+          "spellName": {
+            "label": "Stored spell"
+          },
+          "spellDescription": {
+            "label": "Spell effect"
+          },
+          "school": {
+            "label": "School"
+          },
+          "spellLevel": {
+            "label": "Spell level"
+          },
+          "strength": {
+            "label": "Strength"
+          }
+        }
+      },
+      "wand": {
+        "FIELDS": {
+          "charges": {
+            "label": "Charges"
+          },
+          "maxCharges": {
+            "label": "Maximum charges"
+          }
+        }
+      },
+      "gate": {
+        "FIELDS": {
+          "distance": {
+            "label": "Distance"
+          }
+        }
+      },
+      "communication": {
+        "FIELDS": {
+          "complexity": {
+            "label": "Transmits"
+          },
+          "relayCode": {
+            "label": "Relay code"
+          }
+        }
+      },
+      "containment": {
+        "FIELDS": {
+          "creaturesAffected": {
+            "label": "Creatures affected"
+          },
+          "containmentType": {
+            "label": "Containment type"
+          },
+          "securityLevel": {
+            "label": "Security level"
+          },
+          "specialProperties": {
+            "label": "Special properties"
+          }
+        }
+      },
+      "dream": {
+        "FIELDS": {
+          "dreamType": {
+            "label": "Dream type"
+          }
+        }
+      },
+      "mount": {
+        "FIELDS": {
+          "mountType": {
+            "label": "Mount type"
+          },
+          "movement": {
+            "label": "Movement (hexes)"
+          },
+          "carryCapacity": {
+            "label": "Carrying capacity"
+          },
+          "loyalty": {
+            "label": "Loyalty"
+          }
+        }
+      },
+      "vehicle": {
+        "FIELDS": {
+          "vehicleType": {
+            "label": "Vehicle type"
+          },
+          "movement": {
+            "label": "Movement (hexes)"
+          },
+          "overland": {
+            "label": "Overland speed"
+          },
+          "drivers": {
+            "label": "Drivers"
+          },
+          "passengers": {
+            "label": "Passengers"
+          },
+          "cargo": {
+            "label": "Cargo"
+          },
+          "condition": {
+            "label": "Condition"
+          }
+        }
+      },
+      "biological": {
+        "FIELDS": {
+          "maxHp": {
+            "label": "Max HP"
+          },
+          "energy": {
+            "label": "Energy"
+          },
+          "maxEnergy": {
+            "label": "Max energy"
+          }
+        }
+      },
+      "fleshcraft": {
+        "FIELDS": {
+          "sanityCost": {
+            "label": "Sanity cost"
+          },
+          "active": {
+            "label": "Active"
+          },
+          "naturalWeapons": {
+            "label": "Natural weapons"
+          },
+          "skills": {
+            "label": "Skills"
+          },
+          "attributes": {
+            "label": "Attributes"
+          },
+          "defenses": {
+            "label": "Defenses"
+          },
+          "nd": {
+            "label": "Natural deflection"
+          }
+        }
+      },
+      "disease": {
+        "FIELDS": {
+          "transmission": {
+            "label": "Transmission"
+          },
+          "incubation": {
+            "label": "Incubation"
+          },
+          "durationType": {
+            "label": "Duration type"
+          },
+          "virality": {
+            "label": "Virality"
+          },
+          "treatmentDT": {
+            "label": "Treatment DT"
+          },
+          "requiresVector": {
+            "label": "Needs a vector"
+          },
+          "requiresCure": {
+            "label": "Needs a cure"
+          },
+          "price": {
+            "label": "Price (sp)"
+          },
+          "weight": {
+            "label": "Weight"
+          }
+        }
+      },
+      "mutation": {
+        "FIELDS": {
+          "severity": {
+            "label": "Severity"
+          },
+          "rollRange": {
+            "label": "Roll range"
+          }
+        }
+      },
+      "heritage": {
+        "FIELDS": {
+          "heritageType": {
+            "label": "Heritage type"
+          },
+          "motherSpecies": {
+            "label": "Mother's species"
+          },
+          "fatherSpecies": {
+            "label": "Father's species"
+          },
+          "characteristicChanges": {
+            "label": "Characteristic changes"
+          },
+          "mutationRolls": {
+            "label": "Mutation rolls"
+          }
+        }
+      },
+      "hazard": {
+        "FIELDS": {
+          "category": {
+            "label": "Category"
+          },
+          "interval": {
+            "label": "Interval"
+          },
+          "escalationDice": {
+            "label": "Escalation dice"
+          },
+          "attackDice": {
+            "label": "Attack dice"
+          },
+          "defense": {
+            "label": "Attacks"
+          },
+          "damage": {
+            "label": "Damage"
+          },
+          "damageType": {
+            "label": "Damage type"
+          },
+          "damageTrack": {
+            "label": "Damages"
+          },
+          "critical": {
+            "label": "Critical (successes)"
+          },
+          "bypassArmor": {
+            "label": "Ignores armor"
+          }
+        }
+      },
+      "trap": {
+        "FIELDS": {
+          "level": {
+            "label": "Level"
+          },
+          "trigger": {
+            "label": "Trigger"
+          },
+          "reset": {
+            "label": "Reset"
+          },
+          "detectionSkill": {
+            "label": "Detect with"
+          },
+          "detectionDT": {
+            "label": "Detection DT"
+          },
+          "disarmSkill": {
+            "label": "Disarm with"
+          },
+          "disarmDT": {
+            "label": "Disarm DT"
+          }
+        }
+      },
+      "downtime": {
+        "FIELDS": {
+          "activityType": {
+            "label": "Activity"
+          },
+          "cost": {
+            "label": "Cost"
+          },
+          "progress": {
+            "label": "Progress"
+          },
+          "target": {
+            "label": "Goal"
+          },
+          "status": {
+            "label": "Status"
+          },
+          "benefit": {
+            "label": "Benefit"
+          }
+        }
+      }
+    },
+    "TAH": {
+      "features": "Talents & Traits",
+      "utility": "Utility",
+      "openSheet": "Open sheet"
+    },
+    "Opposed": {
+      "title": "Opposed Roll",
+      "lead": "Both sides roll their pools. More successes wins; a tie goes to the opponent (defender).",
+      "skill": "Skill",
+      "attributeOnly": "— Attribute only —",
+      "attribute": "Attribute (if no skill)",
+      "opponent": "Opponent",
+      "who": "Actor",
+      "noActors": "No other actors are available for an opposed roll.",
+      "notFound": "Opposed roll: the opponent could not be found.",
+      "wins": "{name} wins the contest.",
+      "tie": "Tie: {name} (defender) prevails.",
+      "versus": "{initiator} vs {opponent}",
+      "vs": "vs"
+    },
+    "Aid": {
+      "title": "Aid Another",
+      "lead": "Help an ally with a skill you have at Learned rank or better. Roll it at DT {dt}; on a success the ally gains +1D on their check with the same skill.",
+      "ally": "Ally to aid",
+      "skill": "Skill you help with",
+      "skillHint": "Only skills at Learned rank or better are listed.",
+      "helperLimit": "An ally can be helped by one character at Learned, plus one more per rank above Learned (up to six at Mastered).",
+      "combatHint": "Aid Another is used outside combat only, and the GM may rule it out for some skills.",
+      "roll": "Roll to aid",
+      "noActors": "No other actors are available to aid.",
+      "noSkills": "{name} has no skill at Learned rank or better, which Aid Another requires.",
+      "notFound": "Aid Another: the ally could not be found.",
+      "requiresRank": "Aid Another requires Learned rank or better in the skill (you have {rank}).",
+      "success": "+1D to {ally}'s next {skill} check.",
+      "failure": "The aid fails; no bonus dice are granted.",
+      "flavor": "{helper} aids {ally} with {skill}"
+    },
+    "Ignition": {
+      "title": "Ignition",
+      "intensity": {
+        "faint": "Faint",
+        "moderate": "Moderate",
+        "intense": "Intense"
+      },
+      "subtitle": "{name} · {intensity} · {radius} hex",
+      "subtitleShort": "{intensity}, {radius} hex",
+      "minutes": "min",
+      "durationCap": "1 min per participant, max {max}",
+      "statusActive": "Active",
+      "statusEnded": "Ended",
+      "startCost": "Igniting costs a Minor Action. Allies within the radius join as a free action on their turn, or a Reaction outside it.",
+      "participantsHeading": "Participants ({count})",
+      "initiator": "initiator",
+      "effectsHeading": "While active (everyone in the Ignition)",
+      "effectAttack": "+1D to attack rolls",
+      "effectSkill": "+{dice}D to {skill}",
+      "effectSense": "Sense the life force of allies in the Ignition",
+      "effectsApplied": "The dice bonuses are added to each participant's temporary bonuses until the Ignition ends.",
+      "actionsHeading": "Ignition Actions (each once per Ignition, spent for everyone)",
+      "spent": "Spent",
+      "join": "Join Ignition",
+      "end": "End Ignition",
+      "bonusLabel": "{name}'s Ignition",
+      "reason": {
+        "ended": "ended early",
+        "expired": "its time ran out",
+        "flare": "spent on Flare of Purpose"
+      },
+      "endedLine": "Ended ({reason}). Everyone who took part recovers for {hours} hour(s).",
+      "endedNoRecovery": "Ended ({reason}). No allies joined, so no recovery is needed.",
+      "endedNote": "{name}'s Ignition has ended ({reason}). Everyone who took part must wait {hours} hour(s) before igniting or joining another Ignition.",
+      "endedNoteNoRecovery": "{name}'s Ignition has ended ({reason}).",
+      "joinedNote": "{ally} joins {initiator}'s Ignition.",
+      "inviteTitle": "Ignition Invitation",
+      "inviteLine": "{initiator} invites {ally}",
+      "joinCost": "Joining is a free action on your turn, or a Reaction outside it.",
+      "accept": "Accept",
+      "decline": "Decline",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "invitesSent": "Sent {count} Ignition invite(s).",
+      "confirm": "Confirm",
+      "chooseJoiner": "Join with which character?",
+      "choosePerformer": "Who performs {action}?",
+      "chooseTarget": "Designate an ally:",
+      "chooseTargets": "Designate up to {count} allies:",
+      "performedOn": "{name} → {targets}",
+      "minorAction": "Minor Action",
+      "healing": "Healing",
+      "hp": "HP to everyone in the Ignition",
+      "healRow": "{name}: {from} → {to} HP",
+      "flareDamage": "+{damage} damage to the triggering attack ({count} in the Ignition × 15).",
+      "flareEnds": "Flare of Purpose ends the Ignition for everyone.",
+      "roundsLeft": "{rounds} rd left",
+      "minutesLeft": "{minutes} min left",
+      "statusInitiator": "Ignition active: {intensity}, {radius} hex, {count} participant(s), {remaining}",
+      "statusAlly": "In {name}'s Ignition, {remaining}",
+      "statusRecovering": "Recovering from Ignition: {minutes} min remaining",
+      "needIntensity": "Set an Aura Intensity (Faint, Moderate, or Intense) before igniting.",
+      "alreadyActive": "{name} is already in an Ignition.",
+      "recovering": "{name} is still recovering from an Ignition ({minutes} min remaining).",
+      "recoveringOverride": "{name} is still recovering from an Ignition ({minutes} min remaining). Ignore recovery and continue?",
+      "noToken": "Place a token for {name} on the viewed scene before igniting.",
+      "notActive": "That Ignition is no longer active.",
+      "notInIgnition": "{name} is not in an Ignition.",
+      "onlyInitiator": "Only the owner of {name} (the initiator) or a GM can end this Ignition.",
+      "notOwner": "You don't own {name}.",
+      "alreadyJoined": "{name} is already in this Ignition.",
+      "inAnother": "{name} is already in another Ignition.",
+      "noInitiatorToken": "The initiator's token is no longer on its scene.",
+      "noAllyToken": "{name} has no token on the Ignition's scene.",
+      "outOfRadius": "{name} is outside the aura's {radius}-hex radius.",
+      "noOwnedToken": "You have no character within {radius} hex of {name} who can join.",
+      "noOwnedParticipant": "None of your characters are in this Ignition.",
+      "notParticipant": "Only a participant in this Ignition can perform its actions.",
+      "needAlly": "Ignition Actions can only be performed once an ally has joined the Ignition.",
+      "needTargets": "Designate at least one ally.",
+      "noTargets": "There are no other participants to designate.",
+      "actionSpent": "{action} has already been used in this Ignition.",
+      "unknownAction": "Unknown Ignition Action.",
+      "action": {
+        "sharedSurge": {
+          "label": "Shared Surge",
+          "hint": "As a Minor Action, you and an ally within Ignition you designate receive +2D to the next roll you or they make within the duration of the Ignition."
+        },
+        "interlinkedDefense": {
+          "label": "Interlinked Defense",
+          "hint": "You can designate two other allies; you and your allies designated share their Defense stats (effectively using the highest among them) against the next attack roll they each individually would suffer. This benefit disappears if not triggered within 4 rounds."
+        },
+        "echoedStrikes": {
+          "label": "Echoed Strikes",
+          "hint": "When making an attack roll if you successfully hit and deal damage, an ally within the aura's radius can expend their Reaction to make a free attack roll, even if they'd normally be out of range, as the spectral energy from their spirit charges your own attack for a follow-up."
+        },
+        "harmonicFlow": {
+          "label": "Harmonic Flow",
+          "hint": "You can cast a spell you don't know but an ally within the Ignition knows."
+        },
+        "resonantHealing": {
+          "label": "Resonant Healing",
+          "hint": "As a Minor Action you can activate a burst of healing energy: all allies within the Ignition heal 2D immediately."
+        },
+        "combatUnity": {
+          "label": "Combat Unity",
+          "hint": "As a Minor Action, you can treat yourself as possessing the Talent of an ally within the Ignition, even if you don't meet the prerequisites."
+        },
+        "flareOfPurpose": {
+          "label": "Flare of Purpose",
+          "hint": "You can activate this after making a successful attack, however doing so will end the Ignition for everyone. You increase the damage of your attack by 15 per ally within the Ignition (including yourself)."
+        }
+      },
+      "outOfRange": "{name} is outside {initiator}'s Ignition radius and loses its bonuses until they return.",
+      "backInRange": "{name} is back inside {initiator}'s Ignition radius and regains its bonuses.",
+      "outOfRangeShort": "out of range: no bonuses"
+    },
+    "Damage": {
+      "takes": "{target} takes {amount} {type} damage to the {location} from {source}.",
+      "absorbedHeal": "Absorption: {type} damage heals {healed} HP instead.",
+      "vulnerable": "{severity} vulnerability raises the damage to {amount}.",
+      "immune": "Immunity negates all {type} damage.",
+      "resisted": "Resistance reduces the damage to {amount}.",
+      "bypassesArmor": "{type} damage bypasses armor.",
+      "armorAbsorbed": "Armor and natural deflection absorbed {amount}.",
+      "braceBlocked": "Brace for Impact: the excess is blocked from HP.",
+      "braceHalved": "Brace for Impact: HP damage halved.",
+      "hpChange": "HP {before} → {after}.",
+      "hpLoss": "HP {before} → {after} (−{amount}).",
+      "noHp": "No HP damage.",
+      "bleed": "Bleed applied.",
+      "down": "{target} is down!"
+    }
+  }
 }

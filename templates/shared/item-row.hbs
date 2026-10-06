@@ -1,0 +1,36 @@
+<li class="tf-item draggable {{#if system.equipped}}equipped{{/if}} {{#if expanded}}expanded{{/if}}" data-item-id="{{id}}">
+    <img src="{{img}}" alt="" class="tf-thumb">
+    <div class="tf-item-text">
+        <a class="tf-item-name" data-action="itemOpen" data-tooltip="THEFADE.Item.openHint">{{name}}</a>
+        <span class="tf-item-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</span>
+    </div>
+    <div class="tf-item-controls">
+        {{#if resource}}
+        <span class="tf-resource" data-tooltip="{{localize resource.label}}">
+            {{#if resource.unlimited}}∞{{else}}{{resource.value}}{{#if resource.max}}<small>/ {{resource.max}}</small>{{/if}}{{/if}}
+        </span>
+        <button type="button" class="tf-text-button" data-action="itemUse" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-play"></i> {{localize "THEFADE.Item.use"}}</button>
+        {{#if resource.resettable}}{{#if resource.used}}
+        <button type="button" class="tf-icon-button" data-action="itemReset" data-tooltip="THEFADE.Item.resetUses" aria-label="{{localize 'THEFADE.Item.resetUses'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-rotate-left"></i></button>
+        {{/if}}{{/if}}
+        {{else}}
+        {{#if system.isPhysical}}{{#unless (eq resource.kind "quantity")}}
+        <span class="tf-quantity">
+            {{#if editable}}<button type="button" class="tf-icon-button" data-action="itemQuantity" data-delta="-1" aria-label="{{localize 'THEFADE.Item.less'}}"><i class="fa-solid fa-minus"></i></button>{{/if}}
+            <span>×{{system.quantity}}</span>
+            {{#if editable}}<button type="button" class="tf-icon-button" data-action="itemQuantity" data-delta="1" aria-label="{{localize 'THEFADE.Item.more'}}"><i class="fa-solid fa-plus"></i></button>{{/if}}
+        </span>
+        {{/unless}}{{/if}}
+        {{/if}}
+        {{#if system.isPhysical}}
+        <button type="button" class="tf-icon-button toggle {{#if system.equipped}}on{{/if}}" data-action="itemEquip" aria-pressed="{{system.equipped}}" data-tooltip="{{#if system.equipped}}THEFADE.Item.unequip{{else}}THEFADE.Item.equip{{/if}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-check"></i></button>
+        {{/if}}
+        <button type="button" class="tf-icon-button" data-action="itemExpand" aria-expanded="{{expanded}}" data-tooltip="{{#if expanded}}THEFADE.Item.collapse{{else}}THEFADE.Item.expand{{/if}}"><i class="fa-solid {{#if expanded}}fa-chevron-up{{else}}fa-chevron-down{{/if}}"></i></button>
+    </div>
+    {{#if expanded}}
+    <div class="tf-item-summary">
+        {{#if description}}{{{description}}}{{else}}<p class="tf-hint">{{localize "THEFADE.Item.noDescription"}}</p>{{/if}}
+        <p class="tf-item-summary-actions"><button type="button" class="tf-text-button" data-action="itemChat"><i class="fa-solid fa-comment"></i> {{localize "THEFADE.Item.toChat"}}</button></p>
+    </div>
+    {{/if}}
+</li>

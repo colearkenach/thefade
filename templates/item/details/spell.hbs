@@ -1,0 +1,45 @@
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{localize "THEFADE.Spell.casting"}}</h2>
+        <span class="tf-section-aside">{{system.schoolLabel}}{{#if system.isDark}} · <span class="tf-dark">{{localize "THEFADE.Magic.dark"}}</span>{{/if}}</span>
+    </header>
+    <div class="tf-form-grid">
+        <div class="form-group">
+            <label>{{systemFields.school.label}}</label>
+            <div class="form-fields"><select name="system.school">{{selectOptions config.spellSchools selected=source.school}}</select></div>
+        </div>
+        {{formGroup systemFields.isDarkMagic value=source.isDarkMagic}}
+        {{formGroup systemFields.time value=source.time}}
+        {{formGroup systemFields.range value=source.range}}
+        {{formGroup systemFields.successes value=source.successes}}
+        {{#if (eq source.school "Runes")}}
+        {{formGroup systemFields.symbologySuccesses value=source.symbologySuccesses placeholder=(localize "THEFADE.Spell.sameAsSuccesses")}}
+        {{formGroup systemFields.spellcastingSuccesses value=source.spellcastingSuccesses placeholder=(localize "THEFADE.Spell.sameAsSuccesses")}}
+        {{/if}}
+        <div class="form-group">
+            <label>{{systemFields.mishapModifier.label}}</label>
+            <div class="form-fields"><select name="system.mishapModifier">{{selectOptions config.mishapModifiers selected=source.mishapModifier localize=true}}</select></div>
+        </div>
+        {{#if (eq source.school "Martial")}}{{formGroup systemFields.weapons value=source.weapons}}{{/if}}
+        {{#if (eq source.school "Rituals")}}{{formGroup systemFields.recipeCost value=source.recipeCost}}{{/if}}
+    </div>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head"><h2>{{localize "THEFADE.Spell.attacks"}}</h2></header>
+    <div class="tf-check-row" data-attack-flags>
+        {{#each attackFlags}}
+        <label class="tf-check-field"><input type="checkbox" data-attack-flag="{{key}}" {{checked checked}}> {{label}}</label>
+        {{/each}}
+    </div>
+    <p class="tf-hint">{{localize "THEFADE.Spell.attacksHint"}}</p>
+</section>
+
+<section class="tf-section">
+    <header class="tf-section-head">
+        <h2>{{localize "THEFADE.Weapon.damage"}}</h2>
+        {{#if system.damage}}<span class="tf-section-aside">{{system.damageLabel}}</span>{{/if}}
+    </header>
+    {{> thefade.damage-rows}}
+    {{formGroup systemFields.sanityDamage value=source.sanityDamage placeholder="1d6" hint=(localize "THEFADE.Spell.sanityHint")}}
+</section>

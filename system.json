@@ -1,9 +1,8 @@
 {
   "id": "thefade",
-  "name": "thefade",
   "title": "The Fade (Abyss)",
   "description": "A system for playing The Fade (Abyss) TTRPG in Foundry VTT",
-  "version": "13.3.0",
+  "version": "14.0.0",
   "authors": [
     {
       "name": "Jeremy H.",
@@ -11,115 +10,14 @@
     }
   ],
   "compatibility": {
-    "minimum": 12,
-    "verified": "13",
-    "maximum": "14"
+    "minimum": "13",
+    "verified": "13"
   },
   "esmodules": [
-    "thefade.js"
+    "thefade.mjs"
   ],
   "styles": [
     "styles/thefade.css"
-  ],
-  "packs": [
-    {
-      "name": "species",
-      "label": "Species",
-      "system": "thefade",
-      "path": "./packs/species.db",
-      "type": "Item"
-    },
-    {
-      "name": "paths",
-      "label": "Paths",
-      "system": "thefade",
-      "path": "./packs/paths.db",
-      "type": "Item"
-    },
-    {
-      "name": "skills",
-      "label": "Skills",
-      "system": "thefade",
-      "path": "./packs/skills.db",
-      "type": "Item"
-    },
-    {
-      "name": "weapons",
-      "label": "Weapons",
-      "system": "thefade",
-      "path": "./packs/weapons.db",
-      "type": "Item"
-    },
-    {
-      "name": "armor",
-      "label": "Armor",
-      "system": "thefade",
-      "path": "./packs/armor.db",
-      "type": "Item"
-    },
-    {
-      "name": "mundane-item",
-      "label": "Mundane Item",
-      "system": "thefade",
-      "path": "./packs/mundane-item.db",
-      "type": "Item"
-    },
-    {
-      "name": "magic-item",
-      "label": "Magic Item",
-      "system": "thefade",
-      "path": "./packs/magic-item.db",
-      "type": "Item"
-    },
-    {
-      "name": "spells",
-      "label": "Spells",
-      "system": "thefade",
-      "path": "./packs/spells.db",
-      "type": "Item"
-    },
-    {
-      "name": "talents",
-      "label": "Talents",
-      "system": "thefade",
-      "path": "./packs/talents.db",
-      "type": "Item"
-    },
-	{
-      "name": "traits",
-      "label": "Traits",
-      "system": "thefade",
-      "path": "./packs/traits.db",
-      "type": "Item"
-    },
-	{
-      "name": "precepts",
-      "label": "Precepts",
-      "system": "thefade",
-      "path": "./packs/precepts.db",
-      "type": "Item"
-    },
-	{
-      "name": "lore",
-      "label": "Lore Entries",
-      "system": "thefade",
-      "path": "./packs/lore.db",
-      "type": "JournalEntry"
-    },
-	{
-      "name": "gamemechanics",
-      "label": "Game Mechanics",
-      "system": "thefade",
-      "path": "./packs/gamemechanics.db",
-      "type": "JournalEntry"
-    },
-	{
-      "name": "npcs",
-      "label": "NPCs",
-      "system": "thefade",
-      "path": "./packs/npcs.db",
-      "type": "Actor"
-    }
   ],
   "languages": [
     {
@@ -128,53 +26,343 @@
       "path": "lang/en.json"
     }
   ],
+  "documentTypes": {
+    "Actor": {
+      "character": {
+        "htmlFields": [
+          "biography",
+          "notes"
+        ]
+      },
+      "npc": {
+        "htmlFields": [
+          "biography",
+          "notes"
+        ]
+      },
+      "party": {
+        "htmlFields": [
+          "notes"
+        ]
+      },
+      "shop": {
+        "htmlFields": [
+          "description",
+          "notes"
+        ]
+      }
+    },
+    "Item": {
+      "weapon": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "armor": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "skill": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "path": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "monsterpath": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "spell": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "alchemical": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "talent": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "trait": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "precept": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "species": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "monsterspecies": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "drug": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "poison": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "disease": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "biological": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "medical": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "travel": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "mount": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "vehicle": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "musical": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "potion": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "staff": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "wand": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "gate": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "communication": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "containment": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "dream": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "fleshcraft": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "magicitem": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "clothing": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "mutation": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "heritage": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "trap": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "hazard": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "downtime": {
+        "htmlFields": [
+          "description"
+        ]
+      },
+      "item": {
+        "htmlFields": [
+          "description"
+        ]
+      }
+    }
+  },
+  "packs": [
+    {
+      "name": "species",
+      "label": "Species",
+      "system": "thefade",
+      "path": "packs/species",
+      "type": "Item"
+    },
+    {
+      "name": "paths",
+      "label": "Paths",
+      "system": "thefade",
+      "path": "packs/paths",
+      "type": "Item"
+    },
+    {
+      "name": "skills",
+      "label": "Skills",
+      "system": "thefade",
+      "path": "packs/skills",
+      "type": "Item"
+    },
+    {
+      "name": "weapons",
+      "label": "Weapons",
+      "system": "thefade",
+      "path": "packs/weapons",
+      "type": "Item"
+    },
+    {
+      "name": "armor",
+      "label": "Armor",
+      "system": "thefade",
+      "path": "packs/armor",
+      "type": "Item"
+    },
+    {
+      "name": "mundane-item",
+      "label": "Mundane Item",
+      "system": "thefade",
+      "path": "packs/mundane-item",
+      "type": "Item"
+    },
+    {
+      "name": "magic-item",
+      "label": "Magic Item",
+      "system": "thefade",
+      "path": "packs/magic-item",
+      "type": "Item"
+    },
+    {
+      "name": "spells",
+      "label": "Spells",
+      "system": "thefade",
+      "path": "packs/spells",
+      "type": "Item"
+    },
+    {
+      "name": "talents",
+      "label": "Talents",
+      "system": "thefade",
+      "path": "packs/talents",
+      "type": "Item"
+    },
+    {
+      "name": "traits",
+      "label": "Traits",
+      "system": "thefade",
+      "path": "packs/traits",
+      "type": "Item"
+    },
+    {
+      "name": "precepts",
+      "label": "Precepts",
+      "system": "thefade",
+      "path": "packs/precepts",
+      "type": "Item"
+    },
+    {
+      "name": "lore",
+      "label": "Lore Entries",
+      "system": "thefade",
+      "path": "packs/lore",
+      "type": "JournalEntry"
+    },
+    {
+      "name": "gamemechanics",
+      "label": "Game Mechanics",
+      "system": "thefade",
+      "path": "packs/gamemechanics",
+      "type": "JournalEntry"
+    },
+    {
+      "name": "npcs",
+      "label": "NPCs",
+      "system": "thefade",
+      "path": "packs/npcs",
+      "type": "Actor"
+    }
+  ],
+  "socket": true,
   "grid": {
     "distance": 1,
     "units": "yard"
   },
   "primaryTokenAttribute": "hp",
   "secondaryTokenAttribute": "sanity",
+  "flags": {
+    "hotReload": {
+      "extensions": [
+        "css",
+        "hbs",
+        "json"
+      ],
+      "paths": [
+        "styles",
+        "templates",
+        "lang"
+      ]
+    }
+  },
   "url": "https://github.com/colearkenach/thefade-foundry",
   "manifest": "https://github.com/colearkenach/thefade-foundry/releases/download/v3/system.json",
   "download": "https://github.com/colearkenach/thefade-foundry/archive/refs/tags/v3.zip",
-  "license": "LICENSE.txt",
-  "itemTypes": [
-    "weapon",
-    "armor",
-    "skill",
-    "path",
-    "monsterpath",
-    "spell",
-    "alchemical",
-    "talent",
-    "trait",
-    "precept",
-    "species",
-    "monsterspecies",
-    "drug",
-    "poison",
-    "disease",
-    "biological",
-    "medical",
-    "travel",
-    "mount",
-    "vehicle",
-    "musical",
-    "potion",
-    "staff",
-    "wand",
-    "gate",
-    "communication",
-    "containment",
-    "dream",
-    "fleshcraft",
-    "magicitem",
-    "clothing",
-    "mutation",
-    "heritage",
-    "trap",
-    "hazard",
-    "downtime",
-    "item"
-  ]
+  "license": "LICENSE.txt"
 }

@@ -1,0 +1,241 @@
+<section class="tab tf-tab combat {{tab.cssClass}}" data-group="primary" data-tab="combat">
+
+    {{!-- Weapons --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Sheet.weapons"}}</h2>
+            {{#if editable}}
+            <span class="tf-section-aside tf-section-actions">
+                <button type="button" class="tf-icon-button" data-action="browse" data-type="weapon" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="weapon" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+            </span>
+            {{/if}}
+        </header>
+        <table class="tf-table tf-weapons">
+            <thead>
+                <tr>
+                    <th>{{localize "THEFADE.Weapon.name"}}</th>
+                    <th>{{localize "THEFADE.Weapon.damage"}}</th>
+                    <th>{{localize "THEFADE.Weapon.crit"}}</th>
+                    <th>{{localize "THEFADE.Weapon.range"}}</th>
+                    <th class="center">{{localize "THEFADE.Weapon.ready"}}</th>
+                    <th class="center">{{localize "THEFADE.Weapon.attack"}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each attacks}}
+                <tr class="draggable" data-item-id="{{id}}">
+                    <td>
+                        <a class="tf-item-name" data-action="itemOpen"><img src="{{img}}" alt="" class="tf-thumb">{{name}}</a>
+                        <div class="tf-hint">{{skill}}{{#if attributeSource}} · {{attributeSource}}{{/if}}{{#if qualities}} · {{qualities}}{{/if}}</div>
+                    </td>
+                    <td>{{damage}}</td>
+                    <td>{{critical}}{{#if criticalBonus}} <span class="tf-hint">(+{{criticalBonus}})</span>{{/if}}</td>
+                    <td>{{range}}</td>
+                    <td class="center">
+                        {{#unless natural}}
+                        <button type="button" class="tf-icon-button toggle {{#if equipped}}on{{/if}}" data-action="itemEquip" aria-pressed="{{equipped}}" data-tooltip="{{#if equipped}}THEFADE.Item.unequip{{else}}THEFADE.Item.equip{{/if}}" {{#unless ../editable}}disabled{{/unless}}><i class="fa-solid fa-hand-fist"></i></button>
+                        {{else}}<span class="tf-hint" data-tooltip="THEFADE.Weapon.naturalHint"><i class="fa-solid fa-paw"></i></span>{{/unless}}
+                    </td>
+                    <td class="center"><button type="button" class="tf-roll-button" data-action="rollAttack"><i class="fa-solid fa-dice-d20" aria-hidden="true"></i>{{dice}}D</button></td>
+                </tr>
+                {{else}}
+                <tr><td colspan="6" class="tf-empty">{{localize "THEFADE.Attack.noWeapons"}}</td></tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </section>
+
+    <div class="tf-columns">
+        {{!-- Armor --}}
+        <section class="tf-section">
+            <header class="tf-section-head">
+                <h2>{{localize "THEFADE.Sheet.armor"}}</h2>
+                {{#if editable}}
+                <span class="tf-section-aside tf-section-actions">
+                    <button type="button" class="tf-icon-button" data-action="browse" data-type="armor" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                    <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="armor" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+                </span>
+                {{/if}}
+            </header>
+            <ol class="tf-item-list">
+                {{#each armor}}
+                <li class="tf-item draggable {{#if system.equipped}}equipped{{/if}}" data-item-id="{{id}}">
+                    <img src="{{img}}" alt="" class="tf-thumb">
+                    <div class="tf-item-text">
+                        <a class="tf-item-name" data-action="itemOpen">{{name}}</a>
+                        <span class="tf-item-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</span>
+                    </div>
+                    <button type="button" class="tf-icon-button toggle {{#if system.equipped}}on{{/if}}" data-action="itemEquip" aria-pressed="{{system.equipped}}" data-tooltip="{{#if system.equipped}}THEFADE.Item.unequip{{else}}THEFADE.Item.equip{{/if}}" {{#unless ../editable}}disabled{{/unless}}><i class="fa-solid fa-shirt"></i></button>
+                </li>
+                {{else}}
+                <li class="tf-empty">{{localize "THEFADE.Armor.none"}}</li>
+                {{/each}}
+            </ol>
+        </section>
+
+        {{!-- Protection by location --}}
+        <section class="tf-section">
+            <header class="tf-section-head">
+                <h2>{{localize "THEFADE.Sheet.protection"}}</h2>
+                {{#if editable}}
+                <span class="tf-section-aside tf-section-actions">
+                    <button type="button" class="tf-text-button" data-action="restoreLocation" data-tooltip="THEFADE.Protection.restoreAllHint"><i class="fa-solid fa-rotate-left"></i> {{localize "THEFADE.Protection.restoreAll"}}</button>
+                </span>
+                {{/if}}
+            </header>
+            {{#if alternateAnatomy}}
+            <label class="tf-inline-field">{{localize "THEFADE.Protection.anatomy"}}
+                <select name="system.anatomy.preset" {{#unless editable}}disabled{{/unless}}>{{selectOptions anatomyOptions selected=source.anatomy.preset}}</select>
+            </label>
+            {{/if}}
+            <table class="tf-table tf-protection">
+                <thead><tr><th>{{localize "THEFADE.Protection.location"}}</th><th>{{localize "THEFADE.Protection.armor"}}</th><th>{{localize "THEFADE.Protection.natural"}}</th><th>{{localize "THEFADE.Protection.total"}}</th><th></th></tr></thead>
+                <tbody>
+                    {{#each protection.rows}}
+                    <tr class="{{#if damaged}}damaged{{/if}}">
+                        <th scope="row">{{label}}</th>
+                        <td>{{armor.current}} / {{armor.max}}</td>
+                        <td>
+                            {{#if ../editMode}}
+                            <span class="tf-pair">
+                                <input type="number" name="system.naturalDeflection.{{location}}.current" value="{{source.current}}" min="0" step="1" aria-label="{{localize 'THEFADE.Protection.ndCurrent'}}">
+                                / <input type="number" name="system.naturalDeflection.{{location}}.max" value="{{source.max}}" min="0" step="1" aria-label="{{localize 'THEFADE.Protection.ndMax'}}">
+                                <label class="tf-check" data-tooltip="THEFADE.Protection.stacksHint"><input type="checkbox" name="system.naturalDeflection.{{location}}.stacks" {{checked source.stacks}}> {{localize "THEFADE.Protection.stacks"}}</label>
+                            </span>
+                            {{else}}{{natural.current}} / {{natural.max}}{{#if natural.stacks}} <span class="tf-hint">({{localize "THEFADE.Protection.stacks"}})</span>{{/if}}{{/if}}
+                        </td>
+                        <td class="tf-strong">{{total}} / {{max}}</td>
+                        <td class="tf-row-controls">
+                            {{#if ../editable}}
+                            <button type="button" class="tf-icon-button" data-action="damageLocation" data-location="{{location}}" data-tooltip="THEFADE.Protection.damage" aria-label="{{localize 'THEFADE.Protection.damage'}}"><i class="fa-solid fa-minus"></i></button>
+                            <button type="button" class="tf-icon-button" data-action="restoreLocation" data-location="{{location}}" data-tooltip="THEFADE.Protection.restore" aria-label="{{localize 'THEFADE.Protection.restore'}}"><i class="fa-solid fa-rotate-left"></i></button>
+                            {{/if}}
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    {{!-- Stance & conditions --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Sheet.stanceConditions"}}</h2>
+            {{#if editable}}<span class="tf-section-aside tf-section-actions"><button type="button" class="tf-text-button" data-action="clearCombatState"><i class="fa-solid fa-eraser"></i> {{localize "THEFADE.Condition.clear"}}</button></span>{{/if}}
+        </header>
+        <div class="tf-stance-options wide" role="group" aria-label="{{localize 'THEFADE.Sheet.stance'}}">
+            {{#each stances}}
+            <button type="button" class="tf-pill {{#if active}}active{{/if}}" data-action="setStance" data-stance="{{key}}" aria-pressed="{{active}}" data-tooltip="{{description}}" {{#unless ../editable}}disabled{{/unless}}>{{label}}</button>
+            {{/each}}
+        </div>
+        {{#if stanceSummary}}<p class="tf-hint">{{stanceSummary}}</p>{{/if}}
+        <div class="tf-conditions">
+            {{#each conditions}}
+            <div class="tf-condition {{#if active}}active{{/if}} {{#if immune}}immune{{/if}}">
+                <button type="button" class="tf-condition-toggle" data-action="toggleCondition" data-condition="{{key}}" aria-pressed="{{active}}" {{#if immune}}disabled data-tooltip="THEFADE.Condition.immuneHint"{{/if}} {{#unless ../editable}}disabled{{/unless}}>
+                    <img src="{{img}}" alt="" aria-hidden="true">
+                    <span>{{label}}</span>
+                </button>
+                {{#if tiered}}
+                <span class="tf-intensity" role="group" aria-label="{{localize 'THEFADE.Condition.intensity'}}">
+                    {{#each intensities}}
+                    <button type="button" class="tf-intensity-pip {{level}} {{#if active}}on{{/if}}" data-action="setIntensity" data-condition="{{../key}}" data-intensity="{{level}}" data-tooltip="{{label}}" aria-label="{{label}}" aria-pressed="{{active}}" {{#if ../immune}}disabled{{/if}}></button>
+                    {{/each}}
+                </span>
+                {{/if}}
+            </div>
+            {{/each}}
+        </div>
+        {{#if conditionSummary}}<p class="tf-hint">{{conditionSummary}}</p>{{/if}}
+    </section>
+
+    {{!-- Combat traits --}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Sheet.traits"}}</h2></header>
+        {{#each traitSummary}}
+        <p class="tf-trait-line"><strong>{{label}}:</strong> {{#each entries}}<span class="tf-chip" {{#if description}}data-tooltip="{{description}}"{{/if}}>{{label}}</span>{{/each}}</p>
+        {{else}}
+        <p class="tf-hint">{{localize "THEFADE.Traits.none"}}</p>
+        {{/each}}
+        {{#if traitEditor}}
+        <details class="tf-details">
+            <summary>{{localize "THEFADE.Traits.edit"}}</summary>
+            <p class="tf-hint">{{localize "THEFADE.Traits.grantedHint"}}</p>
+            {{#each traitEditor.abilities}}
+            <fieldset class="tf-fieldset">
+                <legend>{{label}}</legend>
+                <div class="tf-check-grid">
+                    {{#each abilities}}
+                    <label class="tf-check {{#if granted}}granted{{/if}}" data-tooltip="{{description}}">
+                        <input type="checkbox" name="system.combatTraits.abilities.{{../key}}.{{key}}" {{checked checked}}> {{label}}
+                        {{#if amount}}{{#if (ne key "spellResistance")}}<input type="number" class="tf-tiny" name="system.combatTraits.abilityValues.{{../key}}.{{key}}" value="{{value}}" step="1" aria-label="{{amount.label}}">{{/if}}{{/if}}
+                        {{#if granted}}<i class="fa-solid fa-gem" data-tooltip="THEFADE.Traits.granted"></i>{{/if}}
+                    </label>
+                    {{/each}}
+                </div>
+            </fieldset>
+            {{/each}}
+            <label class="tf-inline-field">{{localize "THEFADE.Traits.spellResistance"}} <input type="number" name="system.combatTraits.spellResistancePercent" value="{{traitEditor.spellResistancePercent}}" min="1" max="100" step="1">%</label>
+            <fieldset class="tf-fieldset"><legend>{{localize "THEFADE.Traits.resistances"}}</legend><div class="tf-check-grid">
+                {{#each traitEditor.resistances}}<label class="tf-check {{#if granted}}granted{{/if}}"><input type="checkbox" name="system.combatTraits.resistances.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+            </div></fieldset>
+            <fieldset class="tf-fieldset"><legend>{{localize "THEFADE.Traits.damageImmunities"}}</legend><div class="tf-check-grid">
+                {{#each traitEditor.damageImmunities}}<label class="tf-check {{#if granted}}granted{{/if}}"><input type="checkbox" name="system.combatTraits.immunities.damageTypes.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+            </div></fieldset>
+            <fieldset class="tf-fieldset"><legend>{{localize "THEFADE.Traits.statusImmunities"}}</legend><div class="tf-check-grid">
+                {{#each traitEditor.statusImmunities}}<label class="tf-check {{#if granted}}granted{{/if}}"><input type="checkbox" name="system.combatTraits.immunities.statuses.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+            </div></fieldset>
+            <fieldset class="tf-fieldset"><legend>{{localize "THEFADE.Traits.effectImmunities"}}</legend><div class="tf-check-grid">
+                {{#each traitEditor.effectImmunities}}<label class="tf-check {{#if granted}}granted{{/if}}"><input type="checkbox" name="system.combatTraits.immunities.effects.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+            </div></fieldset>
+            <fieldset class="tf-fieldset"><legend>{{localize "THEFADE.Traits.absorption"}}</legend><div class="tf-check-grid">
+                {{#each traitEditor.absorption}}<label class="tf-check {{#if granted}}granted{{/if}}"><input type="checkbox" name="system.combatTraits.absorption.{{key}}" {{checked checked}}> {{label}}</label>{{/each}}
+            </div></fieldset>
+            <fieldset class="tf-fieldset"><legend>{{localize "THEFADE.Traits.vulnerabilities"}}</legend><div class="tf-check-grid">
+                {{#each traitEditor.vulnerabilities}}
+                <label class="tf-check {{#if granted}}granted{{/if}}">
+                    <input type="checkbox" name="system.combatTraits.vulnerabilities.{{key}}" {{checked checked}}> {{label}}
+                    <select class="tf-tiny" name="system.combatTraits.vulnerabilitySeverity.{{key}}">{{selectOptions ../traitEditor.severityOptions selected=severity}}</select>
+                </label>
+                {{/each}}
+            </div></fieldset>
+            <label class="tf-stacked-field">{{localize "THEFADE.Traits.notes"}}<textarea name="system.combatTraits.notes" rows="2">{{traitEditor.notes}}</textarea></label>
+        </details>
+        {{/if}}
+    </section>
+
+    <div class="tf-columns">
+        {{!-- Injuries --}}
+        <section class="tf-section">
+            <header class="tf-section-head"><h2>{{localize "THEFADE.Sheet.injuries"}}</h2></header>
+            <div class="tf-check-grid">
+                {{#each injuries}}
+                <label class="tf-check {{#if severed}}severed{{/if}}"><input type="checkbox" name="system.injuries.{{key}}.severed" {{checked severed}} {{#unless ../editable}}disabled{{/unless}}> {{localize label}} {{localize "THEFADE.Injury.severed"}}</label>
+                {{/each}}
+            </div>
+            <h3 class="tf-subhead">{{localize "THEFADE.Injury.disorders"}}
+                {{#if editable}}<button type="button" class="tf-icon-button" data-action="addDisorder" data-tooltip="THEFADE.Injury.addDisorder" aria-label="{{localize 'THEFADE.Injury.addDisorder'}}"><i class="fa-solid fa-plus"></i></button>{{/if}}
+            </h3>
+            <ul class="tf-plain-list">
+                {{#each disorders}}
+                <li><span class="tf-chip {{type}}">{{type}}</span> {{name}}
+                    {{#if ../editable}}<button type="button" class="tf-icon-button danger" data-action="removeDisorder" data-index="{{index}}" aria-label="{{localize 'THEFADE.Injury.removeDisorder'}}"><i class="fa-solid fa-xmark"></i></button>{{/if}}
+                </li>
+                {{else}}<li class="tf-hint">{{localize "THEFADE.Injury.noDisorders"}}</li>{{/each}}
+            </ul>
+        </section>
+
+        {{!-- Afflictions --}}
+        <section class="tf-section">
+            <header class="tf-section-head">
+                <h2>{{localize "THEFADE.Sheet.afflictions"}}</h2>
+                {{#if editable}}<span class="tf-section-aside tf-section-actions"><button type="button" class="tf-icon-button" data-action="itemCreate" data-type="disease" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button></span>{{/if}}
+            </header>
+            <ol class="tf-item-list">
+                {{#each afflictions}}{{> "thefade.item-row" this editable=../editable}}{{else}}<li class="tf-empty">{{localize "THEFADE.Affliction.none"}}</li>{{/each}}
+            </ol>
+        </section>
+    </div>
+</section>

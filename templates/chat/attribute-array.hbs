@@ -1,0 +1,17 @@
+<div class="thefade chat-card attribute-array-card">
+    <header class="tf-card-header">
+        <div class="tf-card-title">
+            <h3>{{localize "THEFADE.Creation.cardTitle"}}</h3>
+            <span class="tf-card-subtitle">{{actorName}}</span>
+        </div>
+    </header>
+    <section class="tf-card-section">
+        <p class="tf-hint">{{localize "THEFADE.Creation.cardLead" values=rolled}}</p>
+        <ul>
+            {{#each rows}}
+            <li><strong>{{label}}:</strong> {{value}} <span class="tf-hint">({{dice}})</span></li>
+            {{/each}}
+        </ul>
+        {{#if rearranged}}<p class="tf-hint">{{localize "THEFADE.Creation.rearranged"}}</p>{{/if}}
+    </section>
+</div>

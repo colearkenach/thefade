@@ -1,0 +1,13 @@
+<div class="tf-rows tf-damage-rows">
+    {{#each damageRows}}
+    <div class="tf-row">
+        <input type="hidden" name="system.damageComponents.{{index}}.id" value="{{id}}">
+        <input type="number" class="tf-short" name="system.damageComponents.{{index}}.amount" value="{{amount}}" step="1" aria-label="{{localize 'THEFADE.ItemSheet.damageAmount'}}">
+        <select name="system.damageComponents.{{index}}.type" aria-label="{{localize 'THEFADE.ItemSheet.damageType'}}">{{selectOptions @root.damageTypeOptions selected=type}}</select>
+        <button type="button" class="tf-icon-button" data-action="removeRow" data-path="system.damageComponents" data-index="{{index}}" data-tooltip="THEFADE.ItemSheet.removeRow" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    {{else}}
+    <p class="tf-empty">{{localize "THEFADE.ItemSheet.noDamage"}}</p>
+    {{/each}}
+    <button type="button" class="tf-text-button" data-action="addRow" data-path="system.damageComponents" data-template="damage"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.ItemSheet.addDamage"}}</button>
+</div>

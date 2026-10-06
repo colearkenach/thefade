@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Compendium packs are LevelDB databases: never convert line endings.
+# (A CRLF in packs/*/CURRENT stops LevelDB from finding the manifest.)
+packs/** -text

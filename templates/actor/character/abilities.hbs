@@ -1,0 +1,157 @@
+<section class="tab tf-tab abilities {{tab.cssClass}}" data-group="primary" data-tab="abilities">
+
+    <div class="tf-progress-strip">
+        <span data-tooltip="THEFADE.Progression.pathsHint">{{localize "THEFADE.Progression.paths" taken=progression.pathsTaken allowed=progression.pathsAllowed}}</span>
+        <span data-tooltip="THEFADE.Progression.talentsHint">{{localize "THEFADE.Progression.talents" taken=progression.talentsTaken allowed=progression.talentsAllowed}}</span>
+        <span>{{localize "THEFADE.Progression.traits" taken=progression.traitsTaken}}</span>
+        <span>{{localize "THEFADE.Progression.maxTier" tier=progression.maxTier}}</span>
+    </div>
+
+    {{#if temporaryBonuses.length}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Abilities.activeEffects"}}</h2></header>
+        <ul class="tf-plain-list">
+            {{#each temporaryBonuses}}
+            <li><strong>{{ability}}</strong> <span class="tf-hint">({{source}})</span>
+                {{#if ../editable}}<button type="button" class="tf-icon-button danger" data-action="removeTemporaryBonus" data-bonus-id="{{id}}" aria-label="{{localize 'THEFADE.Abilities.endEffect'}}" data-tooltip="THEFADE.Abilities.endEffect"><i class="fa-solid fa-xmark"></i></button>{{/if}}
+            </li>
+            {{/each}}
+        </ul>
+    </section>
+    {{/if}}
+
+    {{!-- Species --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Abilities.species"}}</h2>
+            {{#if editable}}
+            <span class="tf-section-aside tf-section-actions">
+                <button type="button" class="tf-icon-button" data-action="browse" data-type="species" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+            </span>
+            {{/if}}
+        </header>
+        {{#each species}}
+        <article class="tf-card" data-item-id="{{id}}">
+            <header class="tf-card-head">
+                <img src="{{img}}" alt="" class="tf-thumb">
+                <a class="tf-card-title" data-action="itemOpen">{{name}}</a>
+                <span class="tf-item-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</span>
+            </header>
+            <ol class="tf-abilities">
+                {{#each abilities}}{{> "thefade.ability" this}}{{else}}<li class="tf-hint">{{localize "THEFADE.Abilities.none"}}</li>{{/each}}
+            </ol>
+        </article>
+        {{else}}
+        <p class="tf-hint">{{localize "THEFADE.Abilities.noSpecies"}}</p>
+        {{/each}}
+        {{#if editMode}}
+        <details class="tf-details" {{#if speciesManual}}open{{/if}}>
+            <summary>{{localize "THEFADE.Abilities.speciesDetails"}}</summary>
+            <p class="tf-hint">{{localize "THEFADE.Abilities.speciesManualHint"}}</p>
+            <div class="tf-form-grid">
+                <label>{{localize "THEFADE.Species.name"}}<input type="text" name="system.species.name" value="{{source.species.name}}"></label>
+                <label>{{localize "THEFADE.Species.baseHP"}}<input type="number" name="system.species.baseHP" value="{{source.species.baseHP}}" step="1"></label>
+                <label>{{localize "THEFADE.Species.size"}}<select name="system.species.size">{{selectOptions sizeOptions selected=source.species.size}}</select></label>
+                <label>{{localize "THEFADE.Species.creatureType"}}<select name="system.species.creatureType">{{selectOptions creatureTypeOptions selected=source.species.creatureType}}</select></label>
+                <label class="wide">{{localize "THEFADE.Species.languages"}}<input type="text" name="system.species.languages" value="{{source.species.languages}}"></label>
+                <label class="wide">{{localize "THEFADE.Species.customSubtype"}}<input type="text" name="system.species.creatureSubtype" value="{{source.species.creatureSubtype}}"></label>
+                <label class="tf-check"><input type="checkbox" name="system.isMonster" {{checked source.isMonster}}> {{localize "THEFADE.Species.isMonster"}}</label>
+            </div>
+            <div class="tf-subtypes">
+                <span>{{localize "THEFADE.Species.subtypes"}}</span>
+                <select name="system.species.creatureSubtypes" multiple size="5">
+                    {{#each subtypeSelector.selected}}<option value="{{id}}" selected>{{label}}</option>{{/each}}
+                    {{#each subtypeSelector.available}}<option value="{{id}}">{{label}}</option>{{/each}}
+                </select>
+            </div>
+        </details>
+        {{/if}}
+        {{#if creatureRules.length}}
+        <details class="tf-details">
+            <summary>{{localize "THEFADE.Abilities.creatureRules"}}</summary>
+            {{#each creatureRules}}
+            <h3 class="tf-subhead">{{kind}}: {{label}}</h3>
+            <ol class="tf-abilities">
+                {{#each abilities}}
+                <li class="tf-ability" data-ability-id="{{id}}" data-source-id="{{../id}}" data-kind="rule">
+                    <div class="tf-ability-head"><strong>{{name}}</strong>
+                        {{#if (eq activation "active")}}<span class="tf-chip">{{localize "THEFADE.Activation.active"}}{{#if actionCost}} · {{actionCost}}{{/if}}</span>
+                        <button type="button" class="tf-text-button" data-action="useAbility"><i class="fa-solid fa-play"></i> {{localize "THEFADE.Item.use"}}</button>{{/if}}
+                    </div>
+                    <p>{{description}}</p>
+                </li>
+                {{/each}}
+            </ol>
+            {{/each}}
+        </details>
+        {{/if}}
+    </section>
+
+    {{!-- Paths --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Abilities.paths"}}</h2>
+            {{#if editable}}
+            <span class="tf-section-aside tf-section-actions">
+                <button type="button" class="tf-icon-button" data-action="browse" data-type="path" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="path" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+            </span>
+            {{/if}}
+        </header>
+        {{#each paths}}
+        <article class="tf-card draggable" data-item-id="{{id}}">
+            <header class="tf-card-head">
+                <img src="{{img}}" alt="" class="tf-thumb">
+                <a class="tf-card-title" data-action="itemOpen">{{name}}</a>
+                <span class="tf-item-chips">{{#each chips}}<span class="tf-chip">{{this}}</span>{{/each}}</span>
+            </header>
+            <ol class="tf-abilities">
+                {{#each abilities}}{{> "thefade.ability" this}}{{else}}<li class="tf-hint">{{localize "THEFADE.Abilities.none"}}</li>{{/each}}
+            </ol>
+        </article>
+        {{else}}
+        <p class="tf-hint">{{localize "THEFADE.Abilities.noPaths"}}</p>
+        {{/each}}
+    </section>
+
+    {{!-- Talents, traits, precepts --}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Abilities.talents"}}</h2>
+            {{#if editable}}
+            <span class="tf-section-aside tf-section-actions">
+                <button type="button" class="tf-icon-button" data-action="browse" data-type="talent" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="talent" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+            </span>
+            {{/if}}
+        </header>
+        <ol class="tf-item-list">{{#each talents}}{{> "thefade.item-row" this editable=../editable}}{{else}}<li class="tf-empty">{{localize "THEFADE.Abilities.noTalents"}}</li>{{/each}}</ol>
+    </section>
+
+    <div class="tf-columns">
+        <section class="tf-section">
+            <header class="tf-section-head">
+                <h2>{{localize "THEFADE.Abilities.traits"}}</h2>
+                {{#if editable}}
+                <span class="tf-section-aside tf-section-actions">
+                    <button type="button" class="tf-icon-button" data-action="browse" data-type="trait" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                    <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="trait" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+                </span>
+                {{/if}}
+            </header>
+            <ol class="tf-item-list">{{#each traits}}{{> "thefade.item-row" this editable=../editable}}{{else}}<li class="tf-empty">{{localize "THEFADE.Abilities.noTraits"}}</li>{{/each}}</ol>
+        </section>
+        <section class="tf-section">
+            <header class="tf-section-head">
+                <h2>{{localize "THEFADE.Abilities.precepts"}}</h2>
+                {{#if editable}}
+                <span class="tf-section-aside tf-section-actions">
+                    <button type="button" class="tf-icon-button" data-action="browse" data-type="precept" data-tooltip="THEFADE.Item.browse" aria-label="{{localize 'THEFADE.Item.browse'}}"><i class="fa-solid fa-book-open"></i></button>
+                    <button type="button" class="tf-icon-button" data-action="itemCreate" data-type="precept" data-tooltip="THEFADE.Item.create" aria-label="{{localize 'THEFADE.Item.create'}}"><i class="fa-solid fa-plus"></i></button>
+                </span>
+                {{/if}}
+            </header>
+            <ol class="tf-item-list">{{#each precepts}}{{> "thefade.item-row" this editable=../editable}}{{else}}<li class="tf-empty">{{localize "THEFADE.Abilities.noPrecepts"}}</li>{{/each}}</ol>
+        </section>
+    </div>
+</section>

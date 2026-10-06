@@ -1,0 +1,23 @@
+<div class="thefade chat-card opposed-card">
+    <header class="tf-card-header">
+        <div class="tf-card-title">
+            <h3>{{localize "THEFADE.Opposed.title"}}</h3>
+            <span class="tf-card-subtitle">{{localize "THEFADE.Opposed.versus" initiator=initiatorName opponent=opponentName}}</span>
+        </div>
+    </header>
+    {{#each sides}}
+    <section class="tf-card-section opposed-side {{#if won}}winner{{/if}}">
+        <p><strong>{{name}}</strong> · {{label}} <span class="tf-hint">{{localize "THEFADE.Roll.poolOf" dice=poolSize}}</span></p>
+        {{#if faces.length}}<div class="tf-dice-row" aria-label="{{localize 'THEFADE.Roll.dice'}}">{{#each faces}}<span class="tf-face {{cls}}">{{face}}</span>{{/each}}</div>{{/if}}
+        <div class="tf-result-line">
+            <span class="tf-successes"><strong>{{successes}}</strong> {{localize "THEFADE.Roll.successes"}}</span>
+            {{#if autoFail}}<span class="tf-outcome failure">{{localize "THEFADE.Roll.autoFail"}}</span>{{/if}}
+        </div>
+        {{#if notes.length}}<ul class="tf-notes">{{#each notes}}<li>{{this}}</li>{{/each}}</ul>{{/if}}
+    </section>
+    {{#unless @last}}<p class="tf-vs">{{localize "THEFADE.Opposed.vs"}}</p>{{/unless}}
+    {{/each}}
+    <div class="tf-result-line">
+        <span class="tf-outcome {{outcome.cls}}">{{outcome.text}}</span>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<div class="thefade tf-dialog">
+    <p class="tf-dialog-lead">{{localize "THEFADE.Creation.assignLead"}}</p>
+    <p>{{#each results}}<span class="tf-chip" data-tooltip="{{dice}}">{{value}}</span> {{/each}}</p>
+    {{#each slots}}
+    <div class="form-group">
+        <label>{{label}}</label>
+        <div class="form-fields">
+            <select name="{{key}}" data-slot>
+                {{#each @root.results}}<option value="{{index}}" {{#if (eq index ../index)}}selected{{/if}}>{{localize "THEFADE.Creation.rollOption" value=value number=number}}</option>{{/each}}
+            </select>
+        </div>
+    </div>
+    {{/each}}
+    <p class="tf-hint">{{localize "THEFADE.Creation.assignHint"}}</p>
+</div>

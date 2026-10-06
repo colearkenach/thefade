@@ -1,0 +1,64 @@
+<section class="tab tf-tab enhancements {{tab.cssClass}}" data-group="primary" data-tab="enhancements">
+    {{#if enhance.natural}}
+    <p class="tf-empty">{{localize "THEFADE.Enhance.naturalNone"}}</p>
+    {{else}}
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Enhance.enchantment"}}</h2>
+            <span class="tf-section-aside">{{localize "THEFADE.Enhance.totalCost" value=enhance.totalCost}}</span>
+        </header>
+        <div class="tf-form-grid">
+            {{formGroup systemFields.isEnchanted value=source.isEnchanted hint=(localize "THEFADE.Enhance.basePrice" value=enhance.basePrice)}}
+            {{formGroup systemFields.enchantmentPrice value=source.enchantmentPrice}}
+            <div class="form-group">
+                <label>{{localize "THEFADE.Enhance.strengthening"}}</label>
+                <div class="form-fields"><select name="system.{{enhance.increaseKey}}" {{#unless source.isEnchanted}}disabled{{/unless}}>{{selectOptions enhance.increaseOptions selected=enhance.increaseValue}}</select></div>
+                {{#unless source.isEnchanted}}<p class="hint">{{localize "THEFADE.Enhance.requiresEnchant"}}</p>{{/unless}}
+            </div>
+            {{formGroup systemFields.strengtheningPrice value=source.strengtheningPrice}}
+        </div>
+        <p class="tf-hint">{{#if (eq type "weapon")}}{{localize "THEFADE.Enhance.weaponRules"}}{{#if enhance.radiationImmune}} {{localize "THEFADE.Enhance.radiationImmune"}}{{/if}}{{else}}{{localize "THEFADE.Enhance.armorRules"}}{{/if}}</p>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Enhance.powers"}}</h2></header>
+        <div class="tf-rows">
+            {{#each enhance.powers}}
+            <div class="tf-row-block">
+                <div class="tf-row">
+                    <input type="hidden" name="system.enchantmentPowers.{{index}}.id" value="{{id}}">
+                    <input type="text" name="system.enchantmentPowers.{{index}}.name" value="{{name}}" placeholder="{{localize 'THEFADE.Enhance.powerName'}}">
+                    <label class="tf-check-field" data-tooltip="THEFADE.Enhance.darkHint"><input type="checkbox" name="system.enchantmentPowers.{{index}}.isDarkMagic" {{checked isDarkMagic}}> {{localize "THEFADE.Magic.dark"}}</label>
+                    <button type="button" class="tf-icon-button" data-action="removeRow" data-path="system.enchantmentPowers" data-index="{{index}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <textarea name="system.enchantmentPowers.{{index}}.description" rows="2" placeholder="{{localize 'THEFADE.Enhance.powerDescription'}}">{{description}}</textarea>
+            </div>
+            {{else}}<p class="tf-empty">{{localize "THEFADE.Enhance.noPowers"}}</p>
+            {{/each}}
+            <button type="button" class="tf-text-button" data-action="addRow" data-path="system.enchantmentPowers" data-template="power"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Enhance.addPower"}}</button>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head">
+            <h2>{{localize "THEFADE.Enhance.modifications"}}</h2>
+            <span class="tf-section-aside {{#if enhance.overCapacity}}tf-warning{{/if}}">{{localize "THEFADE.Enhance.slots" used=enhance.slotsUsed max=enhance.slotsMax}}</span>
+        </header>
+        <div class="tf-rows">
+            {{#each enhance.mods}}
+            <div class="tf-row-block">
+                <div class="tf-row">
+                    <input type="hidden" name="system.modifications.{{index}}.id" value="{{id}}">
+                    <input type="text" name="system.modifications.{{index}}.name" value="{{name}}" placeholder="{{localize 'THEFADE.Enhance.modName'}}">
+                    <label class="tf-inline-field">{{localize "THEFADE.ITEM.physical.FIELDS.price.label"}} <input type="number" class="tf-short" name="system.modifications.{{index}}.price" value="{{price}}" min="0" step="1"></label>
+                    <button type="button" class="tf-icon-button" data-action="removeRow" data-path="system.modifications" data-index="{{index}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <textarea name="system.modifications.{{index}}.description" rows="2" placeholder="{{localize 'THEFADE.Enhance.modDescription'}}">{{description}}</textarea>
+            </div>
+            {{else}}<p class="tf-empty">{{localize "THEFADE.Enhance.noMods"}}</p>
+            {{/each}}
+            <button type="button" class="tf-text-button" data-action="addRow" data-path="system.modifications" data-template="mod"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Enhance.addMod"}}</button>
+        </div>
+    </section>
+    {{/if}}
+</section>

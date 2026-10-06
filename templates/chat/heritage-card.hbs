@@ -1,0 +1,15 @@
+<div class="thefade chat-card heritage-card">
+    <header class="tf-card-header">
+        <div class="tf-card-title">
+            <h3>{{localize "THEFADE.Heritage.cardTitle"}}</h3>
+            <span class="tf-card-subtitle">{{actorName}}</span>
+        </div>
+    </header>
+    <section class="tf-card-section">
+        <p class="tf-hint">{{parents}}</p>
+        <p><strong>{{outcome}}</strong> · {{details}}</p>
+        {{#if breakdown.length}}
+        <ul class="tf-notes">{{#each breakdown}}<li>{{label}}: {{localize "THEFADE.Heritage.rollsBonus" rolls=rolls}}</li>{{/each}}</ul>
+        {{/if}}
+    </section>
+</div>

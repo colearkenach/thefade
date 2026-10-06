@@ -1,0 +1,12 @@
+<section class="tf-physical">
+    <label class="tf-stat-field"><span>{{systemFields.quantity.label}}</span>{{formInput systemFields.quantity value=source.quantity disabled=(not editable)}}</label>
+    <label class="tf-stat-field"><span>{{systemFields.weight.label}}</span>{{formInput systemFields.weight value=source.weight step=0.01 disabled=(not editable)}}</label>
+    <label class="tf-stat-field"><span>{{systemFields.price.label}}</span>{{formInput systemFields.price value=source.price step=0.01 disabled=(not editable)}}</label>
+    {{#if owned}}
+    <label class="tf-check-field"><input type="checkbox" name="system.equipped" {{checked source.equipped}} {{#unless editable}}disabled{{/unless}}> {{systemFields.equipped.label}}</label>
+    {{/if}}
+    <label class="tf-check-field"><input type="checkbox" name="system.technological" {{checked source.technological}} {{#unless editable}}disabled{{/unless}}> {{systemFields.technological.label}}</label>
+    {{#if techAttunement}}
+    <label class="tf-check-field"><input type="checkbox" name="system.technologyAttunement" {{checked source.technologyAttunement}} {{#unless editable}}disabled{{/unless}}> {{systemFields.technologyAttunement.label}}</label>
+    {{/if}}
+</section>

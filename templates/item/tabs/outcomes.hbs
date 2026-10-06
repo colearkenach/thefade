@@ -1,0 +1,56 @@
+<section class="tab tf-tab outcomes {{tab.cssClass}}" data-group="primary" data-tab="outcomes">
+    {{#if attackEffectRows.length}}
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Spell.onHit"}}</h2></header>
+        {{#each attackEffectRows}}
+        <div class="form-group stacked">
+            <label>{{localize "THEFADE.Spell.attackVs" defense=label}}</label>
+            <textarea name="system.attackEffects.{{key}}" rows="2">{{value}}</textarea>
+        </div>
+        {{/each}}
+    </section>
+    {{/if}}
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Spell.statusEffects"}}</h2></header>
+        <div class="tf-rows">
+            {{#each statusRows}}
+            <div class="tf-row">
+                <input type="hidden" name="system.statusEffects.{{index}}.id" value="{{id}}">
+                <select name="system.statusEffects.{{index}}.status" aria-label="{{localize 'THEFADE.Spell.status'}}">{{selectOptions @root.statusOptions selected=status}}</select>
+                <select name="system.statusEffects.{{index}}.intensity" aria-label="{{localize 'THEFADE.Spell.intensity'}}">{{selectOptions @root.intensityOptions selected=intensity}}</select>
+                <input type="text" class="tf-short" name="system.statusEffects.{{index}}.duration" value="{{duration}}" placeholder="{{localize 'THEFADE.Spell.duration'}}" aria-label="{{localize 'THEFADE.Spell.duration'}}">
+                <input type="text" name="system.statusEffects.{{index}}.notes" value="{{notes}}" placeholder="{{localize 'THEFADE.Spell.notes'}}" aria-label="{{localize 'THEFADE.Spell.notes'}}">
+                <button type="button" class="tf-icon-button" data-action="removeRow" data-path="system.statusEffects" data-index="{{index}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            {{else}}<p class="tf-empty">{{localize "THEFADE.Spell.noStatus"}}</p>
+            {{/each}}
+            <button type="button" class="tf-text-button" data-action="addRow" data-path="system.statusEffects" data-template="status"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Spell.addStatus"}}</button>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{localize "THEFADE.Spell.buffs"}}</h2></header>
+        <div class="tf-rows">
+            {{#each buffRows}}
+            <div class="tf-row-block">
+                <div class="tf-row">
+                    <input type="hidden" name="system.buffEffects.{{index}}.id" value="{{id}}">
+                    <input type="text" name="system.buffEffects.{{index}}.name" value="{{name}}" placeholder="{{localize 'THEFADE.Spell.buffName'}}">
+                    <input type="text" name="system.buffEffects.{{index}}.target" value="{{target}}" placeholder="{{localize 'THEFADE.Spell.buffTarget'}}">
+                    <input type="text" class="tf-short" name="system.buffEffects.{{index}}.duration" value="{{duration}}" placeholder="{{localize 'THEFADE.Spell.duration'}}">
+                    <button type="button" class="tf-icon-button" data-action="removeRow" data-path="system.buffEffects" data-index="{{index}}" aria-label="{{localize 'THEFADE.ItemSheet.removeRow'}}"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <textarea name="system.buffEffects.{{index}}.description" rows="2" placeholder="{{localize 'THEFADE.Spell.buffDescription'}}">{{description}}</textarea>
+            </div>
+            {{else}}<p class="tf-empty">{{localize "THEFADE.Spell.noBuffs"}}</p>
+            {{/each}}
+            <button type="button" class="tf-text-button" data-action="addRow" data-path="system.buffEffects" data-template="buff"><i class="fa-solid fa-plus"></i> {{localize "THEFADE.Spell.addBuff"}}</button>
+        </div>
+    </section>
+
+    <section class="tf-section">
+        <header class="tf-section-head"><h2>{{systemFields.bonusEffect.label}}</h2></header>
+        <textarea name="system.bonusEffect" rows="3" placeholder="{{localize 'THEFADE.Spell.bonusEffectHint'}}">{{source.bonusEffect}}</textarea>
+    </section>
+</section>
