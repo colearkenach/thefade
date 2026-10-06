@@ -60,6 +60,12 @@
         <div class="tab" data-group="primary" data-tab="main">
             {{> "systems/thefade/templates/actor/parts/vitals-hp-sanity.html"}}
 
+            {{#if isLegacyNPC}}
+            <div class="legacy-actor-fields">
+                <label>Maximum HP<input type="number" name="system.hp.max" value="{{npcBaseHP}}" data-dtype="Number" min="1" /></label>
+            </div>
+            {{/if}}
+
             {{!-- Identity: Species + Paths summary --}}
             <div class="identity-row identity-row-top">
                 <div class="species-card{{#if system.species.manualEntry}} species-card-manual{{/if}}" data-item-id="{{actor.speciesItem._id}}">
@@ -135,15 +141,18 @@
 
             {{> "systems/thefade/templates/actor/parts/attributes.html"}}
 
-            {{!-- Defenses — unified 6-col band (active + passive together) --}}
+            {{!-- Defenses — active and passive ward cards --}}
             <h2>Defenses</h2>
-            <div class="defenses-band">
+            <div class="defenses-band defense-wards">
                 <div class="defense defense-compact" data-defense="resilience">
                     <label class="defense-label">Resilience
                         <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="resilience" data-label="Resilience" title="Edit Resilience (bonus / override)"><i class="fas fa-pencil"></i></a>
                     </label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.totalResilience}}" disabled class="total-value" title="{{system.defenses.resilienceFormula}}" />
+                        <div class="defense-ward">
+                            <i class="fas fa-shield" aria-hidden="true"></i>
+                            <input type="text" aria-label="Resilience total" value="{{system.totalResilience}}" disabled class="total-value" title="{{system.defenses.resilienceFormula}}" />
+                        </div>
                         {{#if defenseExcess.resilience}}<span class="excess-penalty resilience-excess-penalty">+{{defenseExcess.resilience}}D</span>{{/if}}
                     </div>
                 </div>
@@ -153,7 +162,10 @@
                         <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="avoid" data-label="Avoid" title="Edit Avoid (bonus / override)"><i class="fas fa-pencil"></i></a>
                     </label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" title="{{system.defenses.avoidFormula}}" />
+                        <div class="defense-ward">
+                            <i class="fas fa-wind" aria-hidden="true"></i>
+                            <input type="text" aria-label="Avoid total" value="{{system.totalAvoid}}" disabled class="total-value avoid-value" title="{{system.defenses.avoidFormula}}" />
+                        </div>
                         {{#if defenseExcess.avoid}}<span class="excess-penalty avoid-excess-penalty">+{{defenseExcess.avoid}}D</span>{{/if}}
                     </div>
                 </div>
@@ -163,7 +175,10 @@
                         <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="grit" data-label="Grit" title="Edit Grit (bonus / override)"><i class="fas fa-pencil"></i></a>
                     </label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.totalGrit}}" disabled class="total-value" title="{{system.defenses.gritFormula}}" />
+                        <div class="defense-ward">
+                            <i class="fas fa-mountain" aria-hidden="true"></i>
+                            <input type="text" aria-label="Grit total" value="{{system.totalGrit}}" disabled class="total-value" title="{{system.defenses.gritFormula}}" />
+                        </div>
                         {{#if defenseExcess.grit}}<span class="excess-penalty grit-excess-penalty">+{{defenseExcess.grit}}D</span>{{/if}}
                     </div>
                 </div>
@@ -173,7 +188,10 @@
                         <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="passiveDodge" data-label="Passive Dodge" title="Edit Passive Dodge (bonus / override)"><i class="fas fa-pencil"></i></a>
                     </label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.defenses.passiveDodge}}" disabled class="total-value passive-dodge-value" title="{{system.defenses.passiveDodgeFormula}}" />
+                        <div class="defense-ward">
+                            <i class="fas fa-person-running" aria-hidden="true"></i>
+                            <input type="text" aria-label="Passive Dodge total" value="{{system.defenses.passiveDodge}}" disabled class="total-value passive-dodge-value" title="{{system.defenses.passiveDodgeFormula}}" />
+                        </div>
                     </div>
                 </div>
 
@@ -182,84 +200,77 @@
                         <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="passiveParry" data-label="Passive Parry" title="Edit Passive Parry (bonus / override)"><i class="fas fa-pencil"></i></a>
                     </label>
                     <div class="defense-value">
-                        <input type="text" value="{{system.defenses.passiveParry}}" disabled class="total-value passive-parry-value" title="{{system.defenses.passiveParryFormula}}" />
+                        <div class="defense-ward">
+                            <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                            <input type="text" aria-label="Passive Parry total" value="{{system.defenses.passiveParry}}" disabled class="total-value passive-parry-value" title="{{system.defenses.passiveParryFormula}}" />
+                        </div>
                     </div>
                 </div>
             </div>
 
             {{> "systems/thefade/templates/actor/parts/protection.html"}}
 
-            {{!-- Movement — 2-col Hexes/Miles table --}}
             <h2>Movement</h2>
-            <table class="movement-table">
-                <thead>
-                    <tr>
-                        <th>Speed</th>
-                        <th>Hexes</th>
-                        <th>Miles (Overland)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="movement-label">Land</td>
-                        <td><input type="text" name="system.movement.land" value="{{system.movement.land}}" data-dtype="Number" /></td>
-                        <td><input type="text" name="system.overland-movement.landOverland" value="{{system.overland-movement.landOverland}}" data-dtype="Number" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td class="movement-label">Fly</td>
-                        <td><input type="text" name="system.movement.fly" value="{{system.movement.fly}}" data-dtype="Number" /></td>
-                        <td><input type="text" name="system.overland-movement.flyOverland" value="{{system.overland-movement.flyOverland}}" data-dtype="Number" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td class="movement-label">Swim</td>
-                        <td><input type="text" name="system.movement.swim" value="{{system.movement.swim}}" data-dtype="Number" /></td>
-                        <td><input type="text" name="system.overland-movement.swimOverland" value="{{system.overland-movement.swimOverland}}" data-dtype="Number" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td class="movement-label">Climb</td>
-                        <td><input type="text" name="system.movement.climb" value="{{system.movement.climb}}" data-dtype="Number" /></td>
-                        <td><input type="text" name="system.overland-movement.climbOverland" value="{{system.overland-movement.climbOverland}}" data-dtype="Number" disabled /></td>
-                    </tr>
-                    <tr>
-                        <td class="movement-label">Burrow</td>
-                        <td><input type="text" name="system.movement.burrow" value="{{system.movement.burrow}}" data-dtype="Number" /></td>
-                        <td><input type="text" name="system.overland-movement.burrowOverland" value="{{system.overland-movement.burrowOverland}}" data-dtype="Number" disabled /></td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="movement-modes">
+                <div class="movement-mode movement-land">
+                    <h3><i class="fas fa-shoe-prints" aria-hidden="true"></i> Land</h3>
+                    <label class="movement-speed"><input type="text" name="system.movement.land" value="{{system.movement.land}}" data-dtype="Number" aria-label="Land speed in hexes" /><span>Hexes</span></label>
+                    <label class="movement-overland"><input type="text" name="system.overland-movement.landOverland" value="{{system.overland-movement.landOverland}}" data-dtype="Number" disabled aria-label="Land overland speed in miles" /><span>Miles / overland</span></label>
+                </div>
+                <div class="movement-mode movement-fly">
+                    <h3><i class="fas fa-feather-pointed" aria-hidden="true"></i> Fly</h3>
+                    <label class="movement-speed"><input type="text" name="system.movement.fly" value="{{system.movement.fly}}" data-dtype="Number" aria-label="Fly speed in hexes" /><span>Hexes</span></label>
+                    <label class="movement-overland"><input type="text" name="system.overland-movement.flyOverland" value="{{system.overland-movement.flyOverland}}" data-dtype="Number" disabled aria-label="Fly overland speed in miles" /><span>Miles / overland</span></label>
+                </div>
+                <div class="movement-mode movement-swim">
+                    <h3><i class="fas fa-water" aria-hidden="true"></i> Swim</h3>
+                    <label class="movement-speed"><input type="text" name="system.movement.swim" value="{{system.movement.swim}}" data-dtype="Number" aria-label="Swim speed in hexes" /><span>Hexes</span></label>
+                    <label class="movement-overland"><input type="text" name="system.overland-movement.swimOverland" value="{{system.overland-movement.swimOverland}}" data-dtype="Number" disabled aria-label="Swim overland speed in miles" /><span>Miles / overland</span></label>
+                </div>
+                <div class="movement-mode movement-climb">
+                    <h3><i class="fas fa-mountain" aria-hidden="true"></i> Climb</h3>
+                    <label class="movement-speed"><input type="text" name="system.movement.climb" value="{{system.movement.climb}}" data-dtype="Number" aria-label="Climb speed in hexes" /><span>Hexes</span></label>
+                    <label class="movement-overland"><input type="text" name="system.overland-movement.climbOverland" value="{{system.overland-movement.climbOverland}}" data-dtype="Number" disabled aria-label="Climb overland speed in miles" /><span>Miles / overland</span></label>
+                </div>
+                <div class="movement-mode movement-burrow">
+                    <h3><i class="fas fa-hill-rockslide" aria-hidden="true"></i> Burrow</h3>
+                    <label class="movement-speed"><input type="text" name="system.movement.burrow" value="{{system.movement.burrow}}" data-dtype="Number" aria-label="Burrow speed in hexes" /><span>Hexes</span></label>
+                    <label class="movement-overland"><input type="text" name="system.overland-movement.burrowOverland" value="{{system.overland-movement.burrowOverland}}" data-dtype="Number" disabled aria-label="Burrow overland speed in miles" /><span>Miles / overland</span></label>
+                </div>
+            </div>
 
             {{!-- Carrying + compact character profile footer --}}
             <div class="minor-stats-row">
                 <div class="capacity-card">
-                    <h3>Carrying Capacity
+                    <h3><i class="fas fa-weight-hanging" aria-hidden="true"></i> Carrying Capacity
                         <span class="capacity-load-inline">
-                            Load: <input class="capacity-load-input" type="number" name="system.currentLoad" value="{{system.currentLoad}}" min="0" />
+                            Load: <input aria-label="Current carried load" class="capacity-load-input" type="number" name="system.currentLoad" value="{{system.currentLoad}}" min="0" />
                             <span class="capacity-tier-badge capacity-tier-{{system.carryingCapacity.currentTier}}">{{system.carryingCapacity.currentTierLabel}}</span>
                         </span>
                     </h3>
                     <div class="capacity-grid capacity-grid-full">
                         <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'light')}}capacity-active{{/if}}">
-                            <label title="No penalty">Light</label>
+                            <label title="No penalty"><i class="fas fa-feather" aria-hidden="true"></i> Light</label>
                             <input type="text" value="{{system.carryingCapacity.light}}" disabled />
                         </div>
                         <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'medium')}}capacity-active{{/if}}">
-                            <label title="Speed ÷ 2">Medium</label>
+                            <label title="Speed ÷ 2"><i class="fas fa-bag-shopping" aria-hidden="true"></i> Medium</label>
                             <input type="text" value="{{system.carryingCapacity.medium}}" disabled />
                         </div>
                         <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'heavy')}}capacity-active{{/if}}">
-                            <label title="Speed ÷ 4, −1 Avoid">Heavy</label>
+                            <label title="Speed ÷ 4, −1 Avoid"><i class="fas fa-weight-hanging" aria-hidden="true"></i> Heavy</label>
                             <input type="text" value="{{system.carryingCapacity.heavy}}" disabled />
                         </div>
                         <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'overHead')}}capacity-active{{/if}}">
-                            <label title="Over Head lift — no movement">Over Head</label>
+                            <label title="Over Head lift — no movement"><i class="fas fa-up-long" aria-hidden="true"></i> Over Head</label>
                             <input type="text" value="{{system.carryingCapacity.overHead}}" disabled />
                         </div>
                         <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'offGround')}}capacity-active{{/if}}">
-                            <label title="Lift off ground — no movement">Off Ground</label>
+                            <label title="Lift off ground — no movement"><i class="fas fa-dumbbell" aria-hidden="true"></i> Off Ground</label>
                             <input type="text" value="{{system.carryingCapacity.offGround}}" disabled />
                         </div>
                         <div class="capacity-cell {{#if (eq system.carryingCapacity.currentTier 'pushOrDrag')}}capacity-active{{/if}}">
-                            <label title="Push or drag along surface">Push/Drag</label>
+                            <label title="Push or drag along surface"><i class="fas fa-arrows-left-right" aria-hidden="true"></i> Push/Drag</label>
                             <input type="text" value="{{system.carryingCapacity.pushOrDrag}}" disabled />
                         </div>
                     </div>
@@ -305,8 +316,7 @@
         </div>
 
         {{!-- Combat Tab --}}
-        <div class="tab" data-group="primary" data-tab="combat">
-            {{> "systems/thefade/templates/actor/parts/vitals-hp-sanity.html" noName=true}}
+        <div class="tab combat-tab" data-group="primary" data-tab="combat">
             {{> "systems/thefade/templates/actor/parts/combat-state.html"}}
             {{> "systems/thefade/templates/actor/parts/combat-traits.html"}}
             {{> "systems/thefade/templates/actor/parts/injuries.html"}}
@@ -323,198 +333,9 @@
         </div>
 
         {{!-- Background Tab --}}
-        <div class="tab" data-group="primary" data-tab="background">
-                    {{> "systems/thefade/templates/actor/parts/heritage-downtime.html"}}
-                    <center><img class="character-image" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" /></center>
-                    <!-- Personal Details -->
-                    <div class="character-details-section">
-                        <h3>Personal Details</h3>
-
-                        <div class="detail-row">
-                            <label>Sexuality</label>
-                            <select name="system.personalDetails.sexuality">
-                                <option value="" {{#unless system.personalDetails.sexuality}} selected{{/unless}}>--</option>
-                                <option value="heterosexual" {{#if (eq system.personalDetails.sexuality "heterosexual")}} selected{{/if}}>Heterosexual</option>
-                                <option value="bisexual" {{#if (eq system.personalDetails.sexuality "bisexual")}} selected{{/if}}>Bisexual</option>
-                                <option value="homosexual" {{#if (eq system.personalDetails.sexuality "homosexual")}} selected{{/if}}>Homosexual</option>
-                                <option value="asexual" {{#if (eq system.personalDetails.sexuality "asexual")}} selected{{/if}}>Asexual</option>
-                            </select>
-                        </div>
-
-                        <div class="detail-row height-row">
-                            <label>Height</label>
-                            <div class="height-inputs">
-                                <input type="number" name="system.personalDetails.heightFeet" value="{{system.personalDetails.heightFeet}}" min="0" max="10" placeholder="ft" />
-                                <span>'</span>
-                                <input type="number" name="system.personalDetails.heightInches" value="{{system.personalDetails.heightInches}}" min="0" max="11" placeholder="in" />
-                                <span>"</span>
-                            </div>
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Weight (lbs)</label>
-                            <input type="number" name="system.personalDetails.weight" value="{{system.personalDetails.weight}}" min="0" />
-                        </div>
-
-                        <div class="detail-row color-row">
-                            <label>Hair Color</label>
-                            <input type="color" name="system.personalDetails.hairColor" value="{{system.personalDetails.hairColor}}" />
-                        </div>
-
-                        <div class="detail-row color-row">
-                            <label>Eye Color</label>
-                            <input type="color" name="system.personalDetails.eyeColor" value="{{system.personalDetails.eyeColor}}" />
-                        </div>
-
-                        <div class="detail-row color-row">
-                            <label>Skin Color</label>
-                            <input type="color" name="system.personalDetails.skinColor" value="{{system.personalDetails.skinColor}}" />
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Handedness</label>
-                            <select name="system.personalDetails.handedness">
-                                <option value="" {{#unless system.personalDetails.handedness}} selected{{/unless}}>--</option>
-                                <option value="right" {{#if (eq system.personalDetails.handedness "right")}} selected{{/if}}>Right</option>
-                                <option value="left" {{#if (eq system.personalDetails.handedness "left")}} selected{{/if}}>Left</option>
-                                <option value="ambidextrous" {{#if (eq system.personalDetails.handedness "ambidextrous")}} selected{{/if}}>Ambidextrous</option>
-                            </select>
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Birthplace</label>
-                            <input type="text" name="system.personalDetails.birthplace" value="{{system.personalDetails.birthplace}}" />
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Culture</label>
-                            <input type="text" name="system.personalDetails.culture" value="{{system.personalDetails.culture}}" />
-                        </div>
-
-
-                        <div class="detail-row">
-                            <label>Build/Body Type</label>
-                            <select name="system.personalDetails.build">
-                                <option value="" {{#unless system.personalDetails.build}} selected{{/unless}}>--</option>
-                                <option value="slim" {{#if (eq system.personalDetails.build "slim")}} selected{{/if}}>Slim</option>
-                                <option value="athletic" {{#if (eq system.personalDetails.build "athletic")}} selected{{/if}}>Athletic</option>
-                                <option value="stocky" {{#if (eq system.personalDetails.build "stocky")}} selected{{/if}}>Stocky</option>
-                                <option value="heavy" {{#if (eq system.personalDetails.build "heavy")}} selected{{/if}}>Heavy</option>
-                                <option value="lanky" {{#if (eq system.personalDetails.build "lanky")}} selected{{/if}}>Lanky</option>
-                                <option value="muscular" {{#if (eq system.personalDetails.build "muscular")}} selected{{/if}}>Muscular</option>
-                                <option value="bloat" {{#if (eq system.personalDetails.build "bloat")}} selected{{/if}}>Bloatlord</option>
-                            </select>
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Distinguishing Marks</label>
-                            <input type="text" name="system.personalDetails.distinguishingMarks" value="{{system.personalDetails.distinguishingMarks}}" placeholder="Scars, tattoos, etc." />
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Voice</label>
-                            <input type="text" name="system.personalDetails.voice" value="{{system.personalDetails.voice}}" placeholder="Accent, tone, volume" />
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Social Class</label>
-                            <select name="system.personalDetails.socialClass">
-                                <option value="" {{#unless system.personalDetails.socialClass}} selected{{/unless}}>--</option>
-                                <option value="royalty" {{#if (eq system.personalDetails.socialClass "royalty")}} selected{{/if}}>Royalty</option>
-                                <option value="nobility" {{#if (eq system.personalDetails.socialClass "nobility")}} selected{{/if}}>Nobility</option>
-                                <option value="upper-class" {{#if (eq system.personalDetails.socialClass "upper-class")}} selected{{/if}}>Upper Class</option>
-                                <option value="merchant" {{#if (eq system.personalDetails.socialClass "merchant")}} selected{{/if}}>Merchant Class</option>
-                                <option value="middle-class" {{#if (eq system.personalDetails.socialClass "middle-class")}} selected{{/if}}>Middle Class</option>
-                                <option value="working-class" {{#if (eq system.personalDetails.socialClass "working-class")}} selected{{/if}}>Working Class</option>
-                                <option value="poor" {{#if (eq system.personalDetails.socialClass "poor")}} selected{{/if}}>Poor</option>
-                                <option value="outcast" {{#if (eq system.personalDetails.socialClass "outcast")}} selected{{/if}}>Outcast</option>
-                                <option value="slave" {{#if (eq system.personalDetails.socialClass "slave")}} selected{{/if}}>Slave</option>
-                                <option value="criminal" {{#if (eq system.personalDetails.socialClass "criminal")}} selected{{/if}}>Criminal</option>
-                                <option value="wild" {{#if (eq system.personalDetails.socialClass "wild")}} selected{{/if}}>Wild</option>
-
-                            </select>
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Education Level</label>
-                            <select name="system.personalDetails.education">
-                                <option value="" {{#unless system.personalDetails.education}} selected{{/unless}}>--</option>
-                                <option value="none" {{#if (eq system.personalDetails.education "none")}} selected{{/if}}>None</option>
-                                <option value="basic" {{#if (eq system.personalDetails.education "basic")}} selected{{/if}}>Basic</option>
-                                <option value="apprenticed" {{#if (eq system.personalDetails.education "apprenticed")}} selected{{/if}}>Apprenticed</option>
-                                <option value="advanced" {{#if (eq system.personalDetails.education "advanced")}} selected{{/if}}>Advanced</option>
-                                <option value="scholarly" {{#if (eq system.personalDetails.education "scholarly")}} selected{{/if}}>Scholarly</option>
-                                <option value="self-taught" {{#if (eq system.personalDetails.education "self-taught")}} selected{{/if}}>Self-Taught</option>
-                            </select>
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Occupation</label>
-                            <input type="text" name="system.personalDetails.occupation" value="{{system.personalDetails.occupation}}" placeholder="Current or former job" />
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Greatest Vice</label>
-                            <select name="system.personalDetails.greatestVice">
-                                <option value="" {{#unless system.personalDetails.greatestVice}} selected{{/unless}}>--</option>
-                                <option value="drinking" {{#if (eq system.personalDetails.greatestVice "drinking")}} selected{{/if}}>Drinking</option>
-                                <option value="gambling" {{#if (eq system.personalDetails.greatestVice "gambling")}} selected{{/if}}>Gambling</option>
-                                <option value="smoking" {{#if (eq system.personalDetails.greatestVice "smoking")}} selected{{/if}}>Smoking</option>
-                                <option value="lying" {{#if (eq system.personalDetails.greatestVice "lying")}} selected{{/if}}>Lying</option>
-                                <option value="stealing" {{#if (eq system.personalDetails.greatestVice "stealing")}} selected{{/if}}>Stealing</option>
-                                <option value="cheating" {{#if (eq system.personalDetails.greatestVice "cheating")}} selected{{/if}}>Cheating</option>
-                                <option value="gossiping" {{#if (eq system.personalDetails.greatestVice "gossiping")}} selected{{/if}}>Gossiping</option>
-                                <option value="laziness" {{#if (eq system.personalDetails.greatestVice "laziness")}} selected{{/if}}>Laziness</option>
-                                <option value="overeating" {{#if (eq system.personalDetails.greatestVice "overeating")}} selected{{/if}}>Overeating</option>
-                                <option value="overspending" {{#if (eq system.personalDetails.greatestVice "overspending")}} selected{{/if}}>Overspending</option>
-                                <option value="violence" {{#if (eq system.personalDetails.greatestVice "violence")}} selected{{/if}}>Violence</option>
-                                <option value="bragging" {{#if (eq system.personalDetails.greatestVice "bragging")}} selected{{/if}}>Bragging</option>
-                                <option value="procrastination" {{#if (eq system.personalDetails.greatestVice "procrastination")}} selected{{/if}}>Procrastination</option>
-                                <option value="manipulation" {{#if (eq system.personalDetails.greatestVice "manipulation")}} selected{{/if}}>Manipulation</option>
-                                <option value="substance-abuse" {{#if (eq system.personalDetails.greatestVice "substance-abuse")}} selected{{/if}}>Substance Abuse</option>
-                                <option value="sex" {{#if (eq system.personalDetails.greatestVice "sex")}} selected{{/if}}>Sex</option>
-                                <option value="backstabbing" {{#if (eq system.personalDetails.greatestVice "backstabbing")}} selected{{/if}}>Backstabbing</option>
-                                <option value="hoarding" {{#if (eq system.personalDetails.greatestVice "hoarding")}} selected{{/if}}>Hoarding</option>
-                            </select>
-                        </div>
-
-                        <div class="detail-row">
-                            <label>Reputation</label>
-                            <select name="system.personalDetails.reputation">
-                                <option value="" {{#unless system.personalDetails.reputation}} selected{{/unless}}>--</option>
-                                <option value="unknown" {{#if (eq system.personalDetails.reputation "unknown")}} selected{{/if}}>Unknown</option>
-                                <option value="indifferent" {{#if (eq system.personalDetails.reputation "indifferent")}} selected{{/if}}>Indifferent</option>
-                                <option value="respected" {{#if (eq system.personalDetails.reputation "respected")}} selected{{/if}}>Respected</option>
-                                <option value="feared" {{#if (eq system.personalDetails.reputation "feared")}} selected{{/if}}>Feared</option>
-                                <option value="beloved" {{#if (eq system.personalDetails.reputation "beloved")}} selected{{/if}}>Beloved</option>
-                                <option value="notorious" {{#if (eq system.personalDetails.reputation "notorious")}} selected{{/if}}>Notorious</option>
-                                <option value="mistrusted" {{#if (eq system.personalDetails.reputation "mistrusted")}} selected{{/if}}>Mistrusted</option>
-                                <option value="famous" {{#if (eq system.personalDetails.reputation "famous")}} selected{{/if}}>Famous</option>
-                                <option value="infamous" {{#if (eq system.personalDetails.reputation "infamous")}} selected{{/if}}>Infamous</option>
-                                <option value="heroic" {{#if (eq system.personalDetails.reputation "heroic")}} selected{{/if}}>Heroic</option>
-                                <option value="villainous" {{#if (eq system.personalDetails.reputation "villainous")}} selected{{/if}}>Villainous</option>
-                            </select>
-                        </div>
-
-                        <!--Update this later when the Fighting book comes out with the REAL fighting styles in-universe-->
-                        <div class="detail-row">
-                            <label>Fighting Style</label>
-                            <select name="system.personalDetails.fightingStyle">
-                                <option value="" {{#unless system.personalDetails.fightingStyle}} selected{{/unless}}>--</option>
-                                <option value="aggressive" {{#if (eq system.personalDetails.fightingStyle "aggressive")}} selected{{/if}}>Aggressive</option>
-                                <option value="defensive" {{#if (eq system.personalDetails.fightingStyle "defensive")}} selected{{/if}}>Defensive</option>
-                                <option value="tactical" {{#if (eq system.personalDetails.fightingStyle "tactical")}} selected{{/if}}>Tactical</option>
-                                <option value="reckless" {{#if (eq system.personalDetails.fightingStyle "reckless")}} selected{{/if}}>Reckless</option>
-                                <option value="cautious" {{#if (eq system.personalDetails.fightingStyle "cautious")}} selected{{/if}}>Cautious</option>
-                                <option value="berserker" {{#if (eq system.personalDetails.fightingStyle "berserker")}} selected{{/if}}>Berserker</option>
-                                <option value="duelist" {{#if (eq system.personalDetails.fightingStyle "duelist")}} selected{{/if}}>Duelist</option>
-                                <option value="ranged" {{#if (eq system.personalDetails.fightingStyle "ranged")}} selected{{/if}}>Ranged</option>
-                                <option value="support" {{#if (eq system.personalDetails.fightingStyle "support")}} selected{{/if}}>Support</option>
-                                <option value="dirty-fighter" {{#if (eq system.personalDetails.fightingStyle "dirty-fighter")}} selected{{/if}}>Dirty Fighter</option>
-                            </select>
-                        </div>
-
-                    </div>
+        <div class="tab background-tab" data-group="primary" data-tab="background">
+            {{> "systems/thefade/templates/actor/parts/background-profile.html"}}
+            {{> "systems/thefade/templates/actor/parts/heritage-downtime.html"}}
         </div>
     </section>
 </form>

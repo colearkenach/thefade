@@ -1,0 +1,30 @@
+<div class="inventory-gear-groups">
+    {{#each inventoryGroups as |group|}}
+    <details class="inv-block sheet-state-section inventory-gear-group" data-section-key="inventory-{{group.key}}" {{#if group.open}}open{{/if}}>
+        <summary class="inv-heading sheet-section-summary"><span class="inv-title">{{group.label}}</span><span class="inv-count">{{group.items.length}}</span></summary>
+        <div class="inventory-group-tools">
+            <select class="inventory-create-type" aria-label="Item type for {{group.label}}">{{#each group.options as |option|}}<option value="{{option.type}}">{{option.label}}</option>{{/each}}</select>
+            <button type="button" class="inventory-create"><i class="fas fa-plus"></i> Add</button>
+            <button type="button" class="inventory-browse"><i class="fas fa-search"></i> Browse</button>
+        </div>
+        <ol class="items-list compact-gear-list">
+            {{#each group.items as |entry|}}
+            <li class="item compact-gear-row" data-item-id="{{entry._id}}" data-search="{{entry.searchText}}">
+                <div class="compact-gear-name"><img class="item-icon" src="{{entry.img}}" alt="" /><button type="button" class="item-edit gear-name-button">{{entry.name}}</button><span class="gear-type-label">{{entry.typeLabel}}</span></div>
+                <label class="compact-gear-quantity">Qty<input type="number" data-item-path="system.quantity" value="{{entry.system.quantity}}" data-dtype="Number" min="0" aria-label="{{entry.name}} quantity" /></label>
+                <div class="compact-gear-resource">{{#if entry.resource}}{{#unless (eq entry.resource.kind "quantity")}}{{entry.resource.label}} <strong>{{#if entry.resource.unlimited}}Unlimited{{else}}{{entry.resource.current}}{{#if entry.resource.max}} / {{entry.resource.max}}{{/if}}{{/if}}</strong>{{/unless}}{{/if}}</div>
+                <div class="compact-gear-actions">
+                    {{#if entry.isClothing}}<button type="button" class="clothing-wear" aria-pressed="{{entry.system.equipped}}">{{#if entry.system.equipped}}Remove{{else}}Wear{{/if}}</button>{{/if}}
+                    {{#if entry.isFleshcraft}}<button type="button" class="fleshcraft-activate" aria-pressed="{{entry.system.active}}">{{#if entry.system.active}}Deactivate{{else}}Activate{{/if}}</button>{{/if}}
+                    {{#if entry.resource}}<button type="button" class="inventory-use" title="Use {{entry.name}}" {{#unless (or entry.resource.unlimited entry.resource.current)}}disabled{{/unless}}><i class="fas fa-play"></i> Use</button>{{/if}}
+                    {{#if entry.resource.canReset}}<button type="button" class="inventory-reset" title="Reset {{entry.name}} daily uses"><i class="fas fa-rotate-right"></i></button>{{/if}}
+                    {{#if entry.canCraft}}<button type="button" class="craft-alchemical" title="Craft {{entry.name}}"><i class="fas fa-flask"></i></button>{{/if}}
+                    <button type="button" class="item-delete" title="Delete {{entry.name}}" aria-label="Delete {{entry.name}}"><i class="fas fa-trash"></i></button>
+                </div>
+                {{#if entry.summary}}<p class="compact-gear-summary">{{entry.summary}}</p>{{/if}}
+            </li>
+            {{else}}<li class="empty-list">No items in this group.</li>{{/each}}
+        </ol>
+    </details>
+    {{/each}}
+</div>

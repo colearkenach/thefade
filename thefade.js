@@ -11,7 +11,6 @@ import { TheFadeActor } from './src/actor.js';
 import { TheFadeItem } from './src/item.js';
 import { TheFadeItemSheet } from './src/item-sheet.js';
 import { TheFadeCharacterSheet } from './src/character-sheet.js';
-import { TheFadeNPCSheet } from './src/npc-sheet.js';
 import { TheFadePartySheet } from './src/party-sheet.js';
 import { TheFadeShopSheet } from './src/shop-sheet.js';
 import { computePerRoundDamage, registerTheFadeStatusEffects } from './src/conditions.js';
@@ -349,13 +348,7 @@ Hooks.once('init', async function () {
 
     // Register The Fade character sheet
     Actors.registerSheet("thefade", TheFadeCharacterSheet, {
-        types: ["character"],
-        makeDefault: true
-    });
-
-    // Register NPC sheet
-    Actors.registerSheet("thefade", TheFadeNPCSheet, {
-        types: ["npc"],
+        types: ["character", "npc"],
         makeDefault: true
     });
 
@@ -389,7 +382,11 @@ Hooks.once('init', async function () {
 
     await loadTemplates([
         "systems/thefade/templates/actor/character-sheet.html",
-        "systems/thefade/templates/actor/npc-sheet.html",
+        "systems/thefade/templates/actor/parts/background-profile.html",
+        "systems/thefade/templates/actor/parts/gear-groups.html",
+        "systems/thefade/templates/item/compact-sheet.html",
+        "systems/thefade/templates/item/power-sheet.html",
+        "systems/thefade/templates/dialogs/item-create.html",
         "systems/thefade/templates/actor/party-sheet.html",
         "systems/thefade/templates/actor/shop-sheet.html",
         "systems/thefade/templates/actor/parts/attributes.html",

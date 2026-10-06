@@ -1,3 +1,4 @@
+import { getItemResetUpdate } from "./item-actions.js";
 // TheFadeActor document class (extracted from thefade.js).
 import {
     BODY_PARTS,
@@ -45,6 +46,23 @@ function coerceSheetNumber(value, fallback = 0) {
 * Handles core actor data preparation and functionality
 */
 export class TheFadeActor extends Actor {
+    static async createDialog(data = {}, createOptions = {}, dialogOptions = {}) {
+        // Old NPC documents remain loadable, but new actors use the shared type.
+        const types = (dialogOptions.types || this.TYPES || ["character", "party", "shop"]).filter(type => type !== "npc");
+        if (data.type === "npc") data = { ...data, type: "character" };
+        if (Number(game.release?.generation) < 13) return super.createDialog(data, { ...createOptions, types });
+        return super.createDialog(data, createOptions, { ...dialogOptions, types });
+    }
+
+    _getSheetClass() {
+        // Honor old saved sheet overrides without registering a second UI.
+        if (this.getFlag("core", "sheetClass") === "thefade.TheFadeNPCSheet") {
+            const shared = CONFIG.Actor.sheetClasses[this.type]?.["thefade.TheFadeCharacterSheet"];
+            if (shared) return shared.cls;
+        }
+        return super._getSheetClass();
+    }
+
 
     /**
      * Keep Foundry's native status-effect documents and The Fade's mechanical
@@ -1449,7 +1467,10 @@ export class TheFadeActor extends Actor {
 
         // HP state label (max is stored directly, not calculated)
         if (!data.hp) data.hp = { value: 10, max: 10 };
-        data.hp.max = Math.max(1, Number(data.hp.max || 10) + coerceSheetNumber(data.hpMiscBonus, 0));
+        const storedMax = this._source?.system?.hp?.max ?? 10;
+        data.hp.max = Math.max(1, Number(storedMax) + coerceSheetNumber(data.hpMiscBonus, 0));
+        this._calculateCarryingCapacity(data);
+        this._calculateOverlandMovement(data);
         const hp = data.hp.value ?? 0;
         const max = Math.max(1, data.hp.max ?? 10);
         if (hp >= max)          { data.hp.state = "healthy";     data.hp.stateLabel = "Healthy"; }
@@ -1467,17 +1488,11 @@ export class TheFadeActor extends Actor {
     async restDaily() {
         await resetDailySin(this);
 
-        // Reset talent uses-per-day
-        const talentsWithUses = this.items.filter(i => i.type === 'talent' && (i.system.usesPerDay ?? 0) > 0);
-        for (const talent of talentsWithUses) {
-            await talent.update({ "system.currentUses": 0 });
-        }
-
-        // Reset staff uses
-        const staves = this.items.filter(i => i.type === 'staff');
-        for (const staff of staves) {
-            await staff.update({ "system.uses": 0 });
-        }
+        const updates = this.items.map(item => {
+            const update = getItemResetUpdate(item);
+            return update ? { _id: item.id, ...update } : null;
+        }).filter(Boolean);
+        if (updates.length) await this.updateEmbeddedDocuments("Item", updates);
 
         ChatMessage.create({
             speaker: ChatMessage.getSpeaker({ actor: this }),

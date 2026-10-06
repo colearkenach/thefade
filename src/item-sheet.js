@@ -1,3 +1,5 @@
+import { buildCompactItemView, usesCompactItemSheet } from "./item-sheet-config.js";
+import { useItemResource, resetItemResource } from "./item-actions.js";
 // TheFadeItemSheet class (extracted from thefade.js).
 import {
     SIZE_OPTIONS,
@@ -99,12 +101,13 @@ export class TheFadeItemSheet extends ItemSheet {
     */
     get template() {
         const path = "systems/thefade/templates/item";
+        if (usesCompactItemSheet(this.item.type)) return `${path}/compact-sheet.html`;
         if (["mutation", "heritage", "trap", "hazard", "downtime"].includes(this.item.type)) {
             return `${path}/rules-item-sheet.html`;
         }
-        // Magic items use the generic item sheet (they already have conditional sections in item-sheet.html)
+        // Items of Power keep their specialized equipment and attunement controls.
         if (this.item.type === "magicitem") {
-            return `${path}/item-sheet.html`;
+            return `${path}/power-sheet.html`;
         }
         if (this.item.type === "monsterpath") {
             return `${path}/path-sheet.html`;
@@ -115,11 +118,21 @@ export class TheFadeItemSheet extends ItemSheet {
         return `${path}/${this.item.type}-sheet.html`;
     }
 
+    async _updateObject(event, formData) {
+        const path = event?.target?.name;
+        if (this.item.type === "staff" && ["system.uses", "system.usesToday"].includes(path)) {
+            const used = Math.max(0, Number(formData[path]) || 0);
+            formData["system.uses"] = used;
+            formData["system.usesToday"] = used;
+        }
+        return super._updateObject(event, formData);
+    }
+
     /**
     * Get template path based on item type
     * @returns {string} Template path
     */
-    getData() {
+    async getData() {
 
         let data = {};
 
@@ -134,7 +147,7 @@ export class TheFadeItemSheet extends ItemSheet {
 
         // Try to call super.getData() safely
         try {
-            const superData = super.getData();
+            const superData = await super.getData();
             if (superData && typeof superData === 'object') {
                 data = foundry.utils.mergeObject(data, superData);
             }
@@ -532,27 +545,6 @@ export class TheFadeItemSheet extends ItemSheet {
                 data.weaponDamageAttributeSource = resolvedDamageAttribute.source;
                 data.weaponDamageAttributeLockedByQuality = !!resolvedDamageAttribute.source;
 
-                // Lazy persistent migration: if a legacy weapon has damage/damageType
-                // but no damageComponents, persist a single component on first sheet
-                // open. prepareData has already hydrated the in-memory array, so we
-                // just check whether the persisted source still lacks it.
-                const sourceComponents = this.item._source?.system?.damageComponents;
-                const sourceDamage = Number(this.item._source?.system?.damage) || 0;
-                if (
-                    !this._migratedDamageComponents &&
-                    Array.isArray(sourceComponents) &&
-                    sourceComponents.length === 0 &&
-                    sourceDamage > 0
-                ) {
-                    this._migratedDamageComponents = true;
-                    const migrated = [{
-                        id: foundry.utils.randomID(16),
-                        amount: sourceDamage,
-                        type: this.item._source.system.damageType || "Ut"
-                    }];
-                    this.item.update({ "system.damageComponents": migrated });
-                }
-
                 const components = Array.isArray(sys.damageComponents) ? sys.damageComponents : [];
                 data.weaponDamageComponents = components.map(c => ({
                     id: c.id,
@@ -582,32 +574,6 @@ export class TheFadeItemSheet extends ItemSheet {
 
             if (this.item?.type === 'spell') {
                 const sys = this.item.system;
-                const sourceComponents = this.item._source?.system?.damageComponents;
-                const sourceDamage = Math.max(
-                    0,
-                    Number(this.item._source?.system?.damage) || parseInt(this.item._source?.system?.damage, 10) || 0
-                );
-
-                // Persist the component form when a legacy spell sheet is first
-                // opened. The old fields remain synchronized for integrations
-                // that still read damage/damageType.
-                if (
-                    !this._migratedSpellDamageComponents &&
-                    this.options.editable &&
-                    !this.item.pack &&
-                    (!Array.isArray(sourceComponents) || sourceComponents.length === 0) &&
-                    sourceDamage > 0
-                ) {
-                    this._migratedSpellDamageComponents = true;
-                    this.item.update({
-                        "system.damageComponents": [{
-                            id: foundry.utils.randomID(16),
-                            amount: sourceDamage,
-                            type: this.item._source.system.damageType || "Ut"
-                        }]
-                    });
-                }
-
                 data.spellDamageComponents = getSpellDamageComponents(sys);
                 const damageProfile = buildSpellDamageProfile(sys);
                 data.spellDamageTotal = damageProfile.total;
@@ -679,6 +645,13 @@ export class TheFadeItemSheet extends ItemSheet {
             };
         }
         addMechanicalBonusSheetOptions(data);
+        data.compact = buildCompactItemView(this.item, data);
+        if (data.compact) {
+            const TextEditorClass = foundry.applications?.ux?.TextEditor?.implementation ?? globalThis.TextEditor;
+            data.enrichedDescription = await TextEditorClass.enrichHTML(this.item.system.description || "", {
+                async: true, secrets: this.item.isOwner, relativeTo: this.item
+            });
+        }
         return data;
     }
 
@@ -700,6 +673,12 @@ export class TheFadeItemSheet extends ItemSheet {
             if (details.open) this._itemPowerGrantOpenCategories.add(category);
             else this._itemPowerGrantOpenCategories.delete(category);
         });
+
+        if (!this._sectionStates) this._sectionStates = new Map();
+        html.find('.item-sheet-section').each((_, section) => {
+            const key = section.dataset.section;
+            if (this._sectionStates.has(key)) section.open = this._sectionStates.get(key);
+        }).on('toggle', event => this._sectionStates.set(event.currentTarget.dataset.section, event.currentTarget.open));
 
         // Everything below here is only needed if the sheet is editable
         if (!this.options.editable) return;
@@ -779,32 +758,7 @@ export class TheFadeItemSheet extends ItemSheet {
             }
         });
 
-        // For all other fields, use this approach:
-        html.find('input[name], select[name]:not([name="type"]), textarea[name]').change(ev => {
-            const input = ev.currentTarget;
-            if ((this.item.type === 'species' || this.item.type === 'monsterspecies') && !input.closest('.bonus-section')) {
-                return;
-            }
-            const fieldName = input.name;
-
-            let value = input.type === 'checkbox' ? input.checked : input.value;
-
-            // Convert to number for numeric inputs
-            if (input.dataset.dtype === 'Number') {
-                value = Number(value);
-                if (isNaN(value)) value = 0;
-            }
-
-            // Handle system data updates
-            if (fieldName.startsWith('system.')) {
-                this.item.update({ [fieldName]: value });
-            } else if (fieldName !== 'type') { // Skip type field
-                // For other updates
-                this.item.update({
-                    [fieldName]: value
-                });
-            }
-        });
+        // Ordinary named fields are saved once by Foundry's form handler.
 
         // Add skill to path
         html.find('.path-skill-create').click(async ev => {
@@ -1170,106 +1124,10 @@ export class TheFadeItemSheet extends ItemSheet {
             });
         }
 
-        // Handle wand charges — with chat card
-        if (this.item.type === 'wand') {
-            html.find('.charge-use').click(async ev => {
-                ev.preventDefault();
-                const charges = this.item.system.charges || 0;
-                if (charges <= 0) return ui.notifications.warn("This wand has no charges remaining.");
-                const newCharges = charges - 1;
-                await this.item.update({ "system.charges": newCharges });
-                const actor = this.item.parent;
-                ChatMessage.create({
-                    speaker: actor ? ChatMessage.getSpeaker({ actor }) : undefined,
-                    content: `<div class="thefade chat-card">
-                        <h3>${this.item.name}</h3>
-                        <p class="item-type-label">Wand</p>
-                        ${this.item.system.spellName ? `<p><strong>Spell:</strong> ${this.item.system.spellName}</p>` : ""}
-                        ${this.item.system.spellDescription || this.item.system.spellEffect ? `<p>${this.item.system.spellDescription || this.item.system.spellEffect}</p>` : ""}
-                        <p class="qty-remaining">Charges remaining: ${newCharges}${this.item.system.maxCharges ? ` / ${this.item.system.maxCharges}` : ""}</p>
-                    </div>`
-                });
-            });
-        }
-
-        // Handle staff uses — with chat card
-        if (this.item.type === 'staff') {
-            html.find('.use-per-day').click(async ev => {
-                ev.preventDefault();
-                const uses = this.item.system.uses || 0;
-                const maxUses = this.item.system.usesPerDay || 3;
-                if (uses >= maxUses) return ui.notifications.warn("This staff has been used the maximum number of times today.");
-                const newUses = uses + 1;
-                await this.item.update({ "system.uses": newUses });
-                const actor = this.item.parent;
-                ChatMessage.create({
-                    speaker: actor ? ChatMessage.getSpeaker({ actor }) : undefined,
-                    content: `<div class="thefade chat-card">
-                        <h3>${this.item.name}</h3>
-                        <p class="item-type-label">Staff</p>
-                        ${this.item.system.spellName ? `<p><strong>Spell:</strong> ${this.item.system.spellName}</p>` : ""}
-                        ${this.item.system.spellDescription || this.item.system.spellEffect ? `<p>${this.item.system.spellDescription || this.item.system.spellEffect}</p>` : ""}
-                        <p class="qty-remaining">Uses today: ${newUses} / ${maxUses}</p>
-                    </div>`
-                });
-            });
-
-            html.find('.reset-uses').click(async ev => {
-                ev.preventDefault();
-                await this.item.update({ "system.uses": 0 });
-                ui.notifications.info("Staff uses have been reset for a new day.");
-            });
-        }
-
-        // Handle biological item energy consumption
-        if (this.item.type === 'biological') {
-            html.find('.use-energy').click(ev => {
-                ev.preventDefault();
-                const energy = this.item.system.energy || 0;
-                if (energy > 0) {
-                    this.item.update({ "system.energy": energy - 1 });
-                } else {
-                    ui.notifications.warn("This biological item has no energy remaining.");
-                }
-            });
-        }
-
-        // Handle dimensional gate activation
-        if (this.item.type === 'gate') {
-            html.find('.activate-gate').click(ev => {
-                ev.preventDefault();
-                const usesPerDay = this.item.system.usesPerDay || 0;
-                const usesRemaining = this.item.system.usesRemaining || usesPerDay;
-
-                if (usesRemaining > 0) {
-                    ui.notifications.info(`Gate activated! Duration: ${this.item.system.duration}`);
-                    this.item.update({ "system.usesRemaining": usesRemaining - 1 });
-                } else {
-                    ui.notifications.warn("This gate cannot be used again today.");
-                }
-            });
-
-            html.find('.reset-gate').click(ev => {
-                ev.preventDefault();
-                const usesPerDay = this.item.system.usesPerDay || 0;
-                this.item.update({ "system.usesRemaining": usesPerDay });
-                ui.notifications.info("Gate uses have been reset for a new day.");
-            });
-        }
-
-        // Handle communication device usage
-        if (this.item.type === 'communication') {
-            html.find('.activate-relay').click(ev => {
-                ev.preventDefault();
-                const targetCode = html.find('.target-relay-code').val();
-
-                if (targetCode) {
-                    ui.notifications.info(`Attempting to establish connection with relay code: ${targetCode}`);
-                } else {
-                    ui.notifications.warn("Please enter a target relay code.");
-                }
-            });
-        }
+        html.find('.item-action-use, .charge-use, .use-per-day, .use-energy, .activate-gate, .consume-item, .use-talent')
+            .on('click', event => { event.preventDefault(); return useItemResource(this.item); });
+        html.find('.item-action-reset, .reset-uses, .reset-gate')
+            .on('click', event => { event.preventDefault(); return resetItemResource(this.item); });
 
         // Poison: Roll Toxicity (NdT vs target Resilience).
         if (this.item.type === 'poison') {
@@ -1333,51 +1191,6 @@ export class TheFadeItemSheet extends ItemSheet {
                         ${sys.treatmentDT ? `<p><strong>Treatment DT:</strong> ${sys.treatmentDT}</p>` : ""}
                         ${sys.effect ? `<p><strong>Effect:</strong> ${sys.effect}</p>` : ""}
                         ${await roll.render()}
-                    </div>`
-                });
-            });
-        }
-
-        // Generic consume/use handler for potions, drugs, medical supplies, poisons
-        if (['potion', 'drug', 'medical', 'poison'].includes(this.item.type)) {
-            html.find('.consume-item').click(async ev => {
-                ev.preventDefault();
-                const item = this.item;
-                const actor = item.parent;
-                const qty = item.system.quantity ?? 1;
-                if (qty <= 0) return ui.notifications.warn(`No ${item.name} remaining.`);
-                await item.update({ "system.quantity": qty - 1 });
-                const effect = item.system.effect || item.system.healingAmount || "";
-                const duration = item.system.duration || "";
-                ChatMessage.create({
-                    speaker: actor ? ChatMessage.getSpeaker({ actor }) : undefined,
-                    content: `<div class="thefade chat-card">
-                        <h3>${item.name}</h3>
-                        <p class="item-type-label">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</p>
-                        ${effect ? `<p><strong>Effect:</strong> ${effect}</p>` : ""}
-                        ${duration ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
-                        <p class="qty-remaining">Remaining: ${qty - 1}</p>
-                    </div>`
-                });
-            });
-        }
-
-        // Talent: Use button with uses-per-day tracking
-        if (this.item.type === 'talent') {
-            html.find('.use-talent').click(async ev => {
-                ev.preventDefault();
-                const item = this.item;
-                const cur = item.system.currentUses ?? 0;
-                const max = item.system.usesPerDay ?? 0;
-                if (max > 0 && cur >= max) return ui.notifications.warn(`${item.name}: No uses remaining today.`);
-                if (max > 0) await item.update({ "system.currentUses": cur + 1 });
-                ChatMessage.create({
-                    speaker: item.parent ? ChatMessage.getSpeaker({ actor: item.parent }) : undefined,
-                    content: `<div class="thefade chat-card">
-                        <h3>${item.name}</h3>
-                        <p class="item-type-label">Talent</p>
-                        ${item.system.description ? `<p>${item.system.description}</p>` : ""}
-                        ${max > 0 ? `<p class="qty-remaining">Uses: ${cur + 1} / ${max}</p>` : ""}
                     </div>`
                 });
             });
@@ -1779,25 +1592,6 @@ export class TheFadeItemSheet extends ItemSheet {
             });
         }
 
-        // Species fields bypass the shared handler above because those sheets
-        // manage their main form separately. Preserve their direct-save path
-        // without binding every other item sheet twice.
-        if (this.item.type === 'species' || this.item.type === 'monsterspecies') {
-            html.find('input[name], select[name]:not([name="type"]), textarea[name]').change(ev => {
-                const input = ev.currentTarget;
-                if (input.closest('.bonus-section')) return;
-                const fieldName = input.name;
-                let value = input.type === 'checkbox' ? input.checked : input.value;
-
-                if (input.dataset.dtype === 'Number') {
-                    value = Number(value);
-                    if (isNaN(value)) value = 0;
-                }
-
-                this.item.update({ [fieldName]: value });
-            });
-        }
-
         // Reset armor AP
         html.find('.reset-armor-ap').click(async ev => {
             ev.preventDefault();
@@ -2172,13 +1966,8 @@ export class TheFadeItemSheet extends ItemSheet {
     * This is for adding core skills to paths via browsing
     */
     _showPathSkillBrowserDialog() {
-        // Open skill compendium for browsing
-        openCompendiumBrowser("skill");
-
-        // Listen for skill selection
         const self = this;
-        const handler = function (e) {
-            const skill = e.detail.item;
+        return openCompendiumBrowser("skill", null, null, async skill => {
 
             if (skill && skill.type === "skill") {
                 // Add as specific skill entry
@@ -2201,7 +1990,7 @@ export class TheFadeItemSheet extends ItemSheet {
                     };
 
                     pathSkills.push(skillEntry);
-                    self.item.update({ "system.pathSkills": pathSkills });
+                    await self.item.update({ "system.pathSkills": pathSkills });
                     ui.notifications.info(`Added ${skill.name} to path skills`);
                     self.render(true);
                 } else {
@@ -2209,10 +1998,7 @@ export class TheFadeItemSheet extends ItemSheet {
                 }
             }
 
-            document.removeEventListener("compendiumSelection", handler);
-        };
-
-        document.addEventListener("compendiumSelection", handler);
+        });
     }
 
     /**

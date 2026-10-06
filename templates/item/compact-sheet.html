@@ -1,0 +1,60 @@
+<form class="{{cssClass}} item-sheet-shell compact-item-sheet flexcol" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" alt="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" aria-label="Item name" /></h1>
+            <div class="item-type-badge">{{compact.family}} · {{itemTypeLabel}}</div>
+        </div>
+    </header>
+    <section class="sheet-body compact-item-body">
+        <section class="item-description-lead" aria-label="Description">
+            <h2>Description</h2>
+            <div class="item-description-editor">
+                {{editor enrichedDescription target="system.description" button=true editable=editable engine="prosemirror" collaborate=false}}
+            </div>
+        </section>
+        <hr class="item-description-divider" />
+        {{#if compact.resource}}
+        <div class="item-resource-bar">
+            <span>{{compact.resource.label}} <strong>{{#if compact.resource.unlimited}}Unlimited{{else}}{{compact.resource.current}}{{#if compact.resource.max}} / {{compact.resource.max}}{{/if}}{{/if}}</strong></span>
+            <button type="button" class="item-action-use" {{#unless (or compact.resource.unlimited compact.resource.current)}}disabled{{/unless}}><i class="fas fa-play"></i> {{compact.resource.action}}</button>
+            {{#if compact.resource.canReset}}<button type="button" class="item-action-reset" title="Reset daily uses"><i class="fas fa-rotate-right"></i> Reset</button>{{/if}}
+            {{#if compact.poison}}<button type="button" class="roll-toxicity"><i class="fas fa-dice-d12"></i> Toxicity</button>{{/if}}
+        </div>
+        {{/if}}
+        {{#if compact.physical}}
+        <div class="item-physical-fields">
+            <label>Quantity<input type="number" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" min="0" /></label>
+            <label>Price (sp)<input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" min="0" step="any" /></label>
+            <label>Weight (lb)<input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" min="0" step="any" /></label>
+        </div>
+        {{/if}}
+        <div class="compact-item-fields">
+            {{#each compact.fields as |field|}}
+            <label class="compact-item-field {{#if field.multiline}}full-width{{/if}}">{{field.label}}
+                {{#if field.options}}
+                <select name="{{field.path}}" data-dtype="{{field.dtype}}">{{#each field.options as |option|}}<option value="{{option.value}}" {{#if option.selected}}selected{{/if}}>{{option.label}}</option>{{/each}}</select>
+                {{else if field.multiline}}
+                <textarea name="{{field.path}}" rows="3">{{field.value}}</textarea>
+                {{else}}
+                <input type="{{field.type}}" name="{{field.path}}" value="{{field.value}}" data-dtype="{{field.dtype}}" {{#if (eq field.type "number")}}step="any"{{/if}} />
+                {{/if}}
+            </label>
+            {{/each}}
+        </div>
+        {{#if compact.bonuses}}
+        <details class="item-sheet-section" data-section="bonuses">
+            <summary>Mechanical Bonuses</summary>
+            {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=system.bonuses bonusPath="system.bonuses"}}
+        </details>
+        {{/if}}
+        {{#if compact.technical}}
+        {{#if techAttunementEnabled}}
+        <details class="item-sheet-section" data-section="technology">
+            <summary>Technology</summary>
+            {{> "systems/thefade/templates/item/parts/tech-attunement.html"}}
+        </details>
+        {{/if}}
+        {{/if}}
+    </section>
+</form>

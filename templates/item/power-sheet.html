@@ -1,0 +1,201 @@
+<form class="{{cssClass}} item-sheet-shell" autocomplete="off">
+    <header class="sheet-header">
+        <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+        <div class="header-fields">
+            <h1 class="item-name-dynamic"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
+            <div class="item-type-badge magicitem">Item of Power</div>
+        </div>
+    </header>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="properties">Properties</a>
+        <a class="item" data-tab="grants">Grants</a>
+        <a class="item" data-tab="details">Details</a>
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        {{!-- Description Tab --}}
+        <div class="tab" data-group="primary" data-tab="description">
+            <div class="form-group">
+                <label>Description</label>
+                <textarea name="system.description" rows="10">{{system.description}}</textarea>
+            </div>
+        </div>
+
+        {{!-- Properties Tab --}}
+        <div class="tab" data-group="primary" data-tab="properties">
+            <div class="item-attr-grid">
+                <div class="form-group">
+                    <label>Equipment Slot</label>
+                    <select name="system.slot">
+                        {{selectOptions itemPowerSlotOptions selected=system.slot}}
+                    </select>
+                    <p class="hint">{{#if (eq itemPowerSlotRule "alternate")}}Alternate expanded slot rules are active.{{else}}Standard Item of Power slots are active.{{/if}}</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Overlap Behavior</label>
+                    <select name="system.overlapMode">
+                        {{selectOptions itemPowerOverlapOptions selected=system.overlapMode}}
+                    </select>
+                    <p class="hint">Accessories such as earrings, monocles, gloves, bracers, and wristbands can be marked non-overlapping.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Catalyst Used</label>
+                    <select name="system.catalyst">
+                        <option value="" {{#ifEquals system.catalyst ""}} selected{{/ifEquals}}>Unknown/Unspecified</option>
+                        <option value="planar-essence" {{#ifEquals system.catalyst "planar-essence"}} selected{{/ifEquals}}>Planar Essence</option>
+                        <option value="divine-gift" {{#ifEquals system.catalyst "divine-gift"}} selected{{/ifEquals}}>Divine Gift</option>
+                        <option value="bones-of-glory" {{#ifEquals system.catalyst "bones-of-glory"}} selected{{/ifEquals}}>Bones of Glory</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Magical Effect</label>
+                <textarea name="system.effect" rows="4" placeholder="Describe the magical effect this item provides...">{{system.effect}}</textarea>
+            </div>
+
+            <div class="form-group flexrow" style="margin-top: 4px;">
+                {{#unless attunementRemoved}}
+                <div class="form-field">
+                    <label>Currently Attuned</label>
+                    <input type="checkbox" name="system.attunement" {{#if system.attunement}} checked{{/if}} />
+                </div>
+                {{/unless}}
+                <div class="form-field">
+                    <label>Equipped</label>
+                    <input type="checkbox" name="system.equipped" {{#if system.equipped}} checked{{/if}} />
+                </div>
+                <div class="form-field">
+                    <label>Has Aura</label>
+                    <input type="checkbox" name="system.hasAura" {{#if system.hasAura}} checked{{/if}} {{#if isDarkMagicItem}}disabled title="Dark Magic Items always radiate an aura"{{/if}} />
+                </div>
+            </div>
+
+            {{#if system.hasAura}}
+            <div class="form-group">
+                <label>Aura Color</label>
+                <input type="text" name="system.auraColor" value="{{system.auraColor}}" placeholder="Dull gray (default)" />
+                <p class="hint">Items with auras shine like torches out to 3 hexes</p>
+            </div>
+            {{/if}}
+
+            <div class="dark-magic-item panel {{#if isDarkMagicItem}}is-dark{{/if}}">
+                <label class="form-field">
+                    <input type="checkbox" name="system.darkMagic" {{checked isDarkMagicItem}} />
+                    Dark Magic Item
+                </label>
+                {{#if isDarkMagicItem}}
+                <div class="dark-magic-summary">
+                    <strong>Corruption Value {{darkMagicCorruptionValue}}</strong>
+                    {{#if darkMagicRetroactive}}<span class="rules-badge">Retroactive core item</span>{{/if}}
+                </div>
+                <label>Corruption Value Override
+                    <select name="system.corruptionValueOverride">
+                        {{selectOptions darkMagicCorruptionOptions selected=system.corruptionValueOverride}}
+                    </select>
+                </label>
+                <p class="hint">Attuned: gain Sin equal to CV each dawn. Carried but unattuned: gain 1 Sin each week. Crossing the Sin Threshold triggers a Dark Magic attack against Grit, using CV as its base dice.</p>
+                {{/if}}
+            </div>
+
+            {{#unless (eq item.type "magicitem")}}{{> "systems/thefade/templates/item/parts/tech-attunement.html"}}{{/unless}}
+
+            {{> "systems/thefade/templates/item/parts/bonuses.html" bonuses=system.bonuses bonusPath="system.bonuses"}}
+        </div>
+
+        {{!-- Granted Traits Tab --}}
+        <div class="tab" data-group="primary" data-tab="grants">
+            {{> "systems/thefade/templates/item/parts/item-power-grants.html"}}
+        </div>
+
+        {{!-- Details Tab --}}
+        <div class="tab" data-group="primary" data-tab="details">
+            <div class="item-attr-grid">
+                <div class="form-group">
+                    <label>Price (sp)</label>
+                    <input type="number" name="system.price" value="{{system.price}}" data-dtype="Number" />
+                    <p class="hint">Price in Serpents</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Weight (lbs)</label>
+                    <input type="number" name="system.weight" value="{{system.weight}}" data-dtype="Number" step="0.1" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label class="form-field">
+                        <input type="checkbox" name="system.conflictsArmor" {{#if system.conflictsArmor}} checked{{/if}} />
+                        Conflicts with Armor
+                    </label>
+                    <p class="hint">When checked, this Item of Power also occupies an armor location and supplies AP while equipped.</p>
+                </div>
+            </div>
+
+            {{#if system.conflictsArmor}}
+            <div class="combat-traits panel item-power-armor">
+                <div class="combat-traits-header">
+                    <h2>Armor Protection</h2>
+                </div>
+                <div class="item-attr-grid">
+                    <div class="form-group">
+                        <label>Max AP</label>
+                        <input type="number" name="system.ap" value="{{system.ap}}" data-dtype="Number" min="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Current AP</label>
+                        <input type="number" name="system.currentAP" value="{{system.currentAP}}" data-dtype="Number" min="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Armor Location</label>
+                        <select name="system.location">
+                            {{selectOptions armorLocationOptions selected=system.location}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Material</label>
+                        <select name="system.material">
+                            {{selectOptions materialOptions selected=system.material}}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-field">
+                            <input type="checkbox" name="system.isHeavy" {{checked system.isHeavy}} />
+                            Heavy Armor
+                        </label>
+                        <p class="hint">Applies the normal heavy-armor handling.</p>
+                    </div>
+                </div>
+
+                {{#if (eq system.location "Shield")}}
+                <div class="form-group">
+                    <label>Auto Block</label>
+                    <input type="text" name="system.autoBlock" value="{{system.autoBlock}}" placeholder="Arms, Body" />
+                </div>
+                {{/if}}
+
+                <div class="item-ap-controls">
+                    <span>AP: <input type="number" value="{{system.currentAP}}" class="ap-current" data-dtype="Number" min="0" /> / {{effectiveAP}}</span>
+                    <a class="item-action-btn reduce-ap"><i class="fas fa-shield-alt"></i> Take Hit (−1 AP)</a>
+                    <a class="item-action-btn reset-ap"><i class="fas fa-redo"></i> Repair (Reset AP)</a>
+                </div>
+            </div>
+            {{/if}}
+
+            <div class="form-group">
+                <label>Magical Radiation Effect</label>
+                <textarea name="system.radiationEffect" rows="3" placeholder="How this item affects technology (50% failure for complex tech)...">{{system.radiationEffect}}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Creation Requirements</label>
+                <textarea name="system.creationRequirements" rows="3" placeholder="What's needed to create this item...">{{system.creationRequirements}}</textarea>
+            </div>
+        </div>
+    </section>
+</form>

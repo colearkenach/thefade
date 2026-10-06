@@ -13756,3 +13756,420 @@ select[name="system.aura.color"] option[value="white"] {
     }
 }
 
+/* Shared sheet components. Layout responds to the floating sheet width. */
+.thefade.sheet .window-content {
+    container-type: inline-size;
+    container-name: fade-sheet;
+}
+
+.thefade .compact-item-body { display: flex; flex-direction: column; gap: 14px; }
+.thefade .item-resource-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px; background: var(--bg-surface-deep); border: 1px solid var(--border-faint); border-radius: 4px; }
+.thefade .item-resource-bar > span { flex: 1 1 150px; color: var(--text-muted); }
+.thefade .item-resource-bar strong { color: var(--accent-gold); margin-left: 6px; }
+.thefade .item-resource-bar button { width: auto; flex: 0 0 auto; padding: 5px 10px; margin: 0; }
+.thefade .item-physical-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border-faint); }
+.thefade .compact-item-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.thefade .compact-item-field, .thefade .item-physical-fields label { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-size: .85rem; color: var(--text-muted); }
+.thefade .compact-item-field.full-width { grid-column: 1 / -1; }
+.thefade .compact-item-field input, .thefade .compact-item-field textarea, .thefade .compact-item-field select, .thefade .item-physical-fields input { width: 100%; min-width: 0; margin: 0; box-sizing: border-box; }
+.thefade .compact-item-field textarea { min-height: 64px; resize: vertical; }
+.thefade .item-sheet-section { border: 1px solid var(--border-faint); border-radius: 4px; overflow: hidden; }
+.thefade .item-sheet-section > summary { cursor: pointer; padding: 9px 12px; color: var(--accent-gold); background: var(--bg-surface); font-size: .9rem; }
+.thefade .item-sheet-section > :not(summary) { margin: 10px 12px; }
+.thefade .item-description-editor .editor { min-height: 120px; }
+.thefade .item-description-editor .editor-content { min-height: 100px; }
+.thefade .item-description-editor .prosemirror { min-height: 240px; }
+.thefade .item-description-editor p { margin: 0 0 .6em; }
+
+.thefade .inventory-gear-groups { display: flex; flex-direction: column; gap: 10px; }
+.thefade .inventory-group-tools { display: flex; gap: 6px; align-items: center; padding: 8px 10px; background: var(--bg-surface-deep); }
+.thefade .inventory-group-tools select { flex: 1; min-width: 0; }
+.thefade .inventory-group-tools button { width: auto; flex: 0 0 auto; margin: 0; padding: 4px 9px; }
+.thefade .compact-gear-list { padding: 0; margin: 0; list-style: none; }
+.thefade .items-list .compact-gear-row { display: grid; grid-template-columns: minmax(120px, 1fr) 52px minmax(90px, .55fr) auto; align-items: center; gap: 6px 10px; padding: 10px; border-bottom: 1px solid var(--border-faint); }
+.thefade .compact-gear-name { display: grid; grid-template-columns: 26px minmax(0, 1fr); align-items: center; gap: 2px 8px; min-width: 0; }
+.thefade .compact-gear-name .item-icon { width: 26px; height: 26px; grid-row: span 2; }
+.thefade.sheet .gear-name-button { width: auto; text-align: left; padding: 0; margin: 0; border: 0; background: none; line-height: 1.3; min-height: 0; white-space: normal; font-weight: 600; text-transform: none; font-size: .9rem; }
+.thefade .gear-type-label { color: var(--text-muted); font-size: .75rem; }
+.thefade .compact-gear-quantity { display: flex; flex-direction: column; gap: 2px; color: var(--text-muted); font-size: .7rem; }
+.thefade .compact-gear-quantity input { width: 100%; min-width: 0; height: 28px; }
+.thefade .compact-gear-resource { color: var(--text-muted); font-size: .75rem; }
+.thefade .compact-gear-resource strong { display: block; color: var(--text-primary); font-size: .9rem; }
+.thefade .compact-gear-actions { display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end; }
+.thefade .compact-gear-actions button { width: auto; min-width: 28px; margin: 0; padding: 3px 6px; font-size: .8rem; }
+.thefade .compact-gear-summary { grid-column: 1 / -1; margin: 0; color: var(--text-muted); font-size: .8rem; line-height: 1.4; }
+.thefade .legacy-actor-fields { display: flex; margin: 8px 0; }
+.thefade .legacy-actor-fields label { display: flex; gap: 8px; align-items: center; }
+.thefade .legacy-actor-fields input { width: 65px; }
+.thefade .actor-notes textarea { width: 100%; min-height: 100px; }
+.thefade .inventory-gear-group[hidden] { display: none; }
+.thefade .gear-name-button:focus-visible, .thefade summary:focus-visible, .thefade button:focus-visible { outline: 2px solid var(--accent-gold); outline-offset: 2px; }
+.thefade .compendium-item-picker ol { max-height: 420px; overflow-y: auto; list-style: none; padding: 0; }
+.thefade .compendium-item-picker li { display: flex; align-items: center; gap: 6px; padding: 7px 0; border-bottom: 1px solid var(--border-faint); }
+.thefade .compendium-item-picker li[hidden] { display: none; }
+.thefade .compendium-item-picker li span { flex: 1; }
+.thefade .compendium-item-picker button { width: auto; margin: 0; }
+
+/* Combat and background keep reference information visible and editors folded. */
+.thefade .sheet-disclosure { border: 1px solid var(--border-faint); border-radius: 4px; background: var(--bg-surface-deep); }
+.thefade .sheet-disclosure > summary { display: flex; align-items: center; gap: 9px; padding: 10px 12px; cursor: pointer; color: var(--accent-gold); list-style: none; }
+.thefade .sheet-disclosure > summary::-webkit-details-marker { display: none; }
+.thefade .sheet-disclosure > summary::before { content: "\25B8"; flex: 0 0 10px; }
+.thefade .sheet-disclosure[open] > summary::before { content: "\25BE"; }
+.thefade .sheet-disclosure[open] > summary { border-bottom: 1px solid var(--border-faint); }
+.thefade .sheet-disclosure > summary > span:first-of-type { font-weight: 600; }
+.thefade .sheet-disclosure .section-status { margin-left: auto; min-width: 0; max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .8rem; color: var(--text-muted); }
+.thefade .sheet-disclosure-body { padding: 10px 12px; }
+.thefade .combat-tab .panel { margin: 0 0 10px; padding: 10px 12px; }
+.thefade .combat-tab .combat-state-header { margin-bottom: 8px; }
+.thefade .combat-tab .combat-state-header h2, .thefade .combat-tab .combat-traits-header h2 { font-size: 1rem; }
+.thefade .combat-tab .combat-state-clear { width: auto; margin: 0; }
+.thefade .combat-tab .stance-label { min-width: 0; }
+.thefade .combat-tab .conditions-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.thefade .combat-tab .condition-card { flex-direction: row; align-items: center; justify-content: space-between; min-height: 34px; padding: 5px 7px; gap: 5px; }
+.thefade .combat-tab .condition-toggle { min-width: 0; margin: 0; }
+.thefade .combat-tab .condition-name { font-size: .82rem; }
+.thefade .combat-tab .condition-card:not(.is-active) .condition-intensity { display: none; }
+.thefade .combat-tab .condition-intensity { flex: 0 0 auto; }
+.thefade .combat-tab .int-opt { position: relative; padding: 3px 5px; }
+.thefade .combat-tab .int-opt input[type="radio"] { display: block; position: absolute; opacity: 0; width: 1px; height: 1px; }
+.thefade .combat-tab .int-opt:has(input:focus-visible) { outline: 2px solid var(--accent-gold); outline-offset: 2px; }
+.thefade .combat-tab .condition-intensity-legend { margin: 5px 0 8px; font-size: .75rem; }
+.thefade .combat-trait-summary { display: grid; gap: 7px; margin-bottom: 10px; }
+.thefade .combat-summary-row { display: grid; grid-template-columns: 105px minmax(0, 1fr); align-items: baseline; gap: 8px; font-size: .85rem; }
+.thefade .combat-summary-label { color: var(--text-muted); }
+.thefade .combat-summary-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.thefade .combat-summary-tag { border: 1px solid var(--border-faint); border-radius: 3px; padding: 3px 7px; background: var(--bg-surface); }
+.thefade .combat-summary-notes { margin: 0; white-space: pre-wrap; font-size: .85rem; }
+.thefade .combat-trait-summary .empty-list { margin: 0; padding: 2px 0; text-align: left; }
+.thefade .combat-tab .combat-trait-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.thefade .combat-tab .universal-ability-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.thefade .combat-tab .universal-ability-categories { grid-template-columns: 1fr; }
+.thefade .combat-tab .combat-trait-option small { display: none; }
+.thefade .combat-tab .combat-trait-option:has(input:checked) small { display: block; }
+.thefade .combat-tab .injuries-panel { padding: 0; }
+.thefade .combat-tab .limbs-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.thefade .combat-tab .limb-card { padding: 6px; }
+.thefade .combat-tab .limb-card:not(.is-severed) .limb-effect { display: none; }
+.thefade .combat-tab .limb-toggle { flex-direction: row; gap: 5px; }
+.thefade .combat-tab .limb-icon { font-size: .9rem; }
+.thefade .background-profile { display: grid; gap: 8px; margin-bottom: 8px; }
+.thefade .background-biography { display: grid; gap: 6px; padding: 10px 12px; border: 1px solid var(--border-faint); border-radius: 4px; background: var(--bg-surface-deep); }
+.thefade .background-biography > label { font-weight: 600; color: var(--accent-gold); }
+.thefade .background-biography textarea { min-height: 90px; resize: vertical; margin: 0; }
+.thefade .background-fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 12px; }
+.thefade .background-fields .detail-row { display: flex; flex-direction: column; align-items: stretch; gap: 4px; margin: 0; padding: 0; min-width: 0; border: 0; }
+.thefade .background-fields .detail-row > label { flex: none; width: auto; font-size: .8rem; color: var(--text-muted); }
+.thefade .background-fields .detail-row > input, .thefade .background-fields .detail-row > select { width: 100%; min-width: 0; margin: 0; }
+.thefade .background-fields .height-inputs { display: flex; align-items: center; gap: 4px; }
+.thefade .background-fields .height-inputs input { width: 60px; min-width: 0; }
+.thefade .background-fields .color-row > input { height: 30px; }
+.thefade .background-tab .heritage-rules-panel, .thefade .background-tab .heritage-rules-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin: 0; }
+.thefade .background-tab .heritage-rules-panel .panel { padding: 0; margin: 0; }
+.thefade .background-section-tools { margin-bottom: 8px; padding: 0; }
+.thefade .background-section-tools p { margin: 0; color: var(--text-muted); font-size: .75rem; }
+.thefade .background-tab .heritage-parent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.thefade .background-tab textarea { width: 100%; }
+
+@container fade-sheet (max-width: 720px) {
+    .thefade .combat-tab .conditions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .thefade .background-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .thefade.sheet.actor .redesigned-header .header-fields { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+    .thefade.sheet.actor .redesigned-header .header-actions-row { justify-content: flex-start; flex-wrap: wrap; }
+    .thefade.sheet.actor .character-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .thefade .skill-category .skills-column-header, .thefade .skill-category .skill-row { grid-template-columns: minmax(85px, 1fr) 105px 52px 45px 52px 48px; gap: 5px; padding-left: 8px; padding-right: 8px; }
+    .thefade .skill-category .skill-controls { gap: 4px; }
+    .thefade .defenses-band { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@container fade-sheet (max-width: 480px) {
+    .thefade .combat-tab .conditions-grid, .thefade .combat-tab .combat-trait-grid, .thefade .combat-tab .universal-ability-list { grid-template-columns: minmax(0, 1fr); }
+    .thefade .combat-tab .limbs-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .thefade .combat-summary-row { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+    .thefade .background-fields, .thefade .background-tab .motivation-grid, .thefade .background-tab .xenochild-modifiers { grid-template-columns: minmax(0, 1fr); }
+    .thefade .items-list .compact-gear-row { grid-template-columns: minmax(0, 1fr) 50px auto; }
+    .thefade .compact-gear-resource { grid-column: 1; }
+    .thefade .compact-gear-actions { grid-column: 2 / -1; grid-row: 2; }
+    .thefade .compact-item-fields { grid-template-columns: minmax(0, 1fr); }
+    .thefade .inventory-tabs .tab-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .thefade .skill-category { overflow-x: auto; }
+    .thefade .skill-category .skill-row, .thefade .skill-category .skills-column-header { min-width: 425px; }
+    .thefade .armor-slots-grid .slot-row { flex-direction: column; }
+}
+
+/* Visible affordances in the profile; description leads every compact item. */
+.thefade .background-detail-section { padding: 0; margin: 0; }
+.thefade .background-detail-section > summary { background: var(--bg-surface); }
+.thefade .background-detail-section > summary::before { content: none; }
+.thefade .background-detail-section > summary:hover { background: var(--bg-surface-alt); }
+.thefade .background-detail-section .disclosure-hint { margin-left: auto; color: var(--text-muted); font-size: .75rem; font-weight: normal; }
+.thefade .background-detail-section[open] .disclosure-hint { display: none; }
+.thefade .background-detail-section > summary .section-toggle-icon { flex: 0 0 auto; margin-left: 0; font-size: .95rem; color: var(--accent-gold); }
+.thefade .background-detail-section[open] > summary .section-toggle-icon { margin-left: auto; }
+.thefade .compact-item-sheet .item-description-lead { padding: 0 2px; }
+.thefade .compact-item-sheet .item-description-lead > h2 { margin: 0 0 8px; padding: 0; border: 0; background: none; color: var(--accent-gold); font-size: 1rem; }
+.thefade .compact-item-sheet .item-description-lead > h2::before { display: none; }
+.thefade .compact-item-sheet .item-description-editor .editor { min-height: 80px; }
+.thefade .compact-item-sheet .item-description-editor .editor-content { min-height: 80px; padding: 4px 0; line-height: 1.5; }
+.thefade .compact-item-sheet .item-description-divider { flex: 0 0 auto; width: 100%; height: 1px; border: 0; background: var(--border-strong); margin: 0; }
+/* Character vitals: a segmented vitality seal and lunar clarity dial. */
+.thefade .vitals-strip-inline .vital-card {
+  --vital-color: #d96670;
+  --vital-wash: rgba(151, 40, 55, .16);
+  flex: 1 1 260px;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 58px minmax(90px, 1fr) auto;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border-strong);
+  border-top: 2px solid var(--vital-color);
+  background: linear-gradient(120deg, var(--vital-wash), transparent 75%), var(--bg-surface-deep);
+}
+.thefade .vitals-strip-inline .vital-sanity {
+  --vital-color: #b59cde;
+  --vital-wash: rgba(115, 80, 169, .18);
+}
+.thefade .vital-card .vital-emblem {
+  position: relative;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--vital-color);
+  border-radius: 50%;
+  color: var(--vital-color);
+  font-size: 22px;
+  background: var(--bg-surface-deep);
+  box-shadow: 0 0 0 4px var(--vital-wash), inset 0 0 18px var(--vital-wash);
+}
+.thefade .vital-hp .vital-emblem { border-radius: 45% 45% 50% 50%; border-bottom: 3px solid var(--vital-color); }
+.thefade .vital-sanity .vital-emblem {
+  border: 0;
+  background: conic-gradient(var(--vital-color) var(--vital-fill), var(--border-faint) 0);
+}
+.thefade .vital-sanity .vital-emblem::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: var(--bg-surface-deep);
+}
+.thefade .vital-emblem i { position: relative; }
+.thefade .vital-card-content { min-width: 0; }
+.thefade .vital-card-content > label { display: flex; flex-wrap: wrap; gap: 6px; color: var(--vital-color); }
+.thefade .vital-caption { color: var(--text-muted); font-size: .85em; font-weight: normal; }
+.thefade .vital-card .vital-values { align-items: baseline; gap: 2px; margin: 3px 0 6px; }
+.thefade .vital-card .vital-values input { width: 52px; height: 32px; font-size: 1.65em; border-bottom: 1px dotted var(--vital-color); border-radius: 0; }
+.thefade .vital-card .vital-values input:disabled { font-size: 1em; width: 42px; border: 0; }
+.thefade .vital-track { height: 6px; background: var(--border-faint); overflow: hidden; }
+.thefade .vital-track span { display: block; width: var(--vital-fill); height: 100%; background: var(--vital-color); }
+.thefade .vital-hp .vital-track { mask-image: repeating-linear-gradient(to right, #000 0, #000 calc(10% - 2px), transparent calc(10% - 2px), transparent 10%); }
+.thefade .vital-sanity .vital-track { height: 3px; border-radius: 3px; }
+.thefade .vital-card-tools { display: grid; justify-items: center; gap: 3px; }
+.thefade .vital-bonus-label { font-size: .65em; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+.thefade .vital-card-tools .hp-state-badge { margin: 0; font-size: .6em; }
+.thefade .vital-card-tools .take-rest-btn { width: 100%; height: 20px; }
+/* Ability seals share the vitals palette, with a distinct emblem for each score. */
+.thefade .ability-physique { --ability-color: #db8890; --ability-wash: rgba(164, 57, 72, .16); }
+.thefade .ability-finesse { --ability-color: #89c7b4; --ability-wash: rgba(58, 135, 113, .16); }
+.thefade .ability-mind { --ability-color: #8fb9de; --ability-wash: rgba(67, 110, 161, .16); }
+.thefade .ability-presence { --ability-color: #dbbb77; --ability-wash: rgba(164, 128, 54, .16); }
+.thefade .ability-soul { --ability-color: #bba0e4; --ability-wash: rgba(121, 80, 174, .16); }
+.thefade .tab[data-tab="main"] .ability-sigils > .ability-sigil {
+  min-width: 0;
+  padding: 10px 6px;
+  border-top: 2px solid var(--ability-color);
+  background: linear-gradient(160deg, var(--ability-wash), transparent 85%), var(--bg-surface-deep);
+}
+.thefade .tab[data-tab="main"] .ability-sigils > .ability-sigil:hover {
+  border-color: var(--ability-color);
+  transform: none;
+}
+.thefade .ability-sigil::before { display: none; }
+.thefade .attribute.ability-sigil > label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3px;
+  background: none;
+  color: var(--ability-color);
+  letter-spacing: .05em;
+  padding: 0;
+  font-size: .72em;
+  width: 100%;
+}
+.thefade .attribute.ability-sigil label .tf-edit-adjustable { opacity: .8; margin-left: 0; padding: 3px; }
+.thefade .attribute.ability-sigil .attribute-value {
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 4px 0 0;
+}
+.thefade .ability-seal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 100%;
+  height: 82px;
+  isolation: isolate;
+}
+.thefade .ability-seal::before {
+  content: "";
+  position: absolute;
+  width: 61px;
+  height: 61px;
+  border: 1px solid var(--ability-color);
+  border-radius: 12px 3px;
+  transform: rotate(45deg);
+  background: var(--ability-wash);
+  box-shadow: 0 0 0 4px var(--ability-wash), inset 0 0 16px var(--ability-wash);
+  z-index: -1;
+}
+.thefade .ability-seal > i { font-size: 13px; color: var(--ability-color); margin-bottom: 1px; }
+.thefade .attribute.ability-sigil .ability-seal input[type="text"] {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 35px;
+  font-size: 1.9em;
+  line-height: 1;
+  padding: 0;
+  border-bottom: 1px dotted var(--ability-color);
+}
+.thefade .attribute.ability-sigil .ability-seal input[type="text"]:focus {
+  background: var(--bg-surface-deep);
+  outline: 1px solid var(--ability-color);
+}
+.thefade .attribute.ability-sigil .attribute-value .attribute-total { margin-left: 0; }
+/* Defense wards: shield-shaped totals, distinct from the ability seals. */
+.thefade .defense-wards [data-defense="resilience"] { --ward-color: #d99b85; --ward-wash: rgba(166, 92, 66, .16); }
+.thefade .defense-wards [data-defense="avoid"] { --ward-color: #89c7b4; --ward-wash: rgba(58, 135, 113, .16); }
+.thefade .defense-wards [data-defense="grit"] { --ward-color: #bba0e4; --ward-wash: rgba(121, 80, 174, .16); }
+.thefade .defense-wards [data-defense="passive-dodge"] { --ward-color: #8fb9de; --ward-wash: rgba(67, 110, 161, .16); }
+.thefade .defense-wards [data-defense="passive-parry"] { --ward-color: #dbbb77; --ward-wash: rgba(164, 128, 54, .16); }
+.thefade .defense-wards .defense {
+  min-width: 0;
+  padding: 10px 6px;
+  background: linear-gradient(160deg, var(--ward-wash), transparent 85%), var(--bg-surface-deep);
+  border-top: 2px solid var(--ward-color);
+}
+.thefade .defense-wards .defense:hover { border-color: var(--ward-color); }
+.thefade .defense-wards .defense-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--ward-color);
+  letter-spacing: .04em;
+  cursor: default;
+}
+.thefade .defense-wards .defense-label .toggle-icon { opacity: .8; margin-left: 0; padding: 3px; cursor: pointer; }
+.thefade .defense-ward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 66px;
+  height: 70px;
+  margin: 4px 0;
+  border: 1px solid var(--ward-color);
+  border-bottom: 3px solid var(--ward-color);
+  border-radius: 5px 5px 45% 45%;
+  background: var(--ward-wash);
+  box-shadow: 0 0 0 3px var(--ward-wash), inset 0 0 16px var(--ward-wash);
+}
+.thefade .defense-ward > i { color: var(--ward-color); font-size: 13px; }
+.thefade .defense-wards .defense-ward input.total-value {
+  width: 58px;
+  height: 36px;
+  padding: 0;
+  font-family: "EideticNeo-Omni", serif;
+  font-size: 1.9em;
+  opacity: 1;
+}
+.thefade .defense-wards .defense-value .excess-penalty {
+  padding: 2px 6px;
+  border: 1px solid var(--border-faint);
+  border-radius: 3px;
+}
+.thefade .defense-wards .defense-label { background: none; padding: 0; }
+/* Travel, protection and load use the same restrained heraldic accents. */
+.thefade .movement-modes { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.thefade .movement-mode { --travel-color: #b5c6a0; min-width: 0; padding: 10px 6px; text-align: center; border: 1px solid var(--border-faint); border-top: 2px solid var(--travel-color); border-radius: 4px; background: linear-gradient(160deg, rgba(110,145,132,.12), transparent), var(--bg-surface-deep); }
+.thefade .movement-fly { --travel-color: #d7c599; }
+.thefade .movement-swim { --travel-color: #8fb9de; }
+.thefade .movement-climb { --travel-color: #dbab89; }
+.thefade .movement-burrow { --travel-color: #bba0ce; }
+.thefade .movement-mode h3 { display: flex; flex-direction: column; align-items: center; gap: 6px; background: none; border: 0; margin: 0 0 6px; padding: 0; font-size: .75em; color: var(--travel-color); }
+.thefade .movement-mode h3 i { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--travel-color); border-radius: 50%; font-size: 14px; }
+.thefade .movement-mode label { display: flex; flex-direction: column; align-items: center; gap: 2px; background: none; padding: 0; }
+.thefade .movement-mode input { width: 100%; min-width: 0; text-align: center; background: none; border: 0; color: var(--text-primary); }
+.thefade .movement-speed input { width: 60px; height: 30px; font-size: 1.6em; border-bottom: 1px dotted var(--travel-color); }
+.thefade .movement-mode label span { color: var(--text-muted); font-size: .65em; }
+.thefade .movement-overland { border-top: 1px solid var(--border-faint); margin-top: 7px; padding-top: 5px !important; }
+.thefade .movement-overland input { height: 20px; opacity: 1; font-size: .9em; }
+.thefade .protection-ledger { border-top: 2px solid #dbbb77; }
+.thefade .protection-ledger .protection-heading { background: linear-gradient(110deg, rgba(164,128,54,.12), transparent); flex-wrap: wrap; }
+.thefade .protection-ledger .protection-heading h3 { background: none; padding: 0; }
+.thefade .protection-ledger .protection-row { grid-template-columns: minmax(90px, 1fr) minmax(115px, 1.1fr) minmax(210px, 1.7fr) minmax(85px, .7fr); padding: 6px 10px; }
+.thefade .protection-ledger .protection-location strong { font-size: .9em; }
+.thefade .protection-ledger .protection-location i { color: #dbbb77; font-size: .75em; margin-right: 4px; }
+.thefade .protection-ledger .total-protection-value { justify-content: center; padding: 5px; border: 1px solid rgba(219,187,119,.35); border-radius: 4px 4px 12px 12px; background: rgba(164,128,54,.1); }
+.thefade .protection-ledger .natural-protection-value { flex-wrap: wrap; }
+.thefade .protection-ledger .protection-value input[type="number"] { width: 38px; }
+.thefade .minor-stats-row .capacity-card { border-top: 2px solid #dbbb77; background: linear-gradient(135deg, rgba(164,128,54,.08), transparent), var(--bg-surface-deep); }
+.thefade .minor-stats-row .capacity-card h3 { background: none; padding: 0; }
+.thefade .minor-stats-row .capacity-cell { border: 1px solid var(--border-faint); padding: 7px 4px; text-align: center; }
+.thefade .minor-stats-row .capacity-cell label { display: flex; flex-direction: column; align-items: center; gap: 5px; background: none; padding: 0; }
+.thefade .capacity-cell label i { color: #bca579; font-size: 14px; }
+.thefade .minor-stats-row .capacity-cell input { border: 0; background: none; font-size: 1.15em; opacity: 1; }
+.thefade .minor-stats-row .capacity-cell.capacity-active { border-color: #dbbb77; box-shadow: inset 0 -3px #dbbb77; background: rgba(164,128,54,.16); }
+@container fade-sheet (max-width: 720px) {
+  .thefade .protection-ledger .protection-column-header { display: none; }
+  .thefade .protection-ledger .protection-row:not(.protection-column-header) { grid-template-columns: minmax(0,1fr) minmax(0,1.5fr) minmax(0,.8fr); gap: 6px 10px; }
+  .thefade .protection-ledger .protection-location { grid-column: 1 / -1; }
+  .thefade .protection-ledger .protection-value { flex-wrap: wrap; }
+  .thefade .protection-ledger .protection-value::before { content: attr(data-label); flex: 0 0 100%; color: var(--text-muted); font-size: .65em; text-transform: uppercase; }
+  .thefade .protection-ledger .anatomy-controls { flex-wrap: wrap; }
+  .thefade .minor-stats-row .capacity-grid.capacity-grid-full { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@container fade-sheet (max-width: 480px) {
+  .thefade .movement-modes { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Skills remain a compact text ledger rather than another row of emblems. */
+.thefade .skills-section { font-family: Arial, sans-serif; }
+.thefade .skills-section .skill-category { margin-bottom: 10px; border-radius: 3px; overflow: hidden; }
+.thefade .skills-section .skill-category-heading { padding: 7px 10px; min-height: 30px; background: var(--bg-surface-deep); border-bottom: 1px solid var(--border-strong); }
+.thefade .skills-section .skill-category-heading .inv-title { font-family: Arial, sans-serif; font-size: .85rem; letter-spacing: .04em; }
+.thefade .skills-section .skill-category-heading .inv-count { font-size: .68rem; font-weight: normal; border: 0; background: none; color: var(--text-muted); }
+.thefade .skills-section .skill-category .skills-column-header,
+.thefade .skills-section .skill-category .skill-row { grid-template-columns: minmax(130px, 1fr) 120px 58px 48px 58px 52px; gap: 8px; padding: 4px 10px; }
+.thefade .skills-section .skill-category .skills-column-header { font-size: .63rem; letter-spacing: .05em; padding-top: 5px; padding-bottom: 5px; }
+.thefade .skills-section .skills-column-header > :not(:first-child) { text-align: center; }
+.thefade .skills-section .skill-entry { margin: 0; padding: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.thefade .skills-section .skill-entry:nth-child(even) { background: rgba(255,255,255,.025); }
+.thefade .skills-section .skill-entry:hover,
+.thefade .skills-section .skill-entry:focus-within { background: rgba(197,164,93,.08); }
+.thefade .skills-section .skill-entry .skill-name { font-family: Arial, sans-serif; font-size: .8rem; font-weight: 500; line-height: 1.3; overflow-wrap: anywhere; }
+.thefade .skills-section .skill-name-cell { min-width: 0; }
+.thefade .skills-section .skill-entry input,
+.thefade .skills-section .skill-entry select { font-family: Arial, sans-serif; font-size: .75rem; height: 24px; }
+.thefade .skills-section .skill-entry .skill-total-cell { font-family: Arial, sans-serif; font-size: .8rem; font-variant-numeric: tabular-nums; color: var(--text-primary); font-weight: 700; }
+.thefade .skills-section .skill-entry .skill-controls { justify-content: center; gap: 4px; }
+.thefade .skills-section .skill-entry .skill-controls a { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; }
+.thefade .skills-section .skill-entry .skill-controls .skill-roll { color: var(--accent-gold); }
+.thefade .skills-section .untrained-skills-summary { padding: 5px 10px; min-height: 28px; font-size: .68rem; text-transform: none; letter-spacing: 0; }
+.thefade .skills-section .custom-skills-bar { margin-bottom: 10px; }
+.thefade .skills-section .custom-skills-bar > summary { padding: 6px 10px; min-height: 30px; }
+.thefade .skills-section .custom-skills-bar .inv-title { font-family: Arial, sans-serif; font-size: .75rem; }
+@container fade-sheet (max-width: 720px) {
+  .thefade .skills-section .skill-category .skills-column-header,
+  .thefade .skills-section .skill-category .skill-row { grid-template-columns: minmax(90px, 1fr) 108px 46px 42px 48px 52px; gap: 5px; padding-left: 7px; padding-right: 7px; }
+}
+.thefade .skills-section .skill-entry .skill-bonus-cell input.small-input,
+.thefade .skills-section .skill-entry .skill-attribute-select { min-width: 0; max-width: 100%; box-sizing: border-box; }

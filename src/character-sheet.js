@@ -1,3 +1,6 @@
+import { buildInventoryGroups } from "./item-sheet-config.js";
+import { buildCombatTraitSummary, buildInjurySummary } from "./sheet-summaries.js";
+import { useItemResource, resetItemResource } from "./item-actions.js";
 // TheFadeCharacterSheet class (extracted from thefade.js).
 import {
     SIZE_OPTIONS, AURA_COLOR_OPTIONS, AURA_SHAPE_OPTIONS,
@@ -141,12 +144,32 @@ export class TheFadeCharacterSheet extends ActorSheet {
             };
         }
 
+        // Legacy NPC records keep their saved type and field locations while
+        // using the same interface and interactions as every other actor.
+        data.isLegacyNPC = this.actor.type === "npc";
+        if (data.isLegacyNPC) {
+            const system = foundry.utils.deepClone(this.actor.system);
+            system.species = { ...system.species, manualEntry: true,
+                creatureType: system.creatureType, creatureSubtype: system.creatureSubtype,
+                creatureSubtypes: system.creatureSubtypes || [], size: system.size };
+            data.actor = { ...this.actor.toObject(false), system };
+            data.system = system;
+            data.npcBaseHP = this.actor._source.system.hp?.max ?? 10;
+        }
+        // Clamp only the visual gauge; negative HP and over-cap values remain editable.
+        data.vitalPercent = Object.fromEntries(["hp", "sanity"].map(key => {
+            const vital = (data.system || this.actor.system)[key] || {};
+            const value = Number(vital.value);
+            const max = Number(vital.max);
+            return [key, Number.isFinite(value) && Number.isFinite(max) && max > 0
+                ? Math.max(0, Math.min(100, value / max * 100)) : 0];
+        }));
         data.sizeOptions = SIZE_OPTIONS;
         data.creatureTypeOptions = CREATURE_TYPE_OPTIONS;
-        data.selectedCreatureType = normalizeCreatureType(this.actor.system.species?.creatureType);
-        data.creatureSubtypeSelector = buildCreatureSubtypeSelector(this.actor.system, "character");
+        data.selectedCreatureType = normalizeCreatureType(data.isLegacyNPC ? this.actor.system.creatureType : this.actor.system.species?.creatureType);
+        data.creatureSubtypeSelector = buildCreatureSubtypeSelector(this.actor.system, this.actor.type);
         data.creatureRuleAbilityView = {
-            sources: getCreatureRuleSources(this.actor.system, "character"),
+            sources: getCreatureRuleSources(this.actor.system, this.actor.type),
             canActivate: true
         };
         data.temporaryAbilityBonuses = getActiveTemporaryBonusEntries(this.actor).map(entry => ({
@@ -160,19 +183,23 @@ export class TheFadeCharacterSheet extends ActorSheet {
         data.combatImmunityDamageTypes = COMBAT_IMMUNITY_DAMAGE_TYPES;
         data.combatImmunityEffects = COMBAT_IMMUNITY_EFFECTS;
         data.combatStatusImmunities = COMBAT_STATUS_IMMUNITIES;
-        // Native <details> state is DOM-only and would otherwise reset every
-        // time an actor update re-renders the sheet. Keep the open categories
-        // on this sheet instance so Combat-tab accordions stay where the user
-        // left them. Preserve the existing first-render behavior (all open).
-        if (!this._combatTraitOpenCategories) {
-            this._combatTraitOpenCategories = new Set(
-                UNIVERSAL_ABILITY_CATEGORIES.map(category => category.key)
-            );
-        }
+        // Trait editors start collapsed; active traits remain in the summary.
+        if (!this._combatTraitOpenCategories) this._combatTraitOpenCategories = new Set();
         data.universalAbilityCategories = UNIVERSAL_ABILITY_CATEGORIES.map(category => ({
             ...category,
             isOpen: this._combatTraitOpenCategories.has(category.key)
         }));
+        data.combatTraitSummary = buildCombatTraitSummary(data.system || this.actor.system);
+        data.injurySummary = buildInjurySummary(data.system || this.actor.system);
+        data.injurySummaryText = data.injurySummary.join(" · ");
+        data.combatSectionStates = {
+            traits: this._getSheetSectionOpenState("combat-traits", false),
+            injuries: this._getSheetSectionOpenState("combat-injuries", false)
+        };
+        data.backgroundSectionStates = Object.fromEntries(
+            ["appearance", "life", "personality", "heritage", "mutations", "fate", "downtime"]
+                .map(key => [key, this._getSheetSectionOpenState(`background-${key}`, false)])
+        );
         data.vulnerabilitySeverityOptions = VULNERABILITY_SEVERITY_OPTIONS;
 
         data.flexibleBonusAttributeOptions = FLEXIBLE_BONUS_OPTIONS;
@@ -289,7 +316,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         data.sizeOptions = SIZE_OPTIONS;
 
         // Only prepare character data if we have a valid actor and system data
-        if (data.actor?.type === 'character' && data.system) {
+        if (['character', 'npc'].includes(data.actor?.type) && data.system) {
             try {
                 this._prepareCharacterItems(data);
                 this._prepareCharacterData(data);
@@ -333,8 +360,25 @@ export class TheFadeCharacterSheet extends ActorSheet {
             grit: defenseExcess(data.system?.totalGrit)
         };
 
+        data.inventoryGroups = buildInventoryGroups(data.items).map(group => ({
+            ...group, open: this._getSheetSectionOpenState(`inventory-${group.key}`, group.items.length > 0)
+        }));
+        if (data.isLegacyNPC) data.system.creationMode = "";
         addMechanicalBonusSheetOptions(data);
         return data;
+    }
+
+    async _updateObject(event, formData) {
+        if (this.actor.type === "npc") {
+            for (const key of ["creatureType", "creatureSubtype", "creatureSubtypes", "size"]) {
+                const path = `system.species.${key}`;
+                if (path in formData) {
+                    formData[`system.${key}`] = formData[path];
+                    delete formData[path];
+                }
+            }
+        }
+        return super._updateObject(event, formData);
     }
 
     _buildLinkedAbilitySources(actorData) {
@@ -1532,523 +1576,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
         });
     }
-
-    // --------------------------------------------------------------------
-    // DEFENSE SYSTEM MANAGEMENT
-    // --------------------------------------------------------------------
-
-    /**
-    * Initialize facing dropdown with proper event handling
-    * @param {HTMLElement} html - Sheet HTML element
-    */
-    _initializeFacingDropdown(html) {
-        const facingDropdown = html.find('#facing-select');
-
-        // Remove any existing handlers
-        facingDropdown.off('change');
-
-        // Add the improved handler
-        facingDropdown.on('change', this._handleFacingChange.bind(this));
-
-        // Initialize with current value from flags
-        const currentFacing = this.actor.getFlag("thefade", "facing") || "front";
-        facingDropdown.val(currentFacing);
-    }
-
-    /**
-    * Handle facing change with direct DOM updates
-    * @param {Event} event - Change event
-    */
-    async _handleFacingChange(event) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const actor = this.actor;
-        const sheet = this;
-        const newFacing = event.target.value;
-
-        try {
-            // Store facing in flags
-            await actor.setFlag("thefade", "facing", newFacing);
-
-            // Get current defense values from flags
-            const basePassiveDodge = actor.getFlag("thefade", "basePassiveDodge") || 0;
-            const basePassiveParry = actor.getFlag("thefade", "basePassiveParry") || 0;
-
-            // Calculate new values
-            let newDodge = basePassiveDodge;
-            let newParry = basePassiveParry;
-            let avoidPenalty = 0;
-
-            // Apply facing modifications
-            if (newFacing === "flank") {
-                avoidPenalty = -1;
-            }
-            else if (newFacing === "backflank") {
-                newDodge = Math.floor(basePassiveDodge / 2);
-                newParry = 0;
-                avoidPenalty = -2;
-            }
-            else if (newFacing === "back") {
-                newDodge = Math.floor(basePassiveDodge / 4);
-                newParry = 0;
-                avoidPenalty = -2;
-            }
-
-            // Store the updated values in flags
-            await actor.setFlag("thefade", "currentPassiveDodge", newDodge);
-            await actor.setFlag("thefade", "currentPassiveParry", newParry);
-            await actor.setFlag("thefade", "avoidPenalty", avoidPenalty);
-
-            // Update the system data for display
-            const baseAvoid = Math.floor((actor.system.attributes.finesse.total ?? actor.system.attributes.finesse.value) / 2);
-            const avoidBonus = actor.system.defenses.avoidBonus || 0;
-            const totalAvoid = Math.max(0, baseAvoid + avoidBonus + avoidPenalty);
-
-            // Apply updates to system data
-            await actor.update({
-                "system.defenses.passiveDodge": newDodge,
-                "system.defenses.passiveParry": newParry,
-                "system.defenses.avoidPenalty": avoidPenalty,
-                "system.totalAvoid": totalAvoid
-            });
-
-            // Direct DOM updates for immediate visual feedback
-            const domElement = $(event.target).closest('.sheet');
-
-            if (domElement.length) {
-                // Update display values
-                domElement.find('.passive-dodge-value').val(newDodge);
-                domElement.find('.passive-parry-value').val(newParry);
-                domElement.find('.avoid-value').val(totalAvoid);
-                domElement.find('.avoid-penalty').val(avoidPenalty);
-            }
-
-            // Show success notification
-            ui.notifications.info(`Facing changed to: ${newFacing}`);
-
-            // No need to re-render the whole sheet - we've updated the values directly
-        } catch (error) {
-            console.error("Error updating facing:", error);
-            ui.notifications.error("Failed to update facing");
-        }
-
-        return false;
-    }
-
-    /**
-    * Update facing with direct approach
-    * @param {HTMLElement} html - Sheet HTML element
-    */
-    async _updateFacingDirectly(html) {
-        const actor = this.actor;
-        const sheet = this;
-
-        // Find the facing dropdown
-        const facingDropdown = html.find('select[name="system.defenses.facing"]');
-
-        // Remove any existing event handlers to prevent duplicates
-        facingDropdown.off('change');
-
-        // Add direct change handler with immediate forced update
-        facingDropdown.on('change', async function (event) {
-            event.preventDefault();
-            const newFacing = this.value;
-
-            try {
-                // First update the actor with the new facing
-                await actor.update({
-                    "system.defenses.facing": newFacing
-                });
-
-                // Force a full recalculation of defenses
-                let fakedEvent = new Event('fakedEvent');
-                sheet._onDefenseRecalculation(fakedEvent);
-
-                // Force a complete re-render
-                sheet.render(true);
-                ui.notifications.info(`Facing changed to: ${newFacing}`);
-            } catch (error) {
-                console.error("Facing update failed:", error);
-                ui.notifications.error("Failed to update facing");
-            }
-        });
-    }
-
-    /**
-    * Force defense recalculation
-    * @param {Event} event - Triggering event
-    */
-    async _onDefenseRecalculation(event) {
-        const actor = this.actor;
-        const data = actor.system;
-
-        if (!data.defenses) return;
-
-        // Get the current facing
-        const facing = data.defenses.facing || "front";
-
-        // Store original values for debugging
-        const originalDodge = data.defenses.passiveDodge;
-        const originalParry = data.defenses.passiveParry;
-        const originalAvoid = data.totalAvoid;
-
-        // Re-calculate passive dodge based on facing
-        let newDodge = originalDodge;
-        let newParry = originalParry;
-        let avoidPenalty = 0;
-
-        // Apply modifications based on facing
-        if (facing === "flank") {
-            // Full passive defenses, but -1 to Avoid
-            avoidPenalty = -1;
-        }
-        else if (facing === "backflank") {
-            // Half passive dodge, no parry, -2 Avoid
-            newDodge = Math.floor(originalDodge / 2);
-            newParry = 0;
-            avoidPenalty = -2;
-        }
-        else if (facing === "back") {
-            // Quarter passive dodge, no parry, -2 Avoid
-            newDodge = Math.floor(originalDodge / 4);
-            newParry = 0;
-            avoidPenalty = -2;
-        }
-
-        // Update the actor with the new calculated values
-        await actor.update({
-            "system.defenses.passiveDodge": newDodge,
-            "system.defenses.passiveParry": newParry,
-            "system.defenses.avoidPenalty": avoidPenalty
-        });
-    }
-
-    /**
-    * Initialize facing system using flags
-    * @param {HTMLElement} html - Sheet HTML element
-    */
-    async _initializeFacingWithFlags(html) {
-        const actor = this.actor;
-        const sheet = this;
-
-        // Find the facing dropdown (using ID instead of name now)
-        const facingDropdown = html.find('#facing-select');
-
-        // Initialize flag if it doesn't exist
-        let currentFacing = actor.getFlag("thefade", "facing");
-        if (!currentFacing) {
-            currentFacing = "front";
-            await actor.setFlag("thefade", "facing", currentFacing);
-        }
-
-        // Set dropdown to match flag
-        facingDropdown.val(currentFacing);
-
-        // Handle dropdown change
-        facingDropdown.off('change').on('change', async function (event) {
-            // Stop event propagation to prevent other handlers from running
-            event.stopPropagation();
-            event.preventDefault();
-
-            const newFacing = this.value;
-
-            try {
-                // Store facing in flags
-                await actor.setFlag("thefade", "facing", newFacing);
-
-                // Update defense calculations based on facing
-                await sheet._updateDefensesForFacing(newFacing);
-
-                // Force re-render
-                sheet.render(true);
-
-                // Show notification
-                ui.notifications.info(`Facing changed to: ${newFacing}`);
-            } catch (error) {
-                console.error("Error updating facing:", error);
-                ui.notifications.error("Failed to update facing");
-            }
-
-            return false;
-        });
-    }
-
-    /**
-    * Apply defense modifications based on facing
-    * @param {string} facing - Current facing direction
-    */
-    async _updateDefensesForFacing(facing) {
-        const actor = this.actor;
-
-        // Get current defense values
-        const basePassiveDodge = actor.getFlag("thefade", "basePassiveDodge") || 0;
-        const basePassiveParry = actor.getFlag("thefade", "basePassiveParry") || 0;
-
-        let newDodge = basePassiveDodge;
-        let newParry = basePassiveParry;
-        let avoidPenalty = 0;
-
-        /*
-        CONFIG.debug.thefade && console.debug(`Updating defenses for facing ${facing} with base values:
-        Base Dodge: ${basePassiveDodge}
-        Base Parry: ${basePassiveParry}`);
-        */
-
-        // Calculate new values based on facing
-        if (facing === "flank") {
-            // Full passive defenses, -1 Avoid
-            avoidPenalty = -1;
-        }
-        else if (facing === "backflank") {
-            // Half dodge, no parry, -2 Avoid
-            newDodge = Math.floor(basePassiveDodge / 2);
-            newParry = 0;
-            avoidPenalty = -2;
-        }
-        else if (facing === "back") {
-            // Quarter dodge, no parry, -2 Avoid
-            newDodge = Math.floor(basePassiveDodge / 4);
-            newParry = 0;
-            avoidPenalty = -2;
-        }
-
-        /*
-        CONFIG.debug.thefade && console.debug(`New defense values after facing ${facing}:
-        New Dodge: ${newDodge}
-        New Parry: ${newParry}
-        Avoid Penalty: ${avoidPenalty}`);
-        */
-
-        // Store the final values
-        await actor.update({
-            "system.defenses.passiveDodge": newDodge,
-            "system.defenses.passiveParry": newParry,
-            "system.defenses.avoidPenalty": avoidPenalty
-        });
-
-        // Also store in flags for reference
-        await actor.setFlag("thefade", "currentPassiveDodge", newDodge);
-        await actor.setFlag("thefade", "currentPassiveParry", newParry);
-        await actor.setFlag("thefade", "avoidPenalty", avoidPenalty);
-    }
-
-    /**
-    * Calculate and store base defense values
-    */
-    async _calculateAndStoreBaseDefenses() {
-        const actor = this.actor;
-        const data = actor.system;
-
-        // Calculate Passive Dodge from Acrobatics or Finesse
-        let acrobonaticsDodge = 0;
-        let finesseDodge = Math.floor((data.attributes.finesse.total ?? data.attributes.finesse.value) / 4);
-
-        // Find Acrobatics skill
-        const acrobaticsSkill = getSkill(actor, "Acrobatics");
-
-        if (acrobaticsSkill) {
-            const rank = acrobaticsSkill.rank;
-            if (rank === 'adept') acrobonaticsDodge = 1;
-            else if (rank === 'experienced') acrobonaticsDodge = 1;
-            else if (rank === 'expert') acrobonaticsDodge = 2;
-            else if (rank === 'mastered') acrobonaticsDodge = 3;
-        }
-
-        // Use higher value
-        const basePassiveDodge = Math.max(acrobonaticsDodge, finesseDodge);
-
-        // Calculate Passive Parry from weapon skills
-        let highestParry = 0;
-        const weaponSkillNames = ['Sword', 'Axe', 'Cudgel', 'Polearm', 'Heavy Weaponry', 'Unarmed'];
-        for (const name of weaponSkillNames) {
-            const skill = getSkill(actor, name);
-            if (!skill) continue;
-            let parryValue = 0;
-            const rank = skill.rank;
-            if (rank === 'practiced') parryValue = 1;
-            else if (rank === 'adept') parryValue = 2;
-            else if (rank === 'experienced') parryValue = 3;
-            else if (rank === 'expert') parryValue = 4;
-            else if (rank === 'mastered') parryValue = 6;
-            if (parryValue > highestParry) highestParry = parryValue;
-        }
-
-        const basePassiveParry = highestParry;
-
-        /*
-        CONFIG.debug.thefade && console.debug(`Calculated base defenses:
-        Base Passive Dodge: ${basePassiveDodge}
-        Base Passive Parry: ${basePassiveParry}`);
-        */
-
-        // Store base values in flags
-        await actor.setFlag("thefade", "basePassiveDodge", basePassiveDodge);
-        await actor.setFlag("thefade", "basePassiveParry", basePassiveParry);
-
-        // Apply current facing to these base values
-        const currentFacing = actor.getFlag("thefade", "facing") || "front";
-        await this._updateDefensesForFacing(currentFacing);
-    }
-
-    /**
-    * Handle defense expansion with proper event handling
-    * @param {HTMLElement} html - Sheet HTML element
-    */
-    _initializeDefenseExpansion(html) {
-        // Remove any existing event handlers to prevent duplicates
-        html.find('.defense-checkbox').off('change');
-
-        // Add simple handlers
-        html.find('.defense-checkbox').on('change', function () {
-            const checkbox = $(this);
-            const details = checkbox.closest('.defense').find('.defense-details');
-
-            if (checkbox.is(':checked')) {
-                details.css('max-height', '200px');
-                details.css('padding-top', '10px');
-            } else {
-                details.css('max-height', '0');
-                details.css('padding-top', '0');
-            }
-
-            // Prevent the event from triggering other handlers
-            return false;
-        });
-    }
-
-    /**
-    * Update displayed defense values
-    */
-    async _updateDefenseDisplays() {
-        const actor = this.actor;
-
-        // Get current values directly from flags
-        const currentDodge = actor.getFlag("thefade", "currentPassiveDodge") || 0;
-        const currentParry = actor.getFlag("thefade", "currentPassiveParry") || 0;
-        const avoidPenalty = actor.getFlag("thefade", "avoidPenalty") || 0;
-
-        // Get current defense values
-        const baseResilience = actor.system.defenses.resilience;
-        const baseAvoid = actor.system.defenses.avoid;
-        const baseGrit = actor.system.defenses.grit;
-
-        // Get bonuses
-        const resilienceBonus = actor.system.defenses.resilienceBonus || 0;
-        const avoidBonus = actor.system.defenses.avoidBonus || 0;
-        const gritBonus = actor.system.defenses.gritBonus || 0;
-
-        // Get other penalties 
-        const resiliencePenalty = actor.getFlag("thefade", "resiliencePenalty") || 0;
-        const gritPenalty = actor.getFlag("thefade", "gritPenalty") || 0;
-
-        // Calculate raw totals including all bonuses and penalties
-        const rawResilience = baseResilience + resilienceBonus + resiliencePenalty;
-        const rawAvoid = baseAvoid + avoidBonus + avoidPenalty;
-        const rawGrit = baseGrit + gritBonus + gritPenalty;
-
-        // Apply minimum defense rule (minimum 1) and calculate excess penalties
-        const totalResilience = Math.max(1, rawResilience);
-        const totalAvoid = Math.max(1, rawAvoid);
-        const totalGrit = Math.max(1, rawGrit);
-
-        // Calculate excess penalties for attack bonuses
-        const excessResiliencePenalty = rawResilience < 1 ? Math.abs(rawResilience - 1) : 0;
-        const excessAvoidPenalty = rawAvoid < 1 ? Math.abs(rawAvoid - 1) : 0;
-        const excessGritPenalty = rawGrit < 1 ? Math.abs(rawGrit - 1) : 0;
-
-        // Store excess penalties in flags for easy access
-        this.actor.setFlag("thefade", "excessResiliencePenalty", excessResiliencePenalty);
-        this.actor.setFlag("thefade", "excessAvoidPenalty", excessAvoidPenalty);
-        this.actor.setFlag("thefade", "excessGritPenalty", excessGritPenalty);
-
-        // Update the UI elements directly without actor update
-        try {
-            const sheet = this.element;
-            if (sheet) {
-                // Update total defense displays
-                sheet.find('.defense').each(function () {
-                    const defense = $(this);
-                    const totalInput = defense.find('input.total-value');
-
-                    if (defense.find('label').text().includes('Resilience')) {
-                        totalInput.val(totalResilience);
-                    } else if (defense.find('label').text().includes('Avoid')) {
-                        totalInput.val(totalAvoid);
-                    } else if (defense.find('label').text().includes('Grit')) {
-                        totalInput.val(totalGrit);
-                    }
-                });
-
-                sheet.find('input.avoid-value').val(totalAvoid);
-                sheet.find('input.passive-dodge-value').val(currentDodge);
-                sheet.find('input.passive-parry-value').val(currentParry);
-
-                // Update excess penalty displays
-                this._updateExcessPenaltyDisplays(sheet);
-            }
-        } catch (error) {
-            console.error("Error updating UI elements:", error);
-        }
-    }
-
-    _updateExcessPenaltyDisplays(sheet) {
-        // Update Resilience excess penalty
-        const resilienceExcess = this.actor.getFlag("thefade", "excessResiliencePenalty") || 0;
-        const resilienceDisplay = sheet.find('.resilience-excess-penalty');
-        if (resilienceExcess > 0) {
-            resilienceDisplay.text(`+${resilienceExcess}D`).show();
-        } else {
-            resilienceDisplay.hide();
-        }
-
-        // Update Avoid excess penalty
-        const avoidExcess = this.actor.getFlag("thefade", "excessAvoidPenalty") || 0;
-        const avoidDisplay = sheet.find('.avoid-excess-penalty');
-        if (avoidExcess > 0) {
-            avoidDisplay.text(`+${avoidExcess}D`).show();
-        } else {
-            avoidDisplay.hide();
-        }
-
-        // Update Grit excess penalty
-        const gritExcess = this.actor.getFlag("thefade", "excessGritPenalty") || 0;
-        const gritDisplay = sheet.find('.grit-excess-penalty');
-        if (gritExcess > 0) {
-            gritDisplay.text(`+${gritExcess}D`).show();
-        } else {
-            gritDisplay.hide();
-        }
-    }
-
-    /**
-    * Initialize complete defense system - call on sheet load
-    * @param {HTMLElement} html - Sheet HTML element
-    */
-    async _initializeDefenseSystem(html) {
-        // Preserve expanded state before any operations
-        this._preserveExpandedState(html);
-
-        // First handle expansion behavior
-        this._initializeDefenseExpansion(html);
-
-        // Calculate and store base defenses
-        await this._calculateAndStoreBaseDefenses();
-
-        // Initialize facing dropdown with flags
-        await this._initializeFacingWithFlags(html);
-
-        // Make sure displays are updated
-        await this._updateDefenseDisplays();
-
-        // Restore expanded state after operations
-        this._restoreExpandedState(html);
-    }
-
-
-    // --------------------------------------------------------------------
-    // MAGIC ITEM EQUIPMENT SYSTEM
-    // --------------------------------------------------------------------
 
     /**
     * Handle equipping magic items
@@ -3924,22 +3451,24 @@ export class TheFadeCharacterSheet extends ActorSheet {
             const selector = $(ev.currentTarget).closest('.creature-subtype-selector');
             const id = selector.find('.creature-subtype-choice').val();
             if (!id) return;
-            const subtypes = [...new Set([...(this.actor.system.species?.creatureSubtypes || []), id])];
-            await this.actor.update({ "system.species.creatureSubtypes": subtypes });
+            const path = this.actor.type === "npc" ? "system.creatureSubtypes" : "system.species.creatureSubtypes";
+            const current = foundry.utils.getProperty(this.actor, path) || [];
+            await this.actor.update({ [path]: [...new Set([...current, id])] });
         });
 
         html.find('.creature-subtype-remove').on('click', async ev => {
             ev.preventDefault();
             const id = ev.currentTarget.dataset.subtypeId;
-            const subtypes = (this.actor.system.species?.creatureSubtypes || []).filter(value => value !== id);
-            await this.actor.update({ "system.species.creatureSubtypes": subtypes });
+            const path = this.actor.type === "npc" ? "system.creatureSubtypes" : "system.species.creatureSubtypes";
+            const current = foundry.utils.getProperty(this.actor, path) || [];
+            await this.actor.update({ [path]: current.filter(value => value !== id) });
         });
 
         html.find('.creature-rule-ability-use').on('click', async ev => {
             ev.preventDefault();
             const sourceId = ev.currentTarget.closest('[data-creature-rule-source]')?.dataset.creatureRuleSource;
             const abilityId = ev.currentTarget.closest('[data-creature-rule-ability]')?.dataset.creatureRuleAbility;
-            const source = getCreatureRuleSources(this.actor.system, "character").find(entry => entry.id === sourceId);
+            const source = getCreatureRuleSources(this.actor.system, this.actor.type).find(entry => entry.id === sourceId);
             const ability = source?.abilities.find(entry => entry.id === abilityId);
             if (source && ability) await activateAbility(this.actor, ability, source);
         });
@@ -3994,8 +3523,52 @@ export class TheFadeCharacterSheet extends ActorSheet {
             else this._combatTraitOpenCategories.delete(category);
         });
 
+        // Inventory Tab Navigation
+        html.find('.tab-button').click((event) => {
+            const clickedTab = $(event.currentTarget);
+            const tabName = clickedTab.data('tab');
+
+            this._activeInventoryTab = tabName;
+
+            html.find('.tab-button').removeClass('active');
+            html.find('.tab-content').removeClass('active');
+
+            clickedTab.addClass('active');
+            html.find(`#${tabName}-tab`).addClass('active');
+        });
+
+        // Inventory Subtab Navigation
+        html.find('.subtab-button').click((event) => {
+            const clickedSubtab = $(event.currentTarget);
+            const subtabName = clickedSubtab.data('subtab');
+
+            const parentTab = clickedSubtab.closest('.tab-content');
+            const parentTabId = parentTab.attr('id').replace('-tab', '');
+
+            // Store the new active subtab
+            if (!this._activeSubtabs) this._activeSubtabs = {};
+            this._activeSubtabs[parentTabId] = subtabName;
+
+            parentTab.find('.subtab-button').removeClass('active');
+            parentTab.find('.subtab-content').removeClass('active');
+
+            clickedSubtab.addClass('active');
+            parentTab.find(`#${subtabName}-subtab`).addClass('active');
+        });
+
+
+        html.find('.item-edit, .item-edit-btn').on('click', event => {
+            event.preventDefault();
+            const id = event.currentTarget.closest('[data-item-id]')?.dataset.itemId;
+            this.actor.items.get(id)?.sheet.render(true);
+        });
+
         // Everything below here is only needed if the sheet is editable
-        if (!this.options.editable) return;
+        if (!this.options.editable) {
+            this._restoreTabState(html);
+            this._restoreSheetFilters?.();
+            return;
+        }
 
         this._initializeExcessPenaltyTooltips(html);
 
@@ -4113,41 +3686,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
             await this.actor.update({ "system.mentalDisorders": existing });
         });
 
-        // Initialize defense details state
-        html.find('.defense-checkbox').each(function () {
-            const checkbox = $(this);
-            const details = checkbox.closest('.defense').find('.defense-details');
-
-            if (checkbox.is(':checked')) {
-                details.css('max-height', '200px');
-                details.css('padding-top', '10px');
-            } else {
-                details.css('max-height', '0');
-                details.css('padding-top', '0');
-            }
-        });
-
-        // Toggle defense details on checkbox change
-        html.find('.defense-checkbox').change(function () {
-            const checkbox = $(this);
-            const details = checkbox.closest('.defense').find('.defense-details');
-
-            if (checkbox.is(':checked')) {
-                details.css('max-height', '200px');
-                details.css('padding-top', '10px');
-            } else {
-                details.css('max-height', '0');
-                details.css('padding-top', '0');
-            }
-        });
-
-        // Facing selector change - trigger re-render to update calculated passive defenses
-        html.find('.facing-select').change(ev => {
-            // The update happens automatically via the general handler above
-            // The re-render will ensure calculated values reflect the new facing
-            this.render(false);
-        });
-
         // Embedded item fields deliberately use data-item-path rather than a
         // form name so Foundry's ActorSheet handler cannot also write them to
         // the actor document.
@@ -4170,20 +3708,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
             }
 
             await item.update({ [field]: value });
-        });
-
-        // Handle collapsible sections
-        html.find('.defense-checkbox').change(function () {
-            const checkbox = $(this);
-            const details = checkbox.closest('.defense').find('.defense-details');
-
-            if (checkbox.is(':checked')) {
-                details.css('max-height', '200px');
-                details.css('padding-top', '10px');
-            } else {
-                details.css('max-height', '0');
-                details.css('padding-top', '0');
-            }
         });
 
         html.find('.tool-header')
@@ -4234,52 +3758,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
         html.find('.item-create[data-type="skill"]').click(ev => {
             ev.preventDefault();
             ui.notifications.info("Skills are automatically provided. Use the custom skill buttons to add Craft, Lore, or Perform skills.");
-        });
-
-        html.find('.item-edit-btn').click(ev => {
-            const li = $(ev.currentTarget).closest("[data-item-id]");
-            const itemId = li.data("itemId");
-            if (!itemId) return;
-
-            const item = this.actor.items.get(itemId);
-            if (!item) return;
-
-            item.sheet.render(true);
-        });
-
-
-
-        // Inventory Tab Navigation
-        html.find('.tab-button').click((event) => {
-            const clickedTab = $(event.currentTarget);
-            const tabName = clickedTab.data('tab');
-
-            this._activeInventoryTab = tabName;
-
-            html.find('.tab-button').removeClass('active');
-            html.find('.tab-content').removeClass('active');
-
-            clickedTab.addClass('active');
-            html.find(`#${tabName}-tab`).addClass('active');
-        });
-
-        // Inventory Subtab Navigation
-        html.find('.subtab-button').click((event) => {
-            const clickedSubtab = $(event.currentTarget);
-            const subtabName = clickedSubtab.data('subtab');
-
-            const parentTab = clickedSubtab.closest('.tab-content');
-            const parentTabId = parentTab.attr('id').replace('-tab', '');
-
-            // Store the new active subtab
-            if (!this._activeSubtabs) this._activeSubtabs = {};
-            this._activeSubtabs[parentTabId] = subtabName;
-
-            parentTab.find('.subtab-button').removeClass('active');
-            parentTab.find('.subtab-content').removeClass('active');
-
-            clickedSubtab.addClass('active');
-            parentTab.find(`#${subtabName}-subtab`).addClass('active');
         });
 
         html.find('.item-delete').off('click').click(ev => {
@@ -4625,7 +4103,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
         html.find('.gate-browse').click(ev => {
             ev.preventDefault();
-            openCompendiumBrowser("dimensional gate", this.actor);
+            openCompendiumBrowser("gate", this.actor);
         });
 
         html.find('.dream-browse').click(ev => {
@@ -4641,7 +4119,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             openCompendiumBrowser("medical", this.actor);
         });
 
-        html.find('.biological-browse').click(ev => {
+        html.find('.bio-browse, .biological-browse').click(ev => {
             ev.preventDefault();
             openCompendiumBrowser("biological", this.actor);
         });
@@ -4702,46 +4180,13 @@ export class TheFadeCharacterSheet extends ActorSheet {
             this.render(false);
         });
 
-        // Handle spell filtering
-        html.find('.spell-school-filter').change(ev => {
-            const school = ev.currentTarget.value;
-
-            if (school === 'all') {
-                html.find('.spell-wrapper').show();
-            } else {
-                html.find('.spell-wrapper').hide();
-                html.find(`.spell-wrapper .spell-item[data-school="${school}"]`).parents('.spell-wrapper').show();
-            }
-        });
-
-        html.find('.spell-search').on('input', ev => {
-            const searchTerm = ev.currentTarget.value.toLowerCase();
-
-            if (searchTerm === '') {
-                html.find('.spell-wrapper').show();
-            } else {
-                html.find('.spell-wrapper').each(function () {
-                    const spellName = $(this).find('.spell-name').text().toLowerCase();
-                    const spellDesc = $(this).find('.spell-description-content').text().toLowerCase();
-
-                    if (spellName.includes(searchTerm) || spellDesc.includes(searchTerm)) {
-                        $(this).show();
-                    } else {
-                        $(this).hide();
-                    }
-                });
-            }
-        });
-
         html.find('.add-family-member').click(this._onAddFamilyMember.bind(this));
         html.find('.remove-family-member').click(this._onRemoveFamilyMember.bind(this));
 
-        this._initializeFacingDropdown(html);
-        this._updateFacingDirectly(html);
         this._setupArmorResetListeners(html);
 
         // Initialize tooltips
-        this._initializeDataTooltips(html);
+        if (CONFIG.debug?.thefade) this._initializeDataTooltips(html);
 
         if (this.actor.isOwner) {
             html.find('.initialize-skills').click(async ev => {
@@ -4789,42 +4234,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
         }
 
         // Auto-update overland movement when base movement changes
-        html.find('input[name^="system.movement."]').change(async (ev) => {
-            const input = ev.currentTarget;
-            const fieldName = input.name;
-            const value = parseInt(input.value) || 0;
-
-            CONFIG.debug.thefade && console.debug(`Movement field changed: ${fieldName} = ${value}`);
-
-            // Determine which overland field to update - FIXED TO MATCH HTML
-            let overlandField = '';
-            if (fieldName === 'system.movement.land') {
-                overlandField = 'system.overland-movement.landOverland';
-            } else if (fieldName === 'system.movement.fly') {
-                overlandField = 'system.overland-movement.flyOverland';
-            } else if (fieldName === 'system.movement.swim') {
-                overlandField = 'system.overland-movement.swimOverland';
-            } else if (fieldName === 'system.movement.climb') {
-                overlandField = 'system.overland-movement.climbOverland';
-            } else if (fieldName === 'system.movement.burrow') {
-                overlandField = 'system.overland-movement.burrowOverland';
-            }
-
-            if (overlandField) {
-                const overlandValue = value * 6;
-                CONFIG.debug.thefade && console.debug(`Updating ${overlandField} to ${overlandValue}`);
-
-                // Update both the movement field and corresponding overland field
-                const updateData = {};
-                updateData[fieldName] = value;
-                updateData[overlandField] = overlandValue;
-
-                await this.actor.update(updateData);
-                CONFIG.debug.thefade && console.debug(`Updated successfully`);
-            }
-        });
-
         this._restoreTabState(html);
+        this._restoreSheetFilters?.();
     }
 
     _onAddFamilyMember(event) {
@@ -4996,6 +4407,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const skillsInput = html.find('.skills-filter');
         const applySkillFilter = () => {
             const query = normalize(skillsInput.val());
+            this._skillFilter = skillsInput.val();
             let matchCount = 0;
 
             html.find('.skill-category').each((_, categoryElement) => {
@@ -5004,7 +4416,8 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
                 category.find('.skill-entry').each((__, rowElement) => {
                     const row = $(rowElement);
-                    const matches = !query || normalize(row.text()).includes(query);
+                    const text = [row.find('.skill-name').text(), row.find('.skill-rank-select option:selected').text(), row.find('.skill-attribute-select option:selected').text(), row.find('.skill-attribute-text').text()].join(' ');
+                    const matches = !query || normalize(text).includes(query);
                     row.toggleClass('filter-match', matches).toggle(matches);
                     if (matches) {
                         categoryMatches += 1;
@@ -5036,6 +4449,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             html.find('.skills-filter-bar .sheet-filter-clear').toggleClass('is-visible', !!query);
         };
 
+        skillsInput.val(this._skillFilter || '');
         skillsInput.on('input', applySkillFilter);
         html.find('.skills-filter-bar .sheet-filter-clear').on('click', event => {
             event.preventDefault();
@@ -5045,25 +4459,26 @@ export class TheFadeCharacterSheet extends ActorSheet {
         const inventoryInput = html.find('.inventory-filter');
         const applyInventoryFilter = () => {
             const query = normalize(inventoryInput.val());
+            this._inventoryFilter = inventoryInput.val();
             let matchCount = 0;
 
-            html.find('.inventory-tabs .item[data-item-id]').each((_, rowElement) => {
+            html.find('.inventory-tabs .item[data-item-id], .inventory-tabs .equipped-armor-item[data-item-id], .inventory-tabs .equipped-item[data-item-id]').each((_, rowElement) => {
                 const row = $(rowElement);
-                const matches = !query || normalize(row.text()).includes(query);
+                const matches = !query || normalize(row.attr('data-search') || row.text()).includes(query);
                 row.toggleClass('filter-match', matches).toggle(matches);
                 if (matches) matchCount += 1;
             });
 
             html.find('.inventory-tabs > .tab-content').each((_, panelElement) => {
                 const panel = $(panelElement);
-                const hasMatch = panel.find('.item[data-item-id].filter-match').length > 0;
+                const hasMatch = panel.find('[data-item-id].filter-match').length > 0;
                 const tabName = panelElement.id?.replace(/-tab$/, '');
                 html.find(`.inventory-tabs > .tab-nav .tab-button[data-tab="${tabName}"]`)
                     .toggleClass('filter-no-match', !!query && !hasMatch);
 
                 panel.find('.subtab-content').each((__, subpanelElement) => {
                     const subpanel = $(subpanelElement);
-                    const subHasMatch = subpanel.find('.item[data-item-id].filter-match').length > 0;
+                    const subHasMatch = subpanel.find('[data-item-id].filter-match').length > 0;
                     const subtabName = subpanelElement.id?.replace(/-subtab$/, '');
                     panel.find(`.subtab-button[data-subtab="${subtabName}"]`)
                         .toggleClass('filter-no-match', !!query && !subHasMatch);
@@ -5072,18 +4487,18 @@ export class TheFadeCharacterSheet extends ActorSheet {
 
             if (query && matchCount > 0) {
                 const activePanel = html.find('.inventory-tabs > .tab-content.active');
-                if (!activePanel.find('.item[data-item-id].filter-match').length) {
+                if (!activePanel.find('[data-item-id].filter-match').length) {
                     html.find('.inventory-tabs > .tab-nav .tab-button').not('.filter-no-match').first().trigger('click');
                 }
 
                 const currentPanel = html.find('.inventory-tabs > .tab-content.active');
                 const currentSubpanel = currentPanel.find('.subtab-content.active');
-                if (currentSubpanel.length && !currentSubpanel.find('.item[data-item-id].filter-match').length) {
+                if (currentSubpanel.length && !currentSubpanel.find('[data-item-id].filter-match').length) {
                     currentPanel.find('.subtab-button').not('.filter-no-match').first().trigger('click');
                 }
 
                 const firstVisibleMatch = html
-                    .find('.inventory-tabs > .tab-content.active .item[data-item-id].filter-match')
+                    .find('.inventory-tabs > .tab-content.active [data-item-id].filter-match')
                     .first()[0];
                 firstVisibleMatch?.scrollIntoView({ block: "nearest" });
             }
@@ -5093,11 +4508,43 @@ export class TheFadeCharacterSheet extends ActorSheet {
             html.find('.inventory-filter-bar .sheet-filter-clear').toggleClass('is-visible', !!query);
         };
 
-        inventoryInput.on('input', applyInventoryFilter);
+        html.find('.inventory-gear-group').each((_, section) => {
+            section.dataset.filterForced = "false";
+        });
+        const originalInventoryFilter = applyInventoryFilter;
+        const filterInventory = () => {
+            originalInventoryFilter();
+            const query = normalize(inventoryInput.val());
+            html.find('.inventory-gear-group').each((_, section) => {
+                const matches = section.querySelector('[data-item-id].filter-match');
+                section.hidden = !!query && !matches;
+                section.dataset.filterForced = "true";
+                section.open = query ? !!matches : this._getSheetSectionOpenState(section.dataset.sectionKey, section.querySelectorAll("[data-item-id]").length > 0);
+                setTimeout(() => delete section.dataset.filterForced, 0);
+            });
+        };
+        inventoryInput.on('input', filterInventory);
         html.find('.inventory-filter-bar .sheet-filter-clear').on('click', event => {
             event.preventDefault();
             inventoryInput.val('').trigger('input').trigger('focus');
         });
+        inventoryInput.val(this._inventoryFilter || '');
+        const schoolInput = html.find('.spell-school-filter').val(this._spellSchool || 'all');
+        const spellInput = html.find('.spell-search').val(this._spellSearch || '');
+        const filterSpells = () => {
+            this._spellSchool = schoolInput.val() || 'all';
+            this._spellSearch = spellInput.val() || '';
+            const query = normalize(this._spellSearch);
+            html.find('.spell-wrapper').each((_, element) => {
+                const row = $(element);
+                const matchesSchool = this._spellSchool === 'all' || row.find('.spell-item').attr('data-school') === this._spellSchool;
+                const text = `${row.find('.spell-name').text()} ${row.find('.spell-description-content').text()}`;
+                row.toggle(matchesSchool && (!query || normalize(text).includes(query)));
+            });
+        };
+        schoolInput.on('change', filterSpells);
+        spellInput.on('input', filterSpells);
+        this._restoreSheetFilters = () => { applySkillFilter(); filterInventory(); filterSpells(); };
     }
 
     /**
@@ -5110,6 +4557,20 @@ export class TheFadeCharacterSheet extends ActorSheet {
             console.error("Invalid HTML element passed to _activateInventoryListeners");
             return;
         }
+
+        const rowItem = event => this.actor.items.get(event.currentTarget.closest('[data-item-id]')?.dataset.itemId);
+        html.find('.inventory-use, .potion-drink, .potion-consume, .drug-use, .medical-use, .poison-apply, .staff-use, .wand-use, .gate-activate')
+            .on('click', event => { event.preventDefault(); return useItemResource(rowItem(event)); });
+        html.find('.craft-alchemical').on('click', event => { event.preventDefault(); return craftAlchemicalItem(this.actor, rowItem(event)); });
+        html.find('.inventory-reset, .staff-reset')
+            .on('click', event => { event.preventDefault(); return resetItemResource(rowItem(event)); });
+        html.find('.inventory-create, .inventory-browse').on('click', async event => {
+            event.preventDefault();
+            const type = $(event.currentTarget).closest('.inventory-group-tools').find('.inventory-create-type').val();
+            if (event.currentTarget.classList.contains('inventory-browse')) return openCompendiumBrowser(type, this.actor);
+            const [item] = await this.actor.createEmbeddedDocuments('Item', [{ name: `New ${game.i18n.localize(CONFIG.Item.typeLabels[type] || type)}`, type }]);
+            item?.sheet.render(true);
+        });
 
         // Equip Items - handle both armor and magic items
         html.find('.item-equip').click(async (event) => {
@@ -5600,254 +5061,6 @@ export class TheFadeCharacterSheet extends ActorSheet {
         // COMPREHENSIVE ITEM ACTION HANDLERS
         // ============================================================================
 
-        // 1. UNIVERSAL EDIT BUTTON HANDLER
-        // This should catch all edit buttons regardless of context
-        html.find('.item-edit, .item-edit-btn').click(ev => {
-            ev.preventDefault();
-            CONFIG.debug.thefade && console.debug("Edit button clicked");
-
-            // Try multiple ways to find the item ID
-            const element = $(ev.currentTarget);
-            let itemId = element.closest('[data-item-id]').attr('data-item-id') ||
-                element.closest('[data-item-id]').data('item-id') ||
-                element.closest('.item').attr('data-item-id') ||
-                element.closest('.item').data('item-id');
-
-            CONFIG.debug.thefade && console.debug("Found item ID:", itemId);
-
-            if (!itemId) {
-                console.error("Could not find item ID for edit button");
-                ui.notifications.error("Could not find item to edit");
-                return;
-            }
-
-            const item = this.actor.items.get(itemId);
-            if (!item) {
-                console.error("Item not found:", itemId);
-                ui.notifications.error("Item not found");
-                return;
-            }
-
-            CONFIG.debug.thefade && console.debug("Opening item sheet for:", item.name);
-            item.sheet.render(true);
-        });
-
-        // 2. POISON ACTION HANDLERS
-        html.find('.poison-apply').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Applied ${item.name}! Effects: ${item.system.effect || 'See item description'}`);
-
-            // Reduce quantity by 1
-            const currentQuantity = item.system.quantity || 1;
-            if (currentQuantity > 1) {
-                await item.update({ "system.quantity": currentQuantity - 1 });
-            } else {
-                // Ask if they want to delete the item
-                new Dialog({
-                    title: "Use Last Dose",
-                    content: `<p>This was the last dose of ${item.name}. Delete the item?</p>`,
-                    buttons: {
-                        delete: {
-                            label: "Delete",
-                            callback: () => this.actor.deleteEmbeddedDocuments("Item", [itemId])
-                        },
-                        keep: {
-                            label: "Keep Empty",
-                            callback: () => item.update({ "system.quantity": 0 })
-                        }
-                    },
-                    default: "delete"
-                }).render(true);
-            }
-        });
-
-        // 3. BIOLOGICAL ITEM HANDLERS
-        html.find('.bio-analyze').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Analyzing ${item.name}... Results: ${item.system.effect || 'Requires laboratory equipment'}`);
-        });
-
-        html.find('.bio-harvest').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Harvesting ${item.name}...`);
-            // Could add dice rolling logic here for harvest success
-        });
-
-        // 4. MEDICAL ITEM HANDLERS
-        html.find('.medical-use').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Using ${item.name}! Effect: ${item.system.effect || 'See item description'}`);
-
-            // Reduce quantity
-            const currentQuantity = item.system.quantity || 1;
-            if (currentQuantity > 1) {
-                await item.update({ "system.quantity": currentQuantity - 1 });
-            }
-        });
-
-        // 5. TRAVEL GEAR HANDLERS
-        html.find('.travel-use').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Using ${item.name} for travel purposes`);
-        });
-
-        // 6. MUSICAL INSTRUMENT HANDLERS
-        html.find('.musical-play').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Playing ${item.name}... Make a Perform check!`);
-        });
-
-        // 7. STAFF HANDLERS
-        html.find('.staff-use').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            const usesRemaining = (item.system.usesPerDay || 3) - (item.system.usesToday || 0);
-
-            if (usesRemaining > 0) {
-                await item.update({ "system.usesToday": (item.system.usesToday || 0) + 1 });
-                ui.notifications.info(`${item.name} activated! Spell: ${item.system.spellName || 'Unknown'}`);
-            } else {
-                ui.notifications.warn(`${item.name} has no uses remaining today`);
-            }
-        });
-
-        html.find('.staff-reset').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            await item.update({ "system.usesToday": 0 });
-            ui.notifications.info(`${item.name} uses reset for a new day`);
-        });
-
-        // 8. WAND HANDLERS
-        html.find('.wand-use').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            const charges = item.system.charges || 0;
-
-            if (charges > 0) {
-                await item.update({ "system.charges": charges - 1 });
-                ui.notifications.info(`${item.name} activated! Charges remaining: ${charges - 1}`);
-            } else {
-                ui.notifications.warn(`${item.name} has no charges remaining`);
-            }
-        });
-
-        // 9. GATE HANDLERS
-        html.find('.gate-activate').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            const usesRemaining = (item.system.usesPerDay || 1) - (item.system.usesToday || 0);
-
-            if (usesRemaining > 0) {
-                await item.update({ "system.usesToday": (item.system.usesToday || 0) + 1 });
-                ui.notifications.info(`${item.name} portal opened! Range: ${item.system.range || 'Unknown'}`);
-            } else {
-                ui.notifications.warn(`${item.name} cannot be used again today`);
-            }
-        });
-
-        // 10. COMMUNICATION DEVICE HANDLERS
-        html.find('.communication-use').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            // Could open a dialog for entering relay codes, etc.
-            ui.notifications.info(`Activating ${item.name}... Range: ${item.system.range || 'Unknown'}`);
-        });
-
-        // 11. CONTAINMENT ITEM HANDLERS
-        html.find('.containment-open').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Opening ${item.name}... Contents: ${item.system.contents || 'Empty'}`);
-        });
-
-        // 12. DREAM HARVESTING HANDLERS
-        html.find('.dream-harvest').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Using ${item.name} to harvest dreams... EL: ${item.system.el || 1}`);
-        });
-
-        // 13. MOUNT HANDLERS
-        html.find('.mount-ride').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Mounting ${item.name}! Movement: ${item.system.movement || 'Unknown'}`);
-        });
-
-        // 14. VEHICLE HANDLERS
-        html.find('.vehicle-drive').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Piloting ${item.name}! Passengers: ${item.system.passengers || 0}`);
-        });
-
         // 15. FLESHCRAFT HANDLERS
         html.find('.fleshcraft-activate').click(async ev => {
             ev.preventDefault();
@@ -5880,85 +5093,7 @@ export class TheFadeCharacterSheet extends ActorSheet {
             ui.notifications.info(`${item.name} ${isWorn ? 'removed' : 'worn'}`);
         });
 
-        // 17. POTION CONSUMPTION (if not already handled elsewhere)
-        html.find('.potion-drink, .potion-consume').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
 
-            if (!item) return;
-
-            ui.notifications.info(`${item.name} consumed! Effect: ${item.system.effect || 'See description'}`);
-
-            // Reduce quantity or delete
-            const currentQuantity = item.system.quantity || 1;
-            if (currentQuantity > 1) {
-                await item.update({ "system.quantity": currentQuantity - 1 });
-            } else {
-                await this.actor.deleteEmbeddedDocuments("Item", [itemId]);
-            }
-        });
-
-        // 18. DRUG USE HANDLERS
-        html.find('.drug-use').click(async ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.warn(`Using ${item.name}! Addiction rating: ${item.system.addictionRating || 0}`);
-
-            // Reduce quantity
-            const currentQuantity = item.system.quantity || 1;
-            if (currentQuantity > 1) {
-                await item.update({ "system.quantity": currentQuantity - 1 });
-            }
-        });
-
-        // 19. GENERIC ITEM USE HANDLER (fallback)
-        html.find('.item-use, .item-activate').click(ev => {
-            ev.preventDefault();
-            const itemId = $(ev.currentTarget).closest('[data-item-id]').attr('data-item-id');
-            const item = this.actor.items.get(itemId);
-
-            if (!item) return;
-
-            ui.notifications.info(`Using ${item.name}! ${item.system.effect || 'See item description for effects'}`);
-        });
-
-
-    }
-
-    _preserveExpandedState(html) {
-        // Store which defense details are currently expanded
-        const expandedStates = {};
-        html.find('.defense-checkbox').each(function () {
-            const checkbox = $(this);
-            expandedStates[checkbox.attr('id')] = checkbox.is(':checked');
-        });
-
-        // Store in a property for later restoration
-        this._expandedDefenseStates = expandedStates;
-    }
-
-    _restoreExpandedState(html) {
-        // Restore previously expanded defense details
-        if (this._expandedDefenseStates) {
-            Object.entries(this._expandedDefenseStates).forEach(([id, isExpanded]) => {
-                const checkbox = html.find(`#${id}`);
-                const details = checkbox.closest('.defense').find('.defense-details');
-
-                checkbox.prop('checked', isExpanded);
-                if (isExpanded) {
-                    details.css('max-height', '200px');
-                    details.css('padding-top', '10px');
-                } else {
-                    details.css('max-height', '0');
-                    details.css('padding-top', '0');
-                }
-            });
-        }
     }
 
     /*

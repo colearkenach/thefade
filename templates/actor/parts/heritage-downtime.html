@@ -1,7 +1,9 @@
 <section class="heritage-rules-panel">
     <div class="heritage-rules-grid">
-        <article class="panel heritage-builder">
-            <header class="rules-card-header"><div><h2>Heritage & Xenochildren</h2><p>Heirs to Rangar, pp. 33-47</p></div><a class="rules-item-create" data-type="heritage" title="Add special heritage"><i class="fas fa-plus"></i></a></header>
+        <details class="panel heritage-builder sheet-disclosure sheet-state-section" data-section-key="background-heritage" {{#if backgroundSectionStates.heritage}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Heritage &amp; Xenochildren</span><span class="section-status">{{#if system.heritage.outcomeLabel}}{{system.heritage.outcomeLabel}}{{else}}{{actor.heritages.length}} recorded{{/if}}</span></summary>
+        <div class="sheet-disclosure-body">
+            <div class="rules-card-header background-section-tools"><p>Heirs to Rangar, pp. 33-47</p><a class="rules-item-create" data-type="heritage" title="Add special heritage"><i class="fas fa-plus"></i></a></div>
             <label class="checkbox-label heritage-xenochild"><input type="checkbox" name="system.personalDetails.xenochild" {{#if system.personalDetails.xenochild}}checked{{/if}} /> Created as a Xenochild</label>
             <div class="heritage-parent-grid">
                 <label>Mother's Type<select name="system.heritage.motherType"><option value="">Choose type</option>{{selectOptions crossbreedTypes selected=system.heritage.motherType}}</select></label>
@@ -39,10 +41,13 @@
                 {{/each}}
             </ol>
             {{/if}}
-        </article>
+                </div>
+    </details>
 
-        <article class="panel mutation-card">
-            <header class="rules-card-header"><div><h2>Mutations</h2><p>Heirs to Rangar, pp. 21-32</p></div><a class="rules-item-create" data-type="mutation" title="Add custom mutation"><i class="fas fa-plus"></i></a></header>
+        <details class="panel mutation-card sheet-disclosure sheet-state-section" data-section-key="background-mutations" {{#if backgroundSectionStates.mutations}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Mutations</span><span class="section-status">{{actor.mutations.length}} recorded</span></summary>
+        <div class="sheet-disclosure-body">
+            <div class="rules-card-header background-section-tools"><p>Heirs to Rangar, pp. 21-32</p><a class="rules-item-create" data-type="mutation" title="Add custom mutation"><i class="fas fa-plus"></i></a></div>
             <div class="mutation-tools">
                 <select name="mutation-roll-severity">{{selectOptions mutationSeverityOptions selected="minor"}}</select>
                 <button type="button" class="mutation-roll"><i class="fas fa-dice-d10"></i> Roll & Add</button>
@@ -57,12 +62,15 @@
                 {{/each}}
             </ol>
             {{else}}<p class="empty-list">No mutations recorded.</p>{{/if}}
-        </article>
+                </div>
+    </details>
     </div>
 
     {{#if fatePointsEnabled}}
-    <article class="panel fate-card">
-        <header class="rules-card-header"><div><h2>Fate Points & Motivations</h2><p>Bestiary of Morta IV, pp. 349-351</p></div><div class="fate-total"><i class="fas fa-star"></i><input type="number" name="system.fate.points" min="0" value="{{system.fate.points}}" /><span>Fate</span></div></header>
+    <details class="panel fate-card sheet-disclosure sheet-state-section" data-section-key="background-fate" {{#if backgroundSectionStates.fate}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Fate &amp; Motivations</span><span class="section-status">{{system.fate.points}} Fate</span></summary>
+        <div class="sheet-disclosure-body">
+        <div class="rules-card-header background-section-tools"><p>Bestiary of Morta IV, pp. 349-351</p><div class="fate-total"><i class="fas fa-star"></i><input type="number" name="system.fate.points" min="0" value="{{system.fate.points}}" /><span>Fate</span></div></div>
         <div class="motivation-grid">
             <label>Personal Goal<textarea name="system.fate.motivations.personalGoal" rows="2" placeholder="A short, immediate goal">{{system.fate.motivations.personalGoal}}</textarea></label>
             <label>Driving Force<textarea name="system.fate.motivations.drivingForce" rows="2" placeholder="The character's long-term arc">{{system.fate.motivations.drivingForce}}</textarea></label>
@@ -75,11 +83,14 @@
             <button type="button" class="fate-spend" data-cost="6" data-label="Brush With Death" data-effect="Survive an otherwise lethal attack at 0 HP.">Brush With Death <span>6</span></button>
             {{#if isGM}}<div class="fate-awards"><span>Award:</span><button type="button" class="fate-award" data-amount="1">+1</button><button type="button" class="fate-award" data-amount="2">+2</button><button type="button" class="fate-award" data-amount="3">+3</button></div>{{/if}}
         </div>
-    </article>
+            </div>
+    </details>
     {{/if}}
 
-    <article class="panel downtime-card">
-        <header class="rules-card-header"><div><h2>Downtime</h2><p>Core Rulebook, pp. 407-414</p></div><a class="rules-item-create" data-type="downtime" title="Add downtime activity"><i class="fas fa-plus"></i></a></header>
+    <details class="panel downtime-card sheet-disclosure sheet-state-section" data-section-key="background-downtime" {{#if backgroundSectionStates.downtime}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Downtime</span><span class="section-status">{{actor.downtimeProjects.length}} activities</span></summary>
+        <div class="sheet-disclosure-body">
+        <div class="rules-card-header background-section-tools"><p>Core Rulebook, pp. 407-414</p><a class="rules-item-create" data-type="downtime" title="Add downtime activity"><i class="fas fa-plus"></i></a></div>
         {{#if actor.downtimeProjects.length}}
         <ol class="rules-embedded-list downtime-list">
             {{#each actor.downtimeProjects as |project|}}
@@ -95,5 +106,6 @@
             {{/each}}
         </ol>
         {{else}}<p class="empty-list">No downtime activities. Add one here.</p>{{/if}}
-    </article>
+            </div>
+    </details>
 </section>

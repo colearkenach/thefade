@@ -1,4 +1,4 @@
-<section class="protection-panel panel">
+<section class="protection-panel panel protection-ledger">
     <header class="protection-heading">
         <div>
             <h3><i class="fas fa-shield-halved"></i> Protection by Location</h3>
@@ -37,13 +37,13 @@
         <div class="protection-row {{#unless part.isPrimaryPool}}shared-protection-pool{{/unless}}"
              data-protection-location="{{part.location}}">
             <div class="protection-location">
-                <strong>{{part.label}}</strong>
+                <strong><i class="fas fa-crosshairs" aria-hidden="true"></i> {{part.label}}</strong>
                 {{#if part.isMapped}}
                 <span class="protection-pool-note">Uses {{part.poolLabel}}{{#if part.isSharedPool}} shared{{/if}} pool</span>
                 {{/if}}
             </div>
 
-            <div class="protection-value armor-protection-value" title="Current / maximum equipped armor protection">
+            <div data-label="Armor" class="protection-value armor-protection-value" title="Current / maximum equipped armor protection">
                 <i class="fas fa-shield"></i>
                 <span class="protection-current">{{part.armor.current}}</span>
                 <span>/</span>
@@ -64,7 +64,7 @@
                 {{/if}}
             </div>
 
-            <div class="protection-value natural-protection-value">
+            <div data-label="Natural" class="protection-value natural-protection-value">
                 {{#if part.isPrimaryPool}}
                 <input type="number" name="system.naturalDeflection.{{part.location}}.current"
                        value="{{part.natural.current}}" data-dtype="Number" min="0" title="Current Natural Deflection" />
@@ -93,7 +93,7 @@
                 {{/if}}
             </div>
 
-            <div class="protection-value total-protection-value" title="Effective protection after stacking rules">
+            <div data-label="Effective" class="protection-value total-protection-value" title="Effective protection after stacking rules">
                 <strong class="protection-current">{{part.total.current}}</strong>
                 <span>/</span>
                 <strong class="protection-max">{{part.total.max}}</strong>

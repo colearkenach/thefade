@@ -17,14 +17,17 @@
 </div>
 {{/if}}
 
-<div class="grid grid-5col">
+<div class="grid grid-5col ability-sigils">
 
-    <div class="attribute panel">
+    <div class="attribute panel ability-sigil ability-physique">
         <label>Physique
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="physique" data-label="Physique" title="Edit Physique (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.displayValue}}" data-dtype="Number" />
+            <div class="ability-seal">
+                <i class="fas fa-hand-fist" aria-hidden="true"></i>
+                <input type="text" name="system.attributes.physique.value" value="{{system.attributes.physique.displayValue}}" data-dtype="Number" aria-label="Physique score" />
+            </div>
             {{#if system.attributes.physique.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.physique.speciesBonus}}</span>
             {{/if}}
@@ -37,12 +40,15 @@
         </div>
     </div>
 
-    <div class="attribute panel">
+    <div class="attribute panel ability-sigil ability-finesse">
         <label>Finesse
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="finesse" data-label="Finesse" title="Edit Finesse (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.displayValue}}" data-dtype="Number" />
+            <div class="ability-seal">
+                <i class="fas fa-feather-pointed" aria-hidden="true"></i>
+                <input type="text" name="system.attributes.finesse.value" value="{{system.attributes.finesse.displayValue}}" data-dtype="Number" aria-label="Finesse score" />
+            </div>
             {{#if system.attributes.finesse.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.finesse.speciesBonus}}</span>
             {{/if}}
@@ -55,12 +61,15 @@
         </div>
     </div>
 
-    <div class="attribute panel">
+    <div class="attribute panel ability-sigil ability-mind">
         <label>Mind
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="mind" data-label="Mind" title="Edit Mind (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.displayValue}}" data-dtype="Number" />
+            <div class="ability-seal">
+                <i class="fas fa-eye" aria-hidden="true"></i>
+                <input type="text" name="system.attributes.mind.value" value="{{system.attributes.mind.displayValue}}" data-dtype="Number" aria-label="Mind score" />
+            </div>
             {{#if system.attributes.mind.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.mind.speciesBonus}}</span>
             {{/if}}
@@ -73,12 +82,15 @@
         </div>
     </div>
 
-    <div class="attribute panel">
+    <div class="attribute panel ability-sigil ability-presence">
         <label>Presence
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="presence" data-label="Presence" title="Edit Presence (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.displayValue}}" data-dtype="Number" />
+            <div class="ability-seal">
+                <i class="fas fa-crown" aria-hidden="true"></i>
+                <input type="text" name="system.attributes.presence.value" value="{{system.attributes.presence.displayValue}}" data-dtype="Number" aria-label="Presence score" />
+            </div>
             {{#if system.attributes.presence.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.presence.speciesBonus}}</span>
             {{/if}}
@@ -91,12 +103,15 @@
         </div>
     </div>
 
-    <div class="attribute panel">
+    <div class="attribute panel ability-sigil ability-soul">
         <label>Soul
             <a class="tf-edit-adjustable toggle-icon" data-action="edit-adjustable" data-stat="soul" data-label="Soul" title="Edit Soul (bonus / override)"><i class="fas fa-pencil"></i></a>
         </label>
         <div class="attribute-value">
-            <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.displayValue}}" data-dtype="Number" />
+            <div class="ability-seal">
+                <i class="fas fa-fire-flame-curved" aria-hidden="true"></i>
+                <input type="text" name="system.attributes.soul.value" value="{{system.attributes.soul.displayValue}}" data-dtype="Number" aria-label="Soul score" />
+            </div>
             {{#if system.attributes.soul.speciesBonus}}
             <span class="species-bonus" title="Species Bonus">+{{system.attributes.soul.speciesBonus}}</span>
             {{/if}}

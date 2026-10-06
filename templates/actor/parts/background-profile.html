@@ -1,0 +1,185 @@
+<div class="background-profile">
+    <div class="actor-notes background-biography">
+        <label for="{{actor._id}}-biography">{{#if isLegacyNPC}}Notes{{else}}Biography{{/if}}</label>
+        {{#if isLegacyNPC}}<textarea id="{{actor._id}}-biography" name="system.notes" rows="4">{{system.notes}}</textarea>{{else}}<textarea id="{{actor._id}}-biography" name="system.biography" rows="4">{{system.biography}}</textarea>{{/if}}
+    </div>
+    <details class="panel sheet-disclosure sheet-state-section background-detail-section" data-section-key="background-appearance" {{#if backgroundSectionStates.appearance}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Appearance</span><span class="disclosure-hint" aria-hidden="true">Expand</span><i class="fas fa-chevron-down section-toggle-icon" aria-hidden="true"></i></summary>
+        <div class="background-fields">
+            <div class="detail-row height-row">
+                <label for="{{actor._id}}-personal-heightFeet">Height</label>
+                <div class="height-inputs">
+                    <input type="number" id="{{actor._id}}-personal-heightFeet" aria-label="Height in feet" name="system.personalDetails.heightFeet" value="{{system.personalDetails.heightFeet}}" min="0" max="10" placeholder="ft" />
+                    <span>'</span>
+                    <input type="number" aria-label="Height in inches" name="system.personalDetails.heightInches" value="{{system.personalDetails.heightInches}}" min="0" max="11" placeholder="in" />
+                    <span>"</span>
+                </div>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-weight">Weight (lbs)</label>
+                <input id="{{actor._id}}-personal-weight" type="number" name="system.personalDetails.weight" value="{{system.personalDetails.weight}}" min="0" />
+            </div>
+            <div class="detail-row color-row">
+                <label for="{{actor._id}}-personal-hairColor">Hair Color</label>
+                <input id="{{actor._id}}-personal-hairColor" type="color" name="system.personalDetails.hairColor" value="{{system.personalDetails.hairColor}}" />
+            </div>
+            <div class="detail-row color-row">
+                <label for="{{actor._id}}-personal-eyeColor">Eye Color</label>
+                <input id="{{actor._id}}-personal-eyeColor" type="color" name="system.personalDetails.eyeColor" value="{{system.personalDetails.eyeColor}}" />
+            </div>
+            <div class="detail-row color-row">
+                <label for="{{actor._id}}-personal-skinColor">Skin Color</label>
+                <input id="{{actor._id}}-personal-skinColor" type="color" name="system.personalDetails.skinColor" value="{{system.personalDetails.skinColor}}" />
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-handedness">Handedness</label>
+                <select id="{{actor._id}}-personal-handedness" name="system.personalDetails.handedness">
+                    <option value="" {{#unless system.personalDetails.handedness}} selected{{/unless}}>--</option>
+                    <option value="right" {{#if (eq system.personalDetails.handedness "right")}} selected{{/if}}>Right</option>
+                    <option value="left" {{#if (eq system.personalDetails.handedness "left")}} selected{{/if}}>Left</option>
+                    <option value="ambidextrous" {{#if (eq system.personalDetails.handedness "ambidextrous")}} selected{{/if}}>Ambidextrous</option>
+                </select>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-build">Build/Body Type</label>
+                <select id="{{actor._id}}-personal-build" name="system.personalDetails.build">
+                    <option value="" {{#unless system.personalDetails.build}} selected{{/unless}}>--</option>
+                    <option value="slim" {{#if (eq system.personalDetails.build "slim")}} selected{{/if}}>Slim</option>
+                    <option value="athletic" {{#if (eq system.personalDetails.build "athletic")}} selected{{/if}}>Athletic</option>
+                    <option value="stocky" {{#if (eq system.personalDetails.build "stocky")}} selected{{/if}}>Stocky</option>
+                    <option value="heavy" {{#if (eq system.personalDetails.build "heavy")}} selected{{/if}}>Heavy</option>
+                    <option value="lanky" {{#if (eq system.personalDetails.build "lanky")}} selected{{/if}}>Lanky</option>
+                    <option value="muscular" {{#if (eq system.personalDetails.build "muscular")}} selected{{/if}}>Muscular</option>
+                    <option value="bloat" {{#if (eq system.personalDetails.build "bloat")}} selected{{/if}}>Bloatlord</option>
+                </select>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-distinguishingMarks">Distinguishing Marks</label>
+                <input id="{{actor._id}}-personal-distinguishingMarks" type="text" name="system.personalDetails.distinguishingMarks" value="{{system.personalDetails.distinguishingMarks}}" placeholder="Scars, tattoos, etc." />
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-voice">Voice</label>
+                <input id="{{actor._id}}-personal-voice" type="text" name="system.personalDetails.voice" value="{{system.personalDetails.voice}}" placeholder="Accent, tone, volume" />
+            </div>
+        </div>
+    </details>
+    <details class="panel sheet-disclosure sheet-state-section background-detail-section" data-section-key="background-life" {{#if backgroundSectionStates.life}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Origins & life</span><span class="disclosure-hint" aria-hidden="true">Expand</span><i class="fas fa-chevron-down section-toggle-icon" aria-hidden="true"></i></summary>
+        <div class="background-fields">
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-birthplace">Birthplace</label>
+                <input id="{{actor._id}}-personal-birthplace" type="text" name="system.personalDetails.birthplace" value="{{system.personalDetails.birthplace}}" />
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-culture">Culture</label>
+                <input id="{{actor._id}}-personal-culture" type="text" name="system.personalDetails.culture" value="{{system.personalDetails.culture}}" />
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-socialClass">Social Class</label>
+                <select id="{{actor._id}}-personal-socialClass" name="system.personalDetails.socialClass">
+                    <option value="" {{#unless system.personalDetails.socialClass}} selected{{/unless}}>--</option>
+                    <option value="royalty" {{#if (eq system.personalDetails.socialClass "royalty")}} selected{{/if}}>Royalty</option>
+                    <option value="nobility" {{#if (eq system.personalDetails.socialClass "nobility")}} selected{{/if}}>Nobility</option>
+                    <option value="upper-class" {{#if (eq system.personalDetails.socialClass "upper-class")}} selected{{/if}}>Upper Class</option>
+                    <option value="merchant" {{#if (eq system.personalDetails.socialClass "merchant")}} selected{{/if}}>Merchant Class</option>
+                    <option value="middle-class" {{#if (eq system.personalDetails.socialClass "middle-class")}} selected{{/if}}>Middle Class</option>
+                    <option value="working-class" {{#if (eq system.personalDetails.socialClass "working-class")}} selected{{/if}}>Working Class</option>
+                    <option value="poor" {{#if (eq system.personalDetails.socialClass "poor")}} selected{{/if}}>Poor</option>
+                    <option value="outcast" {{#if (eq system.personalDetails.socialClass "outcast")}} selected{{/if}}>Outcast</option>
+                    <option value="slave" {{#if (eq system.personalDetails.socialClass "slave")}} selected{{/if}}>Slave</option>
+                    <option value="criminal" {{#if (eq system.personalDetails.socialClass "criminal")}} selected{{/if}}>Criminal</option>
+                    <option value="wild" {{#if (eq system.personalDetails.socialClass "wild")}} selected{{/if}}>Wild</option>
+
+                </select>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-education">Education Level</label>
+                <select id="{{actor._id}}-personal-education" name="system.personalDetails.education">
+                    <option value="" {{#unless system.personalDetails.education}} selected{{/unless}}>--</option>
+                    <option value="none" {{#if (eq system.personalDetails.education "none")}} selected{{/if}}>None</option>
+                    <option value="basic" {{#if (eq system.personalDetails.education "basic")}} selected{{/if}}>Basic</option>
+                    <option value="apprenticed" {{#if (eq system.personalDetails.education "apprenticed")}} selected{{/if}}>Apprenticed</option>
+                    <option value="advanced" {{#if (eq system.personalDetails.education "advanced")}} selected{{/if}}>Advanced</option>
+                    <option value="scholarly" {{#if (eq system.personalDetails.education "scholarly")}} selected{{/if}}>Scholarly</option>
+                    <option value="self-taught" {{#if (eq system.personalDetails.education "self-taught")}} selected{{/if}}>Self-Taught</option>
+                </select>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-occupation">Occupation</label>
+                <input id="{{actor._id}}-personal-occupation" type="text" name="system.personalDetails.occupation" value="{{system.personalDetails.occupation}}" placeholder="Current or former job" />
+            </div>
+        </div>
+    </details>
+    <details class="panel sheet-disclosure sheet-state-section background-detail-section" data-section-key="background-personality" {{#if backgroundSectionStates.personality}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Personality</span><span class="disclosure-hint" aria-hidden="true">Expand</span><i class="fas fa-chevron-down section-toggle-icon" aria-hidden="true"></i></summary>
+        <div class="background-fields">
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-sexuality">Sexuality</label>
+                <select id="{{actor._id}}-personal-sexuality" name="system.personalDetails.sexuality">
+                    <option value="" {{#unless system.personalDetails.sexuality}} selected{{/unless}}>--</option>
+                    <option value="heterosexual" {{#if (eq system.personalDetails.sexuality "heterosexual")}} selected{{/if}}>Heterosexual</option>
+                    <option value="bisexual" {{#if (eq system.personalDetails.sexuality "bisexual")}} selected{{/if}}>Bisexual</option>
+                    <option value="homosexual" {{#if (eq system.personalDetails.sexuality "homosexual")}} selected{{/if}}>Homosexual</option>
+                    <option value="asexual" {{#if (eq system.personalDetails.sexuality "asexual")}} selected{{/if}}>Asexual</option>
+                </select>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-greatestVice">Greatest Vice</label>
+                <select id="{{actor._id}}-personal-greatestVice" name="system.personalDetails.greatestVice">
+                    <option value="" {{#unless system.personalDetails.greatestVice}} selected{{/unless}}>--</option>
+                    <option value="drinking" {{#if (eq system.personalDetails.greatestVice "drinking")}} selected{{/if}}>Drinking</option>
+                    <option value="gambling" {{#if (eq system.personalDetails.greatestVice "gambling")}} selected{{/if}}>Gambling</option>
+                    <option value="smoking" {{#if (eq system.personalDetails.greatestVice "smoking")}} selected{{/if}}>Smoking</option>
+                    <option value="lying" {{#if (eq system.personalDetails.greatestVice "lying")}} selected{{/if}}>Lying</option>
+                    <option value="stealing" {{#if (eq system.personalDetails.greatestVice "stealing")}} selected{{/if}}>Stealing</option>
+                    <option value="cheating" {{#if (eq system.personalDetails.greatestVice "cheating")}} selected{{/if}}>Cheating</option>
+                    <option value="gossiping" {{#if (eq system.personalDetails.greatestVice "gossiping")}} selected{{/if}}>Gossiping</option>
+                    <option value="laziness" {{#if (eq system.personalDetails.greatestVice "laziness")}} selected{{/if}}>Laziness</option>
+                    <option value="overeating" {{#if (eq system.personalDetails.greatestVice "overeating")}} selected{{/if}}>Overeating</option>
+                    <option value="overspending" {{#if (eq system.personalDetails.greatestVice "overspending")}} selected{{/if}}>Overspending</option>
+                    <option value="violence" {{#if (eq system.personalDetails.greatestVice "violence")}} selected{{/if}}>Violence</option>
+                    <option value="bragging" {{#if (eq system.personalDetails.greatestVice "bragging")}} selected{{/if}}>Bragging</option>
+                    <option value="procrastination" {{#if (eq system.personalDetails.greatestVice "procrastination")}} selected{{/if}}>Procrastination</option>
+                    <option value="manipulation" {{#if (eq system.personalDetails.greatestVice "manipulation")}} selected{{/if}}>Manipulation</option>
+                    <option value="substance-abuse" {{#if (eq system.personalDetails.greatestVice "substance-abuse")}} selected{{/if}}>Substance Abuse</option>
+                    <option value="sex" {{#if (eq system.personalDetails.greatestVice "sex")}} selected{{/if}}>Sex</option>
+                    <option value="backstabbing" {{#if (eq system.personalDetails.greatestVice "backstabbing")}} selected{{/if}}>Backstabbing</option>
+                    <option value="hoarding" {{#if (eq system.personalDetails.greatestVice "hoarding")}} selected{{/if}}>Hoarding</option>
+                </select>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-reputation">Reputation</label>
+                <select id="{{actor._id}}-personal-reputation" name="system.personalDetails.reputation">
+                    <option value="" {{#unless system.personalDetails.reputation}} selected{{/unless}}>--</option>
+                    <option value="unknown" {{#if (eq system.personalDetails.reputation "unknown")}} selected{{/if}}>Unknown</option>
+                    <option value="indifferent" {{#if (eq system.personalDetails.reputation "indifferent")}} selected{{/if}}>Indifferent</option>
+                    <option value="respected" {{#if (eq system.personalDetails.reputation "respected")}} selected{{/if}}>Respected</option>
+                    <option value="feared" {{#if (eq system.personalDetails.reputation "feared")}} selected{{/if}}>Feared</option>
+                    <option value="beloved" {{#if (eq system.personalDetails.reputation "beloved")}} selected{{/if}}>Beloved</option>
+                    <option value="notorious" {{#if (eq system.personalDetails.reputation "notorious")}} selected{{/if}}>Notorious</option>
+                    <option value="mistrusted" {{#if (eq system.personalDetails.reputation "mistrusted")}} selected{{/if}}>Mistrusted</option>
+                    <option value="famous" {{#if (eq system.personalDetails.reputation "famous")}} selected{{/if}}>Famous</option>
+                    <option value="infamous" {{#if (eq system.personalDetails.reputation "infamous")}} selected{{/if}}>Infamous</option>
+                    <option value="heroic" {{#if (eq system.personalDetails.reputation "heroic")}} selected{{/if}}>Heroic</option>
+                    <option value="villainous" {{#if (eq system.personalDetails.reputation "villainous")}} selected{{/if}}>Villainous</option>
+                </select>
+            </div>
+            <div class="detail-row">
+                <label for="{{actor._id}}-personal-fightingStyle">Fighting Style</label>
+                <select id="{{actor._id}}-personal-fightingStyle" name="system.personalDetails.fightingStyle">
+                    <option value="" {{#unless system.personalDetails.fightingStyle}} selected{{/unless}}>--</option>
+                    <option value="aggressive" {{#if (eq system.personalDetails.fightingStyle "aggressive")}} selected{{/if}}>Aggressive</option>
+                    <option value="defensive" {{#if (eq system.personalDetails.fightingStyle "defensive")}} selected{{/if}}>Defensive</option>
+                    <option value="tactical" {{#if (eq system.personalDetails.fightingStyle "tactical")}} selected{{/if}}>Tactical</option>
+                    <option value="reckless" {{#if (eq system.personalDetails.fightingStyle "reckless")}} selected{{/if}}>Reckless</option>
+                    <option value="cautious" {{#if (eq system.personalDetails.fightingStyle "cautious")}} selected{{/if}}>Cautious</option>
+                    <option value="berserker" {{#if (eq system.personalDetails.fightingStyle "berserker")}} selected{{/if}}>Berserker</option>
+                    <option value="duelist" {{#if (eq system.personalDetails.fightingStyle "duelist")}} selected{{/if}}>Duelist</option>
+                    <option value="ranged" {{#if (eq system.personalDetails.fightingStyle "ranged")}} selected{{/if}}>Ranged</option>
+                    <option value="support" {{#if (eq system.personalDetails.fightingStyle "support")}} selected{{/if}}>Support</option>
+                    <option value="dirty-fighter" {{#if (eq system.personalDetails.fightingStyle "dirty-fighter")}} selected{{/if}}>Dirty Fighter</option>
+                </select>
+            </div>
+        </div>
+    </details>
+</div>

@@ -10,7 +10,7 @@
     {{!-- Custom skill creation bar --}}
     <details class="custom-skills-bar inv-block sheet-state-section" data-section-key="skills-custom" {{#if skillCustomSectionOpen}}open{{/if}}>
         <summary class="inv-heading sheet-section-summary">
-            <i class="fas fa-plus-circle"></i>
+
             <span class="inv-title">Add Custom Skill</span>
             <span class="inv-actions">
                 <a class="initialize-skills" title="Reset core skill ranks to defaults"><i class="fas fa-sync"></i></a>
@@ -19,13 +19,13 @@
         </summary>
         <div class="inv-block-body custom-skills-bar-body">
             <button type="button" class="add-custom-craft" title="Add Custom Craft Skill">
-                <i class="fas fa-hammer"></i> Craft
+                Craft
             </button>
             <button type="button" class="add-custom-lore" title="Add Lore Skill">
-                <i class="fas fa-book"></i> Lore
+                Lore
             </button>
             <button type="button" class="add-custom-perform" title="Add Perform Skill">
-                <i class="fas fa-theater-masks"></i> Perform
+                Perform
             </button>
         </div>
     </details>
@@ -33,19 +33,18 @@
     {{#each skillCategoryGroups as |group|}}
     <section class="skill-category inv-block">
         <header class="inv-heading skill-category-heading">
-            <i class="fas {{group.icon}}"></i>
-            <span class="inv-title">{{group.label}} Skills</span>
-            <span class="inv-count" title="{{group.trainedCount}} trained, {{group.untrainedCount}} untrained">{{group.trainedCount}} / {{group.skills.length}}</span>
+            <span class="inv-title">{{group.label}}</span>
+            <span class="inv-count" title="{{group.trainedCount}} trained, {{group.untrainedCount}} untrained">{{group.trainedCount}} trained · {{group.skills.length}} total</span>
         </header>
 
         {{#if group.trainedSkills.length}}
         <div class="skills-column-header">
             <div class="skill-name-cell">Name</div>
             <div class="skill-rank-cell">Rank</div>
-            <div class="skill-attribute-cell">Attr</div>
+            <div class="skill-attribute-cell" title="Governing attribute">Attr.</div>
             <div class="skill-bonus-cell">Bonus</div>
             <div class="skill-total-cell">Dice</div>
-            <div class="skill-controls"></div>
+            <div class="skill-controls">Actions</div>
         </div>
 
         <div class="skills-list trained-skills-list abilities-list">
@@ -62,7 +61,7 @@
                  data-section-key="skills-untrained-{{group.key}}"
                  {{#if group.untrainedOpen}}open{{/if}}>
             <summary class="untrained-skills-summary sheet-section-summary">
-                <span><i class="fas fa-eye-slash"></i> Untrained</span>
+                <span>Untrained</span>
                 <span class="inv-count">{{group.untrainedCount}}</span>
                 <i class="fas fa-chevron-down section-toggle-icon"></i>
             </summary>
@@ -70,10 +69,10 @@
             <div class="skills-column-header">
                 <div class="skill-name-cell">Name</div>
                 <div class="skill-rank-cell">Rank</div>
-                <div class="skill-attribute-cell">Attr</div>
+                <div class="skill-attribute-cell" title="Governing attribute">Attr.</div>
                 <div class="skill-bonus-cell">Bonus</div>
                 <div class="skill-total-cell">Dice</div>
-                <div class="skill-controls"></div>
+                <div class="skill-controls">Actions</div>
             </div>
 
             <div class="skills-list abilities-list">

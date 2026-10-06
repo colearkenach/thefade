@@ -5,13 +5,13 @@
             {{#if isCustom}}<span class="ability-meta custom-badge">Custom</span>{{/if}}
         </div>
         <div class="skill-rank-cell">
-            <select name="system.skills.{{key}}.rank" class="skill-rank-select">
+            <select name="system.skills.{{key}}.rank" class="skill-rank-select" aria-label="{{name}} rank">
                 {{selectOptions skillRankOptions selected=rank}}
             </select>
         </div>
         <div class="skill-attribute-cell">
             {{#if canEditAttribute}}
-            <select name="system.skills.{{key}}.attribute" class="skill-attribute-select">
+            <select name="system.skills.{{key}}.attribute" class="skill-attribute-select" aria-label="{{name}} attribute">
                 {{selectOptions skillAttributeOptions selected=attribute}}
             </select>
             {{else}}
@@ -19,11 +19,11 @@
             {{/if}}
         </div>
         <div class="skill-bonus-cell">
-            <input type="number" name="system.skills.{{key}}.miscBonus" value="{{miscBonus}}" data-dtype="Number" class="small-input" />
+            <input type="number" name="system.skills.{{key}}.miscBonus" value="{{miscBonus}}" data-dtype="Number" class="small-input" aria-label="{{name}} bonus" />
         </div>
         <div class="skill-total-cell">{{calculatedDice}}d12</div>
         <div class="skill-controls ability-controls">
-            <a class="skill-roll" title="Roll Skill"><i class="fas fa-dice-d12"></i></a>
+            <a class="skill-roll" title="Roll {{name}}" aria-label="Roll {{name}}"><i class="fas fa-dice-d12"></i></a>
             {{#if isCustom}}
             <a class="skill-delete" title="Delete Custom Skill"><i class="fas fa-trash"></i></a>
             {{else}}

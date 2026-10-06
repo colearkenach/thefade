@@ -3,6 +3,16 @@
         <h2>Combat Traits</h2>
     </div>
 
+    <div class="combat-trait-summary">
+        {{#each combatTraitSummary as |group|}}
+        <div class="combat-summary-row"><span class="combat-summary-label">{{group.label}}</span><div class="combat-summary-tags">{{#each group.entries as |entry|}}<span class="combat-summary-tag" title="{{entry.description}}">{{entry.label}}</span>{{/each}}</div></div>
+        {{else}}<p class="empty-list">No active combat traits.</p>{{/each}}
+        {{#if system.combatTraits.abilityNotes}}<p class="combat-summary-notes">{{system.combatTraits.abilityNotes}}</p>{{/if}}
+        {{#if system.combatTraits.notes}}<p class="combat-summary-notes">{{system.combatTraits.notes}}</p>{{/if}}
+    </div>
+    <details class="sheet-disclosure sheet-state-section combat-trait-editor" data-section-key="combat-traits" {{#if combatSectionStates.traits}}open{{/if}}>
+        <summary class="sheet-section-summary"><span>Edit traits &amp; resistances</span></summary>
+        <div class="sheet-disclosure-body">
     <section class="combat-trait-section universal-abilities-section">
         <h3>Universal Abilities</h3>
         <div class="universal-ability-categories">
@@ -178,4 +188,6 @@
         <h3>Trait Notes</h3>
         <textarea class="combat-trait-text" name="system.combatTraits.notes" rows="3" placeholder="Special conditions, temporary effects, suppressed regeneration, or custom rulings">{{system.combatTraits.notes}}</textarea>
     </section>
+        </div>
+    </details>
 </div>

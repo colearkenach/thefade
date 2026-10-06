@@ -5,8 +5,9 @@
       system.mentalDisorders          (array of { type, name })
     Rulebook penalties applied visually here; actor.js computes roll modifiers.
 --}}
-<div class="injuries-panel panel">
-    <h2>Permanent Injuries</h2>
+<details class="injuries-panel panel sheet-disclosure sheet-state-section" data-section-key="combat-injuries" {{#if combatSectionStates.injuries}}open{{/if}}>
+    <summary class="sheet-section-summary"><span>Injuries &amp; disorders</span><span class="section-status" title="{{injurySummaryText}}">{{#if injurySummary.length}}{{injurySummaryText}}{{else}}None{{/if}}</span></summary>
+    <div class="sheet-disclosure-body">
 
     {{!-- Severed Limbs --}}
     <div class="limbs-section">
@@ -107,4 +108,5 @@
         <p class="disorders-empty">No mental disorders.</p>
         {{/if}}
     </div>
-</div>
+    </div>
+</details>

@@ -1,3 +1,4 @@
+import { ITEM_FAMILIES } from "./item-sheet-config.js";
 // TheFadeItem document class (extracted from thefade.js).
 import { DEFAULT_WEAPON, DEFAULT_ARMOR, DEFAULT_SKILL } from './constants.js';
 import { isNaturalWeapon } from './weapon-rules.js';
@@ -14,6 +15,21 @@ import { getAlchemicalCraftCost, getAlchemicalDiscipline } from './alchemy-rules
 * Handles item data preparation for all item types
 */
 export class TheFadeItem extends Item {
+    static async createDialog(data = {}, createOptions = {}, dialogOptions = {}) {
+        if (Number(game.release?.generation) < 13) return super.createDialog(data, createOptions);
+        const allowed = dialogOptions.types || this.TYPES;
+        const itemFamilies = ITEM_FAMILIES.map(family => ({
+            label: family.label,
+            options: family.types.filter(type => allowed.includes(type)).map(value => ({
+                value, label: game.i18n.localize(CONFIG.Item.typeLabels?.[value] || value)
+            }))
+        })).filter(family => family.options.length);
+        return super.createDialog(data, createOptions, {
+            ...dialogOptions, template: "systems/thefade/templates/dialogs/item-create.html",
+            context: { ...dialogOptions.context, itemFamilies }
+        });
+    }
+
     /**
     * Prepare item data - called automatically by Foundry
     */
@@ -432,7 +448,7 @@ export class TheFadeItem extends Item {
         if (!data.hp) data.hp = 0;
         if (!data.avoid) data.avoid = 0;
         if (!data.size) data.size = "medium";
-        if (!data.movement) data.movement = 4;
+        if (data.movement == null) data.movement = 4;
         if (!data.carryCapacity) data.carryCapacity = 0;
     }
 
@@ -466,10 +482,10 @@ export class TheFadeItem extends Item {
         if (!data.school) data.school = "General";
 
         if (itemData.type === 'staff') {
-            if (!data.usesPerDay) data.usesPerDay = 3;
+            if (data.usesPerDay == null) data.usesPerDay = 3;
         } else if (itemData.type === 'wand') {
-            if (!data.charges) data.charges = 20;
-            if (!data.maxCharges) data.maxCharges = 20;
+            if (data.charges == null) data.charges = 20;
+            if (data.maxCharges == null) data.maxCharges = 20;
         }
     }
 

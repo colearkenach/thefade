@@ -1,3 +1,4 @@
+import { ITEM_PACKS } from "./item-sheet-config.js";
 // Utility helpers for The Fade system (extracted from thefade.js).
 import { DEFAULT_SKILLS, PATH_SKILL_TYPES, DEFAULT_TOKEN } from './constants.js';
 import {
@@ -51,98 +52,60 @@ export function applySpellFilters(html, filters) {
 * @param {Actor} actor - Actor to add items to
 * @param {string} compendiumName - Specific compendium name (optional)
 */
-export function openCompendiumBrowser(itemType, actor, compendiumName = null) {
-    // Determine which compendium to use based on item type if not specified
-    if (!compendiumName) {
-        switch (itemType) {
-            case "skill": compendiumName = "skills"; break;
-            case "path": compendiumName = "paths"; break;
-            case "species": compendiumName = "species"; break;
-            case "weapon": compendiumName = "weapons"; break;
-            case "spell": compendiumName = "spells"; break;
-            case "talent": compendiumName = "talents"; break;
-            case "trait": compendiumName = "talents"; break;
-            case "precept": compendiumName = "talents"; break;
-            case "armor": compendiumName = "armor"; break;
-            case "magicitem": compendiumName = "magic-item"; break;
-            case "potion": compendiumName = "magic-item"; break;
-            case "alchemical": compendiumName = "mundane-item"; break;
-            case "medical": compendiumName = "mundane-item"; break;
-            case "travel": compendiumName = "mundane-item"; break;
-            case "biological": compendiumName = "mundane-item"; break;
-            case "musical": compendiumName = "mundane-item"; break;
-            case "drug": compendiumName = "mundane-item"; break;
-            case "poison": compendiumName = "mundane-item"; break;
-            case "clothing": compendiumName = "mundane-item"; break;
-            case "communication": compendiumName = "mundane-item"; break;
-            case "containment": compendiumName = "mundane-item"; break;
-            case "dream": compendiumName = "mundane-item"; break;
-            case "staff": compendiumName = "magic-item"; break;
-            case "wand": compendiumName = "magic-item"; break;
-            case "gate": compendiumName = "magic-item"; break;
-            case "mount": compendiumName = "mundane-item"; break;
-            case "vehicle": compendiumName = "mundane-item"; break;
-            case "fleshcraft": compendiumName = "mundane-item"; break;
-            default: compendiumName = itemType + "s"; // Fallback to pluralized name
-        }
-    }
+export async function openCompendiumBrowser(itemType, actor, compendiumName = null, onSelect = null) {
+    compendiumName ||= ITEM_PACKS[itemType] || itemType + "s";
+    const pack = game.packs.find(p => p.metadata.name === compendiumName);
+    if (!pack) return ui.notifications.warn(`${compendiumName} compendium not found.`);
 
-    // Find the appropriate compendium pack
-    const packs = game.packs.filter(p => p.metadata.name === compendiumName);
-    const pack = packs.length > 0 ? packs[0] : null;
-
-    if (!pack) {
-        ui.notifications.warn(`${compendiumName} compendium not found. Ensure you have a compendium named '${compendiumName}'.`);
-        return;
-    }
-
-    // Open the compendium
-    pack.render(true);
-
-    // Set up a one-time context menu for adding items from the compendium
-    Hooks.once("renderCompendium", (app, html) => {
-        if (app.collection.metadata.name === compendiumName) {
-            // Create a new context menu
-            const contextMenu = new ContextMenu(html, ".directory-item", [
-                {
-                    name: `Add to ${actor ? "Character" : "Sheet"}`,
-                    icon: '<i class="fas fa-plus"></i>',
-                    callback: async (li) => {
-                        try {
-                            const entryId = li.data("document-id");
-                            const item = await pack.getDocument(entryId);
-
-                            if (item) {
-                                if (actor) {
-                                    const exists = actor.items.some(i => i.name === item.name && i.type === item.type);
-
-                                    if (!exists) {
-                                        // Convert old item types to new types
-                                        let itemData = item.toObject();
-                                        itemData = convertLegacyItemType(itemData, itemType);
-
-                                        await actor.createEmbeddedDocuments("Item", [itemData]);
-                                        ui.notifications.info(`Added ${item.name} to ${actor.name}.`);
-                                    } else {
-                                        ui.notifications.warn(`${item.name} is already added to this character.`);
-                                    }
-                                } else {
-                                    ui.notifications.info(`Selected ${item.name} from compendium.`);
-                                    const event = new CustomEvent("compendiumSelection", {
-                                        detail: { item: item }
-                                    });
-                                    document.dispatchEvent(event);
-                                }
-                            }
-                        } catch (err) {
-                            console.error(`Error adding ${itemType} from compendium:`, err);
-                            ui.notifications.error(`Could not add ${itemType} from compendium.`);
+    // Each picker owns its selection callback; opening another sheet cannot
+    // redirect a selection or leave a global listener waiting for it.
+    const index = await pack.getIndex({ fields: ["system.itemCategory"] });
+    const entries = index.filter(entry => entry.type === itemType
+        || (entry.type === "item" && entry.system?.itemCategory === itemType))
+        .sort((a, b) => a.name.localeCompare(b.name));
+    const escape = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+    const rows = entries.map(entry => `<li data-entry-id="${escape(entry._id)}"><span>${escape(entry.name)}</span><button type="button" data-action="view" title="Open item"><i class="fas fa-book-open"></i></button><button type="button" data-action="add">${actor ? "Add" : "Select"}</button></li>`).join("");
+    return new Dialog({
+        title: `Browse ${game.i18n.localize(CONFIG.Item.typeLabels?.[itemType] || itemType)}`,
+        content: `<div class="thefade compendium-item-picker"><input type="search" class="picker-search" placeholder="Search items…" aria-label="Search items" /><ol>${rows || "<li>No matching items in this compendium.</li>"}</ol><p class="picker-empty" hidden>No matching items.</p></div>`,
+        buttons: { close: { label: "Close" } },
+        render: html => {
+            html.find('.picker-search').on('input', event => {
+                const query = event.currentTarget.value.trim().toLocaleLowerCase();
+                let visible = 0;
+                html.find('[data-entry-id]').each((_, row) => {
+                    const matches = row.querySelector('span').textContent.toLocaleLowerCase().includes(query);
+                    row.hidden = !matches;
+                    if (matches) visible++;
+                });
+                html.find('.picker-empty').prop('hidden', visible > 0 || !entries.length);
+            });
+            html.find('[data-action]').on('click', async event => {
+                event.preventDefault();
+                const button = event.currentTarget;
+                button.disabled = true;
+                try {
+                    const item = await pack.getDocument(button.closest('[data-entry-id]').dataset.entryId);
+                    if (!item) return;
+                    if (button.dataset.action === "view") return item.sheet.render(true);
+                    if (actor) {
+                        if (actor.items.some(existing => existing.name === item.name && existing.type === item.type)) {
+                            return ui.notifications.warn(`${item.name} is already added to this character.`);
                         }
-                    }
-                }
-            ]);
+                        const itemData = convertLegacyItemType(item.toObject(), itemType);
+                        delete itemData._id;
+                        await actor.createEmbeddedDocuments("Item", [itemData]);
+                        ui.notifications.info(`Added ${item.name} to ${actor.name}.`);
+                    } else if (onSelect) await onSelect(item);
+                } catch (error) {
+                    console.error("Could not select compendium item:", error);
+                    ui.notifications.error(`Could not add ${itemType} from compendium.`);
+                } finally { button.disabled = false; }
+            });
         }
-    });
+    }, { width: 480, classes: ["thefade", "dialog"] }).render(true);
 
     function convertLegacyItemType(itemData, expectedType) {
         // If the item is already the correct type, return as-is
