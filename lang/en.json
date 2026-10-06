@@ -713,7 +713,9 @@
       "moreRange": "Increase range",
       "moreDuration": "Increase duration",
       "apply": "Apply spell",
-      "nothingApplied": "Nothing to apply."
+      "nothingApplied": "Nothing to apply.",
+      "castSpare": "Casting: {count} spare success(es)",
+      "attackSpare": "Attack: {count} spare success(es)"
     },
     "Mishap": {
       "none": "Standard",

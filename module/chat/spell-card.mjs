@@ -4,24 +4,47 @@ import { applyDamage } from "../rules/damage.mjs";
 const TEMPLATE = "systems/thefade/templates/chat/spell-card.hbs";
 const SPELL_CRIT = 4;
 
+/**
+ * Spendable options, each drawn from one pool. The casting roll's spare
+ * successes ("cast") buy damage, range, duration and the spell's Bonus; the
+ * attack roll's spare successes ("attack") buy crits and damage-type effects.
+ * A spell without an attack roll buys damage-type effects from the casting
+ * pool and cannot crit.
+ */
 function spellOptions(state) {
     if (!state.success) return [];
     const options = [];
     const d = state.damage;
-    if (d.canCrit) options.push({ key: "crit", label: game.i18n.format("THEFADE.Attack.crit", { damage: d.critValue }), cost: SPELL_CRIT });
-    if (d.total) options.push({ key: "damage", label: game.i18n.localize("THEFADE.Spell.moreDamage"), cost: d.increaseCost });
-    if (state.range) options.push({ key: "range", label: game.i18n.localize("THEFADE.Spell.moreRange"), cost: 1 });
-    if (state.time && !/^instant/i.test(state.time)) options.push({ key: "duration", label: game.i18n.localize("THEFADE.Spell.moreDuration"), cost: state.durationCost });
-    if (state.bonusEffect && !state.spent.some(s => s.key === "bonus")) options.push({ key: "bonus", label: state.bonusEffect, cost: 1 });
-    const types = new Set(d.components.filter(c => c.amount > 0).flatMap(c => CONFIG.THEFADE.damageTypeParts[c.type] ?? [c.type]));
-    for (const type of types) {
-        for (const effect of CONFIG.THEFADE.damageEffects[type] ?? []) {
-            if (state.spent.some(s => s.key === effect.key)) continue;
-            options.push({ key: effect.key, label: game.i18n.localize(effect.label), cost: effect.cost, damageEffect: true });
+    const hasAttack = state.attacks.length > 0;
+    const attackHit = state.attacks.some(a => a.hit);
+    if (d.total) options.push({ key: "damage", label: game.i18n.localize("THEFADE.Spell.moreDamage"), cost: d.increaseCost, pool: "cast" });
+    if (state.range) options.push({ key: "range", label: game.i18n.localize("THEFADE.Spell.moreRange"), cost: 1, pool: "cast" });
+    if (state.time && !/^instant/i.test(state.time)) options.push({ key: "duration", label: game.i18n.localize("THEFADE.Spell.moreDuration"), cost: state.durationCost, pool: "cast" });
+    if (state.bonusEffect && !state.spent.some(s => s.key === "bonus")) options.push({ key: "bonus", label: state.bonusEffect, cost: 1, pool: "cast" });
+    if (d.canCrit && attackHit) options.push({ key: "crit", label: game.i18n.format("THEFADE.Attack.crit", { damage: d.critValue }), cost: SPELL_CRIT, pool: "attack" });
+    if (!hasAttack || attackHit) {
+        const pool = hasAttack ? "attack" : "cast";
+        const types = new Set(d.components.filter(c => c.amount > 0).flatMap(c => CONFIG.THEFADE.damageTypeParts[c.type] ?? [c.type]));
+        for (const type of types) {
+            for (const effect of CONFIG.THEFADE.damageEffects[type] ?? []) {
+                if (state.spent.some(s => s.key === effect.key)) continue;
+                options.push({ key: effect.key, label: game.i18n.localize(effect.label), cost: effect.cost, damageEffect: true, pool });
+            }
         }
     }
-    for (const option of options) option.affordable = option.cost <= state.remaining;
+    for (const option of options) option.affordable = option.cost <= poolRemaining(state, option.pool);
     return options;
+}
+
+/** Successes left in a pool ("cast" or "attack"). */
+function poolRemaining(state, pool) {
+    return pool === "attack" ? (state.attackRemaining ?? 0) : state.remaining;
+}
+
+/** Take successes from a pool (a negative amount refunds them). */
+function spendFrom(state, pool, amount) {
+    if (pool === "attack") state.attackRemaining = (state.attackRemaining ?? 0) - amount;
+    else state.remaining -= amount;
 }
 
 async function cardContext(state, message) {
@@ -37,7 +60,8 @@ async function cardContext(state, message) {
         faces: roll?.faces ?? [],
         components,
         totalDamage: components.reduce((sum, c) => sum + c.amount, 0),
-        options: spellOptions(state),
+        castOptions: spellOptions(state).filter(o => o.pool === "cast"),
+        attackOptions: spellOptions(state).filter(o => o.pool === "attack"),
         increases: Object.entries(counts).filter(([k]) => ["range", "duration"].includes(k)).map(([k, n]) => ({ label: game.i18n.localize(k === "range" ? "THEFADE.Spell.moreRange" : "THEFADE.Spell.moreDuration"), n })),
         mishapLabel: state.mishap ? game.i18n.localize(`THEFADE.Spell.mishap.${state.mishap}`) : ""
     };
@@ -71,8 +95,8 @@ export async function handleSpellCardAction(message, button) {
     if (op === "spend") {
         const option = spellOptions(state).find(o => o.key === button.dataset.option);
         if (!option) return;
-        if (option.cost > state.remaining) return ui.notifications.warn("THEFADE.Attack.notEnough", { localize: true });
-        state.remaining -= option.cost;
+        if (option.cost > poolRemaining(state, option.pool)) return ui.notifications.warn("THEFADE.Attack.notEnough", { localize: true });
+        spendFrom(state, option.pool, option.cost);
         if (option.key === "crit") state.damage.crits += 1;
         else if (option.key === "damage") state.damage.increase += 1;
         let rounds = null;
@@ -80,12 +104,12 @@ export async function handleSpellCardAction(message, button) {
         if (effect?.duration === "half") rounds = Math.max(1, Math.floor(state.damage.total / 2));
         else if (typeof effect?.duration === "string") rounds = (await new Roll(effect.duration).evaluate()).total;
         else if (Number.isFinite(effect?.duration)) rounds = effect.duration;
-        state.spent.push({ key: option.key, label: option.label, cost: option.cost, rounds, condition: effect?.condition ?? null, intensity: effect?.intensity ?? null, sanity: effect?.sanity ?? null });
+        state.spent.push({ key: option.key, label: option.label, cost: option.cost, pool: option.pool, rounds, condition: effect?.condition ?? null, intensity: effect?.intensity ?? null, sanity: effect?.sanity ?? null });
         return updateCard(message, state);
     }
 
     if (op === "reset") {
-        state.remaining += state.spent.reduce((sum, s) => sum + s.cost, 0);
+        for (const s of state.spent) spendFrom(state, s.pool ?? "cast", -s.cost);
         state.spent = [];
         state.damage.crits = 0;
         state.damage.increase = 0;

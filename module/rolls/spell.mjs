@@ -108,7 +108,9 @@ export async function castSpell(actor, spell, { event } = {}) {
             cast: { dice, successes: castRoll.successes, required, success: activated, autoFail: mods.autoFail },
             success,
             mishap: activated ? null : mishapSeverity(castRoll.successes, required),
+            // Spare casting successes buy enhancements; spare attack successes buy crits (designer ruling, 2026-10-06).
             remaining: success ? castRoll.excess : 0,
+            attackRemaining: Math.max(0, ...attacks.filter(a => a.hit).map(a => a.successes - a.dt)),
             damage: {
                 components: damage.components.map(c => ({ amount: c.amount, type: c.type, label: c.label })),
                 total: damage.total, increase: 0, crits: 0, critValue: damage.total,

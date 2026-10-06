@@ -61,14 +61,24 @@
     </section>
 
     {{#unless state.applied}}
-    {{#if options.length}}
+    {{#if (or castOptions.length attackOptions.length)}}
     <section class="tf-card-section owner-only">
-        <p class="tf-spend-head">{{localize "THEFADE.Attack.remaining" count=state.remaining}}</p>
+        {{#if castOptions.length}}
+        <p class="tf-spend-head">{{localize "THEFADE.Spell.castSpare" count=state.remaining}}</p>
         <div class="tf-spend-options">
-            {{#each options}}
+            {{#each castOptions}}
             <button type="button" class="tf-spend" data-tf-action="spellAction" data-op="spend" data-option="{{key}}" {{#unless affordable}}disabled{{/unless}}><span>{{label}}</span><small>{{cost}}</small></button>
             {{/each}}
         </div>
+        {{/if}}
+        {{#if attackOptions.length}}
+        <p class="tf-spend-head">{{localize "THEFADE.Spell.attackSpare" count=state.attackRemaining}}</p>
+        <div class="tf-spend-options">
+            {{#each attackOptions}}
+            <button type="button" class="tf-spend" data-tf-action="spellAction" data-op="spend" data-option="{{key}}" {{#unless affordable}}disabled{{/unless}}><span>{{label}}</span><small>{{cost}}</small></button>
+            {{/each}}
+        </div>
+        {{/if}}
         {{#if state.spent.length}}<button type="button" class="tf-text-button" data-tf-action="spellAction" data-op="reset"><i class="fa-solid fa-rotate-left"></i> {{localize "THEFADE.Attack.resetSpend"}}</button>{{/if}}
     </section>
     {{/if}}
